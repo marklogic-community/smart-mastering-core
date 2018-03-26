@@ -1,0 +1,5 @@
+{
+  "role-name" : "adm-core-internal",
+  "description" : "Internal role used for amping",
+  "role" : [ "adm-core-writer" ]
+}
