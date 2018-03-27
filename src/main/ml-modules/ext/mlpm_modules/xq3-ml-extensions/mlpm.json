@@ -1,0 +1,8 @@
+{
+  "name": "xq3-ml-extensions",
+  "version": "0.1.0",
+  "description": "XQuery library functions to add some XQuery 3.0 capabilities to MarkLogic",
+  "repository": "https://github.com/ryanjdew/xq3-ml-extensions.git",
+  "dependencies": {},
+  "gitHead": "80c073975532953faa7e74ea04dc55c624f612ac"
+}

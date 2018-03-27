@@ -1,0 +1,5 @@
+{
+  "role-name": "mdm-admin",
+  "description": "Agile Mastering admin role",
+  "role": ["admin", "rest-admin"]
+}

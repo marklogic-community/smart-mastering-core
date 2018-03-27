@@ -1,0 +1,21 @@
+xquery version "1.0-ml";
+
+import module namespace merging = "http://marklogic.com/agile-mastering/survivorship/merging"
+at "/ext/com.marklogic.agile-mastering/survivorship/merging/base.xqy";
+
+import module namespace test = "http://marklogic.com/roxy/test-helper" at "/test/test-helper.xqy";
+
+(: test getting all options :)
+let $expected := test:get-test-file("sample-options.xml")/node()
+let $actual := merging:get-options()
+let $assert-get-all-options := test:assert-equal-xml($expected, $actual)
+
+(: test getting options by name :)
+let $actual := merging:get-options("sample")
+let $assert-get-named-options := test:assert-equal-xml($expected, $actual)
+
+
+return (
+  $assert-get-all-options,
+  $assert-get-named-options
+)
