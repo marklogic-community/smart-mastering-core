@@ -1,8 +1,43 @@
+buildscript {
+  repositories {
+    jcenter()
+
+    // Needed for ml-unit-test-client dependency until it's available via jcenter()
+    maven {
+      url {"https://dl.bintray.com/rjrudin/maven/"}
+    }
+  }
+  dependencies {
+    classpath "com.marklogic:ml-unit-test-client:0.9.1"
+    classpath "com.marklogic:ml-gradle:${mlGradleVersion}"
+  }
+}
+
 plugins {
   id "maven-publish"
   id "com.jfrog.bintray" version "1.7.3"
-  id "com.marklogic.ml-gradle" version "3.6.1"
+  id "com.marklogic.ml-gradle" version '3.6.1'
   id 'net.saliman.properties' version '1.4.6'
+}
+
+apply plugin: "java"
+apply plugin: "com.marklogic.ml-gradle"
+
+repositories {
+  jcenter()
+
+  // Needed for ml-unit-test and ml-unit-test-client dependencies until they're available via jcenter()
+  maven {
+    url {"https://dl.bintray.com/rjrudin/maven/"}
+  }
+}
+
+dependencies {
+  mlRestApi "com.marklogic:ml-unit-test:0.9.1"
+
+  // For running ml-unit-test tests via JUnit
+  testCompile "com.marklogic:ml-unit-test-client:0.9.1"
+  testCompile "junit:junit:4+"
 }
 
 bintray {
@@ -27,7 +62,7 @@ configurations {
 task modulesZip(type: Zip) {
   description = "Zip up the smart-mastering MarkLogic modules into a package that can be published"
   from("src/main/ml-modules") {
-    into("smart-mastering/ml-modules")
+    into("ml-modules")
   }
   destinationDir file("build/libs")
   baseName "smart-mastering"
