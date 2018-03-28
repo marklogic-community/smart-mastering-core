@@ -1,9 +1,31 @@
 plugins {
+  id "maven-publish"
+  id "com.jfrog.bintray" version "1.7.3"
   id "com.marklogic.ml-gradle" version "3.6.1"
+  id 'net.saliman.properties' version '1.4.6'
+}
+
+bintray {
+  user = bintray_user
+  key = bintray_key
+  pkg {
+    repo = 'Maven'
+    name = 'smart-mastering-core'
+    userOrg = 'marklogic-community'
+    version {
+      name = pkg_version
+    }
+  }
+  publications = ['mainModules']
+}
+
+// Defines a configuration for the MarkLogic modules; used by the modulesZip task below
+configurations {
+  modules
 }
 
 task modulesZip(type: Zip) {
-  description = "Zip up the ml-unit-test MarkLogic modules into a package that can be published"
+  description = "Zip up the smart-mastering MarkLogic modules into a package that can be published"
   from("src/main/ml-modules") {
     into("smart-mastering/ml-modules")
   }
@@ -11,3 +33,23 @@ task modulesZip(type: Zip) {
   baseName "smart-mastering"
 }
 
+
+artifacts {
+  modules modulesZip
+}
+
+publishing {
+  publications {
+    mainModules(MavenPublication) {
+      groupId "com.marklogic.community"
+      artifactId "smart-mastering-core"
+      artifact modulesZip
+      version pkg_version
+    }
+  }
+  repositories {
+    mavenCentral()
+  }
+}
+
+apply plugin: 'maven-publish'
