@@ -1,5 +1,5 @@
 {
   "role-name": "mdm-user",
-  "description": "Agile Mastering user role",
+  "description": "Smart Mastering user role",
   "role": ["rest-reader", "rest-writer"]
 }
