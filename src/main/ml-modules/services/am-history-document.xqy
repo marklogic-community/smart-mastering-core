@@ -5,9 +5,6 @@ module namespace resource = "http://marklogic.com/rest-api/resource/am-history-d
 import module namespace history = "http://marklogic.com/agile-mastering/auditing/history"
   at "/ext/com.marklogic.agile-mastering/auditing/history.xqy";
 
-
-declare namespace rapi = "http://marklogic.com/rest-api";
-
 declare function get(
   $context as map:map,
   $params  as map:map
@@ -15,10 +12,10 @@ declare function get(
 {
   let $results := history:document-history(map:get($params,"uri"))
   let $accept-types := map:get($context,"accept-types")
-  return 
+  return
     if ($accept-types = "application/json") then (
       xdmp:to-json($results)
-    ) else 
+    ) else
       document {
         $results
       }

@@ -4,8 +4,6 @@ module namespace resource = "http://marklogic.com/rest-api/resource/am-match";
 
 import module namespace matcher = "http://marklogic.com/agile-mastering/matcher"
   at "/ext/com.marklogic.agile-mastering/matcher.xqy";
-import module namespace json="http://marklogic.com/xdmp/json"
-  at "/MarkLogic/json/json.xqy";
 
 declare namespace rapi = "http://marklogic.com/rest-api";
 
@@ -26,8 +24,8 @@ declare function put(
   post($context, $params, $input)
 };
 
-declare 
-%rapi:transaction-mode("query") 
+declare
+%rapi:transaction-mode("query")
 function post(
   $context as map:map,
   $params  as map:map,
@@ -36,22 +34,22 @@ function post(
 {
   let $uri := map:get($params, "uri")
   let $input-root := $input/(element()|object-node())
-  let $document := 
+  let $document :=
     if ($input/(*:document|object-node("document"))) then
       $input/(*:document|object-node("document"))
-    else 
+    else
       fn:doc($uri)
-  let $options := 
+  let $options :=
     if (map:contains($params, "options")) then
       matcher:get-options(map:get($params, "options"))
     else
       $input-root/(*:options|.[object-node("options")])
-  let $start := 
+  let $start :=
     fn:head((
       map:get($params,"start") ! xs:integer(.),
       1
     ))
-  let $page-length := 
+  let $page-length :=
     fn:head((
       map:get($params,"pageLength") ! xs:integer(.),
       $options//*:max-scan ! xs:integer(.),
@@ -59,7 +57,7 @@ function post(
     ))
   let $results :=
     matcher:find-document-matches-by-options(
-      $document, 
+      $document,
       $options,
       $start,
       $page-length
@@ -68,7 +66,7 @@ function post(
   return
     if ($accept-types = "application/json") then (
       matcher:results-to-json($results)
-    ) else 
+    ) else
       document {
         $results
       }
