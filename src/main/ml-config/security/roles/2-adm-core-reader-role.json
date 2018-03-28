@@ -1,5 +1,0 @@
-{
-  "role-name" : "adm-core-reader",
-  "description" : "Can view documents, but not edit",
-  "role" : [ "rest-reader", "adm-core-nobody" ]
-}
