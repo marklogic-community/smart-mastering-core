@@ -90,6 +90,7 @@ Click the `Run Tests` button.
 - add these properties to your `gradle-local.properties`
   - bintray_user
   - bintray_key
+- change the `pkg_version` property in `gradle.properties` to the new version number
 - `gradle bintrayUpload`
 
 You must be part of the marklogic-community organization on bintray in order to publish.
