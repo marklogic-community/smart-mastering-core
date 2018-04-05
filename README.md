@@ -64,8 +64,8 @@ Add these top-level statements to connect the task dependencies.
 
     tasks.deployCore.dependsOn unzip
     tasks.mlLoadModules.dependsOn deployCore
-    tasks.mlReloadModules.dependsOn deployCore
-    tasks.mlDeploy.dependsOn deployCore
+    // This dependsOn ensures that mlDeploy includes the deployCore step and runs it at the right time
+    tasks.mlPostDeploy.dependsOn deployCore
 
 ## Development
 
