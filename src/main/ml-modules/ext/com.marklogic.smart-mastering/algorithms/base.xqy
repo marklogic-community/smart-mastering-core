@@ -1,13 +1,13 @@
 xquery version "1.0-ml";
 
-module namespace algorithms = "http://marklogic.com/agile-mastering/algorithms";
+module namespace algorithms = "http://marklogic.com/smart-mastering/algorithms";
 
-import module namespace algorithms = "http://marklogic.com/agile-mastering/algorithms"
+import module namespace algorithms = "http://marklogic.com/smart-mastering/algorithms"
   at  "double-metaphone.xqy",
       "standard-reduction.xqy",
       "thesaurus.xqy";
 
-import module namespace fun-ext = "http://marklogic.com/agile-mastering/function-extension"
+import module namespace fun-ext = "http://marklogic.com/smart-mastering/function-extension"
   at "../function-extension/base.xqy";
 
 declare function algorithms:default-function-lookup(
@@ -16,7 +16,7 @@ declare function algorithms:default-function-lookup(
 {
   fn:function-lookup(
     fn:QName(
-      "http://marklogic.com/agile-mastering/algorithms", 
+      "http://marklogic.com/smart-mastering/algorithms", 
       $name
     ),
     $arity

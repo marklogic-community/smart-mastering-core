@@ -1,4 +1,4 @@
-<options xmlns="http://marklogic.com/agile-mastering/survivorship/merging">
+<options xmlns="http://marklogic.com/smart-mastering/survivorship/merging">
   <match-options>basic</match-options>
   <thresholds>
     <threshold label="Definitive Match" action="merge" />

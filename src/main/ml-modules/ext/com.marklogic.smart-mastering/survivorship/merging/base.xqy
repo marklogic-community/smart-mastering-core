@@ -1,23 +1,23 @@
 xquery version "1.0-ml";
 
-module namespace merging = "http://marklogic.com/agile-mastering/survivorship/merging";
+module namespace merging = "http://marklogic.com/smart-mastering/survivorship/merging";
 
-import module namespace auditing = "http://marklogic.com/agile-mastering/auditing"
+import module namespace auditing = "http://marklogic.com/smart-mastering/auditing"
   at "../../auditing/base.xqy";
 import module namespace flow = "http://marklogic.com/data-hub/flow-lib"
   at "/MarkLogic/data-hub-framework/impl/flow-lib.xqy";
-import module namespace fun-ext = "http://marklogic.com/agile-mastering/function-extension"
+import module namespace fun-ext = "http://marklogic.com/smart-mastering/function-extension"
   at "../../function-extension/base.xqy";
-import module namespace history = "http://marklogic.com/agile-mastering/auditing/history"
+import module namespace history = "http://marklogic.com/smart-mastering/auditing/history"
   at "../../auditing/history.xqy";
 import module namespace json="http://marklogic.com/xdmp/json"
   at "/MarkLogic/json/json.xqy";
-import module namespace merging = "http://marklogic.com/agile-mastering/survivorship/merging"
+import module namespace merging = "http://marklogic.com/smart-mastering/survivorship/merging"
   at  "standard.xqy";
-import module namespace const = "http://marklogic.com/agile-mastering/constants"
-at "/ext/com.marklogic.agile-mastering/constants.xqy";
+import module namespace const = "http://marklogic.com/smart-mastering/constants"
+at "/ext/com.marklogic.smart-mastering/constants.xqy";
 
-declare namespace agile-mastering = "http://marklogic.com/agile-mastering";
+declare namespace smart-mastering = "http://marklogic.com/smart-mastering";
 declare namespace es = "http://marklogic.com/entity-services";
 declare namespace prov = "http://www.w3.org/ns/prov#";
 
@@ -25,7 +25,7 @@ declare option xdmp:mapping "false";
 
 declare variable $retain-rollback-info := fn:false();
 
-declare variable $MERGING-OPTIONS-DIR := "/com.marklogic.agile-mastering/options/merging/";
+declare variable $MERGING-OPTIONS-DIR := "/com.marklogic.smart-mastering/options/merging/";
 
 declare function merging:default-function-lookup(
   $name as xs:string?,
@@ -33,7 +33,7 @@ declare function merging:default-function-lookup(
 {
   fn:function-lookup(
     fn:QName(
-      "http://marklogic.com/agile-mastering/survivorship/merging",
+      "http://marklogic.com/smart-mastering/survivorship/merging",
       if (fn:exists($name[. ne ""])) then
         $name
       else
@@ -70,7 +70,7 @@ declare function merging:save-merge-models-by-uri(
       merging:options-from-json($merge-options)
     else
       $merge-options
-  let $merge-uri := "/com.marklogic.agile-mastering/merged/"||sem:uuid-string()||".xml"
+  let $merge-uri := "/com.marklogic.smart-mastering/merged/"||sem:uuid-string()||".xml"
   let $uris :=
     for $uri in $uris
     let $is-merged := xdmp:document-get-collections($uri) = $const:MERGED-COLL
@@ -268,14 +268,14 @@ declare function merging:build-merge-models-by-final-properties-to-xml(
 ) {
   <es:envelope>
     <es:headers>
-      <agile-mastering:id>{sem:uuid-string()}</agile-mastering:id>
-      <agile-mastering:merges>{
-      $docs/es:envelope/es:headers/agile-mastering:merges/agile-mastering:document-uri,
-      $docs ! element agile-mastering:document-uri { xdmp:node-uri(.) }
-      }</agile-mastering:merges>
-      <agile-mastering:sources>{
-      $docs/es:envelope/es:headers/agile-mastering:sources/agile-mastering:source
-      }</agile-mastering:sources>
+      <smart-mastering:id>{sem:uuid-string()}</smart-mastering:id>
+      <smart-mastering:merges>{
+      $docs/es:envelope/es:headers/smart-mastering:merges/smart-mastering:document-uri,
+      $docs ! element smart-mastering:document-uri { xdmp:node-uri(.) }
+      }</smart-mastering:merges>
+      <smart-mastering:sources>{
+      $docs/es:envelope/es:headers/smart-mastering:sources/smart-mastering:source
+      }</smart-mastering:sources>
     </es:headers>
     <es:instance>{
       merging:build-instance-body-by-final-properties(
@@ -388,16 +388,16 @@ declare function merging:parse-final-properties-for-merge(
   let $prop-history-info := ()
       (:for $doc-uri in fn:distinct-values($docs/(es:envelope|object-node("envelope"))
             /(es:headers|object-node("headers"))
-            /(agile-mastering:merges|array-node("merges"))
-            /(agile-mastering:document-uri|documentUri))
+            /(smart-mastering:merges|array-node("merges"))
+            /(smart-mastering:document-uri|documentUri))
       return
         history:property-history($doc-uri, ()) ! xdmp:to-json(.)/object-node():)
   let $sources :=
     for $source in
       $docs/(es:envelope|object-node("envelope"))
             /(es:headers|object-node("headers"))
-            /(agile-mastering:sources|array-node("sources"))
-            /(agile-mastering:source|object-node())
+            /(smart-mastering:sources|array-node("sources"))
+            /(smart-mastering:source|object-node())
     let $last-updated := $source/*:dateTime[. castable as xs:dateTime] ! xs:dateTime(.)
     order by $last-updated descending
     return
@@ -574,7 +574,7 @@ declare function merging:get-options()
 
 Example merging options:
 
-<options xmlns="http://marklogic.com/agile-mastering/survivorship/merging">
+<options xmlns="http://marklogic.com/smart-mastering/survivorship/merging">
   <match-options>basic</match-options>
   <thresholds>
     <threshold label="Definitive Match" action="merge" />
@@ -658,7 +658,7 @@ declare function merging:_options-json-config()
    (map:put($config, "array-element-names",
              ("algorithm","threshold","scoring","property", "reduce", "add", "expand")),
     map:put($config, "element-namespace",
-             "http://marklogic.com/agile-mastering/matcher"),
+             "http://marklogic.com/smart-mastering/matcher"),
     map:put($config, "element-namespace-prefix", "matcher"),
     map:put($config, "attribute-names",
       ("name","localname", "namespace", "function",
@@ -694,7 +694,7 @@ declare function merging:_option-names-json-config()
    (map:put($config, "array-element-names",
              ("option")),
     map:put($config, "element-namespace",
-             "http://marklogic.com/agile-mastering/survivorship/merging"),
+             "http://marklogic.com/smart-mastering/survivorship/merging"),
     map:put($config, "element-namespace-prefix", "merging"),
     $config)
 };

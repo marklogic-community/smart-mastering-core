@@ -1,6 +1,6 @@
 xquery version "1.0-ml";
 
-module namespace auditing = "http://marklogic.com/agile-mastering/auditing";
+module namespace auditing = "http://marklogic.com/smart-mastering/auditing";
 
 import module namespace diff = "http://marklogic.com/demo/xml-diff"
   at "/ext/mlpm_modules/marklogic-xml-diff/diff.xqy";
@@ -13,12 +13,12 @@ import module namespace sem = "http://marklogic.com/semantics"
 import module namespace xq3 = "http://maxdewpoint.blogspot.com/xq3-ml-extensions"
   at "/ext/mlpm_modules/xq3-ml-extensions/xq3.xqy";
 
-import module namespace const = "http://marklogic.com/agile-mastering/constants"
-  at "/ext/com.marklogic.agile-mastering/constants.xqy";
+import module namespace const = "http://marklogic.com/smart-mastering/constants"
+  at "/ext/com.marklogic.smart-mastering/constants.xqy";
 
 declare namespace prov = "http://www.w3.org/ns/prov#";
 declare namespace foaf = "http://xmlns.com/foaf/0.1/";
-declare namespace am = "http://marklogic.com/agile-mastering/auditing#";
+declare namespace am = "http://marklogic.com/smart-mastering/auditing#";
 declare namespace rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 declare namespace rdfs = "http://www.w3.org/2000/01/rdf-schema#";
 
@@ -152,7 +152,7 @@ declare function auditing:audit-trace(
     }
   return
     xdmp:document-insert(
-      "/com.marklogic.agile-mastering/auditing/"|| $action ||"/"||sem:uuid-string()||".xml",
+      "/com.marklogic.smart-mastering/auditing/"|| $action ||"/"||sem:uuid-string()||".xml",
       element {fn:QName($prov-prefix, "document")} {
         $prov-xml/node(),
         auditing:build-semantic-info($prov-xml)

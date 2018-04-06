@@ -1,9 +1,9 @@
 xquery version "1.0-ml";
 
-module namespace resource = "http://marklogic.com/rest-api/resource/am-merge";
+module namespace resource = "http://marklogic.com/rest-api/resource/sm-merge";
 
-import module namespace merging = "http://marklogic.com/agile-mastering/survivorship/merging"
-  at "/ext/com.marklogic.agile-mastering/survivorship/merging/base.xqy";
+import module namespace merging = "http://marklogic.com/smart-mastering/survivorship/merging"
+  at "/ext/com.marklogic.smart-mastering/survivorship/merging/base.xqy";
 
 declare namespace rapi = "http://marklogic.com/rest-api";
 
@@ -16,8 +16,8 @@ declare function put(
   post($context, $params, $input)
 };
 
-declare 
-%rapi:transaction-mode("update") 
+declare
+%rapi:transaction-mode("update")
 function post(
   $context as map:map,
   $params  as map:map,
@@ -25,12 +25,12 @@ function post(
   ) as document-node()*
 {
   let $uris := (map:get($params, "primary-uri"),map:get($params, "secondary-uri"))
-  let $options := 
+  let $options :=
     if (fn:exists($input/(*:options|object-node()))) then
       $input/(*:options|object-node())
     else
       merging:get-options(map:get($params, "options"))
-  let $merge-fun := 
+  let $merge-fun :=
     if (map:get($params, "preview") = "true") then
       merging:build-merge-models-by-uri#2
     else

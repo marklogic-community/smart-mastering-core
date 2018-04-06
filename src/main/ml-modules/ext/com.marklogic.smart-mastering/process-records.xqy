@@ -1,13 +1,13 @@
 xquery version '1.0-ml';
 
-module namespace process = "http://marklogic.com/agile-mastering/process-records";
+module namespace process = "http://marklogic.com/smart-mastering/process-records";
 
-import module namespace matcher = "http://marklogic.com/agile-mastering/matcher"
+import module namespace matcher = "http://marklogic.com/smart-mastering/matcher"
   at "matcher.xqy";
-import module namespace merging = "http://marklogic.com/agile-mastering/survivorship/merging"
+import module namespace merging = "http://marklogic.com/smart-mastering/survivorship/merging"
   at "survivorship/merging/base.xqy";
-import module namespace const = "http://marklogic.com/agile-mastering/constants"
-at "/ext/com.marklogic.agile-mastering/constants.xqy";
+import module namespace const = "http://marklogic.com/smart-mastering/constants"
+at "/ext/com.marklogic.smart-mastering/constants.xqy";
 
 declare option xdmp:mapping "false";
 

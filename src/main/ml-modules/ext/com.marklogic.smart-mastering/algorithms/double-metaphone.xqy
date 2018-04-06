@@ -1,18 +1,18 @@
 xquery version "1.0-ml";
 
-module namespace algorithms = "http://marklogic.com/agile-mastering/algorithms";
+module namespace algorithms = "http://marklogic.com/smart-mastering/algorithms";
 
 import module namespace spell = "http://marklogic.com/xdmp/spell"
   at "/MarkLogic/spell.xqy";
 
-import module namespace const = "http://marklogic.com/agile-mastering/constants"
-  at "/ext/com.marklogic.agile-mastering/constants.xqy";
+import module namespace const = "http://marklogic.com/smart-mastering/constants"
+  at "/ext/com.marklogic.smart-mastering/constants.xqy";
 
 declare option xdmp:mapping "false";
 
 declare
   %algorithms:setup(
-    "namespace=http://marklogic.com/agile-mastering/algorithms",
+    "namespace=http://marklogic.com/smart-mastering/algorithms",
     "function=setup-double-metaphone"
   )
   %algorithms:input("dictionary=xs:string*", "distance-threshold=xs:integer?")
