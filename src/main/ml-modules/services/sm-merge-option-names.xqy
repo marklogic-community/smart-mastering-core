@@ -1,9 +1,9 @@
 xquery version "1.0-ml";
 
-module namespace resource = "http://marklogic.com/rest-api/resource/am-merge-option-names";
+module namespace resource = "http://marklogic.com/rest-api/resource/sm-merge-option-names";
 
-import module namespace merging = "http://marklogic.com/agile-mastering/survivorship/merging"
-  at "/ext/com.marklogic.agile-mastering/survivorship/merging/base.xqy";
+import module namespace merging = "http://marklogic.com/smart-mastering/survivorship/merging"
+  at "/ext/com.marklogic.smart-mastering/survivorship/merging/base.xqy";
 
 declare function get(
   $context as map:map,

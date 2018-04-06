@@ -1,9 +1,9 @@
 xquery version "1.0-ml";
 
-module namespace resource = "http://marklogic.com/rest-api/resource/am-match-options";
+module namespace resource = "http://marklogic.com/rest-api/resource/sm-merge-options";
 
-import module namespace matcher = "http://marklogic.com/agile-mastering/matcher"
-  at "/ext/com.marklogic.agile-mastering/matcher.xqy";
+import module namespace merging = "http://marklogic.com/smart-mastering/survivorship/merging"
+  at "/ext/com.marklogic.smart-mastering/survivorship/merging/base.xqy";
 
 declare namespace rapi = "http://marklogic.com/rest-api";
 
@@ -13,12 +13,12 @@ declare function get(
   ) as document-node()*
 {
   document {
-    let $options := matcher:get-options(map:get($params, "name")) 
+    let $options := merging:get-options(map:get($params, "name"))
     let $accept-types := map:get($context,"accept-types")
     return
       if ($accept-types = "application/json") then (
         map:put($context,"output-types", "application/json"),
-        matcher:options-to-json($options)
+        merging:options-to-json($options)
       ) else
         $options
   }
@@ -33,22 +33,22 @@ declare function put(
   post($context, $params, $input)
 };
 
-declare 
-%rapi:transaction-mode("update") 
+declare
+%rapi:transaction-mode("update")
 function post(
   $context as map:map,
   $params  as map:map,
   $input   as document-node()*
   ) as document-node()*
 {
-  let $options := $input/(matcher:options|object-node())
-  let $options := 
+  let $options := $input/(merging:options|object-node())
+  let $options :=
     if ($options instance of object-node()) then
-      matcher:options-from-json($options)
+      merging:options-from-json($options)
     else
       $options
   return
-    matcher:save-options(map:get($params, "name"), $options)
+    merging:save-options(map:get($params, "name"), $options)
 };
 
 declare function delete(

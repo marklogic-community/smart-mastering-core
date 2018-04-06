@@ -1,6 +1,6 @@
 xquery version "1.0-ml";
 
-module namespace merging = "http://marklogic.com/agile-mastering/survivorship/merging";
+module namespace merging = "http://marklogic.com/smart-mastering/survivorship/merging";
 
 declare function merging:standard(
   $property-name as xs:QName,

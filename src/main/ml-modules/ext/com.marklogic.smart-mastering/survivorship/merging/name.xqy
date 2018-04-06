@@ -1,8 +1,8 @@
 xquery version "1.0-ml";
 
-module namespace merging = "http://marklogic.com/agile-mastering/survivorship/merging";
+module namespace merging = "http://marklogic.com/smart-mastering/survivorship/merging";
 
-import module namespace merging = "http://marklogic.com/agile-mastering/survivorship/merging"
+import module namespace merging = "http://marklogic.com/smart-mastering/survivorship/merging"
   at "standard.xqy";
 
 declare function merging:name(

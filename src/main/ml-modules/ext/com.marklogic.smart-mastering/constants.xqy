@@ -1,6 +1,6 @@
 xquery version "1.0-ml";
 
-module namespace constants = "http://marklogic.com/agile-mastering/constants";
+module namespace constants = "http://marklogic.com/smart-mastering/constants";
 
 (: Collections :)
 declare variable $ALGORITHM-COLL := "mdm-algorithm";

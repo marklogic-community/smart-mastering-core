@@ -1,9 +1,9 @@
 xquery version "1.0-ml";
 
-module namespace resource = "http://marklogic.com/rest-api/resource/am-match";
+module namespace resource = "http://marklogic.com/rest-api/resource/sm-match";
 
-import module namespace matcher = "http://marklogic.com/agile-mastering/matcher"
-  at "/ext/com.marklogic.agile-mastering/matcher.xqy";
+import module namespace matcher = "http://marklogic.com/smart-mastering/matcher"
+  at "/ext/com.marklogic.smart-mastering/matcher.xqy";
 
 declare namespace rapi = "http://marklogic.com/rest-api";
 

@@ -1,6 +1,6 @@
 xquery version "1.0-ml";
 
-module namespace fun-ext = "http://marklogic.com/agile-mastering/function-extension";
+module namespace fun-ext = "http://marklogic.com/smart-mastering/function-extension";
 
 import module namespace functional = "http://snelson.org.uk/functions/functional"
   at "functional.xqy";

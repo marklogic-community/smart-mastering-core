@@ -1,6 +1,6 @@
 xquery version "1.0-ml";
 
-module namespace ext = "http://marklogic.com/rest-api/resource/am-entity-services";
+module namespace ext = "http://marklogic.com/rest-api/resource/sm-entity-services";
 
 declare default function namespace "http://www.w3.org/2005/xpath-functions";
 

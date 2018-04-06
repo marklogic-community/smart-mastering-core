@@ -1,6 +1,6 @@
 xquery version "1.0-ml";
 
-module namespace algorithms = "http://marklogic.com/agile-mastering/algorithms";
+module namespace algorithms = "http://marklogic.com/smart-mastering/algorithms";
 
 import module namespace thsr = "http://marklogic.com/xdmp/thesaurus"
   at "/MarkLogic/thesaurus.xqy";

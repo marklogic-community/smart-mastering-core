@@ -1,8 +1,8 @@
 xquery version "1.0-ml";
 
-module namespace history = "http://marklogic.com/agile-mastering/auditing/history";
+module namespace history = "http://marklogic.com/smart-mastering/auditing/history";
 
-import module namespace auditing = "http://marklogic.com/agile-mastering/auditing"
+import module namespace auditing = "http://marklogic.com/smart-mastering/auditing"
   at "base.xqy";
 
 declare namespace prov = "http://www.w3.org/ns/prov#";

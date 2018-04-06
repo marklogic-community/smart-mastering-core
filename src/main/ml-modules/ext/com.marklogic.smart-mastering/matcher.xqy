@@ -1,25 +1,25 @@
 xquery version "1.0-ml";
 
-module namespace matcher = "http://marklogic.com/agile-mastering/matcher";
+module namespace matcher = "http://marklogic.com/smart-mastering/matcher";
 
-import module namespace algorithms = "http://marklogic.com/agile-mastering/algorithms"
+import module namespace algorithms = "http://marklogic.com/smart-mastering/algorithms"
   at  "algorithms/base.xqy";
 import module namespace json="http://marklogic.com/xdmp/json"
   at "/MarkLogic/json/json.xqy";
-import module namespace const = "http://marklogic.com/agile-mastering/constants"
-  at "/ext/com.marklogic.agile-mastering/constants.xqy";
+import module namespace const = "http://marklogic.com/smart-mastering/constants"
+  at "/ext/com.marklogic.smart-mastering/constants.xqy";
 
-declare namespace agile-mastering = "http://marklogic.com/agile-mastering";
+declare namespace smart-mastering = "http://marklogic.com/smart-mastering";
 
 declare option xdmp:mapping "false";
 
-declare variable $ALGORITHM-OPTIONS-DIR := "/com.marklogic.agile-mastering/options/algorithms/";
+declare variable $ALGORITHM-OPTIONS-DIR := "/com.marklogic.smart-mastering/options/algorithms/";
 
 (:
 
 Example matcher options:
 
-<options xmlns="http://marklogic.com/agile-mastering/matcher">
+<options xmlns="http://marklogic.com/smart-mastering/matcher">
   <property-defs>
     <property namespace="" localname="IdentificationID" name="ssn"/>
     <property namespace="" localname="PersonGivenName" name="first-name"/>
@@ -296,7 +296,7 @@ declare function matcher:_option-names-json-config()
    (map:put($config, "array-element-names",
              ("option")),
     map:put($config, "element-namespace",
-             "http://marklogic.com/agile-mastering/matcher"),
+             "http://marklogic.com/smart-mastering/matcher"),
     map:put($config, "element-namespace-prefix", "matcher"),
     $config)
 };
@@ -345,23 +345,23 @@ declare function matcher:save-match-notification(
         $uris
       )
   let $new-notification :=
-    element agile-mastering:notification {
-      element agile-mastering:meta {
-        element agile-mastering:dateTime {fn:current-dateTime()},
-        element agile-mastering:user {xdmp:get-current-user()}
+    element smart-mastering:notification {
+      element smart-mastering:meta {
+        element smart-mastering:dateTime {fn:current-dateTime()},
+        element smart-mastering:user {xdmp:get-current-user()}
       },
-      element agile-mastering:threshold-label {$threshold-label},
-      element agile-mastering:document-uris {
+      element smart-mastering:threshold-label {$threshold-label},
+      element smart-mastering:document-uris {
         let $distinct-uris :=
           fn:distinct-values((
             $uris,
             $existing-notification
-              /agile-mastering:document-uris
-              /agile-mastering:document-uri ! fn:string(.)
+              /smart-mastering:document-uris
+              /smart-mastering:document-uri ! fn:string(.)
           ))
         for $uri in $distinct-uris
         return
-          element agile-mastering:document-uri {
+          element smart-mastering:document-uri {
             $uri
           }
       }
@@ -374,7 +374,7 @@ declare function matcher:save-match-notification(
         xdmp:document-delete(xdmp:node-uri($extra-doc))
     ) else
       xdmp:document-insert(
-        "/com.marklogic.agile-masterting/matcher/notifications/" ||
+        "/com.marklogic.smart-mastering/matcher/notifications/" ||
         sem:uuid-string() || ".xml",
         $new-notification,
         (
@@ -390,14 +390,14 @@ declare function matcher:get-existing-match-notification(
   $threshold-label as xs:string,
   $uris as xs:string*
 ) {
-  cts:search(fn:collection()/agile-mastering:notification,
+  cts:search(fn:collection()/smart-mastering:notification,
     cts:and-query((
       cts:element-value-query(
-        xs:QName("agile-mastering:threshold-label"),
+        xs:QName("smart-mastering:threshold-label"),
         $threshold-label
       ),
       cts:element-value-query(
-        xs:QName("agile-mastering:document-uri"),
+        xs:QName("smart-mastering:document-uri"),
         $uris
       )
     ))
@@ -413,7 +413,7 @@ declare function matcher:_options-json-config()
    (map:put($config, "array-element-names",
              ("algorithm","threshold","scoring","property", "reduce", "add", "expand","results")),
     map:put($config, "element-namespace",
-             "http://marklogic.com/agile-mastering/matcher"),
+             "http://marklogic.com/smart-mastering/matcher"),
     map:put($config, "element-namespace-prefix", "matcher"),
     map:put($config, "attribute-names",
       ("name","localname", "namespace", "function",
@@ -514,7 +514,7 @@ declare function matcher:lock-on-search($query-results)
 {
   let $required-queries := $query-results/element(*,cts:query)
   for $required-query in $required-queries
-  let $lock-uri := "/com.marklogic.agile-mastering/query-lock/"||
+  let $lock-uri := "/com.marklogic.smart-mastering/query-lock/"||
       fn:normalize-unicode(
         fn:normalize-space(fn:lower-case(fn:string($required-query)))
       )

@@ -1,7 +1,7 @@
 {
-  "name": "agile-mastering",
+  "name": "smart-mastering",
   "version": "0.0.1",
-  "description": "Agile Mastering Toolkit",
+  "description": "Smart Mastering Toolkit",
   "repository": "",
   "dependencies": {
     "marklogic-xml-diff": "0.1.*"
