@@ -1,4 +1,18 @@
 <options xmlns='http://marklogic.com/appservices/search'>
   <search-option>unfiltered</search-option>
   <quality-weight>0</quality-weight>
+  <additional-query>
+    <cts:and-not-query xmlns:cts="http://marklogic.com/cts">
+      <cts:positive>
+        <cts:collection-query>
+          <cts:uri>mdm-content</cts:uri>
+        </cts:collection-query>
+      </cts:positive>
+      <cts:negative>
+        <cts:collection-query>
+          <cts:uri>mdm-archived</cts:uri>
+        </cts:collection-query>
+      </cts:negative>
+    </cts:and-not-query>
+  </additional-query>
 </options>
