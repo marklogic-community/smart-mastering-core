@@ -294,10 +294,8 @@ declare function matcher:_option-names-json-config()
 {
   let $config := json:config("custom")
   return (
-    map:put($config, "array-element-names",
-             ("option")),
-    map:put($config, "element-namespace",
-             "http://marklogic.com/smart-mastering/matcher"),
+    map:put($config, "array-element-names", "option"),
+    map:put($config, "element-namespace", "http://marklogic.com/smart-mastering/matcher"),
     map:put($config, "element-namespace-prefix", "matcher"),
     $config
   )
@@ -414,8 +412,7 @@ declare function matcher:_options-json-config()
   return (
     map:put($config, "array-element-names",
              ("algorithm","threshold","scoring","property", "reduce", "add", "expand","results")),
-    map:put($config, "element-namespace",
-             "http://marklogic.com/smart-mastering/matcher"),
+    map:put($config, "element-namespace", "http://marklogic.com/smart-mastering/matcher"),
     map:put($config, "element-namespace-prefix", "matcher"),
     map:put($config, "attribute-names",
       ("name","localname", "namespace", "function",
