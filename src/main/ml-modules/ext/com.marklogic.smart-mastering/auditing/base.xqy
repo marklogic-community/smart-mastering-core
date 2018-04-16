@@ -255,48 +255,47 @@ declare function auditing:build-semantic-info(
   let $new-entity := $entities[fn:starts-with(prov:type, "result of record ")]
   let $new-entity-iri := sem:iri(fn:string($new-entity/@prov:id))
   let $auditing-managed-triples := (
-      if (auditing:subject-not-stored(fn:string($agent-iri))) then (
-        sem:triple(
-          $agent-iri,
-          sem:iri($rdf-prefix||"type"),
-          sem:iri($foaf-prefix||"OnlineAccount")
-        ),
-        sem:triple(
-          $agent-iri,
-          sem:iri($foaf-prefix||"accountName"),
-          $username
-        ),
-        sem:triple(
-          $agent-iri,
-          sem:iri($rdfs-prefix||"label"),
-          $username
-        )
-      ) else (),
-      for $software-agent in $prov-xml/prov:softwareAgent
-      let $iri := sem:iri($software-agent/@prov:id)
-      where auditing:subject-not-stored(fn:string($iri))
-      return
-        (
-          sem:triple(
-            $iri,
-            sem:iri($rdf-prefix||"type"),
-            sem:iri($prov-prefix||"SoftwareAgent")
-          ),
-          sem:triple(
-            $iri,
-            sem:iri($rdfs-prefix||"label"),
-            fn:string($software-agent/prov:label)
-          ),
-          sem:triple(
-            $iri,
-            sem:iri($prov-prefix||"atLocation"),
-            fn:string($software-agent/prov:location)
-          )
-        ),
-      for $entity in $entities
-      return
-        auditing:build-entity-managed-triples($entity, $prov-xml)
-    )
+    if (auditing:subject-not-stored(fn:string($agent-iri))) then (
+      sem:triple(
+        $agent-iri,
+        sem:iri($rdf-prefix||"type"),
+        sem:iri($foaf-prefix||"OnlineAccount")
+      ),
+      sem:triple(
+        $agent-iri,
+        sem:iri($foaf-prefix||"accountName"),
+        $username
+      ),
+      sem:triple(
+        $agent-iri,
+        sem:iri($rdfs-prefix||"label"),
+        $username
+      )
+    ) else (),
+    for $software-agent in $prov-xml/prov:softwareAgent
+    let $iri := sem:iri($software-agent/@prov:id)
+    where auditing:subject-not-stored(fn:string($iri))
+    return (
+      sem:triple(
+        $iri,
+        sem:iri($rdf-prefix||"type"),
+        sem:iri($prov-prefix||"SoftwareAgent")
+      ),
+      sem:triple(
+        $iri,
+        sem:iri($rdfs-prefix||"label"),
+        fn:string($software-agent/prov:label)
+      ),
+      sem:triple(
+        $iri,
+        sem:iri($prov-prefix||"atLocation"),
+        fn:string($software-agent/prov:location)
+      )
+    ),
+    for $entity in $entities
+    return
+      auditing:build-entity-managed-triples($entity, $prov-xml)
+  )
   return (
     if (fn:exists($auditing-managed-triples)) then
       sem:graph-insert(
@@ -400,40 +399,38 @@ declare function auditing:build-entity-managed-triples(
   let $entity-iri := sem:iri($entity-id)
   let $collection-members := $prov-xml/prov:hadMember[prov:collection/@prov:ref = $entity-id]
   return
-  (
     if (auditing:subject-not-stored($entity-id)) then (
-        if ($entity instance of element(prov:collection)) then (
-          let $collection-members := $prov-xml/prov:hadMember[prov:collection/@prov:ref = $entity-id]
-          for $member-id in $collection-members/prov:entity/(@prov:ref|@prov:id)
-          return
-            sem:triple(
-              $entity-iri,
-              sem:iri($prov-prefix||"hadMember"),
-              sem:iri($member-id)
-            ),
+      if ($entity instance of element(prov:collection)) then (
+        let $collection-members := $prov-xml/prov:hadMember[prov:collection/@prov:ref = $entity-id]
+        for $member-id in $collection-members/prov:entity/(@prov:ref|@prov:id)
+        return
           sem:triple(
             $entity-iri,
-            sem:iri($rdf-prefix||"type"),
-            sem:iri($prov-prefix||"Collection")
-          )
-        ) else (),
+            sem:iri($prov-prefix||"hadMember"),
+            sem:iri($member-id)
+          ),
         sem:triple(
           $entity-iri,
           sem:iri($rdf-prefix||"type"),
-          sem:iri($prov-prefix||"Entity")
-        ),
-        sem:triple(
-          $entity-iri,
-          sem:iri($am-prefix||"document-uri"),
-          fn:string($entity/prov:label)
-        ),
-        sem:triple(
-          $entity-iri,
-          sem:iri($rdfs-prefix||"label"),
-          fn:string($entity/prov:label)
+          sem:iri($prov-prefix||"Collection")
         )
-      ) else ()
-  )
+      ) else (),
+      sem:triple(
+        $entity-iri,
+        sem:iri($rdf-prefix||"type"),
+        sem:iri($prov-prefix||"Entity")
+      ),
+      sem:triple(
+        $entity-iri,
+        sem:iri($am-prefix||"document-uri"),
+        fn:string($entity/prov:label)
+      ),
+      sem:triple(
+        $entity-iri,
+        sem:iri($rdfs-prefix||"label"),
+        fn:string($entity/prov:label)
+      )
+    ) else ()
 };
 
 

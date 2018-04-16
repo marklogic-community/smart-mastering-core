@@ -127,19 +127,20 @@ declare function matcher:find-document-matches-by-options(
   let $serialized-query := element boost-query {$query}
   let $minimum-threshold-combinations :=
     matcher:minimum-threshold-combinations($serialized-query, $minimum-threshold)
-  let $match-query := cts:and-query((
-          cts:collection-query($const:CONTENT-COLL),
-          if (fn:exists(xdmp:node-uri($document))) then
-            cts:not-query(cts:document-query(xdmp:node-uri($document)))
-          else (),
-          cts:or-query(
-            $minimum-threshold-combinations
-          )
-        ))
+  let $match-query :=
+    cts:and-query((
+        cts:collection-query($const:CONTENT-COLL),
+        if (fn:exists(xdmp:node-uri($document))) then
+          cts:not-query(cts:document-query(xdmp:node-uri($document)))
+        else (),
+        cts:or-query(
+          $minimum-threshold-combinations
+        )
+    ))
   let $serialized-match-query :=
-      element match-query {
-        $match-query
-      }
+    element match-query {
+      $match-query
+    }
   let $serialized-match-query-combinations := $serialized-match-query/cts:and-query/cts:or-query//element(*, cts:query)
   let $reduced-boost := cts:query(
     element cts:or-query {
@@ -219,9 +220,9 @@ declare function matcher:search(
   $algorithms,
   $options
 ) {
-    let $range := $start to ($start + $page-length - 1)
-    let $additional-documents :=
-          for $result at $pos in cts:search(
+  let $range := $start to ($start + $page-length - 1)
+  let $additional-documents :=
+    for $result at $pos in cts:search(
                             fn:collection(),
                             cts:boost-query(
                               $match-query,
@@ -229,47 +230,47 @@ declare function matcher:search(
                             ),
                             ("unfiltered", "score-simple")
                           )[fn:position() = $range]
-          let $score := matcher:simple-score($result)
-          let $result-stub :=
-            element results {
-              attribute uri {xdmp:node-uri($result)},
-              attribute index {$range[fn:position() = $pos]},
-              attribute total {cts:remainder($result)},
-              element matches {
-                cts:walk(
-                  $result,
-                  cts:or-query((
-                    $match-query,
-                    $boosting-query
-                  )),
-                  $cts:node/..
-                )
-              }
-            }
-          let $reduced-score := $score -
-            fn:sum(
-              for $reduction in $scoring/matcher:reduce
-              let $algorithm := map:get($algorithms, $reduction/@algorithm-ref)
-              where fn:exists($algorithm) and algorithms:execute-algorithm($algorithm, $result-stub, $reduction, $options)
-              return $reduction/@weight ! fn:number(.)
-            )
-          where $score ge $min-threshold
-          return
-            element results {
-              $result-stub/@*,
-              attribute score {$reduced-score},
-              attribute threshold {
-                (
-                  for $threshold in $thresholds/matcher:threshold
-                  where $reduced-score ge fn:number($threshold/@above)
-                  order by fn:number($threshold/@above) descending
-                  return fn:string($threshold/@label)
-                )[1]
-              },
-              $result-stub/*
-            }
+    let $score := matcher:simple-score($result)
+    let $result-stub :=
+      element results {
+        attribute uri {xdmp:node-uri($result)},
+        attribute index {$range[fn:position() = $pos]},
+        attribute total {cts:remainder($result)},
+        element matches {
+          cts:walk(
+            $result,
+            cts:or-query((
+              $match-query,
+              $boosting-query
+            )),
+            $cts:node/..
+          )
+        }
+      }
+    let $reduced-score := $score -
+      fn:sum(
+        for $reduction in $scoring/matcher:reduce
+        let $algorithm := map:get($algorithms, $reduction/@algorithm-ref)
+        where fn:exists($algorithm) and algorithms:execute-algorithm($algorithm, $result-stub, $reduction, $options)
+        return $reduction/@weight ! fn:number(.)
+      )
+    where $score ge $min-threshold
     return
-        $additional-documents
+      element results {
+        $result-stub/@*,
+        attribute score {$reduced-score},
+        attribute threshold {
+          (
+            for $threshold in $thresholds/matcher:threshold
+            where $reduced-score ge fn:number($threshold/@above)
+            order by fn:number($threshold/@above) descending
+            return fn:string($threshold/@label)
+          )[1]
+        },
+        $result-stub/*
+      }
+  return
+      $additional-documents
 };
 
 declare function matcher:get-option-names()
@@ -292,13 +293,12 @@ declare variable $option-names-json-config := matcher:_option-names-json-config(
 declare function matcher:_option-names-json-config()
 {
   let $config := json:config("custom")
- return
-   (map:put($config, "array-element-names",
-             ("option")),
-    map:put($config, "element-namespace",
-             "http://marklogic.com/smart-mastering/matcher"),
+  return (
+    map:put($config, "array-element-names", "option"),
+    map:put($config, "element-namespace", "http://marklogic.com/smart-mastering/matcher"),
     map:put($config, "element-namespace-prefix", "matcher"),
-    $config)
+    $config
+  )
 };
 
 declare function matcher:option-names-to-json($options-xml)
@@ -340,10 +340,10 @@ declare function matcher:save-match-notification(
   $uris as xs:string*
 ) {
   let $existing-notification :=
-      matcher:get-existing-match-notification(
-        $threshold-label,
-        $uris
-      )
+    matcher:get-existing-match-notification(
+      $threshold-label,
+      $uris
+    )
   let $new-notification :=
     element smart-mastering:notification {
       element smart-mastering:meta {
@@ -409,17 +409,17 @@ declare variable $options-json-config := matcher:_options-json-config();
 declare function matcher:_options-json-config()
 {
   let $config := json:config("custom")
- return
-   (map:put($config, "array-element-names",
+  return (
+    map:put($config, "array-element-names",
              ("algorithm","threshold","scoring","property", "reduce", "add", "expand","results")),
-    map:put($config, "element-namespace",
-             "http://marklogic.com/smart-mastering/matcher"),
+    map:put($config, "element-namespace", "http://marklogic.com/smart-mastering/matcher"),
     map:put($config, "element-namespace-prefix", "matcher"),
     map:put($config, "attribute-names",
       ("name","localname", "namespace", "function",
         "at", "property-name", "weight", "above", "label","algorithm-ref")
     ),
-    $config)
+    $config
+  )
 };
 
 declare function matcher:options-to-json($options-xml)
@@ -446,20 +446,21 @@ declare function matcher:results-to-json($results-xml)
 declare function matcher:_results-json-config()
 {
   let $config := json:config("custom")
-  return
-    (map:put($config, "array-element-names", ("results","matches",xs:QName("cts:option"),xs:QName("cts:text"),xs:QName("cts:element"))),
-     map:put($config, "full-element-names",
-              (xs:QName("cts:query"),
-               xs:QName("cts:and-query"),
-               xs:QName("cts:near-query"),
-               xs:QName("cts:or-query"))
-     ),
-     map:put($config, "json-children", "queries"),
-     map:put($config, "attribute-names",
-       ("name","localname", "namespace", "function",
-         "at", "property-name", "weight", "above", "label","algorithm-ref")
-     ),
-     $config)
+  return (
+    map:put($config, "array-element-names", ("results","matches",xs:QName("cts:option"),xs:QName("cts:text"),xs:QName("cts:element"))),
+    map:put($config, "full-element-names",
+      (xs:QName("cts:query"),
+       xs:QName("cts:and-query"),
+       xs:QName("cts:near-query"),
+       xs:QName("cts:or-query"))
+    ),
+    map:put($config, "json-children", "queries"),
+    map:put($config, "attribute-names",
+      ("name","localname", "namespace", "function",
+       "at", "property-name", "weight", "above", "label","algorithm-ref")
+    ),
+    $config
+  )
 };
 
 
@@ -474,9 +475,9 @@ declare function matcher:minimum-threshold-combinations($query-results, $thresho
   let $queries-ge-threshold := $weighted-queries[@weight][@weight ge $threshold]
   let $queries-lt-threshold := $weighted-queries except $queries-ge-threshold
   return (
-      $queries-ge-threshold ! cts:query(.),
-      matcher:filter-for-required-queries($queries-lt-threshold, 0, $threshold, ())
-    )
+    $queries-ge-threshold ! cts:query(.),
+    matcher:filter-for-required-queries($queries-lt-threshold, 0, $threshold, ())
+  )
 };
 
 declare function matcher:filter-for-required-queries(
@@ -502,12 +503,12 @@ declare function matcher:filter-for-required-queries(
       else
         $accumulated-queries
     return
-        matcher:filter-for-required-queries(
-          fn:subsequence($remaining-queries, $pos + 1),
-          $new-combined-weight,
-          $threshold,
-          ($accumulated-queries, $query)
-        )
+      matcher:filter-for-required-queries(
+        fn:subsequence($remaining-queries, $pos + 1),
+        $new-combined-weight,
+        $threshold,
+        ($accumulated-queries, $query)
+      )
 };
 
 declare function matcher:lock-on-search($query-results)
@@ -519,7 +520,5 @@ declare function matcher:lock-on-search($query-results)
         fn:normalize-space(fn:lower-case(fn:string($required-query)))
       )
   return
-    fn:function-lookup(xs:QName("xdmp:lock-for-update"),1)(
-      $lock-uri
-    )
+    fn:function-lookup(xs:QName("xdmp:lock-for-update"),1)($lock-uri)
 };

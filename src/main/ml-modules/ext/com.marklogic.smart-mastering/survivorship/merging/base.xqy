@@ -4,8 +4,6 @@ module namespace merging = "http://marklogic.com/smart-mastering/survivorship/me
 
 import module namespace auditing = "http://marklogic.com/smart-mastering/auditing"
   at "../../auditing/base.xqy";
-import module namespace flow = "http://marklogic.com/data-hub/flow-lib"
-  at "/MarkLogic/data-hub-framework/impl/flow-lib.xqy";
 import module namespace fun-ext = "http://marklogic.com/smart-mastering/function-extension"
   at "../../function-extension/base.xqy";
 import module namespace history = "http://marklogic.com/smart-mastering/auditing/history"
@@ -15,7 +13,7 @@ import module namespace json="http://marklogic.com/xdmp/json"
 import module namespace merging = "http://marklogic.com/smart-mastering/survivorship/merging"
   at  "standard.xqy";
 import module namespace const = "http://marklogic.com/smart-mastering/constants"
-at "/ext/com.marklogic.smart-mastering/constants.xqy";
+  at "/ext/com.marklogic.smart-mastering/constants.xqy";
 
 declare namespace smart-mastering = "http://marklogic.com/smart-mastering";
 declare namespace es = "http://marklogic.com/entity-services";
@@ -99,63 +97,63 @@ declare function merging:save-merge-models-by-uri(
       $merge-options
     )
   let $_audit-trail :=
-      auditing:audit-trace(
-        $const:MERGE-ACTION,
-        $uris,
-        $merge-uri,
-        let $generated-entity-id := $auditing:am-prefix||$merge-uri
-        let $property-related-prov :=
-            for $prop in $final-properties,
-                $value in map:get($prop, "values")
-            let $type := fn:string(fn:node-name($value))
-            let $value-text := history:normalize-value-for-tracing($value)
-            let $hash := xdmp:sha512($value-text)
-            let $algorithm-info := map:get($prop, "algorithm")
-            let $algorithm-agent := "algorithm:"||$algorithm-info/name||";options:"||$algorithm-info/optionsReference
-            for $source in map:get($prop, "sources")
-            let $used-entity-id := $auditing:am-prefix || $source/documentUri || $type || $hash
-            return (
-              element prov:entity {
-                attribute prov:id {$used-entity-id},
-                element prov:type {$type},
-                element prov:label {$source/name || ":" || $type},
-                element prov:location {fn:string($source/documentUri)},
-                element prov:value { $value-text }
-              },
-              element prov:wasDerivedFrom {
-                element prov:generatedEntity {
-                  attribute prov:ref { $generated-entity-id }
-                },
-                element prov:usedEntity {
-                  attribute prov:ref { $used-entity-id }
-                }
-              },
-              element prov:wasInfluencedBy {
-                element prov:influencee { attribute prov:ref { $used-entity-id }},
-                element prov:influencer { attribute prov:ref { $algorithm-agent }}
-              }
-            )
-        let $prop-prov-entities := $property-related-prov[. instance of element(prov:entity)]
-        let $other-prop-prov := $property-related-prov except $prop-prov-entities
+    auditing:audit-trace(
+      $const:MERGE-ACTION,
+      $uris,
+      $merge-uri,
+      let $generated-entity-id := $auditing:am-prefix||$merge-uri
+      let $property-related-prov :=
+        for $prop in $final-properties,
+          $value in map:get($prop, "values")
+        let $type := fn:string(fn:node-name($value))
+        let $value-text := history:normalize-value-for-tracing($value)
+        let $hash := xdmp:sha512($value-text)
+        let $algorithm-info := map:get($prop, "algorithm")
+        let $algorithm-agent := "algorithm:"||$algorithm-info/name||";options:"||$algorithm-info/optionsReference
+        for $source in map:get($prop, "sources")
+        let $used-entity-id := $auditing:am-prefix || $source/documentUri || $type || $hash
         return (
-          element prov:hadMember {
-            element prov:collection { attribute prov:ref { $generated-entity-id } },
-            $prop-prov-entities
+          element prov:entity {
+            attribute prov:id {$used-entity-id},
+            element prov:type {$type},
+            element prov:label {$source/name || ":" || $type},
+            element prov:location {fn:string($source/documentUri)},
+            element prov:value { $value-text }
           },
-          $other-prop-prov,
-          for $agent-id in
-            fn:distinct-values(
-              $other-prop-prov[. instance of element(prov:wasInfluencedBy)]/
-                prov:influencer/
-                  @prov:ref ! fn:string(.)
-            )
-          return element prov:softwareAgent {
-            attribute prov:id {$agent-id},
-            element prov:label {fn:substring-before(fn:substring-after($agent-id,"algorithm:"), ";")},
-            element prov:location {fn:substring-after($agent-id,"options:")}
+          element prov:wasDerivedFrom {
+            element prov:generatedEntity {
+              attribute prov:ref { $generated-entity-id }
+            },
+            element prov:usedEntity {
+              attribute prov:ref { $used-entity-id }
+            }
+          },
+          element prov:wasInfluencedBy {
+            element prov:influencee { attribute prov:ref { $used-entity-id }},
+            element prov:influencer { attribute prov:ref { $algorithm-agent }}
           }
         )
+      let $prop-prov-entities := $property-related-prov[. instance of element(prov:entity)]
+      let $other-prop-prov := $property-related-prov except $prop-prov-entities
+      return (
+        element prov:hadMember {
+          element prov:collection { attribute prov:ref { $generated-entity-id } },
+          $prop-prov-entities
+        },
+        $other-prop-prov,
+        for $agent-id in
+          fn:distinct-values(
+            $other-prop-prov[. instance of element(prov:wasInfluencedBy)]/
+              prov:influencer/
+                @prov:ref ! fn:string(.)
+          )
+        return element prov:softwareAgent {
+          attribute prov:id {$agent-id},
+          element prov:label {fn:substring-before(fn:substring-after($agent-id,"algorithm:"), ";")},
+          element prov:location {fn:substring-after($agent-id,"options:")}
+        }
       )
+    )
   return (
     $merged-document,
     for $uri in $uris[fn:doc-available(.)]
@@ -190,9 +188,9 @@ declare function merging:rollback-merge(
   return (
     for $previous-doc-uri in $auditing-receipts-for-doc/auditing:previous-uri ! fn:string(.)
     let $new-collections := (
-        xdmp:document-get-collections($previous-doc-uri)[fn:not(. = $const:ARCHIVED-COLL)],
-        $const:CONTENT-COLL
-      )
+      xdmp:document-get-collections($previous-doc-uri)[fn:not(. = $const:ARCHIVED-COLL)],
+      $const:CONTENT-COLL
+    )
     return
       xdmp:document-set-collections($previous-doc-uri, $new-collections),
     if ($retain-rollback-info) then (
@@ -418,74 +416,72 @@ declare function merging:parse-final-properties-for-merge(
   let $property-defs := $merge-options/merging:property-defs
   let $algorithms-map := merging:build-merging-map($merge-options)
   let $final-properties :=
-      for $prop in $top-level-properties
-      let $property-namespace := fn:namespace-uri-from-QName($prop)
-      let $property-local-name := fn:local-name-from-QName($prop)
-      let $property-name :=
-        $property-defs
-          /merging:property[@namespace = $property-namespace and @localname = $property-local-name]
-          /@name
-      let $property-spec :=
-        $merge-options
-          /merging:merging
-          /merging:merge[@property-name = $property-name]
-      let $algorithm-name := fn:string($property-spec/@algorithm-ref)
-      let $algorithm := map:get($algorithms-map, $algorithm-name)
-      let $algorithm-info :=
-          object-node {
-            "name": fn:head(($algorithm-name[fn:exists($algorithm)], "standard")),
-            "optionsReference": $merge-options-ref
-          }
-      let $instance-props := $instances/*[fn:node-name(.) = $prop] ! (self::array-node()/*, . except self::array-node())
-      let $instance-prop-count := fn:count($instance-props)
-      return
-        fn:fold-left(function($a as item()*, $b as item()) as item()* {
-            if (
-              fn:exists($a) and
-              fn:deep-equal(map:get(fn:head(fn:reverse($a)),"values"), map:get($b,"values"))
-            ) then
-              fn:head(fn:reverse($a)) + $b
-            else
-              ($a, $b + map:entry("algorithm", $algorithm-info))
-          },
-          (),
-          (if (
-            merging:properties-are-equal($instance-props, $docs)
-          ) then (
-             merging:wrap-revision-info($prop, $instance-props[fn:root(.) is $first-doc], $sources)
-          ) else (
-            let $wrapped-properties :=
-                for $doc at $pos in $docs
-                let $props-for-instance := $instance-props[fn:root(.) is $doc]
-                for $prop-value in $props-for-instance
-                (:let $normalized-value := history:normalize-value-for-tracing($prop-value)
-                let $source-details := $prop-history-info//object-node(fn:string($prop))/object-node($normalized-value)/sourceDetails
-                :)let $lineage-uris :=
-                  (:if (fn:exists($source-details)) then
-                    $source-details/sourceLocation
-                  else:)
-                    xdmp:node-uri($doc)
-                let $prop-sources := $sources[documentUri = $lineage-uris]
-                where fn:exists($props-for-instance)
-                return
-                  merging:wrap-revision-info($prop, $prop-value, $prop-sources)
+    for $prop in $top-level-properties
+    let $property-namespace := fn:namespace-uri-from-QName($prop)
+    let $property-local-name := fn:local-name-from-QName($prop)
+    let $property-name :=
+      $property-defs
+        /merging:property[@namespace = $property-namespace and @localname = $property-local-name]
+        /@name
+    let $property-spec :=
+      $merge-options
+        /merging:merging
+        /merging:merge[@property-name = $property-name]
+    let $algorithm-name := fn:string($property-spec/@algorithm-ref)
+    let $algorithm := map:get($algorithms-map, $algorithm-name)
+    let $algorithm-info :=
+      object-node {
+        "name": fn:head(($algorithm-name[fn:exists($algorithm)], "standard")),
+        "optionsReference": $merge-options-ref
+      }
+    let $instance-props := $instances/*[fn:node-name(.) = $prop] ! (self::array-node()/*, . except self::array-node())
+    let $instance-prop-count := fn:count($instance-props)
+    return
+      fn:fold-left(
+        function($a as item()*, $b as item()) as item()* {
+          if (
+            fn:exists($a) and
+            fn:deep-equal(map:get(fn:head(fn:reverse($a)),"values"), map:get($b,"values"))
+          ) then
+            fn:head(fn:reverse($a)) + $b
+          else
+            ($a, $b + map:entry("algorithm", $algorithm-info))
+        },
+        (),
+        if (merging:properties-are-equal($instance-props, $docs)) then
+          merging:wrap-revision-info($prop, $instance-props[fn:root(.) is $first-doc], $sources)
+        else
+          let $wrapped-properties :=
+            for $doc at $pos in $docs
+            let $props-for-instance := $instance-props[fn:root(.) is $doc]
+            for $prop-value in $props-for-instance
+            (:let $normalized-value := history:normalize-value-for-tracing($prop-value)
+            let $source-details := $prop-history-info//object-node(fn:string($prop))/object-node($normalized-value)/sourceDetails
+            :)
+            let $lineage-uris :=
+              (:if (fn:exists($source-details)) then
+                $source-details/sourceLocation
+              else:)
+                xdmp:node-uri($doc)
+            let $prop-sources := $sources[documentUri = $lineage-uris]
+            where fn:exists($props-for-instance)
             return
-              if (fn:exists($algorithm)) then
-                merging:execute-algorithm(
-                  $algorithm,
-                  $prop,
-                  $wrapped-properties,
-                  $property-spec
-                )
-              else (
-                merging:standard(
-                  $prop,
-                  $wrapped-properties,
-                  $property-spec
-                )
+              merging:wrap-revision-info($prop, $prop-value, $prop-sources)
+          return
+            if (fn:exists($algorithm)) then
+              merging:execute-algorithm(
+                $algorithm,
+                $prop,
+                $wrapped-properties,
+                $property-spec
               )
-          ))
-        )
+            else
+              merging:standard(
+                $prop,
+                $wrapped-properties,
+                $property-spec
+              )
+      )
   return
     map:new((
       map:entry("instances", $instances),
@@ -567,7 +563,7 @@ declare function merging:get-options()
   cts:search(fn:collection(), cts:and-query((
       cts:collection-query($const:OPTIONS-COLL),
       cts:collection-query($const:MERGE-COLL)
-    )))/merging:options
+  )))/merging:options
 };
 
 (:
@@ -654,17 +650,16 @@ declare function merging:options-from-json($options-json)
 declare function merging:_options-json-config()
 {
   let $config := json:config("custom")
- return
-   (map:put($config, "array-element-names",
-             ("algorithm","threshold","scoring","property", "reduce", "add", "expand")),
-    map:put($config, "element-namespace",
-             "http://marklogic.com/smart-mastering/matcher"),
+  return (
+    map:put($config, "array-element-names", ("algorithm","threshold","scoring","property", "reduce", "add", "expand")),
+    map:put($config, "element-namespace", "http://marklogic.com/smart-mastering/matcher"),
     map:put($config, "element-namespace-prefix", "matcher"),
     map:put($config, "attribute-names",
       ("name","localname", "namespace", "function",
         "at", "property-name", "weight", "above", "label","algorithm-ref")
     ),
-    $config)
+    $config
+  )
 };
 
 declare function merging:get-option-names()
@@ -690,13 +685,12 @@ declare variable $option-names-json-config := merging:_option-names-json-config(
 declare function merging:_option-names-json-config()
 {
   let $config := json:config("custom")
-  return
-   (map:put($config, "array-element-names",
-             ("option")),
-    map:put($config, "element-namespace",
-             "http://marklogic.com/smart-mastering/survivorship/merging"),
+  return (
+    map:put($config, "array-element-names", "option"),
+    map:put($config, "element-namespace", "http://marklogic.com/smart-mastering/survivorship/merging"),
     map:put($config, "element-namespace-prefix", "merging"),
-    $config)
+    $config
+  )
 };
 
 declare function merging:option-names-to-json($options-xml)
