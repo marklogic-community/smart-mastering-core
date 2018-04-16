@@ -36,7 +36,7 @@ declare function get(
   let $json := json:object()
   let $m := cts:values(cts:collection-reference(), (), ("item-frequency", "map"))
   let $_ := for $key in map:keys($m) return map:put($m, $key, cts:frequency(map:get($m, $key)))
-  let $_ := map:put($json, "docCount", map:get($m, $const:CONTENT-COLL) + map:get($m, $const:MERGED-COLL))
+  let $_ := map:put($json, "docCount", xdmp:estimate(cts:search(fn:doc(), cts:collection-query(cts:collection-match("mdm-import://*")))))
   let $_ := map:put($json, "mergeCount", map:get($m, $const:MERGED-COLL))
   let $_ := map:put($json, "instanceCount", map:get($m, $const:CONTENT-COLL))
   return
