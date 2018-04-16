@@ -1,5 +1,5 @@
 (:
-  Copyright 2012-2016 MarkLogic Corporation
+  Copyright 2012-2018 MarkLogic Corporation
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -17,6 +17,9 @@ xquery version "1.0-ml";
 
 module namespace service = "http://marklogic.com/rest-api/resource/mastering-stats";
 
+import module namespace const = "http://marklogic.com/smart-mastering/constants"
+at "/ext/com.marklogic.smart-mastering/constants.xqy";
+
 import module namespace debug = "http://marklogic.com/data-hub/debug"
   at "/MarkLogic/data-hub-framework/impl/debug-lib.xqy";
 
@@ -31,8 +34,11 @@ declare function get(
 {
   debug:dump-env(),
   let $json := json:object()
-  let $_ := map:put($json, "docCount", fn:count(cts:uris((), (), cts:collection-query("mdm-content"))))
-  let $_ := map:put($json, "afterMergeCount", fn:count(cts:uris((), (), cts:collection-query("mdm-merged"))))
+  let $m := cts:values(cts:collection-reference(), (), ("item-frequency", "map"))
+  let $_ := for $key in map:keys($m) return map:put($m, $key, cts:frequency(map:get($m, $key)))
+  let $_ := map:put($json, "docCount", map:get($m, $const:CONTENT-COLL) + map:get($m, $const:MERGED-COLL))
+  let $_ := map:put($json, "mergeCount", map:get($m, $const:MERGED-COLL))
+  let $_ := map:put($json, "instanceCount", map:get($m, $const:CONTENT-COLL))
   return
     document {
       xdmp:to-json($json)
