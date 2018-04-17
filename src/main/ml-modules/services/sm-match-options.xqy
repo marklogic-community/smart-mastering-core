@@ -14,13 +14,8 @@ declare function get(
 {
   document {
     let $options := matcher:get-options(map:get($params, "name"))
-    let $accept-types := map:get($context,"accept-types")
     return
-      if ($accept-types = "application/json") then (
-        map:put($context,"output-types", "application/json"),
-        matcher:options-to-json($options)
-      ) else
-        $options
+      matcher:options-to-json($options)
   }
 };
 

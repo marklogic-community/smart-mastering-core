@@ -62,14 +62,8 @@ function post(
       $start,
       $page-length
     )
-  let $accept-types := map:get($context,"accept-types")
   return
-    if ($accept-types = "application/json") then (
-      matcher:results-to-json($results)
-    ) else
-      document {
-        $results
-      }
+    matcher:results-to-json($results)
 };
 
 declare function delete(

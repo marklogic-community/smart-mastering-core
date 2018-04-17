@@ -12,12 +12,7 @@ declare function get(
 {
   document {
     let $option-names := merging:get-option-names()
-    let $accept-types := map:get($context, "accept-types")
     return
-      if ($accept-types = "application/json") then (
-        map:put($context,"output-types", "application/json"),
-        merging:option-names-to-json($option-names)
-      ) else
-        $option-names
+      merging:option-names-to-json($option-names)
   }
 };
