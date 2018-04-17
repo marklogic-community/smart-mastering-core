@@ -140,7 +140,11 @@ declare function matcher:find-document-matches-by-options(
         else (),
         cts:or-query(
           $minimum-threshold-combinations
-        )
+        ),
+        let $blocks := matcher:get-blocks(fn:base-uri($document))
+        where $blocks
+        return
+          cts:not-query(cts:document-query($blocks/node()))
     ))
   let $serialized-match-query :=
     element match-query {
@@ -562,13 +566,17 @@ declare function matcher:get-blocks($uri as xs:string)
  : @return empty sequence
  :)
 declare function matcher:block-match($uri1 as xs:string, $uri2 as xs:string)
+  as empty-sequence()
 {
-  sem:rdf-insert(
-    (
-      sem:triple(sem:iri($uri1), $PRED-MATCH-BLOCK, sem:iri($uri2)),
-      sem:triple(sem:iri($uri2), $PRED-MATCH-BLOCK, sem:iri($uri1))
+  let $_ :=
+    (: Suppress sem:rdf-insert's return value :)
+    sem:rdf-insert(
+      (
+        sem:triple(sem:iri($uri1), $PRED-MATCH-BLOCK, sem:iri($uri2)),
+        sem:triple(sem:iri($uri2), $PRED-MATCH-BLOCK, sem:iri($uri1))
+      )
     )
-  )
+  return ()
 };
 
 (:

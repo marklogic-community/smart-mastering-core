@@ -14,9 +14,16 @@ declare function get(
   $params  as map:map
 ) as document-node()*
 {
-  document {
-    matcher:get-blocks(map:get($params, "uri"))
-  }
+  let $uri := map:get($params, "uri")
+  return
+    if (fn:exists($uri)) then
+      document {
+        matcher:get-blocks($uri)
+      }
+    else
+      fn:error((),"RESTAPI-SRVEXERR",
+        (400, "Bad Request",
+        "uri parameter is required"))
 };
 
 declare
@@ -27,10 +34,15 @@ function post(
   $input   as document-node()*
 ) as document-node()*
 {
-  matcher:block-match(
-    map:get($params, "uri1"),
-    map:get($params, "uri2")
-  )
+  let $uri1 := map:get($params, "uri1")
+  let $uri2 := map:get($params, "uri2")
+  return
+    if (fn:exists($uri1) and fn:exists($uri2)) then
+      matcher:block-match($uri1, $uri2)
+    else
+      fn:error((),"RESTAPI-SRVEXERR",
+        (400, "Bad Request",
+        "uri1 and uri2 parameters are required"))
 };
 
 declare function delete(
@@ -38,8 +50,13 @@ declare function delete(
   $params  as map:map
 ) as document-node()?
 {
-  matcher:allow-match(
-    map:get($params, "uri1"),
-    map:get($params, "uri2")
-  )
+  let $uri1 := map:get($params, "uri1")
+  let $uri2 := map:get($params, "uri2")
+  return
+    if (fn:exists($uri1) and fn:exists($uri2)) then
+      matcher:allow-match($uri1, $uri2)
+    else
+      fn:error((),"RESTAPI-SRVEXERR",
+        (400, "Bad Request",
+        "uri1 and uri2 parameters are required"))
 };
