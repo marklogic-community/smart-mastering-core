@@ -142,7 +142,7 @@ declare function matcher:find-document-matches-by-options(
           $minimum-threshold-combinations
         ),
         let $blocks := matcher:get-blocks(fn:base-uri($document))
-        where $blocks
+        where fn:exists($blocks/node())
         return
           cts:not-query(cts:document-query($blocks/node()))
     ))

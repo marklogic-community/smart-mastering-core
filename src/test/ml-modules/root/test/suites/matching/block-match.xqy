@@ -8,6 +8,8 @@ import module namespace test = "http://marklogic.com/roxy/test-helper" at "/test
 (: Force update mode :)
 declare option xdmp:update "true";
 
+declare option xdmp:mapping "false";
+
 let $assertions := ()
 let $uri3 := "/content3.xml"
 let $uri4 := "/content4.xml"

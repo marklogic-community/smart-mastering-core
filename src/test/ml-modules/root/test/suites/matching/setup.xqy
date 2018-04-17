@@ -5,6 +5,8 @@ at "/MarkLogic/semantics.xqy";
 import module namespace matcher = "http://marklogic.com/smart-mastering/matcher"
 at "/ext/com.marklogic.smart-mastering/matcher.xqy";
 
+declare option xdmp:mapping "false";
+
 (: Seed the database with a block :)
 let $uri1 := "/content1.xml"
 let $uri2 := "/content2.xml"
