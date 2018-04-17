@@ -11,12 +11,6 @@ declare function get(
   ) as document-node()*
 {
   let $results := history:property-history(map:get($params,"uri"),  map:get($params,"property"))
-  let $accept-types := map:get($context,"accept-types")
   return
-    if ($accept-types = "application/json") then (
-      xdmp:to-json($results)
-    ) else
-      document {
-        $results
-      }
+    xdmp:to-json($results)
 };
