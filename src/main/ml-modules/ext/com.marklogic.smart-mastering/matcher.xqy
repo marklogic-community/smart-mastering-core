@@ -6,6 +6,8 @@ import module namespace algorithms = "http://marklogic.com/smart-mastering/algor
   at  "algorithms/base.xqy";
 import module namespace json="http://marklogic.com/xdmp/json"
   at "/MarkLogic/json/json.xqy";
+import module namespace sem = "http://marklogic.com/semantics"
+  at "/MarkLogic/semantics.xqy";
 import module namespace const = "http://marklogic.com/smart-mastering/constants"
   at "/ext/com.marklogic.smart-mastering/constants.xqy";
 
@@ -14,6 +16,9 @@ declare namespace smart-mastering = "http://marklogic.com/smart-mastering";
 declare option xdmp:mapping "false";
 
 declare variable $ALGORITHM-OPTIONS-DIR := "/com.marklogic.smart-mastering/options/algorithms/";
+
+(: Predicate for recording match blocks between two documents :)
+declare variable $PRED-MATCH-BLOCK := sem:iri("http://marklogic.com/smart-mastering/match-block");
 
 (:
 
@@ -521,4 +526,64 @@ declare function matcher:lock-on-search($query-results)
       )
   return
     fn:function-lookup(xs:QName("xdmp:lock-for-update"),1)($lock-uri)
+};
+
+(:
+ : Return a JSON array of any URIs the that input URI is blocked from matching.
+ : @param $uri  input URI
+ : @return JSON array of URIs
+ :)
+declare function matcher:get-blocks($uri as xs:string)
+  as array-node()
+{
+  let $solution :=
+    sem:sparql(
+      "select distinct(?uri as ?blocked) where { ?uri ?isBlocked ?target }",
+      map:new((
+        map:entry("target", sem:iri($uri)),
+        map:entry("isBlocked", $PRED-MATCH-BLOCK)
+      )),
+      "map"
+    )
+  return
+    array-node {
+      if (fn:exists($solution)) then
+        map:get($solution, "blocked")
+      else ()
+    }
+};
+
+(:
+ : Prevent the two input URIs from being allowed to match.
+ :
+ : @param $uri1  First input URI
+ : @param $uri2  Second input URI
+ : @error will throw xs:QName("SM-CANT-BLOCK") if unable to record the block.
+ : @return empty sequence
+ :)
+declare function matcher:block-match($uri1 as xs:string, $uri2 as xs:string)
+{
+  sem:rdf-insert(
+    (
+      sem:triple(sem:iri($uri1), $PRED-MATCH-BLOCK, sem:iri($uri2)),
+      sem:triple(sem:iri($uri2), $PRED-MATCH-BLOCK, sem:iri($uri1))
+    )
+  )
+};
+
+(:
+ : Clear a match block between the two input URIs.
+ :
+ : @param $uri1  First input URI
+ : @param $uri2  Second input URI
+ :
+ : @error will throw xs:QName("SM-CANT-UNBLOCK") if a block is present, but it cannot be cleared
+ : @return  fn:true if a block was found and cleared; fn:false if no block was found
+ :)
+declare function matcher:allow-match($uri1 as xs:string, $uri2 as xs:string)
+{
+  sem:database-nodes((
+    cts:triples(sem:iri($uri1), $PRED-MATCH-BLOCK, sem:iri($uri2)),
+    cts:triples(sem:iri($uri2), $PRED-MATCH-BLOCK, sem:iri($uri1))
+  )) ! xdmp:node-delete(.)
 };
