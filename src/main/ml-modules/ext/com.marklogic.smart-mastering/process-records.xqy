@@ -18,6 +18,13 @@ declare function process:process-match-and-merge($uri as xs:string)
     process:process-match-and-merge($uri, $merging-options)
 };
 
+(:
+ : Identify matches for a target document. Merge any documents where the match score is above the merge threshold;
+ : record notification for matches above that threshold.
+ :
+ : @param $uri  URI of the target document
+ : @param $options  a set of merge options, which include a reference to a set of match options
+ :)
 declare function process:process-match-and-merge($uri as xs:string, $options as item())
 {
   let $matching-options := matcher:get-options(fn:string($options/merging:match-options))
