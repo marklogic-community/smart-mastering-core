@@ -68,7 +68,8 @@ declare function merging:save-merge-models-by-uri(
       merging:options-from-json($merge-options)
     else
       $merge-options
-  let $merge-uri := "/com.marklogic.smart-mastering/merged/"||sem:uuid-string()||".xml"
+  let $id := sem:uuid-string()
+  let $merge-uri := "/com.marklogic.smart-mastering/merged/"||$id||".xml"
   let $uris :=
     for $uri in $uris
     let $is-merged := xdmp:document-get-collections($uri) = $const:MERGED-COLL
@@ -91,6 +92,7 @@ declare function merging:save-merge-models-by-uri(
   let $wrapper-qnames := map:get($parsed-properties, "wrapper-qnames")
   let $merged-document :=
     merging:build-merge-models-by-final-properties(
+      $id,
       $docs,
       $wrapper-qnames,
       $final-properties,
@@ -228,6 +230,7 @@ declare function merging:build-merge-models-by-uri(
   let $wrapper-qnames := map:get($parsed-properties, "wrapper-qnames")
   return
     merging:build-merge-models-by-final-properties(
+      sem:uuid-string(),
       $docs,
       $wrapper-qnames,
       $final-properties,
@@ -236,6 +239,7 @@ declare function merging:build-merge-models-by-uri(
 };
 
 declare function merging:build-merge-models-by-final-properties(
+  $id as xs:string,
   $docs as node()*,
   $wrapper-qnames as xs:QName*,
   $final-properties as item()*,
@@ -243,6 +247,7 @@ declare function merging:build-merge-models-by-final-properties(
 ) {
   if ($docs instance of document-node(element())+) then
     merging:build-merge-models-by-final-properties-to-xml(
+      $id,
       $docs,
       $wrapper-qnames,
       $final-properties,
@@ -250,6 +255,7 @@ declare function merging:build-merge-models-by-final-properties(
     )
   else
     merging:build-merge-models-by-final-properties-to-json(
+      $id,
       $docs,
       $wrapper-qnames,
       $final-properties,
@@ -259,6 +265,7 @@ declare function merging:build-merge-models-by-final-properties(
 
 
 declare function merging:build-merge-models-by-final-properties-to-xml(
+  $id as xs:string,
   $docs as node()*,
   $wrapper-qnames as xs:QName*,
   $final-properties as item()*,
@@ -266,7 +273,7 @@ declare function merging:build-merge-models-by-final-properties-to-xml(
 ) {
   <es:envelope>
     <es:headers>
-      <smart-mastering:id>{sem:uuid-string()}</smart-mastering:id>
+      <smart-mastering:id>{$id}</smart-mastering:id>
       <smart-mastering:merges>{
       $docs/es:envelope/es:headers/smart-mastering:merges/smart-mastering:document-uri,
       $docs ! element smart-mastering:document-uri { xdmp:node-uri(.) }
@@ -286,6 +293,7 @@ declare function merging:build-merge-models-by-final-properties-to-xml(
 };
 
 declare function merging:build-merge-models-by-final-properties-to-json(
+  $id as xs:string,
   $docs as node()*,
   $wrapper-qnames as xs:QName*,
   $final-properties as item()*,
@@ -294,7 +302,7 @@ declare function merging:build-merge-models-by-final-properties-to-json(
   object-node {
     "envelope": object-node {
       "headers": object-node {
-        "id": sem:uuid-string(),
+        "id": $id,
         "merges": array-node {
           $docs/envelope/headers/merges/object-node(),
           $docs ! object-node { "document-uri": xdmp:node-uri(.) }
