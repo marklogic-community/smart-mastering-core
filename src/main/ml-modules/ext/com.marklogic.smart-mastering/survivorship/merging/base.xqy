@@ -70,9 +70,10 @@ declare function merging:save-merge-models-by-uri(
       $merge-options
   let $id := sem:uuid-string()
   let $merge-uri := "/com.marklogic.smart-mastering/merged/"||$id||".xml"
+  let $merged-uris := $uris[xdmp:document-get-collections(.) = $const:MERGED-COLL]
   let $uris :=
     for $uri in $uris
-    let $is-merged := xdmp:document-get-collections($uri) = $const:MERGED-COLL
+    let $is-merged := $uri = $merged-uris
     return
       if ($is-merged) then
         auditing:auditing-receipts-for-doc-uri($uri)
@@ -158,7 +159,7 @@ declare function merging:save-merge-models-by-uri(
     )
   return (
     $merged-document,
-    for $uri in $uris[fn:doc-available(.)]
+    for $uri in fn:distinct-values(($uris, $merged-uris))[fn:doc-available(.)]
     return
       merging:archive-document($uri),
     xdmp:document-insert(
@@ -168,7 +169,13 @@ declare function merging:save-merge-models-by-uri(
         xdmp:permission($const:MDM-ADMIN, "update"),
         xdmp:permission($const:MDM-USER, "read")
       ),
-      ($const:CONTENT-COLL, $const:MERGED-COLL)
+      (
+        $const:CONTENT-COLL,
+        $const:MERGED-COLL,
+        fn:distinct-values(
+          $uris ! xdmp:document-get-collections(.)[fn:not(fn:starts-with(.,"mdm-"))]
+        )
+      )
     )
   )
 };
@@ -281,6 +288,10 @@ declare function merging:build-merge-models-by-final-properties-to-xml(
       <smart-mastering:sources>{
       $docs/es:envelope/es:headers/smart-mastering:sources/smart-mastering:source
       }</smart-mastering:sources>
+      {
+        (: TODO Add logic for merging headers :)
+        $docs/es:envelope/es:headers/*[fn:empty(self::smart-mastering:*)]
+      }
     </es:headers>
     <es:instance>{
       merging:build-instance-body-by-final-properties(
@@ -301,16 +312,21 @@ declare function merging:build-merge-models-by-final-properties-to-json(
 ) {
   object-node {
     "envelope": object-node {
-      "headers": object-node {
-        "id": $id,
-        "merges": array-node {
+      "headers": xdmp:to-json(map:new((
+        map:entry("id", $id),
+        map:entry("merges", array-node {
           $docs/envelope/headers/merges/object-node(),
-          $docs ! object-node { "document-uri": xdmp:node-uri(.) }
-        },
-        "sources": array-node {
+          $docs ! object-node { "document-uri": fn:base-uri(.) }
+        }),
+        map:entry("sources", array-node {
           $docs/envelope/headers/sources/object-node()
-        }
-      },
+        }),
+        (: TODO merging of carried forward headers :)
+        for $name in fn:distinct-values($docs/envelope/headers/* ! fn:node-name(.))[fn:not(fn:string(.) = ("sources","id","merges"))]
+        let $values := $docs/envelope/headers/*[fn:node-name(.) = $name]
+        return map:entry(fn:string($name), $values)
+      ))
+      )/object-node(),
       "instance": merging:build-instance-body-by-final-properties(
         $final-properties,
         $wrapper-qnames,
