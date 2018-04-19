@@ -596,6 +596,28 @@ declare function matcher:allow-match($uri1 as xs:string, $uri2 as xs:string)
   )) ! xdmp:node-delete(.)
 };
 
+(:
+ : Translate a notifcation into JSON.
+ :)
+declare function matcher:notification-to-json($notification as element(smart-mastering:notification))
+{
+  object-node {
+      "meta": object-node {
+      "dateTime": $notification/smart-mastering:meta/smart-mastering:dateTime/fn:string(),
+      "user": $notification/smart-mastering:meta/smart-mastering:user/fn:string()
+    },
+    "thresholdLabel": $notification/smart-mastering:threshold-label/fn:string(),
+    "uris": array-node {
+      for $uri in $notification/smart-mastering:document-uris/smart-mastering:document-uri
+      return
+        object-node { "uri": $uri/fn:string() }
+    }
+  }
+};
+
+(:
+ : Paged retrieval of notifications
+ :)
 declare function matcher:get-notifications($start, $end)
 {
   (fn:collection($const:NOTIFICATION-COLL)[$start to $end])/smart-mastering:notification
