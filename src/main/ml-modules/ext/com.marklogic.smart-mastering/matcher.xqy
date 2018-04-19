@@ -595,3 +595,8 @@ declare function matcher:allow-match($uri1 as xs:string, $uri2 as xs:string)
     cts:triples(sem:iri($uri2), $PRED-MATCH-BLOCK, sem:iri($uri1))
   )) ! xdmp:node-delete(.)
 };
+
+declare function matcher:get-notifications($start, $end)
+{
+  (fn:collection($const:NOTIFICATION-COLL)[$start to $end])/smart-mastering:notification
+};
