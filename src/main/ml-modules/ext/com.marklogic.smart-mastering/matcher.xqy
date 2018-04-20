@@ -415,7 +415,7 @@ declare function matcher:get-existing-match-notification(
 };
 
 (:
- : Delete any notifications that match the label and URI set.
+ : Delete the specified notification
  : TODO: do we want to add any provenance tracking to this?
  :)
 declare function matcher:delete-notification($uri as xs:string)

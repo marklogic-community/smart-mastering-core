@@ -34,7 +34,12 @@ declare function delete(
   let $uri := map:get($params, "uri")
   return
     if (fn:exists($uri)) then
-      matcher:delete-notification($uri)
+      if (fn:doc-available($uri)) then
+        matcher:delete-notification($uri)
+      else
+        fn:error((),"RESTAPI-SRVEXERR",
+          (404, "Not Found",
+          "No notification available at URI " || $uri))
     else
       fn:error((),"RESTAPI-SRVEXERR",
         (400, "Bad Request",
