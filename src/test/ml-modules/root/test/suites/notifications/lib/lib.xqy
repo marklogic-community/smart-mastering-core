@@ -29,8 +29,8 @@ declare function lib:save-notification($label, $uris)
 };
 
 (: Call the delete-nofication function in a different transaction :)
-declare function lib:delete-notification($label, $uris)
+declare function lib:delete-notification($uri)
 {
-  xdmp:invoke-function(function() { matcher:delete-notification($label, $uris) }, $INVOKE_OPTIONS)
+  xdmp:invoke-function(function() { matcher:delete-notification($uri) }, $INVOKE_OPTIONS)
 };
 
