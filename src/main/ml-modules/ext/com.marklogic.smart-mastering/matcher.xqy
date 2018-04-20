@@ -418,9 +418,9 @@ declare function matcher:get-existing-match-notification(
  : Delete any notifications that match the label and URI set.
  : TODO: do we want to add any provenance tracking to this?
  :)
-declare function matcher:delete-notification($label as xs:string, $uris as xs:string*)
+declare function matcher:delete-notification($uri as xs:string)
 {
-  get-existing-match-notification($label, $uris) ! xdmp:document-delete(fn:base-uri(.))
+  xdmp:document-delete($uri)
 };
 
 declare variable $options-json-config := matcher:_options-json-config();

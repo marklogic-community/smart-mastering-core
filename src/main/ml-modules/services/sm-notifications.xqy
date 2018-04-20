@@ -31,13 +31,12 @@ declare function delete(
   $params  as map:map
 ) as document-node()?
 {
-  let $label := map:get($params, "label")
-  let $uris := map:get($params, "uris")
+  let $uri := map:get($params, "uri")
   return
-    if (fn:exists($label) and fn:exists($uris)) then
-      matcher:delete-notification($label, fn:tokenize($uris, ","))
+    if (fn:exists($uri)) then
+      matcher:delete-notification($uri)
     else
       fn:error((),"RESTAPI-SRVEXERR",
         (400, "Bad Request",
-        "label and uris parameters are required"))
+        "uri parameter is required"))
 };

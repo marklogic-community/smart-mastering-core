@@ -18,7 +18,7 @@ let $assertions := (
 )
 
 (: Delete the first notification :)
-let $_ := lib:delete-notification($lib:LBL-LIKELY, $lib:URI-SET1)
+let $_ := lib:delete-notification(fn:base-uri($initial1))
 
 (: Verify that the first notification was deleted, but the second is still there. :)
 let $post-delete-1 := lib:get-notification($lib:LBL-LIKELY, $lib:URI-SET1)
@@ -28,16 +28,6 @@ let $assertions := (
   $assertions,
   test:assert-equal(0, fn:count($post-delete-1)),
   test:assert-equal(1, fn:count($post-delete-2))
-)
-
-(: Mix up the order and check that the notification is still found and deleted. :)
-let $_ := lib:delete-notification($lib:LBL-POSSIBLE, ("/content5.xml", "/content4.xml"))
-
-let $post-delete-2 := lib:get-notification($lib:LBL-POSSIBLE, $lib:URI-SET2)
-
-let $assertions := (
-  $assertions,
-  test:assert-equal(0, fn:count($post-delete-2))
 )
 
 return $assertions
