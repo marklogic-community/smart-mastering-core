@@ -398,7 +398,8 @@ declare function matcher:save-match-notification(
 declare function matcher:get-existing-match-notification(
   $threshold-label as xs:string,
   $uris as xs:string*
-) {
+) as element(smart-mastering:notification)*
+{
   cts:search(fn:collection()/smart-mastering:notification,
     cts:and-query((
       cts:element-value-query(
@@ -411,6 +412,15 @@ declare function matcher:get-existing-match-notification(
       )
     ))
   )
+};
+
+(:
+ : Delete any notifications that match the label and URI set.
+ : TODO: do we want to add any provenance tracking to this?
+ :)
+declare function matcher:delete-notification($label as xs:string, $uris as xs:string*)
+{
+  get-existing-match-notification($label, $uris) ! xdmp:document-delete(fn:base-uri(.))
 };
 
 declare variable $options-json-config := matcher:_options-json-config();
