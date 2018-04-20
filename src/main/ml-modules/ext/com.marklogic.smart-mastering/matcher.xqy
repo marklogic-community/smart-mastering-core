@@ -614,7 +614,8 @@ declare function matcher:notification-to-json($notification as element(smart-mas
   object-node {
       "meta": object-node {
       "dateTime": $notification/smart-mastering:meta/smart-mastering:dateTime/fn:string(),
-      "user": $notification/smart-mastering:meta/smart-mastering:user/fn:string()
+      "user": $notification/smart-mastering:meta/smart-mastering:user/fn:string(),
+      "uri": fn:base-uri($notification)
     },
     "thresholdLabel": $notification/smart-mastering:threshold-label/fn:string(),
     "uris": array-node {
