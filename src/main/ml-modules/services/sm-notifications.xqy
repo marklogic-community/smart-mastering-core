@@ -12,8 +12,8 @@ declare function get(
   $params  as map:map
 ) as document-node()*
 {
-  let $start := (map:get($params, "start"), 1)[1]
-  let $page-size := (map:get($params, "page-size"), 10)[1]
+  let $start := (map:get($params, "start"), 1)[1] ! xs:int(.)
+  let $page-size := (map:get($params, "page-size"), 10)[1] ! xs:int(.)
   let $end := $start + $page-size - 1
   let $notifications := matcher:get-notifications($start, $end)
   return
