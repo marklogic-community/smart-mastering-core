@@ -25,3 +25,19 @@ declare function get(
       }
     }
 };
+
+declare function delete(
+  $context as map:map,
+  $params  as map:map
+) as document-node()?
+{
+  let $label := map:get($params, "label")
+  let $uris := map:get($params, "uris")
+  return
+    if (fn:exists($label) and fn:exists($uris)) then
+      matcher:delete-notification($label, fn:tokenize($uris, ","))
+    else
+      fn:error((),"RESTAPI-SRVEXERR",
+        (400, "Bad Request",
+        "label and uris parameters are required"))
+};

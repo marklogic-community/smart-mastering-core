@@ -1,9 +1,9 @@
 xquery version "1.0-ml";
 
 import module namespace sem = "http://marklogic.com/semantics"
-at "/MarkLogic/semantics.xqy";
+  at "/MarkLogic/semantics.xqy";
 import module namespace matcher = "http://marklogic.com/smart-mastering/matcher"
-at "/ext/com.marklogic.smart-mastering/matcher.xqy";
+  at "/ext/com.marklogic.smart-mastering/matcher.xqy";
 
 declare option xdmp:mapping "false";
 
