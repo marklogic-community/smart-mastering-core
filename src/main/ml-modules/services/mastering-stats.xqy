@@ -39,6 +39,7 @@ declare function get(
   let $_ := map:put($json, "docCount", xdmp:estimate(cts:search(fn:doc(), cts:collection-query(cts:collection-match("mdm-import://*")))))
   let $_ := map:put($json, "mergeCount", map:get($m, $const:MERGED-COLL))
   let $_ := map:put($json, "instanceCount", map:get($m, $const:CONTENT-COLL))
+  let $_ := map:put($json, "notificationCount", map:get($m, $const:NOTIFICATION-COLL))
   return
     document {
       xdmp:to-json($json)

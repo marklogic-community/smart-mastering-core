@@ -633,3 +633,11 @@ declare function matcher:get-notifications($start, $end)
 {
   (fn:collection($const:NOTIFICATION-COLL)[$start to $end])/smart-mastering:notification
 };
+
+(:
+ : Return a count of all notifications
+ :)
+declare function matcher:count-notifications()
+{
+  xdmp:estimate(fn:collection($const:NOTIFICATION-COLL))
+};

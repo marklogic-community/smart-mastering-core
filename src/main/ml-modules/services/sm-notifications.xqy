@@ -18,10 +18,14 @@ declare function get(
   let $notifications := matcher:get-notifications($start, $end)
   return
     document {
-      array-node {
-        for $n in $notifications
-        return
-          matcher:notification-to-json($n)
+      object-node {
+      "total": matcher:count-notifications(),
+      "notifications":
+        array-node {
+          for $n in $notifications
+          return
+            matcher:notification-to-json($n)
+        }
       }
     }
 };
