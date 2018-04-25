@@ -4,7 +4,7 @@ import module namespace test = "http://marklogic.com/roxy/test-helper" at "/test
 
 import module namespace lib = "http://marklogic.com/smart-mastering/test/notification" at "/test/suites/notifications/lib/lib.xqy";
 
-declare namespace smart-mastering = "http://marklogic.com/smart-mastering";
+declare namespace sm = "http://marklogic.com/smart-mastering";
 
 (: Force update mode :)
 declare option xdmp:update "true";
@@ -23,10 +23,10 @@ let $actual := lib:get-notification($threshold-label, $uris)
 (: Make sure we got what we expected :)
 let $assertions := (
   test:assert-equal(
-    <smart-mastering:threshold-label>{$threshold-label}</smart-mastering:threshold-label>,
-    $actual/smart-mastering:threshold-label
+    <sm:threshold-label>{$threshold-label}</sm:threshold-label>,
+    $actual/sm:threshold-label
   ),
-  test:assert-same-values($uris, $actual/smart-mastering:document-uris/smart-mastering:document-uri/fn:string())
+  test:assert-same-values($uris, $actual/sm:document-uris/sm:document-uri/fn:string())
 )
 
 (: Save an overlapping notification. It should get combined with the first. :)
@@ -38,11 +38,11 @@ let $actual := lib:get-notification($threshold-label, $uris)
 return (
   $assertions,
   test:assert-equal(
-    <smart-mastering:threshold-label>{$threshold-label}</smart-mastering:threshold-label>,
-    $actual/smart-mastering:threshold-label
+    <sm:threshold-label>{$threshold-label}</sm:threshold-label>,
+    $actual/sm:threshold-label
   ),
   test:assert-same-values(
     ($uris, "/content3.xml"),
-    $actual/smart-mastering:document-uris/smart-mastering:document-uri/fn:string()
+    $actual/sm:document-uris/sm:document-uri/fn:string()
   )
 )
