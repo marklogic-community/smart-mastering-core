@@ -614,6 +614,7 @@ declare function matcher:allow-match($uri1 as xs:string, $uri2 as xs:string)
  : Translate a notifcation into JSON.
  :)
 declare function matcher:notification-to-json($notification as element(smart-mastering:notification))
+as object-node()
 {
   object-node {
     "meta": object-node {
@@ -635,6 +636,7 @@ declare function matcher:notification-to-json($notification as element(smart-mas
  : Paged retrieval of notifications
  :)
 declare function matcher:get-notifications($start, $end)
+as element(smart-mastering:notification)*
 {
   (fn:collection($const:NOTIFICATION-COLL)[$start to $end])/smart-mastering:notification
 };
@@ -643,6 +645,7 @@ declare function matcher:get-notifications($start, $end)
  : Return a count of all notifications
  :)
 declare function matcher:count-notifications()
+as xs:int
 {
   xdmp:estimate(fn:collection($const:NOTIFICATION-COLL))
 };
@@ -651,6 +654,7 @@ declare function matcher:count-notifications()
  : Return a count of unread notifications
  :)
 declare function matcher:count-unread-notifications()
+as xs:int
 {
   xdmp:estimate(
     cts:search(
