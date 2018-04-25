@@ -12,5 +12,6 @@ const notifyObj = notification.toObject();
 [].concat(
   test.assertEqual(lib['LBL-LIKELY'], notifyObj.thresholdLabel),
   test.assertEqual(fn.count(lib['URI-SET1']), notifyObj.uris.length),
-  test.assertEqual(notificationURI, notifyObj.meta.uri)
+  test.assertEqual(notificationURI, notifyObj.meta.uri),
+  test.assertEqual(matcher['STATUS-UNREAD'], notifyObj.meta.status)
 )

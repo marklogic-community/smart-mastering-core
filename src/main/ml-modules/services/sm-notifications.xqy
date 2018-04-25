@@ -20,6 +20,8 @@ declare function get(
     document {
       object-node {
       "total": matcher:count-notifications(),
+      "start": $start,
+      "page-size": $page-size,
       "notifications":
         array-node {
           for $n in $notifications
@@ -28,6 +30,39 @@ declare function get(
         }
       }
     }
+};
+
+(:
+ : Update the status of a notification.
+ : @body  JSON object with two properties: uris and status. uris is an array containing URI strings. status must
+ :        use the values of $matcher:STATUS-READ or $matcher:STATUS-UNREAD.
+ :)
+declare function put(
+  $context as map:map,
+  $params  as map:map,
+  $input   as document-node()*
+) as document-node()?
+{
+  let $uris as xs:string* := $input/node()/uris
+  let $status as xs:string? := $input/node()/status
+  return
+    if (fn:empty($status)) then
+      fn:error((),"RESTAPI-SRVEXERR",
+        (400, "Bad Request",
+        "status parameter is required"))
+    else if (fn:empty($uris)) then
+      fn:error((),"RESTAPI-SRVEXERR",
+        (400, "Bad Request",
+        "uris parameter is required"))
+    else
+      for $uri in $uris
+      return
+        if (fn:doc-available($uri)) then
+          matcher:update-notification-status($uri, $status)
+        else
+          fn:error((),"RESTAPI-SRVEXERR",
+            (404, "Not Found",
+            "No notification available at URI " || $uri))
 };
 
 declare function delete(
