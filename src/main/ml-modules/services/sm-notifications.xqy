@@ -70,7 +70,7 @@ declare function delete(
   $params  as map:map
 ) as document-node()?
 {
-  let $uri := map:get($params, "uri")
+  for $uri in map:get($params, "uri")
   return
     if (fn:exists($uri)) then
       if (fn:doc-available($uri)) then
