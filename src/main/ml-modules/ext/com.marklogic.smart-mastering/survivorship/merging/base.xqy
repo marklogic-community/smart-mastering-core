@@ -15,7 +15,7 @@ import module namespace merging = "http://marklogic.com/smart-mastering/survivor
 import module namespace const = "http://marklogic.com/smart-mastering/constants"
   at "/ext/com.marklogic.smart-mastering/constants.xqy";
 
-declare namespace smart-mastering = "http://marklogic.com/smart-mastering";
+declare namespace sm = "http://marklogic.com/smart-mastering";
 declare namespace es = "http://marklogic.com/entity-services";
 declare namespace prov = "http://www.w3.org/ns/prov#";
 
@@ -280,17 +280,17 @@ declare function merging:build-merge-models-by-final-properties-to-xml(
 ) {
   <es:envelope>
     <es:headers>
-      <smart-mastering:id>{$id}</smart-mastering:id>
-      <smart-mastering:merges>{
-      $docs/es:envelope/es:headers/smart-mastering:merges/smart-mastering:document-uri,
-      $docs ! element smart-mastering:document-uri { xdmp:node-uri(.) }
-      }</smart-mastering:merges>
-      <smart-mastering:sources>{
-      $docs/es:envelope/es:headers/smart-mastering:sources/smart-mastering:source
-      }</smart-mastering:sources>
+      <sm:id>{$id}</sm:id>
+      <sm:merges>{
+      $docs/es:envelope/es:headers/sm:merges/sm:document-uri,
+      $docs ! element sm:document-uri { xdmp:node-uri(.) }
+      }</sm:merges>
+      <sm:sources>{
+      $docs/es:envelope/es:headers/sm:sources/sm:source
+      }</sm:sources>
       {
         (: TODO Add logic for merging headers :)
-        $docs/es:envelope/es:headers/*[fn:empty(self::smart-mastering:*)]
+        $docs/es:envelope/es:headers/*[fn:empty(self::sm:*)]
       }
     </es:headers>
     <es:instance>{
@@ -410,16 +410,16 @@ declare function merging:parse-final-properties-for-merge(
   let $prop-history-info := ()
       (:for $doc-uri in fn:distinct-values($docs/(es:envelope|object-node("envelope"))
             /(es:headers|object-node("headers"))
-            /(smart-mastering:merges|array-node("merges"))
-            /(smart-mastering:document-uri|documentUri))
+            /(sm:merges|array-node("merges"))
+            /(sm:document-uri|documentUri))
       return
         history:property-history($doc-uri, ()) ! xdmp:to-json(.)/object-node():)
   let $sources :=
     for $source in
       $docs/(es:envelope|object-node("envelope"))
             /(es:headers|object-node("headers"))
-            /(smart-mastering:sources|array-node("sources"))
-            /(smart-mastering:source|object-node())
+            /(sm:sources|array-node("sources"))
+            /(sm:source|object-node())
     let $last-updated := $source/*:dateTime[. castable as xs:dateTime] ! xs:dateTime(.)
     order by $last-updated descending
     return

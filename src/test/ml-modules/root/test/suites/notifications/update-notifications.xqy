@@ -7,7 +7,7 @@ import module namespace test = "http://marklogic.com/roxy/test-helper" at "/test
 
 import module namespace lib = "http://marklogic.com/smart-mastering/test/notification" at "/test/suites/notifications/lib/lib.xqy";
 
-declare namespace smart-mastering="http://marklogic.com/smart-mastering";
+declare namespace sm = "http://marklogic.com/smart-mastering";
 
 (: Force update mode :)
 declare option xdmp:update "true";
@@ -19,8 +19,8 @@ let $notification := lib:get-notification($lib:LBL-LIKELY, $lib:URI-SET1)
 (: Verify starting state :)
 let $assertions := (
   test:assert-equal(
-    element smart-mastering:status { $matcher:STATUS-UNREAD },
-    $notification/smart-mastering:meta/smart-mastering:status
+    element sm:status { $matcher:STATUS-UNREAD },
+    $notification/sm:meta/sm:status
   )
 )
 
@@ -37,8 +37,8 @@ let $notification := lib:get-notification($lib:LBL-LIKELY, $lib:URI-SET1)
 let $assertions := (
   $assertions,
   test:assert-equal(
-    element smart-mastering:status { $matcher:STATUS-READ },
-    $notification/smart-mastering:meta/smart-mastering:status
+    element sm:status { $matcher:STATUS-READ },
+    $notification/sm:meta/sm:status
   )
 )
 

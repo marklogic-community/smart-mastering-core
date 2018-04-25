@@ -7,28 +7,28 @@ import module namespace test = "http://marklogic.com/roxy/test-helper" at "/test
 
 import module namespace lib = "http://marklogic.com/smart-mastering/test/notification" at "/test/suites/notifications/lib/lib.xqy";
 
-declare namespace smart-mastering="http://marklogic.com/smart-mastering";
+declare namespace sm = "http://marklogic.com/smart-mastering";
 
 declare option xdmp:mapping "false";
 
 let $actual := matcher:get-notifications(1, 10)
-let $likely := $actual[smart-mastering:threshold-label = $lib:LBL-LIKELY]
-let $possible := $actual[smart-mastering:threshold-label = $lib:LBL-POSSIBLE]
+let $likely := $actual[sm:threshold-label = $lib:LBL-LIKELY]
+let $possible := $actual[sm:threshold-label = $lib:LBL-POSSIBLE]
 
 return (
   test:assert-equal(2, fn:count($actual)),
 
   test:assert-exists($likely),
-  test:assert-equal(3, fn:count($likely/smart-mastering:document-uris/smart-mastering:document-uri)),
+  test:assert-equal(3, fn:count($likely/sm:document-uris/sm:document-uri)),
   test:assert-same-values(
     $lib:URI-SET1,
-    $likely/smart-mastering:document-uris/smart-mastering:document-uri/fn:string()
+    $likely/sm:document-uris/sm:document-uri/fn:string()
   ),
 
   test:assert-exists($possible),
-  test:assert-equal(2, fn:count($possible/smart-mastering:document-uris/smart-mastering:document-uri)),
+  test:assert-equal(2, fn:count($possible/sm:document-uris/sm:document-uri)),
   test:assert-same-values(
     $lib:URI-SET2,
-    $possible/smart-mastering:document-uris/smart-mastering:document-uri/fn:string()
+    $possible/sm:document-uris/sm:document-uri/fn:string()
   )
 )
