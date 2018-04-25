@@ -9,6 +9,6 @@
     <!-- Body description not supported. -->
   </method>
   <method name="DELETE">
-    <param name="uri" type="xs:string" />
+    <param name="uri" type="xs:string+" />
   </method>
 </metadata>
