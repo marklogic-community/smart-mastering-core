@@ -11,7 +11,7 @@ import module namespace sem = "http://marklogic.com/semantics"
 import module namespace const = "http://marklogic.com/smart-mastering/constants"
   at "/ext/com.marklogic.smart-mastering/constants.xqy";
 
-declare namespace smart-mastering = "http://marklogic.com/smart-mastering";
+declare namespace sm = "http://marklogic.com/smart-mastering";
 
 declare option xdmp:mapping "false";
 
@@ -357,24 +357,24 @@ declare function matcher:save-match-notification(
       $uris
     )
   let $new-notification :=
-    element smart-mastering:notification {
-      element smart-mastering:meta {
-        element smart-mastering:dateTime {fn:current-dateTime()},
-        element smart-mastering:user {xdmp:get-current-user()},
-        element smart-mastering:status { $STATUS-UNREAD }
+    element sm:notification {
+      element sm:meta {
+        element sm:dateTime {fn:current-dateTime()},
+        element sm:user {xdmp:get-current-user()},
+        element sm:status { $STATUS-UNREAD }
       },
-      element smart-mastering:threshold-label {$threshold-label},
-      element smart-mastering:document-uris {
+      element sm:threshold-label {$threshold-label},
+      element sm:document-uris {
         let $distinct-uris :=
           fn:distinct-values((
             $uris,
             $existing-notification
-              /smart-mastering:document-uris
-              /smart-mastering:document-uri ! fn:string(.)
+              /sm:document-uris
+              /sm:document-uri ! fn:string(.)
           ))
         for $uri in $distinct-uris
         return
-          element smart-mastering:document-uri {
+          element sm:document-uri {
             $uri
           }
       }
@@ -402,16 +402,16 @@ declare function matcher:save-match-notification(
 declare function matcher:get-existing-match-notification(
   $threshold-label as xs:string,
   $uris as xs:string*
-) as element(smart-mastering:notification)*
+) as element(sm:notification)*
 {
-  cts:search(fn:collection()/smart-mastering:notification,
+  cts:search(fn:collection()/sm:notification,
     cts:and-query((
       cts:element-value-query(
-        xs:QName("smart-mastering:threshold-label"),
+        xs:QName("sm:threshold-label"),
         $threshold-label
       ),
       cts:element-value-query(
-        xs:QName("smart-mastering:document-uri"),
+        xs:QName("sm:document-uri"),
         $uris
       )
     ))
@@ -613,19 +613,19 @@ declare function matcher:allow-match($uri1 as xs:string, $uri2 as xs:string)
 (:
  : Translate a notifcation into JSON.
  :)
-declare function matcher:notification-to-json($notification as element(smart-mastering:notification))
+declare function matcher:notification-to-json($notification as element(sm:notification))
 as object-node()
 {
   object-node {
     "meta": object-node {
-      "dateTime": $notification/smart-mastering:meta/smart-mastering:dateTime/fn:string(),
-      "user": $notification/smart-mastering:meta/smart-mastering:user/fn:string(),
+      "dateTime": $notification/sm:meta/sm:dateTime/fn:string(),
+      "user": $notification/sm:meta/sm:user/fn:string(),
       "uri": fn:base-uri($notification),
-      "status": $notification/smart-mastering:meta/smart-mastering:status/fn:string()
+      "status": $notification/sm:meta/sm:status/fn:string()
     },
-    "thresholdLabel": $notification/smart-mastering:threshold-label/fn:string(),
+    "thresholdLabel": $notification/sm:threshold-label/fn:string(),
     "uris": array-node {
-      for $uri in $notification/smart-mastering:document-uris/smart-mastering:document-uri
+      for $uri in $notification/sm:document-uris/sm:document-uri
       return
         object-node { "uri": $uri/fn:string() }
     }
@@ -636,9 +636,9 @@ as object-node()
  : Paged retrieval of notifications
  :)
 declare function matcher:get-notifications($start, $end)
-as element(smart-mastering:notification)*
+as element(sm:notification)*
 {
-  (fn:collection($const:NOTIFICATION-COLL)[$start to $end])/smart-mastering:notification
+  (fn:collection($const:NOTIFICATION-COLL)[$start to $end])/sm:notification
 };
 
 (:
@@ -659,7 +659,7 @@ as xs:int
   xdmp:estimate(
     cts:search(
       fn:collection($const:NOTIFICATION-COLL),
-      cts:element-value-query(xs:QName("smart-mastering:status"), $STATUS-UNREAD))
+      cts:element-value-query(xs:QName("sm:status"), $STATUS-UNREAD))
   )
 };
 
@@ -669,7 +669,7 @@ declare function matcher:update-notification-status(
 )
 {
   xdmp:node-replace(
-    fn:doc($uri)/smart-mastering:notification/smart-mastering:meta/smart-mastering:status,
-    element smart-mastering:status { $status }
+    fn:doc($uri)/sm:notification/sm:meta/sm:status,
+    element sm:status { $status }
   )
 };
