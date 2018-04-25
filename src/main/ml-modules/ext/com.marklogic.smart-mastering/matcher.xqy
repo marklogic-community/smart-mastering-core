@@ -20,6 +20,9 @@ declare variable $ALGORITHM-OPTIONS-DIR := "/com.marklogic.smart-mastering/optio
 (: Predicate for recording match blocks between two documents :)
 declare variable $PRED-MATCH-BLOCK := sem:iri("http://marklogic.com/smart-mastering/match-block");
 
+declare variable $STATUS-READ := "read";
+declare variable $STATUS-UNREAD := "unread";
+
 (:
 
 Example matcher options:
@@ -357,7 +360,8 @@ declare function matcher:save-match-notification(
     element smart-mastering:notification {
       element smart-mastering:meta {
         element smart-mastering:dateTime {fn:current-dateTime()},
-        element smart-mastering:user {xdmp:get-current-user()}
+        element smart-mastering:user {xdmp:get-current-user()},
+        element smart-mastering:status { $STATUS-UNREAD }
       },
       element smart-mastering:threshold-label {$threshold-label},
       element smart-mastering:document-uris {
@@ -612,10 +616,11 @@ declare function matcher:allow-match($uri1 as xs:string, $uri2 as xs:string)
 declare function matcher:notification-to-json($notification as element(smart-mastering:notification))
 {
   object-node {
-      "meta": object-node {
+    "meta": object-node {
       "dateTime": $notification/smart-mastering:meta/smart-mastering:dateTime/fn:string(),
       "user": $notification/smart-mastering:meta/smart-mastering:user/fn:string(),
-      "uri": fn:base-uri($notification)
+      "uri": fn:base-uri($notification),
+      "status": $notification/smart-mastering:meta/smart-mastering:status/fn:string()
     },
     "thresholdLabel": $notification/smart-mastering:threshold-label/fn:string(),
     "uris": array-node {
@@ -640,4 +645,16 @@ declare function matcher:get-notifications($start, $end)
 declare function matcher:count-notifications()
 {
   xdmp:estimate(fn:collection($const:NOTIFICATION-COLL))
+};
+
+(:
+ : Return a count of unread notifications
+ :)
+declare function matcher:count-unread-notifications()
+{
+  xdmp:estimate(
+    cts:search(
+      fn:collection($const:NOTIFICATION-COLL),
+      cts:element-value-query(xs:QName("smart-mastering:status"), $STATUS-UNREAD))
+  )
 };
