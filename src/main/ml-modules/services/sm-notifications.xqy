@@ -20,6 +20,8 @@ declare function get(
     document {
       object-node {
       "total": matcher:count-notifications(),
+      "start": $start,
+      "page-size": $page-size,
       "notifications":
         array-node {
           for $n in $notifications
