@@ -662,3 +662,14 @@ as xs:int
       cts:element-value-query(xs:QName("smart-mastering:status"), $STATUS-UNREAD))
   )
 };
+
+declare function matcher:update-notification-status(
+  $uri as xs:string+,
+  $status as xs:string
+)
+{
+  xdmp:node-replace(
+    fn:doc($uri)/smart-mastering:notification/smart-mastering:meta/smart-mastering:status,
+    element smart-mastering:status { $status }
+  )
+};
