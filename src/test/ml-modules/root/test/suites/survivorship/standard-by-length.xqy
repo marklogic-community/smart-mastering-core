@@ -1,5 +1,9 @@
 xquery version "1.0-ml";
 
+(:
+ : Test the standard survivorship algorithm, comparing different length values.
+ :)
+
 import module namespace merging = "http://marklogic.com/smart-mastering/survivorship/merging"
   at "/ext/com.marklogic.smart-mastering/survivorship/merging/base.xqy",
      "/ext/com.marklogic.smart-mastering/survivorship/merging/standard.xqy";

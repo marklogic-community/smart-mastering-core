@@ -14,6 +14,8 @@ import module namespace merging = "http://marklogic.com/smart-mastering/survivor
   at  "standard.xqy";
 import module namespace const = "http://marklogic.com/smart-mastering/constants"
   at "/ext/com.marklogic.smart-mastering/constants.xqy";
+import module namespace matcher = "http://marklogic.com/smart-mastering/matcher"
+  at "/ext/com.marklogic.smart-mastering/matcher.xqy";
 
 declare namespace sm = "http://marklogic.com/smart-mastering";
 declare namespace es = "http://marklogic.com/entity-services";
@@ -24,6 +26,8 @@ declare option xdmp:mapping "false";
 declare variable $retain-rollback-info := fn:false();
 
 declare variable $MERGING-OPTIONS-DIR := "/com.marklogic.smart-mastering/options/merging/";
+
+declare variable $MERGED-DIR := "/com.marklogic.smart-mastering/merged/";
 
 declare function merging:default-function-lookup(
   $name as xs:string?,
@@ -69,7 +73,7 @@ declare function merging:save-merge-models-by-uri(
     else
       $merge-options
   let $id := sem:uuid-string()
-  let $merge-uri := "/com.marklogic.smart-mastering/merged/"||$id||".xml"
+  let $merge-uri := $MERGED-DIR||$id||".xml"
   let $merged-uris := $uris[xdmp:document-get-collections(.) = $const:MERGED-COLL]
   let $uris :=
     for $uri in $uris
@@ -195,7 +199,9 @@ declare function merging:rollback-merge(
     auditing:auditing-receipts-for-doc-uri($merged-doc-uri)
   where fn:exists($auditing-receipts-for-doc)
   return (
-    for $previous-doc-uri in $auditing-receipts-for-doc/auditing:previous-uri ! fn:string(.)
+    let $uris := $auditing-receipts-for-doc/auditing:previous-uri ! fn:string(.)
+    let $prevent-auto-match := matcher:block-matches($uris)
+    for $previous-doc-uri in $uris
     let $new-collections := (
       xdmp:document-get-collections($previous-doc-uri)[fn:not(. = $const:ARCHIVED-COLL)],
       $const:CONTENT-COLL

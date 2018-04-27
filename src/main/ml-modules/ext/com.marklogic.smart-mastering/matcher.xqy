@@ -566,7 +566,7 @@ declare function matcher:get-blocks($uri as xs:string)
   return
     array-node {
       if (fn:exists($solution)) then
-        map:get($solution, "blocked")
+        $solution ! fn:string(map:get(., "blocked"))
       else ()
     }
 };
@@ -591,6 +591,28 @@ declare function matcher:block-match($uri1 as xs:string, $uri2 as xs:string)
       )
     )
   return ()
+};
+
+(:
+ : Block all pairs of URIs from matching.
+ : If we have 4 URIs, then we need to block (1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4). This function will
+ : start with URI #1 and call matcher:block-match with it each of the remaining URIs. It then recurses on the
+ : tail, repeating the process of blocking URI #2 from matching with the remaining URIs (3, 4). This stops when
+ : there are zero or one URIs remaining.
+ : No return type specified to allow tail call optimization.
+ :
+ : @param uris the sequence of URIs
+ : @return empty sequence
+ :)
+declare function matcher:block-matches($uris as xs:string*)
+{
+  if (fn:empty($uris) or fn:count($uris) = 1) then
+    (: We're done :)
+    ()
+  else
+    let $tail := fn:tail($uris)
+    let $_ := $tail ! matcher:block-match(fn:head($uris), .)
+    return matcher:block-matches($tail)
 };
 
 (:
