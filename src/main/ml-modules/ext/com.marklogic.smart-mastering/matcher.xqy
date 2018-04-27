@@ -628,7 +628,17 @@ as object-node()
       for $uri in $notification/sm:document-uris/sm:document-uri
       return
         object-node { "uri": $uri/fn:string() }
-    }
+    },
+    "names": xdmp:to-json(
+      let $o := json:object()
+      let $_ :=
+        for $uri in $notification/sm:document-uris/sm:document-uri
+        let $doc := fn:doc($uri)
+        let $name := $doc//*:PersonGivenName || " " || $doc//*:PersonSurName
+        return
+          map:put($o, $uri, $name)
+      return $o
+    )
   }
 };
 
