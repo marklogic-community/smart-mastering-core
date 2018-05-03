@@ -8,7 +8,7 @@ buildscript {
     }
   }
   dependencies {
-    classpath "com.marklogic:ml-unit-test-client:0.9.1"
+    classpath "com.marklogic:ml-unit-test-client:0.10.0"
     classpath "com.marklogic:ml-gradle:${mlGradleVersion}"
   }
 }
@@ -16,7 +16,7 @@ buildscript {
 plugins {
   id "maven-publish"
   id "com.jfrog.bintray" version "1.7.3"
-  id "com.marklogic.ml-gradle" version '3.6.1'
+  id "com.marklogic.ml-gradle" version "3.6.3"
   id 'net.saliman.properties' version '1.4.6'
 }
 
@@ -33,10 +33,10 @@ repositories {
 }
 
 dependencies {
-  mlRestApi "com.marklogic:ml-unit-test:0.9.1"
+  mlRestApi "com.marklogic:ml-unit-test:0.10.0"
 
   // For running ml-unit-test tests via JUnit
-  testCompile "com.marklogic:ml-unit-test-client:0.9.1"
+  testCompile "com.marklogic:ml-unit-test-client:0.10.0"
   testCompile "junit:junit:4+"
 }
 
