@@ -4,7 +4,7 @@
     <smart-mastering:id xmlns:smart-mastering="http://marklogic.com/smart-mastering">f57e1093-4c68-46d7-910c-150825ab2edc</smart-mastering:id>
     <smart-mastering:sources xmlns:smart-mastering="http://marklogic.com/smart-mastering">
       <smart-mastering:source>
-        <smart-mastering:name>Oracle</smart-mastering:name>
+        <smart-mastering:name>SOURCE2</smart-mastering:name>
         <smart-mastering:import-id>mdm-import-b96735af-f7c3-4f95-9ea1-f884bc395e0f</smart-mastering:import-id>
         <smart-mastering:user>admin</smart-mastering:user>
         <smart-mastering:dateTime>2018-04-26T16:40:16.760311Z</smart-mastering:dateTime>
@@ -42,7 +42,7 @@
           </PersonSSNIdentification>
           <Revenues>
             <RevenuesType>
-              <Revenue/>
+              <Revenue>4332</Revenue>
             </RevenuesType>
           </Revenues>
           <CaseStartDate>20110406</CaseStartDate>

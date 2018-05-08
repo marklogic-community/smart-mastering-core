@@ -4,7 +4,7 @@
     <smart-mastering:id xmlns:smart-mastering="http://marklogic.com/smart-mastering">66cbe731-7b56-4c91-9257-18a973008277</smart-mastering:id>
     <smart-mastering:sources xmlns:smart-mastering="http://marklogic.com/smart-mastering">
       <smart-mastering:source>
-        <smart-mastering:name>CRM</smart-mastering:name>
+        <smart-mastering:name>SOURCE1</smart-mastering:name>
         <smart-mastering:import-id>mdm-import-8cf89514-fb1d-45f1-b95f-8b69f3126f04</smart-mastering:import-id>
         <smart-mastering:user>admin</smart-mastering:user>
         <smart-mastering:dateTime>2018-04-26T16:40:02.1386Z</smart-mastering:dateTime>
