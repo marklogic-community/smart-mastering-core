@@ -39,15 +39,18 @@ project][sm-demo].
 
 ### Need help?
 
-Technical questions should be asked on [Stack Overflow][stackoverflow]. You can
-[file RFEs and bugs on GitHub][issue tracker]. If you'd like to discuss this 
-project with Product Management, contact [community-requests@marklogic.com][requests]. 
+If you've found a bug or would like to ask for a new capability, please [file an
+issue here on GitHub][issue tracker]. If you are having trouble using 
+smart-mastering-core, you can [file a question issue here on GitHub][issue tracker] 
+or [ask a question on Stack Overflow with the "marklogic" tag][stackoverflow]. 
+If you'd like to discuss this project with Product Management, contact 
+[community-requests@marklogic.com][requests]. 
 
 ### Project Status
 
-Smart Mastering Core is a community-supported project. Help is available on 
-Stack Overflow; however, we can’t promise a specific resolution or timeframe 
-for any request. 
+Smart Mastering Core is a community-supported project. Help is available by 
+filing issues here on GitHub and by asking questions on Stack Overflow; 
+however, we can’t promise a specific resolution or timeframe for any request. 
 
 ### Instructions
 
