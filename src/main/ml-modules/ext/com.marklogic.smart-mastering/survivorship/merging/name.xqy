@@ -9,7 +9,8 @@ declare function merging:name(
   $property-name as xs:QName,
   $properties as item()*,
   $property-spec as element()?
-) {
+)
+{
   merging:standard(
     $property-name,
     $properties,

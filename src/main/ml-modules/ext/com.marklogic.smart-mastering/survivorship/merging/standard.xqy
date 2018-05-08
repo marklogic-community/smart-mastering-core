@@ -24,7 +24,8 @@ declare function merging:standard(
   $property-name as xs:QName,
   $all-properties as map:map*,
   $property-spec as element()?
-) {
+)
+{
   fn:subsequence(
     (
       let $length-weight :=
@@ -80,7 +81,8 @@ declare function merging:standard-condense-properties(
 declare function merging:merge-complementing-properties(
   $remaining-properties,
   $merged-properties
-) {
+)
+{
   if (fn:empty($remaining-properties)) then
     $merged-properties
   else if (fn:empty($merged-properties) and fn:count($remaining-properties) eq 1) then
@@ -134,8 +136,7 @@ declare function merging:merge-complementing-properties(
           else
             fn:distinct-values($all-complementing-values/* ! fn:node-name(.))
         let $current-property-name := $current-property => map:get("name")
-        return
-        (
+        return (
           $merged-properties,
           map:new((
             map:entry("sources", (
@@ -179,11 +180,10 @@ declare function merging:merge-complementing-properties(
             map:entry("name", $current-property-name)
           ))
         )
-      else
-        (
-          $merged-properties,
-          $current-property
-        )
+      else (
+        $merged-properties,
+        $current-property
+      )
     let $complementing-indexes := $complementing-indexes-map => map:get("$indexes")
     return
       merging:merge-complementing-properties(
