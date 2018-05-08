@@ -66,7 +66,8 @@ declare function merging:build-merging-map($merging-xml)
 declare function merging:save-merge-models-by-uri(
   $uris as xs:string*,
   $merge-options as item()?
-) {
+)
+{
   let $merge-options :=
     if ($merge-options instance of object-node()) then
       merging:options-from-json($merge-options)
@@ -187,14 +188,16 @@ declare function merging:save-merge-models-by-uri(
 
 declare function merging:rollback-merge(
   $merged-doc-uri as xs:string
-) {
+)
+{
   merging:rollback-merge($merged-doc-uri, fn:true())
 };
 
 declare function merging:rollback-merge(
   $merged-doc-uri as xs:string,
   $retain-rollback-info as xs:boolean
-) {
+)
+{
   let $auditing-receipts-for-doc :=
     auditing:auditing-receipts-for-doc-uri($merged-doc-uri)
   where fn:exists($auditing-receipts-for-doc)
@@ -226,7 +229,8 @@ declare function merging:rollback-merge(
 declare function merging:build-merge-models-by-uri(
   $uris as xs:string*,
   $merge-options as item()?
-) {
+)
+{
   let $merge-options :=
     if ($merge-options instance of object-node()) then
       merging:options-from-json($merge-options)
@@ -257,7 +261,8 @@ declare function merging:build-merge-models-by-final-properties(
   $wrapper-qnames as xs:QName*,
   $final-properties as item()*,
   $merge-options as item()?
-) {
+)
+{
   if ($docs instance of document-node(element())+) then
     merging:build-merge-models-by-final-properties-to-xml(
       $id,
@@ -283,16 +288,17 @@ declare function merging:build-merge-models-by-final-properties-to-xml(
   $wrapper-qnames as xs:QName*,
   $final-properties as item()*,
   $merge-options as item()?
-) {
+)
+{
   <es:envelope>
     <es:headers>
       <sm:id>{$id}</sm:id>
       <sm:merges>{
-      $docs/es:envelope/es:headers/sm:merges/sm:document-uri,
-      $docs ! element sm:document-uri { xdmp:node-uri(.) }
+        $docs/es:envelope/es:headers/sm:merges/sm:document-uri,
+        $docs ! element sm:document-uri { xdmp:node-uri(.) }
       }</sm:merges>
       <sm:sources>{
-      $docs/es:envelope/es:headers/sm:sources/sm:source
+        $docs/es:envelope/es:headers/sm:sources/sm:source
       }</sm:sources>
       {
         (: TODO Add logic for merging headers :)
@@ -315,7 +321,8 @@ declare function merging:build-merge-models-by-final-properties-to-json(
   $wrapper-qnames as xs:QName*,
   $final-properties as item()*,
   $merge-options as item()?
-) {
+)
+{
   object-node {
     "envelope": object-node {
       "headers": xdmp:to-json(map:new((
@@ -346,7 +353,8 @@ declare function merging:build-instance-body-by-final-properties(
   $final-properties as map:map*,
   $wrapper-qnames as xs:QName*,
   $type as xs:string
-) {
+)
+{
   if ($type eq "json") then
     xdmp:to-json(
       fn:fold-left(
@@ -522,7 +530,8 @@ declare function merging:parse-final-properties-for-merge(
     ))
 };
 
-declare function merging:wrap-revision-info($property-name as xs:QName, $properties as item()*, $sources as item()*) {
+declare function merging:wrap-revision-info($property-name as xs:QName, $properties as item()*, $sources as item()*)
+{
   for $prop in $properties
   return
   map:new((
@@ -535,7 +544,8 @@ declare function merging:wrap-revision-info($property-name as xs:QName, $propert
 declare function merging:properties-are-equal(
   $properties as item()*,
   $docs as item()*
-) {
+)
+{
   let $first-doc := fn:head($docs)
   let $first-doc-props := $properties[fn:root(.) is $first-doc]
   let $doc-1-prop-count := fn:count($first-doc-props)
@@ -563,7 +573,8 @@ declare function merging:properties-are-equal(
 };
 
 (: Compare all keys and values between two maps :)
-declare function merging:objects-equal($object1 as map:map, $object2 as map:map) {
+declare function merging:objects-equal($object1 as map:map, $object2 as map:map)
+{
   (:
    : $map1 - $map2: find key-value pairs that exist in $map1 but not $map2
    : $map1 + $map2: find the union of key-value pairs in the two maps
@@ -577,7 +588,8 @@ declare function merging:execute-algorithm(
   $property-name,
   $properties,
   $property-spec
-) {
+)
+{
   fun-ext:execute-function(
     $algorithm,
     map:new((
