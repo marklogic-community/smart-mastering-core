@@ -43,6 +43,12 @@ Technical questions should be asked on [Stack Overflow][stackoverflow]. You can
 [file RFEs and bugs on GitHub][issue tracker]. If you'd like to discuss this 
 project with Product Management, contact [community-requests@marklogic.com][requests]. 
 
+### Project Status
+
+Smart Mastering Core is a MarkLogic Community project and is not a supported 
+product. Help is available on Stack Overflow, but no commitments are made about 
+responses. 
+
 ### Instructions
 
 In your project's `build.gradle` file, add this to the `buildscript` section:
