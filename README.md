@@ -2,8 +2,18 @@
 # Smart Mastering Core
 
 This repo contains the libraries and services for a Smart Mastering capability
-built on top of MarkLogic. This capability is experimental. Be prepared for 
-the interface and implementation to change significantly.
+built on top of MarkLogic. Smart Mastering consists of matching entities in an
+operational data hub, then auto-merging for high-scoring matches and recording 
+a notification for a human reviewer for cases where the score indicates a 
+possible, but not definite match. Match scoring rules and merging algorithms, 
+thresholds and actions are configuration driven. APIs are available either 
+through a set of XQuery libraries or a REST service layer. 
+
+This capability is experimental. Be prepared for the interface and 
+implementation to change significantly. We welcome your input to guide this 
+development process. 
+
+Additional documentation on usage coming with the first Community release. 
 
 - [Requirements](#requirements)
 - [Using](#using)
