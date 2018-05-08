@@ -17,18 +17,18 @@ declare function algorithms:standard-reduction($matching-result, $reduce-xml, $o
 };
 
 declare function algorithms:standard-reduction-query(
-  $document
-  , $reduce-xml
-  , $options-xml 
+  $document,
+  $reduce-xml,
+  $options-xml
 ) as cts:query? {
   cts:and-query((
-  for $property-name in $reduce-xml/*:all-match/*:property
-  return
-    let $property-def := $options-xml/*:property-defs/*:property[@name = $property-name]
-    where fn:exists($property-def)
+    for $property-name in $reduce-xml/*:all-match/*:property
     return
-      let $qname := fn:QName($property-def/@namespace, $property-def/@localname)
-      let $value := $document//*[fn:node-name(.) eq $qname]
-      return cts:element-value-query($qname, $value, (), -1*$reduce-xml/@weight)
+      let $property-def := $options-xml/*:property-defs/*:property[@name = $property-name]
+      where fn:exists($property-def)
+      return
+        let $qname := fn:QName($property-def/@namespace, $property-def/@localname)
+        let $value := $document//*[fn:node-name(.) eq $qname]
+        return cts:element-value-query($qname, $value, (), -1*$reduce-xml/@weight)
   ))
 };

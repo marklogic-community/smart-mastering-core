@@ -36,7 +36,8 @@ declare function auditing:audit-trace(
   $previous-uris,
   $new-uri,
   $attachments
-) {
+)
+{
   let $dateTime := fn:current-dateTime()
   let $username := xdmp:get-current-user()
   let $new-entity-id := $am-prefix||$new-uri
@@ -166,9 +167,8 @@ declare function auditing:audit-trace(
     )
 };
 
-declare function auditing:auditing-receipts-for-doc-uri(
-    $doc-uri
-) {
+declare function auditing:auditing-receipts-for-doc-uri($doc-uri)
+{
   cts:search(fn:collection($const:AUDITING-COLL)/prov:document,
     cts:element-value-query(
       xs:QName("auditing:new-uri"),
@@ -178,19 +178,16 @@ declare function auditing:auditing-receipts-for-doc-uri(
   )
 };
 
-declare function auditing:auditing-receipts-for-doc-history(
-    $doc-uri
-) {
+declare function auditing:auditing-receipts-for-doc-history($doc-uri)
+{
   auditing:auditing-receipts-for-doc-history(
     $doc-uri,
     ()
   )
 };
 
-declare function auditing:auditing-receipts-for-doc-history(
-    $doc-uris,
-    $returned-docs
-) {
+declare function auditing:auditing-receipts-for-doc-history($doc-uris, $returned-docs)
+{
   if (fn:exists($doc-uris)) then
     let $new-provs :=
       cts:search(fn:collection($const:AUDITING-COLL)/prov:document,
@@ -218,9 +215,8 @@ declare function auditing:auditing-receipts-for-doc-history(
     $returned-docs
 };
 
-declare function auditing:audit-trace-rollback(
-    $prov-xml
-) {
+declare function auditing:audit-trace-rollback($prov-xml)
+{
   let $merged-uri :=
     fn:string(
       $prov-xml/prov:collection[fn:starts-with(prov:type, "result of record ")]/prov:label
@@ -239,9 +235,8 @@ declare function auditing:audit-trace-rollback(
     )
 };
 
-declare function auditing:build-semantic-info(
-  $prov-xml
-) {
+declare function auditing:build-semantic-info($prov-xml)
+{
   let $dateTime := $prov-xml/prov:wasGeneratedBy/prov:time ! xs:dateTime(.)
   let $agent := $prov-xml/prov:agent
   let $agent-iri := sem:iri(fn:string($agent/@prov:id))
@@ -391,10 +386,8 @@ declare function auditing:build-semantic-info(
   )
 };
 
-declare function auditing:build-entity-managed-triples(
-  $entity,
-  $prov-xml
-) {
+declare function auditing:build-entity-managed-triples($entity, $prov-xml)
+{
   let $entity-id := fn:string($entity/@prov:id)
   let $entity-iri := sem:iri($entity-id)
   let $collection-members := $prov-xml/prov:hadMember[prov:collection/@prov:ref = $entity-id]

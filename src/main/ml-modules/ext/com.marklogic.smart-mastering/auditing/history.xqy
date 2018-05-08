@@ -15,7 +15,7 @@ declare function history:property-history(
 };
 
 declare function history:property-history(
-  $doc-uri as xs:string, 
+  $doc-uri as xs:string,
   $properties as xs:string*
 )
 {
@@ -23,13 +23,13 @@ declare function history:property-history(
 };
 
 declare function history:property-history(
-  $doc-uri as xs:string, 
+  $doc-uri as xs:string,
   $properties as xs:string*,
   $property-values as xs:string*
 )
 {
   let $document-auditing := auditing:auditing-receipts-for-doc-uri($doc-uri)
-  let $properties := 
+  let $properties :=
     if (fn:exists($properties)) then
       $properties
     else
@@ -38,10 +38,10 @@ declare function history:property-history(
     map:new(
       for $property in $properties
       return
-        map:entry($property, 
+        map:entry($property,
           map:new((
             let $prop-details := $document-auditing/prov:hadMember/prov:entity[prov:type eq $property]
-            let $distinct-prop-values := 
+            let $distinct-prop-values :=
               if (fn:exists($property-values)) then
                 $property-values
               else
@@ -50,7 +50,7 @@ declare function history:property-history(
             let $sources := $prop-details[prov:value eq $prop-val]
             where fn:exists($sources)
             return
-              map:entry($prop-val, 
+              map:entry($prop-val,
                 map:new((
                   map:entry("count", fn:count($sources)),
                   map:entry("details", (
@@ -66,7 +66,7 @@ declare function history:property-history(
                         map:entry("sourceLocation", fn:string($source/prov:location)),
                         map:entry("influencers",
                           for $influencer in $influencers
-                          return 
+                          return
                             map:new((
                               for $influencer-part in fn:tokenize($influencer, ";")
                               let $parts := fn:tokenize($influencer-part, ":")
@@ -84,9 +84,7 @@ declare function history:property-history(
     )
 };
 
-declare function history:document-history(
-  $doc-uri as xs:string
-)
+declare function history:document-history($doc-uri as xs:string)
 {
   let $document-auditing := auditing:auditing-receipts-for-doc-history($doc-uri)
   return
@@ -104,24 +102,25 @@ declare function history:document-history(
             map:entry("type", fn:string($audit/prov:activity/prov:type)),
             map:entry("label", fn:string($audit/prov:activity/prov:label)),
             map:entry("resultUri", $result-uri),
-            map:entry("wasDerivedFromUris", 
+            map:entry("wasDerivedFromUris",
               json:to-array(
                 $audit/auditing:previous-uri ! fn:string(.)
               )
             ),
             map:entry("time", fn:string($time))
           ))
-        
+
       )
     )
 };
+
 declare function history:normalize-value-for-tracing($value as node())
 {
   fn:normalize-space(
     fn:string-join(
       for $node in $value//(text()|number-node()|boolean-node())
       order by xdmp:key-from-QName(fn:node-name($node)), xdmp:key-from-QName(fn:node-name($node/..))
-      return $node, 
+      return $node,
       " "
     )
   )
