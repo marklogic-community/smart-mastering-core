@@ -11,6 +11,11 @@ declare namespace map = "http://marklogic.com/xdmp/map";
 
 declare option xdmp:mapping "false";
 
+declare function local:all-true($seq as xs:boolean*) as xs:boolean
+{
+  fn:fold-left(function($z, $a) { $z and $a }, fn:true(), ($seq))
+};
+
 let $uris := map:keys($lib:TEST-DATA)
 let $docs := $uris ! fn:doc(.)
 let $merge-options := merging:get-options($lib:OPTIONS-NAME)
@@ -21,15 +26,38 @@ let $actual := merging:build-final-properties(
   $docs,
   $sources
 )
-(: top-level-properties: PersonName, Address, IncidentCategoryCodeDate, id, PersonBirthDate, CaseAmount, PersonSSNIdentification, Revenues, CaseStartDate, PersonSex :)
 
+(: The revenue property is in only one of the documents. Make sure the attributed source is correct. :)
 let $revenue-map :=
   for $map in $actual
   where map:contains(-$map, "Revenues")
   return $map
+(: Both docs have the same value for the CaseAmount property. :)
+let $case-amount-map :=
+  for $map in $actual
+  where map:contains(-$map, "CaseAmount")
+  return $map
+(: The docs have different values for the id property. :)
+let $id-maps :=
+  for $map in $actual
+  where map:contains(-$map, "id")
+  return $map
 return (
-  test:assert-equal(10, fn:count($actual)),
   test:assert-exists($revenue-map),
   test:assert-equal(1, fn:count(map:get($revenue-map, "sources"))),
-  test:assert-equal("SOURCE2", map:get(map:get($revenue-map, "sources"), "name"))
+  test:assert-equal(text{ "SOURCE2" }, map:get($revenue-map, "sources")/name),
+
+  test:assert-exists($case-amount-map),
+  test:assert-equal(2, fn:count(map:get($case-amount-map, "sources"))),
+  test:assert-equal(<CaseAmount>1287.9</CaseAmount>, map:get($case-amount-map, "values")),
+
+  test:assert-equal(2, fn:count($id-maps)),
+  test:assert-true(
+    let $map := $id-maps[1]
+    let $truths := (
+      (map:get($map, "sources")/name = text{"SOURCE1"} and fn:deep-equal(map:get($map, "values"), <id>6986792174</id>)) or
+      (map:get($map, "sources")/name = text{"SOURCE2"} and fn:deep-equal(map:get($map, "values"), <id>6270654339</id>))
+    )
+    return  local:all-true($truths)
+  )
 )

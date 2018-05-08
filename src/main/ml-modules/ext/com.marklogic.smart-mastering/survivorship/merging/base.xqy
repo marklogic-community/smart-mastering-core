@@ -411,9 +411,9 @@ declare function merging:get-sources($docs)
   order by $last-updated descending
   return
     object-node {
-    "name": fn:string($source/*:name),
-    "dateTime": fn:string($last-updated),
-    "documentUri": xdmp:node-uri($source)
+      "name": fn:string($source/*:name),
+      "dateTime": fn:string($last-updated),
+      "documentUri": xdmp:node-uri($source)
     }
 
 };
@@ -460,6 +460,12 @@ declare function merging:parse-final-properties-for-merge(
     ))
 };
 
+(:
+ : Returns a sequence of map:maps, one for each top-level property. Each map has the following keys:
+ : - "algorithm" -- object-node with the name and optionsReference of the algorithm used for this property
+ : - "sources" -- one or more object-nodes indicating which of the original docs the surviving value(s) came from
+ : - "values" -- the surviving property values
+ :)
 declare function merging:build-final-properties(
   $merge-options,
   $instances,
@@ -494,10 +500,14 @@ declare function merging:build-final-properties(
   let $algorithm := map:get($algorithms-map, $algorithm-name)
   let $algorithm-info :=
     object-node {
-    "name": fn:head(($algorithm-name[fn:exists($algorithm)], "standard")),
-    "optionsReference": $merge-options-ref
+      "name": fn:head(($algorithm-name[fn:exists($algorithm)], "standard")),
+      "optionsReference": $merge-options-ref
     }
-  let $instance-props := $instances/*[fn:node-name(.) = $prop] ! (self::array-node()/*, . except self::array-node())
+  let $instance-props :=
+    for $instance-prop in $instances/*[fn:node-name(.) = $prop]
+    (: require the property to have a value :)
+    where fn:normalize-space(fn:string($instance-prop)) ne ""
+    return ($instance-prop/self::array-node()/*, $instance-prop except $instance-prop/self::array-node())
   return
     fn:fold-left(
       function($a as item()*, $b as item()) as item()* {
