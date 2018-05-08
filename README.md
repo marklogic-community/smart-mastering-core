@@ -45,9 +45,9 @@ project with Product Management, contact [community-requests@marklogic.com][requ
 
 ### Project Status
 
-Smart Mastering Core is a MarkLogic Community project and is not a supported 
-product. Help is available on Stack Overflow, but no commitments are made about 
-responses. 
+Smart Mastering Core is a community-supported project. Help is available on 
+Stack Overflow; however, we can’t promise a specific resolution or timeframe 
+for any request. 
 
 ### Instructions
 
