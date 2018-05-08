@@ -2,7 +2,12 @@
 # Smart Mastering Core
 
 This repo contains the libraries and services for a Smart Mastering capability
-built on top of MarkLogic. This capability is experimental.
+built on top of MarkLogic. This capability is experimental. Be prepared for 
+the interface and implementation to change significantly.
+
+- [Requirements](#requirements)
+- [Using](#using)
+- [Development](#development)
 
 ## Requirements
 
@@ -16,6 +21,19 @@ This assumes that you're using ml-gradle in your project.
 
 _Note: be advised that this project is in its very early stages. The APIs
 presented here may change significantly before stabilizing._
+
+### Example
+
+To see an example of smart-mastering-core in use, see the [smart-mastering-demo 
+project][sm-demo].
+
+### Need help?
+
+Technical questions should be asked on [Stack Overflow][stackoverflow]. You can
+[file RFEs and bugs on GitHub][issue tracker]. If you'd like to discuss this 
+project with Product Management, contact [community-requests@marklogic.com][requests]. 
+
+### Instructions
 
 In your project's `build.gradle` file, add this to the `buildscript` section:
 
@@ -94,3 +112,8 @@ Click the `Run Tests` button.
 - `gradle bintrayUpload`
 
 You must be part of the marklogic-community organization on bintray in order to publish.
+
+[issue tracker]: https://github.com/marklogic-community/smart-mastering-core/issues
+[sm-demo]: https://github.com/marklogic-community/smart-mastering-demo/tree/develop/examples/smart-mastering
+[stackoverflow]: http://stackoverflow.com/questions/ask?tags=marklogic
+[requests]: mailto:community-requests@marklogic.com
