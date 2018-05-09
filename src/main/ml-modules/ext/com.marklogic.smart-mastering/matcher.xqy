@@ -452,6 +452,7 @@ declare function matcher:options-to-json($options-xml)
   )
 };
 
+(: Convert JSON match options to XML :)
 declare function matcher:options-from-json($options-json)
 {
   json:transform-from-json($options-json, $options-json-config)
