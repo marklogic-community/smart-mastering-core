@@ -109,7 +109,7 @@ declare function merging:save-merge-models-by-uri(
       $const:MERGE-ACTION,
       $uris,
       $merge-uri,
-      let $generated-entity-id := $auditing:am-prefix||$merge-uri
+      let $generated-entity-id := $auditing:sm-prefix ||$merge-uri
       let $property-related-prov :=
         for $prop in $final-properties,
           $value in map:get($prop, "values")
@@ -119,7 +119,7 @@ declare function merging:save-merge-models-by-uri(
         let $algorithm-info := map:get($prop, "algorithm")
         let $algorithm-agent := "algorithm:"||$algorithm-info/name||";options:"||$algorithm-info/optionsReference
         for $source in map:get($prop, "sources")
-        let $used-entity-id := $auditing:am-prefix || $source/documentUri || $type || $hash
+        let $used-entity-id := $auditing:sm-prefix || $source/documentUri || $type || $hash
         return (
           element prov:entity {
             attribute prov:id {$used-entity-id},
@@ -188,7 +188,7 @@ declare function merging:save-merge-models-by-uri(
 
 declare function merging:rollback-merge(
   $merged-doc-uri as xs:string
-)
+) as empty-sequence()
 {
   merging:rollback-merge($merged-doc-uri, fn:true())
 };
@@ -196,7 +196,7 @@ declare function merging:rollback-merge(
 declare function merging:rollback-merge(
   $merged-doc-uri as xs:string,
   $retain-rollback-info as xs:boolean
-)
+) as empty-sequence()
 {
   let $auditing-receipts-for-doc :=
     auditing:auditing-receipts-for-doc-uri($merged-doc-uri)

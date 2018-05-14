@@ -26,7 +26,7 @@ declare function history:property-history(
   $doc-uri as xs:string,
   $properties as xs:string*,
   $property-values as xs:string*
-)
+) as map:map
 {
   let $document-auditing := auditing:auditing-receipts-for-doc-uri($doc-uri)
   let $properties :=
@@ -84,6 +84,9 @@ declare function history:property-history(
     )
 };
 
+(:
+ : Return a structure that shows the merging and unmerging history of this document.
+ :)
 declare function history:document-history($doc-uri as xs:string)
 {
   let $document-auditing := auditing:auditing-receipts-for-doc-history($doc-uri)
