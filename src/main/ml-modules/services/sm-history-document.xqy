@@ -10,7 +10,5 @@ declare function get(
   $params  as map:map
   ) as document-node()*
 {
-  let $results := history:document-history(map:get($params,"uri"))
-  return
-    xdmp:to-json($results)
+  history:document-history(map:get($params,"uri"))
 };
