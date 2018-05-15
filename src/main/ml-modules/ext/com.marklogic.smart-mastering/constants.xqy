@@ -22,3 +22,11 @@ declare variable $MDM-ADMIN := "mdm-admin";
 (: Actions :)
 declare variable $MERGE-ACTION := "merge";
 declare variable $NOTIFY-ACTION := "notify";
+
+(: Notification statuses :)
+declare variable $STATUS-READ := "read";
+declare variable $STATUS-UNREAD := "unread";
+
+(: Predicate for recording match blocks between two documents :)
+declare variable $PRED-MATCH-BLOCK := sem:iri("http://marklogic.com/smart-mastering/match-block");
+

@@ -3,7 +3,9 @@ xquery version "1.0-ml";
 module namespace lib = "http://marklogic.com/smart-mastering/test/notification";
 
 import module namespace matcher = "http://marklogic.com/smart-mastering/matcher"
-at "/ext/com.marklogic.smart-mastering/matcher.xqy";
+  at "/ext/com.marklogic.smart-mastering/matcher.xqy";
+import module namespace not-impl = "http://marklogic.com/smart-mastering/notification-impl"
+  at "/ext/com.marklogic.smart-mastering/matcher-impl/notification-impl.xqy";
 
 declare variable $INVOKE_OPTIONS :=
   <options xmlns="xdmp:eval">
@@ -19,7 +21,7 @@ declare variable $URI-SET2 := ("/content4.xml", "/content5.xml");
 (: Get a notification without creating a lock. :)
 declare function lib:get-notification($label, $uris)
 {
-  xdmp:invoke-function(function() { matcher:get-existing-match-notification($label, $uris) }, $INVOKE_OPTIONS)
+  xdmp:invoke-function(function() { not-impl:get-existing-match-notification($label, $uris) }, $INVOKE_OPTIONS)
 };
 
 (: Call the save-match-nofication function in a different transaction :)

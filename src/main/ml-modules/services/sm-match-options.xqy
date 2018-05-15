@@ -13,9 +13,7 @@ declare function get(
   ) as document-node()*
 {
   document {
-    let $options := matcher:get-options(map:get($params, "name"))
-    return
-      matcher:options-to-json($options)
+    matcher:get-options-as-json(map:get($params, "name"))
   }
 };
 
@@ -36,14 +34,7 @@ function post(
   $input   as document-node()*
   ) as document-node()*
 {
-  let $options := $input/(matcher:options|object-node())
-  let $options :=
-    if ($options instance of object-node()) then
-      matcher:options-from-json($options)
-    else
-      $options
-  return
-    matcher:save-options(map:get($params, "name"), $options)
+  matcher:save-options(map:get($params, "name"), $input/(matcher:options|object-node()))
 };
 
 declare function delete(

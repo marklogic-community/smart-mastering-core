@@ -11,7 +11,7 @@ declare namespace sm = "http://marklogic.com/smart-mastering";
 
 declare option xdmp:mapping "false";
 
-let $actual := matcher:get-notifications(1, 10)
+let $actual := matcher:get-notifications-as-xml(1, 10)
 let $likely := $actual[sm:threshold-label = $lib:LBL-LIKELY]
 let $possible := $actual[sm:threshold-label = $lib:LBL-POSSIBLE]
 
