@@ -4,7 +4,7 @@ xquery version "1.0-ml";
  : This is an implementation library, not an interface to the Smart Mastering functionality.
  :)
 
-module namespace not-impl = "http://marklogic.com/smart-mastering/notification-impl";
+module namespace notify-impl = "http://marklogic.com/smart-mastering/notification-impl";
 
 import module namespace const = "http://marklogic.com/smart-mastering/constants"
   at "/ext/com.marklogic.smart-mastering/constants.xqy";
@@ -15,13 +15,13 @@ declare namespace sm = "http://marklogic.com/smart-mastering";
 
 declare option xdmp:mapping "false";
 
-declare function not-impl:save-match-notification(
+declare function notify-impl:save-match-notification(
   $threshold-label as xs:string,
   $uris as xs:string*
 )
 {
   let $existing-notification :=
-    not-impl:get-existing-match-notification(
+    notify-impl:get-existing-match-notification(
       $threshold-label,
       $uris
     )
@@ -68,7 +68,7 @@ declare function not-impl:save-match-notification(
       )
 };
 
-declare function not-impl:get-existing-match-notification(
+declare function notify-impl:get-existing-match-notification(
   $threshold-label as xs:string,
   $uris as xs:string*
 ) as element(sm:notification)*
@@ -91,7 +91,7 @@ declare function not-impl:get-existing-match-notification(
  : Delete the specified notification
  : TODO: do we want to add any provenance tracking to this?
  :)
-declare function not-impl:delete-notification($uri as xs:string)
+declare function notify-impl:delete-notification($uri as xs:string)
 {
   xdmp:document-delete($uri)
 };
@@ -99,7 +99,7 @@ declare function not-impl:delete-notification($uri as xs:string)
 (:
  : Translate a notifcation into JSON.
  :)
-declare function not-impl:notification-to-json($notification as element(sm:notification))
+declare function notify-impl:notification-to-json($notification as element(sm:notification))
   as object-node()
 {
   object-node {
@@ -131,7 +131,7 @@ declare function not-impl:notification-to-json($notification as element(sm:notif
 (:
  : Paged retrieval of notifications
  :)
-declare function not-impl:get-notifications-as-xml($start as xs:int, $end as xs:int)
+declare function notify-impl:get-notifications-as-xml($start as xs:int, $end as xs:int)
 as element(sm:notification)*
 {
   (fn:collection($const:NOTIFICATION-COLL)[$start to $end])/sm:notification
@@ -140,18 +140,18 @@ as element(sm:notification)*
 (:
  : Paged retrieval of notifications
  :)
-declare function not-impl:get-notifications-as-json($start as xs:int, $end as xs:int)
+declare function notify-impl:get-notifications-as-json($start as xs:int, $end as xs:int)
 as array-node()
 {
   array-node {
-    not-impl:get-notifications-as-xml($start, $end) ! not-impl:notification-to-json(.)
+    notify-impl:get-notifications-as-xml($start, $end) ! notify-impl:notification-to-json(.)
   }
 };
 
 (:
  : Return a count of all notifications
  :)
-declare function not-impl:count-notifications()
+declare function notify-impl:count-notifications()
 as xs:int
 {
   xdmp:estimate(fn:collection($const:NOTIFICATION-COLL))
@@ -160,7 +160,7 @@ as xs:int
 (:
  : Return a count of unread notifications
  :)
-declare function not-impl:count-unread-notifications()
+declare function notify-impl:count-unread-notifications()
 as xs:int
 {
   xdmp:estimate(
@@ -170,7 +170,7 @@ as xs:int
   )
 };
 
-declare function not-impl:update-notification-status(
+declare function notify-impl:update-notification-status(
   $uri as xs:string+,
   $status as xs:string
 )

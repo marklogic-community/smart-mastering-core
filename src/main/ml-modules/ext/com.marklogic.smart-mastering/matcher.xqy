@@ -6,7 +6,7 @@ import module namespace blocks-impl = "http://marklogic.com/smart-mastering/bloc
   at "/ext/com.marklogic.smart-mastering/matcher-impl/blocks-impl.xqy";
 import module namespace match-impl = "http://marklogic.com/smart-mastering/matcher-impl"
   at "/ext/com.marklogic.smart-mastering/matcher-impl/matcher-impl.xqy";
-import module namespace not-impl = "http://marklogic.com/smart-mastering/notification-impl"
+import module namespace notify-impl = "http://marklogic.com/smart-mastering/notification-impl"
   at "/ext/com.marklogic.smart-mastering/matcher-impl/notification-impl.xqy";
 import module namespace opt-impl = "http://marklogic.com/smart-mastering/options-impl"
   at "/ext/com.marklogic.smart-mastering/matcher-impl/options-impl.xqy";
@@ -206,7 +206,7 @@ declare function matcher:allow-match($uri1 as xs:string, $uri2 as xs:string)
 declare function matcher:get-notifications-as-xml($start as xs:int, $end as xs:int)
   as element(sm:notification)*
 {
-  not-impl:get-notifications-as-xml($start, $end)
+  notify-impl:get-notifications-as-xml($start, $end)
 };
 
 (:
@@ -215,7 +215,7 @@ declare function matcher:get-notifications-as-xml($start as xs:int, $end as xs:i
 declare function matcher:get-notifications-as-json($start as xs:int, $end as xs:int)
   as array-node()
 {
-  not-impl:get-notifications-as-json($start, $end)
+  notify-impl:get-notifications-as-json($start, $end)
 };
 
 (:
@@ -224,7 +224,7 @@ declare function matcher:get-notifications-as-json($start as xs:int, $end as xs:
 declare function matcher:count-notifications()
 as xs:int
 {
-  not-impl:count-notifications()
+  notify-impl:count-notifications()
 };
 
 (:
@@ -233,7 +233,7 @@ as xs:int
 declare function matcher:count-unread-notifications()
 as xs:int
 {
-  not-impl:count-unread-notifications()
+  notify-impl:count-unread-notifications()
 };
 
 declare function matcher:update-notification-status(
@@ -241,7 +241,7 @@ declare function matcher:update-notification-status(
   $status as xs:string
 )
 {
-  not-impl:update-notification-status($uri, $status)
+  notify-impl:update-notification-status($uri, $status)
 };
 
 declare function matcher:save-match-notification(
@@ -249,7 +249,7 @@ declare function matcher:save-match-notification(
   $uris as xs:string*
 )
 {
-  not-impl:save-match-notification($threshold-label, $uris)
+  notify-impl:save-match-notification($threshold-label, $uris)
 };
 
 (:
@@ -257,6 +257,6 @@ declare function matcher:save-match-notification(
  :)
 declare function matcher:delete-notification($uri as xs:string)
 {
-  not-impl:delete-notification($uri)
+  notify-impl:delete-notification($uri)
 };
 
