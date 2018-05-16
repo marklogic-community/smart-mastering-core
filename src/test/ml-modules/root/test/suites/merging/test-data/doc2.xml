@@ -35,6 +35,7 @@
           <id>6270654339</id>
           <PersonBirthDate>19801001</PersonBirthDate>
           <CaseAmount>1287.9</CaseAmount>
+          <CustomThing>2</CustomThing>
           <PersonSSNIdentification>
             <PersonSSNIdentificationType>
               <IdentificationID>393225353</IdentificationID>

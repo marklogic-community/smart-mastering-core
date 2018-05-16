@@ -624,14 +624,7 @@ declare function merging:execute-algorithm(
   $property-spec
 )
 {
-  fun-ext:execute-function(
-    $algorithm,
-    map:new((
-      map:entry("arg1", $property-name),
-      map:entry("arg2", $properties),
-      map:entry("arg4", $property-spec)
-    ))
-  )
+  xdmp:apply($algorithm, $property-name, $properties, $property-spec)
 };
 
 declare function merging:get-options()

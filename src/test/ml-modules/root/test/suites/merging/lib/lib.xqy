@@ -14,3 +14,5 @@ declare variable $TEST-DATA :=
   ));
 
 declare variable $OPTIONS-NAME := "test-options";
+declare variable $OPTIONS-NAME-CUST-XQY := "cust-xqy-test-options";
+declare variable $OPTIONS-NAME-CUST-SJS := "cust-sjs-test-options";
