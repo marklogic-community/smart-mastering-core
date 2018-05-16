@@ -1,5 +1,7 @@
 xquery version "1.0-ml";
 
+import module namespace blocks-impl = "http://marklogic.com/smart-mastering/blocks-impl"
+  at "/ext/com.marklogic.smart-mastering/matcher-impl/blocks-impl.xqy";
 import module namespace matcher = "http://marklogic.com/smart-mastering/matcher"
   at "/ext/com.marklogic.smart-mastering/matcher.xqy";
 
@@ -24,7 +26,7 @@ let $assertions := (
 (: Record a block :)
 let $_ :=
   xdmp:invoke-function(
-    function() { matcher:block-match($uri3, $uri4) },
+    function() { blocks-impl:block-match($uri3, $uri4) },
     <options xmlns="xdmp:eval">
       <isolation>different-transaction</isolation>
     </options>

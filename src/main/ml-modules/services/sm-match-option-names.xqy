@@ -11,8 +11,6 @@ declare function get(
   ) as document-node()*
 {
   document {
-    let $option-names := matcher:get-option-names()
-    return
-      matcher:option-names-to-json($option-names)
+    matcher:get-option-names-as-json()
   }
 };

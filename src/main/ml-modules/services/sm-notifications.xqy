@@ -15,19 +15,13 @@ declare function get(
   let $start := (map:get($params, "start"), 1)[1] ! xs:int(.)
   let $page-size := (map:get($params, "page-size"), 10)[1] ! xs:int(.)
   let $end := $start + $page-size - 1
-  let $notifications := matcher:get-notifications($start, $end)
   return
     document {
       object-node {
-      "total": matcher:count-notifications(),
-      "start": $start,
-      "page-size": $page-size,
-      "notifications":
-        array-node {
-          for $n in $notifications
-          return
-            matcher:notification-to-json($n)
-        }
+        "total": matcher:count-notifications(),
+        "start": $start,
+        "page-size": $page-size,
+        "notifications": matcher:get-notifications-as-json($start, $end)
       }
     }
 };

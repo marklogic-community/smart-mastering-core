@@ -41,7 +41,7 @@ function post(
       fn:doc($uri)
   let $options :=
     if (map:contains($params, "options")) then
-      matcher:get-options(map:get($params, "options"))
+      matcher:get-options-as-xml(map:get($params, "options"))
     else
       $input-root/(*:options|.[object-node("options")])
   let $start :=

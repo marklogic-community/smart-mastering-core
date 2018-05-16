@@ -38,7 +38,7 @@ function post(
   let $uri2 := map:get($params, "uri2")
   return
     if (fn:exists($uri1) and fn:exists($uri2)) then
-      matcher:block-match($uri1, $uri2)
+      matcher:block-matches(($uri1, $uri2))
     else
       fn:error((),"RESTAPI-SRVEXERR",
         (400, "Bad Request",
