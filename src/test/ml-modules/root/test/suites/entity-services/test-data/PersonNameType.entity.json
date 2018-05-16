@@ -1,0 +1,39 @@
+{
+  "info": {
+    "title": "PersonName",
+    "version": "0.0.1"
+  },
+  "definitions": {
+    "PersonName": {
+      "required": ["PersonGivenName", "PersonSurName"],
+      "rangeIndex": [],
+      "wordLexicon": [],
+      "properties": {
+        "PersonGivenName": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "PersonMiddleName": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "PersonSurName": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "PersonNameSuffixText": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        }
+      }
+    }
+  }
+}

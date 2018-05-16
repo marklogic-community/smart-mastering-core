@@ -1,0 +1,9 @@
+{
+  "database-name" : "%%SCHEMAS_DATABASE%%",
+  "word-searches": false,
+  "fast-phrase-searches": false,
+  "fast-case-sensitive-searches": false,
+  "fast-diacritic-sensitive-searches": false,
+  "fast-element-word-searches": false,
+  "fast-element-phrase-searches": false
+}
