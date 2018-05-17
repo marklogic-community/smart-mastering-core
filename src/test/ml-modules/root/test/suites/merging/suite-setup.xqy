@@ -8,4 +8,9 @@ import module namespace lib = "http://marklogic.com/smart-mastering/test" at "li
 
 declare option xdmp:mapping "false";
 
-merging:save-options($lib:OPTIONS-NAME, test:get-test-file("merge-options.xml"))
+merging:save-options($lib:OPTIONS-NAME, test:get-test-file("merge-options.xml")),
+merging:save-options($lib:OPTIONS-NAME-CUST-XQY, test:get-test-file("custom-xqy-merge-options.xml")),
+merging:save-options($lib:OPTIONS-NAME-CUST-SJS, test:get-test-file("custom-sjs-merge-options.xml")),
+
+test:load-test-file("custom-merge-xqy.xqy", xdmp:modules-database(), "/custom-merge-xqy.xqy"),
+test:load-test-file("custom-merge-sjs.sjs", xdmp:modules-database(), "/custom-merge-sjs.sjs")
