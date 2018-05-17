@@ -33,7 +33,7 @@
       </double-metaphone>
     </merge>
     <merge property-name="customThing" algorithm-ref="customThing"  max-values="1">
-      <go-high/>
+      <go-high>true</go-high>
     </merge>
   </merging>
 </options>

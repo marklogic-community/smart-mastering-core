@@ -624,7 +624,13 @@ declare function merging:execute-algorithm(
   $property-spec
 )
 {
-  xdmp:apply($algorithm, $property-name, $properties, $property-spec)
+  if (fn:ends-with(xdmp:function-module($algorithm), "sjs")) then
+    let $properties := json:to-array($properties)
+    let $property-spec := merging:propertyspec-to-json($property-spec)
+    return
+      xdmp:apply($algorithm, $property-name, $properties, $property-spec)
+  else
+    xdmp:apply($algorithm, $property-name, $properties, $property-spec)
 };
 
 declare function merging:get-options()
@@ -767,4 +773,14 @@ declare function merging:option-names-to-json($options-xml)
   xdmp:to-json(
     json:transform-to-json-object($options-xml, $option-names-json-config)
   )
+};
+
+declare function merging:propertyspec-to-json($property-spec as element(merging:merge)) as object-node()
+{
+  let $config := json:config("custom")
+    => map:with("camel-case", fn:true())
+    => map:with("whitespace", "ignore")
+    => map:with("ignore-element-names", xs:QName("merging:merge"))
+  return
+    json:transform-to-json($property-spec, $config)/*:merge
 };
