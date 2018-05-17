@@ -46,7 +46,7 @@ xdmp.invokeFunction(
 );
 
 // examine doc1's history
-const doc1History = history.documentHistory(lib.URI1);
+const doc1History = history.documentHistory(lib.URI1).toObject();
 
 // activities are in reverse chronological order (most recent first)
 assertions.push(

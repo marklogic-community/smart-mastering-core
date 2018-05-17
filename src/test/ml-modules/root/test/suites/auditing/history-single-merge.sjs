@@ -8,7 +8,7 @@ const lib = require('lib/lib.xqy');
 
 const mergedURI = cts.uris(null, "limit=1", cts.collectionQuery(con['MERGED-COLL']));
 
-const actual = history.documentHistory(mergedURI);
+const actual = history.documentHistory(mergedURI).toObject();
 
 let assertions = [];
 
@@ -21,7 +21,7 @@ assertions.push(
 );
 
 // Check the history on doc1
-const actual1 = history.documentHistory(lib.URI1);
+const actual1 = history.documentHistory(lib.URI1).toObject();
 assertions.push(
   test.assertEqual(1, actual1.activities.length),
   test.assertEqual('merge', actual1.activities[0].type),
@@ -30,7 +30,7 @@ assertions.push(
 );
 
 // Check the history on doc2
-const actual2 = history.documentHistory(lib.URI2);
+const actual2 = history.documentHistory(lib.URI2).toObject();
 assertions.push(
   test.assertEqual(1, actual2.activities.length),
   test.assertEqual('merge', actual2.activities[0].type),

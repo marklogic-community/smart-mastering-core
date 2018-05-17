@@ -26,7 +26,7 @@ xdmp.invokeFunction(
 );
 
 // check merged doc history
-const postRollbackActual = history.documentHistory(mergedURI);
+const postRollbackActual = history.documentHistory(mergedURI).toObject();
 
 assertions.push(
   test.assertEqual(3, postRollbackActual.activities.length),
@@ -43,7 +43,7 @@ assertions.push(
 );
 
 // check doc1 history
-const doc1Actual = history.documentHistory(lib.URI1);
+const doc1Actual = history.documentHistory(lib.URI1).toObject();
 
 assertions.push(
   test.assertEqual(2, doc1Actual.activities.length),
