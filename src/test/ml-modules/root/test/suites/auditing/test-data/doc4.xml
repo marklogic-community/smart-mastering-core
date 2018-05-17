@@ -1,0 +1,54 @@
+<envelope xmlns="http://marklogic.com/entity-services">
+  <headers>
+    <smart-mastering:id xmlns:smart-mastering="http://marklogic.com/smart-mastering">31bb5b03-150d-4651-9ffb-f144dafe36db</smart-mastering:id>
+    <smart-mastering:sources xmlns:smart-mastering="http://marklogic.com/smart-mastering">
+      <smart-mastering:source>
+        <smart-mastering:name>SOURCE2</smart-mastering:name>
+        <smart-mastering:import-id>mdm-import-31bb5b03-150d-4651-9ffb-f144dafe36db</smart-mastering:import-id>
+        <smart-mastering:user>admin</smart-mastering:user>
+        <smart-mastering:dateTime>2018-05-17T16:13:05.575572Z</smart-mastering:dateTime>
+      </smart-mastering:source>
+    </smart-mastering:sources>
+  </headers>
+  <triples/>
+  <instance>
+    <MDM xmlns="">
+      <Person>
+        <PersonType>
+          <PersonName>
+            <PersonNameType>
+              <PersonSurName>DORIS</PersonSurName>
+              <PersonGivenName>DALTON</PersonGivenName>
+            </PersonNameType>
+          </PersonName>
+          <Address>
+            <AddressType>
+              <LocationState>CA</LocationState>
+              <AddressPrivateMailboxText>3119</AddressPrivateMailboxText>
+              <AddressSecondaryUnitText>FRESHOUR</AddressSecondaryUnitText>
+              <LocationPostalCode>95219</LocationPostalCode>
+              <LocationCityName>STOCKTON</LocationCityName>
+            </AddressType>
+          </Address>
+          <IncidentCategoryCodeDate/>
+          <id>5878561668</id>
+          <PersonBirthDate>19600924</PersonBirthDate>
+          <PersonSex>F</PersonSex>
+          <CaseAmount>1582.87</CaseAmount>
+          <PersonSSNIdentification>
+            <PersonSSNIdentificationType>
+              <IdentificationID>561627588</IdentificationID>
+            </PersonSSNIdentificationType>
+          </PersonSSNIdentification>
+          <Revenues>
+            <RevenuesType>
+              <Revenue/>
+            </RevenuesType>
+          </Revenues>
+          <CaseStartDate>20161104</CaseStartDate>
+        </PersonType>
+      </Person>
+    </MDM>
+  </instance>
+  <attachments/>
+</envelope>

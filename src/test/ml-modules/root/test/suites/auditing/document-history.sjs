@@ -25,29 +25,40 @@ xdmp.invokeFunction(
   lib['INVOKE_OPTIONS']
 );
 
-const postRollbackActual = history.documentHistory(mergedURI).toObject();
+// check merged doc history
+const postRollbackActual = history.documentHistory(mergedURI);
 
-// Match /source/1/doc1.xml and /source/2/doc2.xml
-let origDocRegEx = RegExp('/source/[0-9]/doc[0-9]\.xml');
+assertions.push(
+  test.assertEqual(3, postRollbackActual.activities.length),
 
-postRollbackActual.activities.forEach(activity => {
-  if (activity.type === 'merge') {
-    assertions.push(
-      test.assertEqual(2, activity.wasDerivedFromUris.length),
-      test.assertEqual(mergedURI, activity.resultUri),
-      test.assertTrue(activity.label.startsWith("merge by"))
-    )
-  } else if (activity.type === 'rollback') {
-    // There will be two of these, one for each of the original docs that got merged
-    assertions.push(
-      test.assertEqual(1, activity.wasDerivedFromUris.length),
-      test.assertEqual(mergedURI, activity.wasDerivedFromUris),
-      test.assertTrue(origDocRegEx.test(activity.resultUri)),
-      test.assertTrue(activity.label.startsWith("rollback by"))
-    )
-  } else {
-    test.fail("activity type should be merge or rollback but is " + activity.type);
-  }
-});
+  test.assertEqual('rollback', postRollbackActual.activities[0].type),
+  test.assertEqual(1, postRollbackActual.activities[0].wasDerivedFromUris.length),
+  test.assertEqual(mergedURI, postRollbackActual.activities[0].wasDerivedFromUris[0]),
+  test.assertTrue([lib.URI1, lib.URI2].includes(postRollbackActual.activities[0].resultUri)),
+
+  test.assertEqual('rollback', postRollbackActual.activities[1].type),
+  test.assertEqual(1, postRollbackActual.activities[1].wasDerivedFromUris.length),
+  test.assertEqual(mergedURI, postRollbackActual.activities[1].wasDerivedFromUris[0]),
+  test.assertTrue([lib.URI1, lib.URI2].includes(postRollbackActual.activities[1].resultUri))
+);
+
+// check doc1 history
+const doc1Actual = history.documentHistory(lib.URI1);
+
+assertions.push(
+  test.assertEqual(2, doc1Actual.activities.length),
+
+  test.assertEqual('rollback', doc1Actual.activities[0].type),
+  test.assertEqual(1, doc1Actual.activities[0].wasDerivedFromUris.length),
+  test.assertEqual(mergedURI, doc1Actual.activities[0].wasDerivedFromUris[0]),
+  test.assertEqual(lib.URI1, doc1Actual.activities[0].resultUri),
+
+  test.assertEqual('merge', doc1Actual.activities[1].type),
+  test.assertEqual(2, doc1Actual.activities[1].wasDerivedFromUris.length),
+  // assertSameValues doesn't currently work for JSON arrays. Add this back in when that's fixed.
+  // See https://github.com/marklogic-community/ml-unit-test/issues/14
+  // test.assertSameValues([lib.URI1, lib.URI2], doc1Actual.activities[1].wasDerivedFromUris),
+  test.assertEqual(mergedURI, doc1Actual.activities[1].resultUri)
+);
 
 assertions

@@ -193,28 +193,19 @@ declare function auditing:auditing-receipts-for-doc-history($doc-uri)
 declare function auditing:auditing-receipts-for-doc-history($doc-uris, $returned-docs)
 {
   if (fn:exists($doc-uris)) then
-    let $new-provs :=
-      cts:search(fn:collection($const:AUDITING-COLL)/prov:document,
-        cts:and-query((
-          cts:element-value-query(
-            (
-              xs:QName("auditing:previous-uri"),
-              xs:QName("auditing:new-uri")
-            ),
-            $doc-uris,
-            "exact"
+    cts:search(fn:collection($const:AUDITING-COLL)/prov:document,
+      cts:and-query((
+        cts:element-value-query(
+          (
+            xs:QName("auditing:previous-uri"),
+            xs:QName("auditing:new-uri")
           ),
-          cts:not-query(cts:document-query($returned-docs ! xdmp:node-uri(.)))
-        ))
-      )
-    return
-      auditing:auditing-receipts-for-doc-history(
-        fn:distinct-values($new-provs/(auditing:previous-uri|auditing:new-uri))[fn:not(. = $doc-uris)],
-        (
-          $new-provs,
-          $returned-docs
-        )
-      )
+          $doc-uris,
+          "exact"
+        ),
+        cts:not-query(cts:document-query($returned-docs ! xdmp:node-uri(.)))
+      ))
+    )
   else
     $returned-docs
 };
