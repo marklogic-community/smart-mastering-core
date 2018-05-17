@@ -8,9 +8,12 @@ declare function custom-merging:customThing(
   $property-spec as element()?
 ) {
   let $values :=
+    let $max := $property-spec/*:go-high = fn:true()
     for $property in $properties
     let $value := map:get($property, "values")
-    order by $value descending
+    order by
+      if ($max) then $value else () descending,
+      if ($max) then () else $value ascending
     return $property
   return
     fn:subsequence(

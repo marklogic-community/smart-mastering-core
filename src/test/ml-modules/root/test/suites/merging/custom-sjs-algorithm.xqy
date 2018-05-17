@@ -1,13 +1,11 @@
 xquery version "1.0-ml";
 
 (:
- : Test the merging:rollback-merge function.
+ : Test the custom sjs algorithm feature.
  :)
 
 import module namespace merging = "http://marklogic.com/smart-mastering/survivorship/merging"
   at "/ext/com.marklogic.smart-mastering/survivorship/merging/base.xqy";
-import module namespace matcher = "http://marklogic.com/smart-mastering/matcher"
-  at "/ext/com.marklogic.smart-mastering/matcher.xqy";
 
 import module namespace test = "http://marklogic.com/roxy/test-helper" at "/test/test-helper.xqy";
 import module namespace lib = "http://marklogic.com/smart-mastering/test" at "lib/lib.xqy";
@@ -32,7 +30,7 @@ let $merged-doc :=
 let $merged-id := $merged-doc/es:headers/sm:id
 let $merged-uri := $merging:MERGED-DIR || $merged-id || ".xml"
 
-(: At this point, there should be no blocks :)
+(: verifiy that the docs were merged and that the higher # survived :)
 let $assertions := (
   test:assert-exists($merged-doc),
   test:assert-equal(1, fn:count($merged-doc//*:CustomThing)),

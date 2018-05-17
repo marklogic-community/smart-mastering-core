@@ -1,6 +1,6 @@
 'use strict'
 
-function maxMerge(propertyName, properties, propertySpec) {
+function orderedMerge(propertyName, properties, propertySpec) {
   const sortedProperties = properties.sort((a, b) => {
     if (propertySpec.goHigh) {
       if (a.values > b.values) return -1;
@@ -16,4 +16,4 @@ function maxMerge(propertyName, properties, propertySpec) {
   return fn.subsequence(xdmp.arrayValues(sortedProperties), 1, maxValues);
 }
 
-exports.customThing = maxMerge;
+exports.customThing = orderedMerge;
