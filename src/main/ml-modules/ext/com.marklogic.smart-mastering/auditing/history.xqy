@@ -88,33 +88,28 @@ declare function history:property-history(
  : Return a structure that shows the merging and unmerging history of this document.
  :)
 declare function history:document-history($doc-uri as xs:string)
+  as document-node()
 {
-  let $document-auditing := auditing:auditing-receipts-for-doc-history($doc-uri)
-  return
-    map:entry(
-      'activities',
-      json:to-array(
-        for $audit in $document-auditing
-        let $result-uri := fn:string($audit/auditing:new-uri)
-        let $time := xs:dateTime($audit/prov:wasGeneratedBy/prov:time)
-        (: order most recent to oldest :)
-        order by $time descending
-        return
-          map:new((
-            map:entry("auditUri", xdmp:node-uri($audit)),
-            map:entry("type", fn:string($audit/prov:activity/prov:type)),
-            map:entry("label", fn:string($audit/prov:activity/prov:label)),
-            map:entry("resultUri", $result-uri),
-            map:entry("wasDerivedFromUris",
-              json:to-array(
-                $audit/auditing:previous-uri ! fn:string(.)
-              )
-            ),
-            map:entry("time", fn:string($time))
-          ))
-
-      )
-    )
+  xdmp:to-json(
+    object-node {
+      'activities':
+        array-node {
+          for $audit in auditing:auditing-receipts-for-doc-history($doc-uri)
+          let $time := xs:dateTime($audit/prov:wasGeneratedBy/prov:time)
+          (: order most recent to oldest :)
+          order by $time descending
+          return
+            object-node {
+              "auditUri": xdmp:node-uri($audit),
+              "type": fn:string($audit/prov:activity/prov:type),
+              "label": fn:string($audit/prov:activity/prov:label),
+              "resultUri": fn:string($audit/auditing:new-uri),
+              "wasDerivedFromUris": array-node { $audit/auditing:previous-uri ! fn:string(.) },
+              "time": fn:string($time)
+            }
+        }
+    }
+  )
 };
 
 declare function history:normalize-value-for-tracing($value as node())
