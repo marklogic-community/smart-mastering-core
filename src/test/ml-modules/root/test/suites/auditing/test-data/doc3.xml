@@ -1,0 +1,54 @@
+<envelope xmlns="http://marklogic.com/entity-services">
+  <headers>
+    <smart-mastering:id xmlns:smart-mastering="http://marklogic.com/smart-mastering">81b59b94-10e5-4034-8ccc-df7af5ddac01</smart-mastering:id>
+    <smart-mastering:sources xmlns:smart-mastering="http://marklogic.com/smart-mastering">
+      <smart-mastering:source>
+        <smart-mastering:name>SOURCE1</smart-mastering:name>
+        <smart-mastering:import-id>mdm-import-81b59b94-10e5-4034-8ccc-df7af5ddac01</smart-mastering:import-id>
+        <smart-mastering:user>admin</smart-mastering:user>
+        <smart-mastering:dateTime>2018-05-17T14:52:21.004498Z</smart-mastering:dateTime>
+      </smart-mastering:source>
+    </smart-mastering:sources>
+  </headers>
+  <triples/>
+  <instance>
+    <MDM xmlns="">
+      <Person>
+        <PersonType>
+          <PersonName>
+            <PersonNameType>
+              <PersonSurName>ALICE</PersonSurName>
+              <PersonGivenName>SMITH</PersonGivenName>
+            </PersonNameType>
+          </PersonName>
+          <Address>
+            <AddressType>
+              <LocationState>ME</LocationState>
+              <AddressPrivateMailboxText>2181</AddressPrivateMailboxText>
+              <AddressSecondaryUnitText>VICTORIA</AddressSecondaryUnitText>
+              <LocationPostalCode>04101</LocationPostalCode>
+              <LocationCityName>Portland</LocationCityName>
+            </AddressType>
+          </Address>
+          <IncidentCategoryCodeDate/>
+          <id>654684686</id>
+          <PersonBirthDate>19880803</PersonBirthDate>
+          <PersonSex>F</PersonSex>
+          <CaseAmount>5547.12</CaseAmount>
+          <PersonSSNIdentification>
+            <PersonSSNIdentificationType>
+              <IdentificationID>004189867</IdentificationID>
+            </PersonSSNIdentificationType>
+          </PersonSSNIdentification>
+          <Revenues>
+            <RevenuesType>
+              <Revenue/>
+            </RevenuesType>
+          </Revenues>
+          <CaseStartDate>20080704</CaseStartDate>
+        </PersonType>
+      </Person>
+    </MDM>
+  </instance>
+  <attachments/>
+</envelope>

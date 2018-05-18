@@ -10,11 +10,15 @@ declare variable $INVOKE_OPTIONS :=
 
 declare variable $URI1 := "/source/1/doc1.xml";
 declare variable $URI2 := "/source/2/doc2.xml";
+declare variable $URI3 := "/source/1/doc3.xml";
+declare variable $URI4 := "/source/2/doc4.xml";
 
 declare variable $TEST-DATA :=
   map:new((
     map:entry($URI1, "doc1.xml"),
-    map:entry($URI2, "doc2.xml")
+    map:entry($URI2, "doc2.xml"),
+    map:entry($URI3, "doc3.xml"),
+    map:entry($URI4, "doc4.xml")
   ));
 
 declare variable $OPTIONS-NAME := "test-options";
