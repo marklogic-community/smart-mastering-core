@@ -9,19 +9,16 @@ buildscript {
   }
   dependencies {
     classpath "com.marklogic:ml-unit-test-client:0.10.0"
-    classpath "com.marklogic:ml-gradle:${mlGradleVersion}"
   }
 }
 
 plugins {
+  id "java"
   id "maven-publish"
   id "com.jfrog.bintray" version "1.7.3"
   id "com.marklogic.ml-gradle" version "3.6.3"
   id 'net.saliman.properties' version '1.4.6'
 }
-
-apply plugin: "java"
-apply plugin: "com.marklogic.ml-gradle"
 
 repositories {
   jcenter()
@@ -43,43 +40,54 @@ dependencies {
 bintray {
   user = bintray_user
   key = bintray_key
+  publications = ['mainModules', 'sourcesModules']
   pkg {
     repo = 'Maven'
-    name = 'smart-mastering-core'
-    userOrg = 'marklogic-community'
+    name = "smart-mastering-core"
+    licenses = ["Apache-2.0"]
+    vcsUrl = "https://github.com/marklogic-community/smart-mastering-core.git"
     version {
-      name = pkg_version
+      name = project.version
+      released = new Date()
     }
   }
-  publications = ['mainModules']
 }
 
 // Defines a configuration for the MarkLogic modules; used by the modulesZip task below
 configurations {
   modules
+  sources
 }
 
-task modulesZip(type: Zip) {
-  description = "Zip up the smart-mastering MarkLogic modules into a package that can be published"
+task modulesJar(type: Jar) {
+  description = "Jar up the smart-mastering-core MarkLogic modules into a package that can be published"
   from("src/main/ml-modules") {
-    into("ml-modules")
+    into("smart-mastering-core/ml-modules")
   }
-  destinationDir file("build/libs")
-  baseName "smart-mastering"
+  baseName "smart-mastering-core"
 }
 
+task sourcesJar(type: Jar, dependsOn: classes) {
+  description = "A sources jar is needed for publishing to jcenter; it has the same contents as the modulesJar"
+  from("src/main/ml-modules")
+  baseName "smart-mastering-core"
+  classifier "sources"
+}
 
 artifacts {
-  modules modulesZip
+  modules modulesJar
+  sources sourcesJar
 }
 
 publishing {
   publications {
     mainModules(MavenPublication) {
-      groupId "com.marklogic.community"
       artifactId "smart-mastering-core"
-      artifact modulesZip
-      version pkg_version
+      artifact modulesJar
+    }
+    sourcesModules(MavenPublication) {
+      artifactId "smart-mastering-core"
+      artifact sourcesJar
     }
   }
   repositories {
@@ -87,4 +95,3 @@ publishing {
   }
 }
 
-apply plugin: 'maven-publish'

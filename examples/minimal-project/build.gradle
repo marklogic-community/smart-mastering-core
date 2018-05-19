@@ -1,0 +1,13 @@
+plugins {
+  id "com.marklogic.ml-gradle" version "3.6.3"
+}
+
+repositories {
+  mavenLocal()
+
+  // Eventually, jcenter() will be used once smart-mastering-core is available there
+}
+
+dependencies {
+  mlRestApi "com.marklogic.community:smart-mastering-core:${smartMasteringVersion}"
+}

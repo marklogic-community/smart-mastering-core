@@ -22,7 +22,9 @@ Additional documentation on usage coming with the first Community release.
 ## Requirements
 
 - MarkLogic 9.0-5 or higher
-- gradle
+- Java 8 or higher
+- [Gradle](https://gradle.org/) is optional - this project has the Gradle wrapper included, and the instructions below
+reference it so that you don't need to install Gradle
 
 ## Using
 
@@ -52,57 +54,48 @@ Smart Mastering Core is a community-supported project. Help is available by
 filing issues here on GitHub and by asking questions on Stack Overflow; 
 however, we can’t promise a specific resolution or timeframe for any request. 
 
-### Instructions
+### Adding Smart Mastering to your project
 
-In your project's `build.gradle` file, add this to the `buildscript` section:
+Assuming you're using ml-gradle, you can easily integrate Smart Mastering into your application.
 
-```
-// Needed for smart-mastering-core dependency until it's available via jcenter()
-maven {
-  url {"https://dl.bintray.com/marklogic-community/Maven/"}
-}
-```
+As this project hasn't been published to the [jcenter](https://bintray.com/bintray/jcenter) repository yet, you'll first
+need to publish a copy of this project to your local Maven repository, which defaults to ~/.m2/repository. 
 
-In the `configurations` section, add a line with `smartMasteringCore` all by
-itself.
+To do so, just run the following command in this directory:
 
-In the `dependencies` section, add this:
+    ./gradlew publishToMavenLocal
+    
+You can verify that the artifacts were published successfully by looking in the 
+~/.m2/repository/com/marklogic/community/smart-mastering-core directory.
 
-    smartMasteringCore "com.marklogic.community:smart-mastering-core:0.0.1"
+Now that you've published Smart Mastering locally, you can add it to your own application. The 
+[minimal example project](examples/minimal-project) provides a simple example of doing this. You just need to add 
+the following to your build.gradle (again, this depends on using ml-gradle).
 
-Add this task to unzip the file that you'll get from bintray:
+First, in the repositories block, make sure you have your local Maven repository listed:
 
-```
-task unzip(type: Copy) {
-  def zipPath = project.configurations.smartMasteringCore.files.toArray()[0]
-  println zipPath
-  def zipFile = file(zipPath)
-  def outputDir = file("${buildDir}")
+    repositories {
+      mavenLocal()
+    }
 
-  from zipTree(zipFile)
-  into outputDir
-}
-```
+And then just add the following to your dependencies block:
 
-Add this task, which will handle deploying the contents of that zip file:
+    dependencies {
+      mlRestApi "com.marklogic.community:smart-mastering-core:0.1.DEV"
+    }
 
-```
-task deployCore(type: com.marklogic.gradle.task.client.LoadModulesTask) {
-}
-```
+This assumes that the version of the artifacts you published above is 0.1.DEV - if not, just change it to whatever 
+the version was used for publishing the artifacts. 
 
-To make the `deployCore` task work, set `mlModulePaths` in your `gradle.properties`
-file. If you already have this property, you can make it a comma-separated
-list.
+And that's it! Now, when you run mlDeploy, the modules in Smart Mastering will be automatically loaded into your
+modules database. To verify that the modules exist, you can either browse your modules database via qConsole, or you 
+can go to your application's REST server and see that the Smart Mastering services have been installed:
 
-    mlModulePaths=build/ml-modules
+    http://localhost:(your REST port)/v1/config/resources 
 
-Add these top-level statements to connect the task dependencies.
+You can then run ml-gradle tasks such as mlLoadModules and mlReloadModules, and the Smart Mastering
+modules will again be loaded into your modules database. 
 
-    tasks.deployCore.dependsOn unzip
-    tasks.mlLoadModules.dependsOn deployCore
-    // This dependsOn ensures that mlDeploy includes the deployCore step and runs it at the right time
-    tasks.mlPostDeploy.dependsOn deployCore
 
 ## Development
 
@@ -127,7 +120,7 @@ Click the `Run Tests` button.
 - add these properties to your `gradle-local.properties`
   - bintray_user
   - bintray_key
-- change the `pkg_version` property in `gradle.properties` to the new version number
+- change the `version` property in `gradle.properties` to the new version number
 - `gradle bintrayUpload`
 
 You must be part of the marklogic-community organization on bintray in order to publish.
