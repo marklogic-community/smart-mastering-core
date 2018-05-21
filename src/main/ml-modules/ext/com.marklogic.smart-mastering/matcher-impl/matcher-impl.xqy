@@ -180,14 +180,16 @@ declare function match-impl:search(
       element results {
         $result-stub/@*,
         attribute score {$reduced-score},
-        attribute threshold {
-          (
-            for $threshold in $thresholds/matcher:threshold
-            where $reduced-score ge fn:number($threshold/@above)
-            order by fn:number($threshold/@above) descending
-            return fn:string($threshold/@label)
-          )[1]
-        },
+        let $selected-threshold := (
+          for $threshold in $thresholds/matcher:threshold
+          where $reduced-score ge fn:number($threshold/@above)
+          order by fn:number($threshold/@above) descending
+          return $threshold
+        )[1]
+        return (
+          attribute threshold { fn:string($selected-threshold/@label) },
+          attribute action { fn:string($selected-threshold/@action) }
+        ),
         $result-stub/*
       }
   return

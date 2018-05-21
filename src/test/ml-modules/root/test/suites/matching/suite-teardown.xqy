@@ -5,4 +5,4 @@ import module namespace const = "http://marklogic.com/smart-mastering/constants"
 
 declare option xdmp:mapping "false";
 
-xdmp:collection-delete($const:MATCH-OPTIONS-COLL)
+xdmp:collection-delete($const:OPTIONS-COLL)

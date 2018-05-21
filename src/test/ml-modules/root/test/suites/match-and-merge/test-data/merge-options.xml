@@ -1,5 +1,5 @@
 <options xmlns="http://marklogic.com/smart-mastering/survivorship/merging">
-  <match-options>basic</match-options>
+  <match-options>match-options</match-options>
   <property-defs>
     <property namespace="" localname="IdentificationID" name="ssn"/>
     <property namespace="" localname="PersonName" name="name"/>

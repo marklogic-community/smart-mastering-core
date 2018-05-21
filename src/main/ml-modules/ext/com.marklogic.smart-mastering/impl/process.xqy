@@ -12,6 +12,7 @@ import module namespace merging = "http://marklogic.com/smart-mastering/survivor
 declare option xdmp:mapping "false";
 
 declare function proc-impl:process-match-and-merge($uri as xs:string)
+  as element()*
 {
   for $merging-options in merging:get-options()
   return
@@ -19,6 +20,7 @@ declare function proc-impl:process-match-and-merge($uri as xs:string)
 };
 
 declare function proc-impl:process-match-and-merge($uri as xs:string, $option-name as xs:string)
+  as element()?
 {
   proc-impl:process-match-and-merge-with-options(
     $uri,
@@ -32,7 +34,7 @@ declare function proc-impl:process-match-and-merge($uri as xs:string, $option-na
 declare function proc-impl:process-match-and-merge-with-options($uri as xs:string, $options as item())
 {
   let $matching-options := matcher:get-options-as-xml(fn:string($options/merging:match-options))
-  let $thresholds := $options/merging:thresholds/merging:threshold[@action = ($const:MERGE-ACTION, $const:NOTIFY-ACTION)]
+  let $thresholds := $matching-options/matcher:thresholds/matcher:threshold[@action = ($const:MERGE-ACTION, $const:NOTIFY-ACTION)]
   let $threshold-labels := $thresholds/@label
   let $minimum-threshold :=
     fn:min(
