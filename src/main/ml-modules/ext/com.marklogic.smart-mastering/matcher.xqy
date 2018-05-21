@@ -70,13 +70,28 @@ Example matcher options:
 </options>
 :)
 
+(:
+ : Starting with the specified document, look for potential matches based on the matching options saved under the
+ : provided name.
+ :
+ : @param $document  document to find matches for
+ : @param $options-name  name previously associated with match options using matcher:save-options
+ : @return  the queries used for search and the search results themselves
+ :)
 declare function matcher:find-document-matches-by-options-name($document, $options-name)
   as element(results)
 {
   matcher:find-document-matches-by-options($document, matcher:get-options-as-xml($options-name))
 };
 
-declare function matcher:find-document-matches-by-options($document, $options)
+(:
+ : Starting with the specified document, look for potential matches based on previously-saved matching options
+ :
+ : @param $document  document to find matches for
+ : @param $options  match options saved using matcher:save-options
+ : @return the queries used for search and the search results themselves
+ :)
+declare function matcher:find-document-matches-by-options($document, $options as element(matcher:options))
   as element(results)
 {
   matcher:find-document-matches-by-options(
@@ -90,12 +105,20 @@ declare function matcher:find-document-matches-by-options($document, $options)
   )
 };
 
-
+(:
+ : Starting with the specified document, look for a page of potential matches based on previously-saved matching options
+ :
+ : @param $document  document to find matches for
+ : @param $options  match options saved using matcher:save-options
+ : @param $start  starting index for potential match results (starts at 1)
+ : @param $page-length  maximum number of results to return in this call
+ : @return the queries used for search and the search results themselves
+ :)
 declare function matcher:find-document-matches-by-options(
   $document,
-  $options,
-  $start,
-  $page-length
+  $options as element(matcher:options),
+  $start as xs:int,
+  $page-length as xs:int
 ) as element(results)
 {
   match-impl:find-document-matches-by-options(
@@ -108,24 +131,45 @@ declare function matcher:find-document-matches-by-options(
   )
 };
 
+(:
+ : Starting with the specified document, look for a page of potential matches based on previously-saved matching options.
+ :
+ : @param $document  document to find matches for
+ : @param $options  match options saved using matcher:save-options
+ : @param $start  starting index for potential match results (starts at 1)
+ : @param $page-length  maximum number of results to return in this call
+ : @param $minimum-threshold  TODO
+ : @param $lock-on-search  TODO
+ : @return the queries used for search and the search results themselves
+ :)
 declare function matcher:find-document-matches-by-options(
   $document,
-  $options,
+  $options as element(matcher:options),
   $start as xs:integer,
   $page-length as xs:integer,
-  $minimum-threshold,
-  $lock-on-search
+  $minimum-threshold as xs:integer,
+  $lock-on-search as xs:boolean
 ) as element(results)
 {
   match-impl:find-document-matches-by-options($document, $options, $start, $page-length, $minimum-threshold, $lock-on-search)
 };
 
+(:
+ : Retrieve names of all previously saved matcher options.
+ :
+ : @return  <matcher:options> element containing zero or more <matcher:option> elements
+ :)
 declare function matcher:get-option-names-as-xml()
   as element(matcher:options)
 {
   opt-impl:get-option-names-as-xml()
 };
 
+(:
+ : Retrieve names of all previously saved matcher options.
+ :
+ : @return  JSON array of strings
+ :)
 declare function matcher:get-option-names-as-json()
   as object-node()?
 {
