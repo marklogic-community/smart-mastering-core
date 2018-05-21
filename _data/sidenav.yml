@@ -1,0 +1,11 @@
+main:
+    - { url: '/', text: 'Getting Started' }
+    - {
+      url: '/docs/',
+      text: 'Docs',
+      childPages: [
+        { url: '/docs/server-side/', text: 'Server Side (xqy, sjs)' },
+      ]
+    }
+    - { url: '/faqs/', text: 'FAQs' }
+    - { absurl: 'https://github.com/marklogic-community/smart-mastering-core', text: 'Smart Mastering on GitHub' }
