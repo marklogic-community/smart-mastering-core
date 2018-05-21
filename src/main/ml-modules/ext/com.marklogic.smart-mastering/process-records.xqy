@@ -13,6 +13,7 @@ declare option xdmp:mapping "false";
  : record notification for matches above that threshold.
  :
  : @param $uri  URI of the target document
+ : @return merged docs, if any, otherwise any notification documents
  :)
 declare function process:process-match-and-merge($uri as xs:string)
 {
@@ -26,6 +27,7 @@ declare function process:process-match-and-merge($uri as xs:string)
  :
  : @param $uri  URI of the target document
  : @param $option-name  the name of a set of merge options, which include a reference to a set of match options
+ : @return merged docs, if any, otherwise any notification documents
  :)
 declare function process:process-match-and-merge($uri as xs:string, $option-name as xs:string)
 {

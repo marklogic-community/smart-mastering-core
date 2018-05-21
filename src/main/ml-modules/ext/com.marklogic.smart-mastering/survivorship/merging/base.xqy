@@ -647,10 +647,6 @@ Example merging options:
 
 <options xmlns="http://marklogic.com/smart-mastering/survivorship/merging">
   <match-options>basic</match-options>
-  <thresholds>
-    <threshold label="Definitive Match" action="merge" />
-    <threshold label="Likely Match" action="notify" />
-  </thresholds>
   <property-defs>
     <property namespace="" localname="IdentificationID" name="ssn"/>
     <property namespace="" localname="PersonName" name="name"/>

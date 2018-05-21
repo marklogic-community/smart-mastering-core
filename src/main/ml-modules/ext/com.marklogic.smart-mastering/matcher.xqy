@@ -59,8 +59,8 @@ Example matcher options:
   </scoring>
   <thresholds>
     <threshold above="30" label="Possible Match"/>
-    <threshold above="50" label="Likely Match"/>
-    <threshold above="75" label="Definitive Match"/>
+    <threshold above="50" label="Likely Match" action="notify"/>
+    <threshold above="75" label="Definitive Match" action="merge"/>
     <!-- below 25 will be NOT-A-MATCH or no category -->
   </thresholds>
   <tuning>
@@ -147,7 +147,7 @@ declare function matcher:find-document-matches-by-options(
   $options as element(matcher:options),
   $start as xs:integer,
   $page-length as xs:integer,
-  $minimum-threshold as xs:integer,
+  $minimum-threshold as xs:double,
   $lock-on-search as xs:boolean
 ) as element(results)
 {
