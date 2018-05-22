@@ -6,8 +6,8 @@ import module namespace const = "http://marklogic.com/smart-mastering/constants"
   at "/ext/com.marklogic.smart-mastering/constants.xqy";
 import module namespace matcher = "http://marklogic.com/smart-mastering/matcher"
   at "/ext/com.marklogic.smart-mastering/matcher.xqy";
-import module namespace merging = "http://marklogic.com/smart-mastering/survivorship/merging"
-  at "/ext/com.marklogic.smart-mastering/survivorship/merging/base.xqy";
+import module namespace merging = "http://marklogic.com/smart-mastering/merging"
+  at "/ext/com.marklogic.smart-mastering/merging.xqy";
 
 declare option xdmp:mapping "false";
 
@@ -24,7 +24,7 @@ declare function proc-impl:process-match-and-merge($uri as xs:string, $option-na
 {
   proc-impl:process-match-and-merge-with-options(
     $uri,
-    merging:get-options($option-name)
+    merging:get-options($option-name, $const:FORMAT-XML)
   )
 };
 

@@ -30,3 +30,6 @@ declare variable $STATUS-UNREAD := "unread";
 (: Predicate for recording match blocks between two documents :)
 declare variable $PRED-MATCH-BLOCK := sem:iri("http://marklogic.com/smart-mastering/match-block");
 
+(: Formats for functions that accept a format parameter :)
+declare variable $FORMAT-JSON := "json";
+declare variable $FORMAT-XML  := "xml";

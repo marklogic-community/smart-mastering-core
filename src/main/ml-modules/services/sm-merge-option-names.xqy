@@ -2,8 +2,10 @@ xquery version "1.0-ml";
 
 module namespace resource = "http://marklogic.com/rest-api/resource/sm-merge-option-names";
 
-import module namespace merging = "http://marklogic.com/smart-mastering/survivorship/merging"
-  at "/ext/com.marklogic.smart-mastering/survivorship/merging/base.xqy";
+import module namespace merging = "http://marklogic.com/smart-mastering/merging"
+  at "/ext/com.marklogic.smart-mastering/merging.xqy";
+import module namespace const = "http://marklogic.com/smart-mastering/constants"
+  at "/ext/com.marklogic.smart-mastering/constants.xqy";
 
 declare function get(
   $context as map:map,
@@ -11,8 +13,6 @@ declare function get(
   ) as document-node()*
 {
   document {
-    let $option-names := merging:get-option-names()
-    return
-      merging:option-names-to-json($option-names)
+    merging:get-option-names($const:FORMAT-JSON)
   }
 };

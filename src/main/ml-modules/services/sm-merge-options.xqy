@@ -2,20 +2,21 @@ xquery version "1.0-ml";
 
 module namespace resource = "http://marklogic.com/rest-api/resource/sm-merge-options";
 
-import module namespace merging = "http://marklogic.com/smart-mastering/survivorship/merging"
-  at "/ext/com.marklogic.smart-mastering/survivorship/merging/base.xqy";
+import module namespace merging = "http://marklogic.com/smart-mastering/merging"
+  at "/ext/com.marklogic.smart-mastering/merging.xqy";
+import module namespace const = "http://marklogic.com/smart-mastering/constants"
+  at "/ext/com.marklogic.smart-mastering/constants.xqy";
 
 declare namespace rapi = "http://marklogic.com/rest-api";
 
 declare function get(
   $context as map:map,
   $params  as map:map
-  ) as document-node()*
+)
+  as document-node()*
 {
   document {
-    let $options := merging:get-options(map:get($params, "name"))
-    return
-      merging:options-to-json($options)
+    merging:get-options(map:get($params, "name"), $const:FORMAT-JSON)
   }
 };
 
@@ -23,7 +24,8 @@ declare function put(
   $context as map:map,
   $params  as map:map,
   $input   as document-node()*
-  ) as document-node()?
+)
+  as document-node()?
 {
   post($context, $params, $input)
 };
@@ -34,22 +36,17 @@ function post(
   $context as map:map,
   $params  as map:map,
   $input   as document-node()*
-  ) as document-node()*
+)
+  as document-node()*
 {
-  let $options := $input/(merging:options|object-node())
-  let $options :=
-    if ($options instance of object-node()) then
-      merging:options-from-json($options)
-    else
-      $options
-  return
-    merging:save-options(map:get($params, "name"), $options)
+  merging:save-options(map:get($params, "name"), $input/(merging:options|object-node()))
 };
 
 declare function delete(
   $context as map:map,
   $params  as map:map
-  ) as document-node()?
+)
+  as document-node()?
 {
   fn:error((), "RESTAPI-SRVEXERR", (405, "Method Not Allowed", "DELETE is not implemented"))
 };

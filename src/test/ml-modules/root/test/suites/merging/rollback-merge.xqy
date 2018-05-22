@@ -4,7 +4,11 @@ xquery version "1.0-ml";
  : Test the merging:rollback-merge function.
  :)
 
-import module namespace merging = "http://marklogic.com/smart-mastering/survivorship/merging"
+import module namespace const = "http://marklogic.com/smart-mastering/constants"
+  at "/ext/com.marklogic.smart-mastering/constants.xqy";
+import module namespace merging = "http://marklogic.com/smart-mastering/merging"
+  at "/ext/com.marklogic.smart-mastering/merging.xqy";
+import module namespace merging-impl = "http://marklogic.com/smart-mastering/survivorship/merging"
   at "/ext/com.marklogic.smart-mastering/survivorship/merging/base.xqy";
 import module namespace matcher = "http://marklogic.com/smart-mastering/matcher"
   at "/ext/com.marklogic.smart-mastering/matcher.xqy";
@@ -24,13 +28,15 @@ declare option xdmp:mapping "false";
 let $merged-doc :=
   xdmp:invoke-function(
     function() {
-      merging:save-merge-models-by-uri(map:keys($lib:TEST-DATA), merging:get-options($lib:OPTIONS-NAME))
+      merging:save-merge-models-by-uri(
+        map:keys($lib:TEST-DATA),
+        merging:get-options($lib:OPTIONS-NAME, $const:FORMAT-XML))
     },
     $lib:INVOKE_OPTIONS
   )
 
 let $merged-id := $merged-doc/es:headers/sm:id
-let $merged-uri := $merging:MERGED-DIR || $merged-id || ".xml"
+let $merged-uri := $merging-impl:MERGED-DIR || $merged-id || ".xml"
 
 (: At this point, there should be no blocks :)
 let $assertions := xdmp:eager(
