@@ -5,6 +5,8 @@ main:
       text: 'Docs',
       childPages: [
         { url: '/docs/server-side/', text: 'Server Side (xqy, sjs)' },
+        { url: '/docs/matching-options/', text: 'Matching Options' },
+        { url: '/docs/merging-options/', text: 'Merging Options' }
       ]
     }
     - { url: '/faqs/', text: 'FAQs' }
