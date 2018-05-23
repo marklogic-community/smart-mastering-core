@@ -15,15 +15,15 @@ let $actual := matcher:find-document-matches-by-options-name($doc, $lib:MATCH-OP
 return (
   let $def-match := $actual/results[@threshold="Definitive Match"]
   return (
-    test:assert-equal(attribute uri {$lib:URI3}, $def-match/@uri),
-    test:assert-equal(attribute threshold {"Definitive Match"}, $def-match/@threshold),
-    test:assert-equal(attribute action {$constants:MERGE-ACTION}, $def-match/@action)
+    test:assert-same-values(($lib:URI3, $lib:URI5, $lib:URI6) ! attribute uri {.}, $def-match/@uri),
+    test:assert-equal(3, fn:count($def-match/@threshold[. = "Definitive Match"])),
+    test:assert-equal(3, fn:count($def-match/@action[. = $constants:MERGE-ACTION]))
   ),
 
   let $likely-match := $actual/results[@threshold="Likely Match"]
   return (
-    test:assert-equal(attribute uri {$lib:URI1}, $likely-match/@uri),
-    test:assert-equal(attribute threshold {"Likely Match"}, $likely-match/@threshold),
-    test:assert-equal(attribute action {$constants:NOTIFY-ACTION}, $likely-match/@action)
+    test:assert-same-values(($lib:URI1, $lib:URI4) ! attribute uri {.}, $likely-match/@uri),
+    test:assert-equal(2, fn:count($likely-match/@threshold[. = "Likely Match"])),
+    test:assert-equal(2, fn:count($likely-match/@action[. = $constants:NOTIFY-ACTION]))
   )
 )
