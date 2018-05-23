@@ -1,9 +1,11 @@
 xquery version "1.0-ml";
 
-import module namespace merging = "http://marklogic.com/smart-mastering/survivorship/merging"
+import module namespace const = "http://marklogic.com/smart-mastering/constants"
+  at "/ext/com.marklogic.smart-mastering/constants.xqy";
+import module namespace merging = "http://marklogic.com/smart-mastering/merging"
+  at "/ext/com.marklogic.smart-mastering/merging.xqy";
+import module namespace merging-impl = "http://marklogic.com/smart-mastering/survivorship/merging"
   at "/ext/com.marklogic.smart-mastering/survivorship/merging/base.xqy";
-import module namespace matcher = "http://marklogic.com/smart-mastering/matcher"
-  at "/ext/com.marklogic.smart-mastering/matcher.xqy";
 import module namespace test = "http://marklogic.com/roxy/test-helper" at "/test/test-helper.xqy";
 import module namespace lib = "http://marklogic.com/smart-mastering/test" at "lib/lib.xqy";
 
@@ -18,11 +20,11 @@ declare function local:all-true($seq as xs:boolean*) as xs:boolean
 
 let $uris := map:keys($lib:TEST-DATA)
 let $docs := $uris ! fn:doc(.)
-let $merge-options := merging:get-options($lib:OPTIONS-NAME)
-let $sources := merging:get-sources($docs)
-let $actual := merging:build-final-properties(
+let $merge-options := merging:get-options($lib:OPTIONS-NAME, $const:FORMAT-XML)
+let $sources := merging-impl:get-sources($docs)
+let $actual := merging-impl:build-final-properties(
   $merge-options,
-  merging:get-instances($docs),
+  merging-impl:get-instances($docs),
   $docs,
   $sources
 )

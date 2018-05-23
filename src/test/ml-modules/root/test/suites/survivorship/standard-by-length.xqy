@@ -4,9 +4,10 @@ xquery version "1.0-ml";
  : Test the standard survivorship algorithm, comparing different length values.
  :)
 
-import module namespace merging = "http://marklogic.com/smart-mastering/survivorship/merging"
-  at "/ext/com.marklogic.smart-mastering/survivorship/merging/base.xqy",
-     "/ext/com.marklogic.smart-mastering/survivorship/merging/standard.xqy";
+import module namespace merging-impl = "http://marklogic.com/smart-mastering/survivorship/merging"
+  at "/ext/com.marklogic.smart-mastering/survivorship/merging/base.xqy";
+import module namespace std = "http://marklogic.com/smart-mastering/survivorship/merging"
+  at "/ext/com.marklogic.smart-mastering/survivorship/merging/standard.xqy";
 
 import module namespace test = "http://marklogic.com/roxy/test-helper" at "/test/test-helper.xqy";
 
@@ -38,12 +39,12 @@ let $source3 :=
   }
 
 let $wrapped-properties := (
-  merging:wrap-revision-info(xs:QName("name"), <name>A</name>, $source1),
-  merging:wrap-revision-info(xs:QName("name"), <name>AA</name>, $source2),
-  merging:wrap-revision-info(xs:QName("name"), <name>AAA</name>, $source3)
+  merging-impl:wrap-revision-info(xs:QName("name"), <name>A</name>, $source1),
+  merging-impl:wrap-revision-info(xs:QName("name"), <name>AA</name>, $source2),
+  merging-impl:wrap-revision-info(xs:QName("name"), <name>AAA</name>, $source3)
 )
 let $actual :=
-  merging:standard(xs:QName("name"), $wrapped-properties, $property-spec)
+  std:standard(xs:QName("name"), $wrapped-properties, $property-spec)
 return (
   test:assert-equal(2, fn:count($actual)),
   let $actual1 := $actual[1]

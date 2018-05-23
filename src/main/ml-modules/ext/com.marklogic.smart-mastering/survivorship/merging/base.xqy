@@ -1,6 +1,6 @@
 xquery version "1.0-ml";
 
-module namespace merging = "http://marklogic.com/smart-mastering/survivorship/merging";
+module namespace merge-impl = "http://marklogic.com/smart-mastering/survivorship/merging";
 
 import module namespace auditing = "http://marklogic.com/smart-mastering/auditing"
   at "../../auditing/base.xqy";
@@ -10,13 +10,14 @@ import module namespace history = "http://marklogic.com/smart-mastering/auditing
   at "../../auditing/history.xqy";
 import module namespace json="http://marklogic.com/xdmp/json"
   at "/MarkLogic/json/json.xqy";
-import module namespace merging = "http://marklogic.com/smart-mastering/survivorship/merging"
+import module namespace merge-impl = "http://marklogic.com/smart-mastering/survivorship/merging"
   at  "standard.xqy";
 import module namespace const = "http://marklogic.com/smart-mastering/constants"
   at "/ext/com.marklogic.smart-mastering/constants.xqy";
 import module namespace matcher = "http://marklogic.com/smart-mastering/matcher"
   at "/ext/com.marklogic.smart-mastering/matcher.xqy";
 
+declare namespace merging = "http://marklogic.com/smart-mastering/merging";
 declare namespace sm = "http://marklogic.com/smart-mastering";
 declare namespace es = "http://marklogic.com/entity-services";
 declare namespace prov = "http://www.w3.org/ns/prov#";
@@ -29,7 +30,7 @@ declare variable $MERGING-OPTIONS-DIR := "/com.marklogic.smart-mastering/options
 
 declare variable $MERGED-DIR := "/com.marklogic.smart-mastering/merged/";
 
-declare function merging:default-function-lookup(
+declare function merge-impl:default-function-lookup(
   $name as xs:string?,
   $arity as xs:int)
 {
@@ -45,7 +46,7 @@ declare function merging:default-function-lookup(
   )
 };
 
-declare function merging:build-merging-map($merging-xml)
+declare function merge-impl:build-merging-map($merging-xml)
 {
   map:new((
     for $algorithm-xml in $merging-xml//*:algorithm
@@ -56,21 +57,21 @@ declare function merging:build-merging-map($merging-xml)
           fn:string($algorithm-xml/@function),
           fn:string($algorithm-xml/@namespace),
           fn:string($algorithm-xml/@at),
-          merging:default-function-lookup(?, 3)
+          merge-impl:default-function-lookup(?, 3)
         )
       )
   ))
 };
 
 
-declare function merging:save-merge-models-by-uri(
+declare function merge-impl:save-merge-models-by-uri(
   $uris as xs:string*,
   $merge-options as item()?
 )
 {
   let $merge-options :=
     if ($merge-options instance of object-node()) then
-      merging:options-from-json($merge-options)
+      merge-impl:options-from-json($merge-options)
     else
       $merge-options
   let $id := sem:uuid-string()
@@ -86,7 +87,7 @@ declare function merging:save-merge-models-by-uri(
       else
         $uri
   let $parsed-properties :=
-      merging:parse-final-properties-for-merge(
+      merge-impl:parse-final-properties-for-merge(
         $uris,
         $merge-options
       )
@@ -97,7 +98,7 @@ declare function merging:save-merge-models-by-uri(
   let $sources := map:get($parsed-properties, "sources")
   let $wrapper-qnames := map:get($parsed-properties, "wrapper-qnames")
   let $merged-document :=
-    merging:build-merge-models-by-final-properties(
+    merge-impl:build-merge-models-by-final-properties(
       $id,
       $docs,
       $wrapper-qnames,
@@ -166,7 +167,7 @@ declare function merging:save-merge-models-by-uri(
     $merged-document,
     for $uri in fn:distinct-values(($uris, $merged-uris))[fn:doc-available(.)]
     return
-      merging:archive-document($uri),
+      merge-impl:archive-document($uri),
     xdmp:document-insert(
       $merge-uri,
       $merged-document,
@@ -186,14 +187,14 @@ declare function merging:save-merge-models-by-uri(
 };
 
 
-declare function merging:rollback-merge(
+declare function merge-impl:rollback-merge(
   $merged-doc-uri as xs:string
 ) as empty-sequence()
 {
-  merging:rollback-merge($merged-doc-uri, fn:true())
+  merge-impl:rollback-merge($merged-doc-uri, fn:true())
 };
 
-declare function merging:rollback-merge(
+declare function merge-impl:rollback-merge(
   $merged-doc-uri as xs:string,
   $retain-rollback-info as xs:boolean
 ) as empty-sequence()
@@ -226,18 +227,18 @@ declare function merging:rollback-merge(
   )
 };
 
-declare function merging:build-merge-models-by-uri(
+declare function merge-impl:build-merge-models-by-uri(
   $uris as xs:string*,
   $merge-options as item()?
 )
 {
   let $merge-options :=
     if ($merge-options instance of object-node()) then
-      merging:options-from-json($merge-options)
+      merge-impl:options-from-json($merge-options)
     else
       $merge-options
   let $parsed-properties :=
-      merging:parse-final-properties-for-merge(
+      merge-impl:parse-final-properties-for-merge(
         $uris,
         $merge-options
       )
@@ -246,7 +247,7 @@ declare function merging:build-merge-models-by-uri(
   let $instances := map:get($parsed-properties, "instances")
   let $wrapper-qnames := map:get($parsed-properties, "wrapper-qnames")
   return
-    merging:build-merge-models-by-final-properties(
+    merge-impl:build-merge-models-by-final-properties(
       sem:uuid-string(),
       $docs,
       $wrapper-qnames,
@@ -255,7 +256,7 @@ declare function merging:build-merge-models-by-uri(
     )
 };
 
-declare function merging:build-merge-models-by-final-properties(
+declare function merge-impl:build-merge-models-by-final-properties(
   $id as xs:string,
   $docs as node()*,
   $wrapper-qnames as xs:QName*,
@@ -264,7 +265,7 @@ declare function merging:build-merge-models-by-final-properties(
 )
 {
   if ($docs instance of document-node(element())+) then
-    merging:build-merge-models-by-final-properties-to-xml(
+    merge-impl:build-merge-models-by-final-properties-to-xml(
       $id,
       $docs,
       $wrapper-qnames,
@@ -272,7 +273,7 @@ declare function merging:build-merge-models-by-final-properties(
       $merge-options
     )
   else
-    merging:build-merge-models-by-final-properties-to-json(
+    merge-impl:build-merge-models-by-final-properties-to-json(
       $id,
       $docs,
       $wrapper-qnames,
@@ -282,7 +283,7 @@ declare function merging:build-merge-models-by-final-properties(
 };
 
 
-declare function merging:build-merge-models-by-final-properties-to-xml(
+declare function merge-impl:build-merge-models-by-final-properties-to-xml(
   $id as xs:string,
   $docs as node()*,
   $wrapper-qnames as xs:QName*,
@@ -306,7 +307,7 @@ declare function merging:build-merge-models-by-final-properties-to-xml(
       }
     </es:headers>
     <es:instance>{
-      merging:build-instance-body-by-final-properties(
+      merge-impl:build-instance-body-by-final-properties(
         $final-properties,
         $wrapper-qnames,
         "xml"
@@ -315,7 +316,7 @@ declare function merging:build-merge-models-by-final-properties-to-xml(
   </es:envelope>
 };
 
-declare function merging:build-merge-models-by-final-properties-to-json(
+declare function merge-impl:build-merge-models-by-final-properties-to-json(
   $id as xs:string,
   $docs as node()*,
   $wrapper-qnames as xs:QName*,
@@ -340,7 +341,7 @@ declare function merging:build-merge-models-by-final-properties-to-json(
         return map:entry(fn:string($name), $values)
       ))
       )/object-node(),
-      "instance": merging:build-instance-body-by-final-properties(
+      "instance": merge-impl:build-instance-body-by-final-properties(
         $final-properties,
         $wrapper-qnames,
         "json"
@@ -349,7 +350,7 @@ declare function merging:build-merge-models-by-final-properties-to-json(
   }
 };
 
-declare function merging:build-instance-body-by-final-properties(
+declare function merge-impl:build-instance-body-by-final-properties(
   $final-properties as map:map*,
   $wrapper-qnames as xs:QName*,
   $type as xs:string
@@ -396,7 +397,7 @@ declare function merging:build-instance-body-by-final-properties(
     )
 };
 
-declare function merging:get-instances($docs)
+declare function merge-impl:get-instances($docs)
 {
   for $doc in $docs
   let $instance := $doc/(es:envelope|object-node("envelope"))/(es:instance|object-node("instance"))/(* except (es:info|object-node("info")))
@@ -407,7 +408,7 @@ declare function merging:get-instances($docs)
       $instance
 };
 
-declare function merging:get-sources($docs)
+declare function merge-impl:get-sources($docs)
   as object-node()*
 {
   for $source in
@@ -426,7 +427,7 @@ declare function merging:get-sources($docs)
 
 };
 
-declare function merging:parse-final-properties-for-merge(
+declare function merge-impl:parse-final-properties-for-merge(
   $uris as xs:string*,
   $merge-options as item()?
 ) as map:map
@@ -435,7 +436,7 @@ declare function merging:parse-final-properties-for-merge(
     for $uri in $uris
     return
       fn:doc($uri)
-  let $instances := merging:get-instances($docs)
+  let $instances := merge-impl:get-instances($docs)
   let $first-doc := fn:head($docs)
   let $first-instance := $instances[fn:root(.) is $first-doc]
   let $wrapper-qnames :=
@@ -453,7 +454,7 @@ declare function merging:parse-final-properties-for-merge(
       return
         history:property-history($doc-uri, ()) ! xdmp:to-json(.)/object-node():)
   let $sources := get-sources($docs)
-  let $final-properties := merging:build-final-properties(
+  let $final-properties := merge-impl:build-final-properties(
     $merge-options,
     $instances,
     $docs,
@@ -474,7 +475,7 @@ declare function merging:parse-final-properties-for-merge(
  : - "sources" -- one or more object-nodes indicating which of the original docs the surviving value(s) came from
  : - "values" -- the surviving property values
  :)
-declare function merging:build-final-properties(
+declare function merge-impl:build-final-properties(
   $merge-options,
   $instances,
   $docs,
@@ -483,7 +484,7 @@ declare function merging:build-final-properties(
 {
   let $top-level-properties := fn:distinct-values($instances/* ! fn:node-name(.))
   let $property-defs := $merge-options/merging:property-defs
-  let $algorithms-map := merging:build-merging-map($merge-options)
+  let $algorithms-map := merge-impl:build-merging-map($merge-options)
   let $merge-options-uri := $merge-options ! xdmp:node-uri(.)
   let $merge-options-ref :=
     if (fn:exists($merge-options-uri)) then
@@ -528,8 +529,8 @@ declare function merging:build-final-properties(
           ($a, $b + map:entry("algorithm", $algorithm-info))
       },
       (),
-      if (merging:properties-are-equal($instance-props, $docs)) then
-        merging:wrap-revision-info($prop, $instance-props[fn:root(.) is $first-doc], $sources)
+      if (merge-impl:properties-are-equal($instance-props, $docs)) then
+        merge-impl:wrap-revision-info($prop, $instance-props[fn:root(.) is $first-doc], $sources)
       else
         let $wrapped-properties :=
           for $doc at $pos in $docs
@@ -546,17 +547,17 @@ declare function merging:build-final-properties(
           let $prop-sources := $sources[documentUri = $lineage-uris]
           where fn:exists($props-for-instance)
           return
-            merging:wrap-revision-info($prop, $prop-value, $prop-sources)
+            merge-impl:wrap-revision-info($prop, $prop-value, $prop-sources)
         return
           if (fn:exists($algorithm)) then
-            merging:execute-algorithm(
+            merge-impl:execute-algorithm(
               $algorithm,
               $prop,
               $wrapped-properties,
               $property-spec
             )
           else
-            merging:standard(
+            merge-impl:standard(
               $prop,
               $wrapped-properties,
               $property-spec
@@ -564,7 +565,7 @@ declare function merging:build-final-properties(
     )
 };
 
-declare function merging:wrap-revision-info($property-name as xs:QName, $properties as item()*, $sources as item()*)
+declare function merge-impl:wrap-revision-info($property-name as xs:QName, $properties as item()*, $sources as item()*)
 {
   for $prop in $properties
   return
@@ -575,7 +576,7 @@ declare function merging:wrap-revision-info($property-name as xs:QName, $propert
   ))
 };
 
-declare function merging:properties-are-equal(
+declare function merge-impl:properties-are-equal(
   $properties as item()*,
   $docs as item()*
 )
@@ -599,7 +600,7 @@ declare function merging:properties-are-equal(
             satisfies
               let $same-type := xdmp:type($prop1) eq xdmp:type($prop2)
               let $is-object := $prop1 instance of object-node()
-              let $objects-are-equal := $same-type and $is-object and merging:objects-equal($prop1, $prop2)
+              let $objects-are-equal := $same-type and $is-object and merge-impl:objects-equal($prop1, $prop2)
               let $values-are-equal := $same-type and fn:not($is-object) and $prop1 = $prop2
               return
                 $objects-are-equal or $values-are-equal
@@ -607,7 +608,7 @@ declare function merging:properties-are-equal(
 };
 
 (: Compare all keys and values between two maps :)
-declare function merging:objects-equal($object1 as map:map, $object2 as map:map)
+declare function merge-impl:objects-equal($object1 as map:map, $object2 as map:map)
 {
   (:
    : $map1 - $map2: find key-value pairs that exist in $map1 but not $map2
@@ -617,7 +618,7 @@ declare function merging:objects-equal($object1 as map:map, $object2 as map:map)
     map:count($object1 + $object2) = map:count($object1)
 };
 
-declare function merging:execute-algorithm(
+declare function merge-impl:execute-algorithm(
   $algorithm,
   $property-name,
   $properties,
@@ -626,26 +627,32 @@ declare function merging:execute-algorithm(
 {
   if (fn:ends-with(xdmp:function-module($algorithm), "sjs")) then
     let $properties := json:to-array($properties)
-    let $property-spec := merging:propertyspec-to-json($property-spec)
+    let $property-spec := merge-impl:propertyspec-to-json($property-spec)
     return
       xdmp:apply($algorithm, $property-name, $properties, $property-spec)
   else
     xdmp:apply($algorithm, $property-name, $properties, $property-spec)
 };
 
-declare function merging:get-options()
+declare function merge-impl:get-options($format as xs:string)
 {
-  cts:search(fn:collection(), cts:and-query((
-      cts:collection-query($const:OPTIONS-COLL),
-      cts:collection-query($const:MERGE-COLL)
-  )))/merging:options
+  let $options :=
+    cts:search(fn:collection(), cts:and-query((
+        cts:collection-query($const:OPTIONS-COLL),
+        cts:collection-query($const:MERGE-COLL)
+    )))/merging:options
+  return
+    if ($format eq $const:FORMAT-XML) then
+      $options
+    else
+      array-node { $options ! merge-impl:options-to-json(.) }
 };
 
 (:
 
 Example merging options:
 
-<options xmlns="http://marklogic.com/smart-mastering/survivorship/merging">
+<options xmlns="http://marklogic.com/smart-mastering/merging">
   <match-options>basic</match-options>
   <property-defs>
     <property namespace="" localname="IdentificationID" name="ssn"/>
@@ -679,46 +686,59 @@ Example merging options:
 </options>
 :)
 
-declare function merging:get-options($options-name)
+declare function merge-impl:get-options($options-name, $format as xs:string)
 {
-  fn:doc($MERGING-OPTIONS-DIR||$options-name||".xml")/merging:options
+  let $options := fn:doc($MERGING-OPTIONS-DIR||$options-name||".xml")/merging:options
+  return
+    if ($format eq $const:FORMAT-XML) then
+      $options
+    else
+      merge-impl:options-to-json($options)
 };
 
-declare function merging:save-options(
+declare function merge-impl:save-options(
   $name as xs:string,
   $options as node()
 )
 {
   xdmp:log("inserting at " || $MERGING-OPTIONS-DIR||$name||".xml"),
-  xdmp:document-insert(
-    $MERGING-OPTIONS-DIR||$name||".xml",
-    $options,
-    (xdmp:permission($const:MDM-ADMIN, "update"), xdmp:permission($const:MDM-USER, "read")),
-    ($const:OPTIONS-COLL, $const:MERGE-COLL)
-  )
+  let $options :=
+    if ($options instance of object-node()) then
+      merge-impl:options-from-json($options)
+    else
+      $options
+  return
+    xdmp:document-insert(
+      $MERGING-OPTIONS-DIR||$name||".xml",
+      $options,
+      (xdmp:permission($const:MDM-ADMIN, "update"), xdmp:permission($const:MDM-USER, "read")),
+      ($const:OPTIONS-COLL, $const:MERGE-COLL)
+    )
 };
 
-declare function merging:archive-document($uri as xs:string)
+declare function merge-impl:archive-document($uri as xs:string)
 {
   xdmp:document-remove-collections($uri, $const:CONTENT-COLL),
   xdmp:document-add-collections($uri, $const:ARCHIVED-COLL)
 };
 
-declare variable $options-json-config := merging:_options-json-config();
+declare variable $options-json-config := merge-impl:_options-json-config();
 
-declare function merging:options-to-json($options-xml)
+declare function merge-impl:options-to-json($options-xml)
 {
-  xdmp:to-json(
-    json:transform-to-json-object($options-xml, $options-json-config)
-  )
+  if (fn:exists($options-xml)) then
+    xdmp:to-json(
+      json:transform-to-json-object($options-xml, $options-json-config)
+    )/node()
+  else ()
 };
 
-declare function merging:options-from-json($options-json)
+declare function merge-impl:options-from-json($options-json)
 {
   json:transform-from-json($options-json, $options-json-config)
 };
 
-declare function merging:_options-json-config()
+declare function merge-impl:_options-json-config()
 {
   let $config := json:config("custom")
   return (
@@ -733,27 +753,32 @@ declare function merging:_options-json-config()
   )
 };
 
-declare function merging:get-option-names()
+declare function merge-impl:get-option-names($format as xs:string)
 {
-  let $options := cts:uris('', (), cts:and-query((
-      cts:collection-query($const:OPTIONS-COLL),
-      cts:collection-query($const:MERGE-COLL)
-    )))
-  let $option-names := $options ! fn:replace(
-    fn:replace(., $MERGING-OPTIONS-DIR, ""),
-    ".xml", ""
-  )
-  return
-    element merging:options {
-      for $name in $option-names
-      return
-        element merging:option { $name }
-    }
+  if ($format eq $const:FORMAT-XML) then
+    let $options := cts:uris('', (), cts:and-query((
+        cts:collection-query($const:OPTIONS-COLL),
+        cts:collection-query($const:MERGE-COLL)
+      )))
+    let $option-names := $options ! fn:replace(
+      fn:replace(., $MERGING-OPTIONS-DIR, ""),
+      ".xml", ""
+    )
+    return
+      element merging:options {
+        for $name in $option-names
+        return
+          element merging:option { $name }
+      }
+  else if ($format eq $const:FORMAT-JSON) then
+    merge-impl:option-names-to-json(merge-impl:get-option-names($const:FORMAT-XML))
+  else
+    fn:error(xs:QName("SM-INVALID-FORMAT"), "Attempted to call merge-impl:get-option-names with invalid format: " || $format)
 };
 
-declare variable $option-names-json-config := merging:_option-names-json-config();
+declare variable $option-names-json-config := merge-impl:_option-names-json-config();
 
-declare function merging:_option-names-json-config()
+declare function merge-impl:_option-names-json-config()
 {
   let $config := json:config("custom")
   return (
@@ -764,14 +789,14 @@ declare function merging:_option-names-json-config()
   )
 };
 
-declare function merging:option-names-to-json($options-xml)
+declare function merge-impl:option-names-to-json($options-xml)
 {
   xdmp:to-json(
     json:transform-to-json-object($options-xml, $option-names-json-config)
   )
 };
 
-declare function merging:propertyspec-to-json($property-spec as element(merging:merge)) as object-node()
+declare function merge-impl:propertyspec-to-json($property-spec as element(merging:merge)) as object-node()
 {
   let $config := json:config("custom")
     => map:with("camel-case", fn:true())

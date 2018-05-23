@@ -2,8 +2,10 @@ xquery version "1.0-ml";
 
 module namespace resource = "http://marklogic.com/rest-api/resource/sm-merge";
 
-import module namespace merging = "http://marklogic.com/smart-mastering/survivorship/merging"
-  at "/ext/com.marklogic.smart-mastering/survivorship/merging/base.xqy";
+import module namespace merging = "http://marklogic.com/smart-mastering/merging"
+  at "/ext/com.marklogic.smart-mastering/merging.xqy";
+import module namespace const = "http://marklogic.com/smart-mastering/constants"
+  at "/ext/com.marklogic.smart-mastering/constants.xqy";
 
 declare namespace rapi = "http://marklogic.com/rest-api";
 
@@ -29,7 +31,7 @@ function post(
     if (fn:exists($input/(*:options|object-node()))) then
       $input/(*:options|object-node())
     else
-      merging:get-options(map:get($params, "options"))
+      merging:get-options(map:get($params, "options"), $const:FORMAT-XML)
   let $merge-fun :=
     if (map:get($params, "preview") = "true") then
       merging:build-merge-models-by-uri#2

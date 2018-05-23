@@ -10,7 +10,7 @@ declareUpdate();
 const test = require('/test/test-helper.xqy');
 const history = require('/ext/com.marklogic.smart-mastering/auditing/history.xqy');
 const con = require('/ext/com.marklogic.smart-mastering/constants.xqy');
-const merging = require('/ext/com.marklogic.smart-mastering/survivorship/merging/base.xqy');
+const merging = require('/ext/com.marklogic.smart-mastering/merging.xqy');
 const lib = require('lib/lib.xqy');
 
 const docUriQname = fn.QName('http://marklogic.com/smart-mastering', 'document-uri');
@@ -29,20 +29,20 @@ function findMergedDoc(uris) {
 const doc12URI = findMergedDoc([lib.URI1, lib.URI2]);
 
 xdmp.invokeFunction(
-  function() { merging.saveMergeModelsByUri([lib.URI3, lib.URI4], merging.getOptions(lib['OPTIONS-NAME'])) },
-  lib['INVOKE_OPTIONS']
+  function() { merging.saveMergeModelsByUri([lib.URI3, lib.URI4], merging.getOptions(lib.OPTIONSNAME, con.FORMATXML)) },
+  lib.INVOKE_OPTIONS
 );
 
 const doc34URI = findMergedDoc([lib.URI3, lib.URI4]);
 
 xdmp.invokeFunction(
   function() { merging.rollbackMerge(doc12URI, true) },
-  lib['INVOKE_OPTIONS']
+  lib.INVOKE_OPTIONS
 );
 
 xdmp.invokeFunction(
-  function() { merging.saveMergeModelsByUri([lib.URI2, doc34URI], merging.getOptions(lib['OPTIONS-NAME'])) },
-  lib['INVOKE_OPTIONS']
+  function() { merging.saveMergeModelsByUri([lib.URI2, doc34URI], merging.getOptions(lib.OPTIONSNAME, con.FORMATXML)) },
+  lib.INVOKE_OPTIONS
 );
 
 // examine doc1's history

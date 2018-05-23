@@ -1,6 +1,6 @@
 xquery version "1.0-ml";
 
-import module namespace merging = "http://marklogic.com/smart-mastering/survivorship/merging"
+import module namespace merging-impl = "http://marklogic.com/smart-mastering/survivorship/merging"
   at "/ext/com.marklogic.smart-mastering/survivorship/merging/base.xqy";
 
 import module namespace test = "http://marklogic.com/roxy/test-helper" at "/test/test-helper.xqy";
@@ -28,9 +28,9 @@ let $map5 := map:new((
 ))
 
 return (
-  test:assert-true(merging:objects-equal($map1, $map5)),
-  test:assert-true(merging:objects-equal($map1, $map1)),
-  test:assert-false(merging:objects-equal($map1, $map2)),
-  test:assert-false(merging:objects-equal($map1, $map3)),
-  test:assert-false(merging:objects-equal($map1, $map4))
+  test:assert-true(merging-impl:objects-equal($map1, $map5)),
+  test:assert-true(merging-impl:objects-equal($map1, $map1)),
+  test:assert-false(merging-impl:objects-equal($map1, $map2)),
+  test:assert-false(merging-impl:objects-equal($map1, $map3)),
+  test:assert-false(merging-impl:objects-equal($map1, $map4))
 )
