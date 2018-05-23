@@ -11,6 +11,10 @@ declare variable $TEST-DATA :=
   map:new((
     map:entry("/source/1/doc1.xml", "doc1.xml"),
     map:entry("/source/2/doc2.xml", "doc2.xml")
+(: when we are ready to turn on json mixed support
+    map:entry("/source/1/doc1.json", "doc1.json"),
+    map:entry("/source/2/doc2.json", "doc2.json")
+:)
   ));
 
 declare variable $OPTIONS-NAME := "test-options";
