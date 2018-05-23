@@ -634,13 +634,18 @@ declare function merge-impl:execute-algorithm(
     xdmp:apply($algorithm, $property-name, $properties, $property-spec)
 };
 
-declare function merge-impl:get-options()
-  as element(merging:options)*
+declare function merge-impl:get-options($format as xs:string)
 {
-  cts:search(fn:collection(), cts:and-query((
-      cts:collection-query($const:OPTIONS-COLL),
-      cts:collection-query($const:MERGE-COLL)
-  )))/merging:options
+  let $options :=
+    cts:search(fn:collection(), cts:and-query((
+        cts:collection-query($const:OPTIONS-COLL),
+        cts:collection-query($const:MERGE-COLL)
+    )))/merging:options
+  return
+    if ($format eq $const:FORMAT-XML) then
+      $options
+    else
+      array-node { $options ! merge-impl:options-to-json(.) }
 };
 
 (:

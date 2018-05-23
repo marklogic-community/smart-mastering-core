@@ -29,20 +29,20 @@ function findMergedDoc(uris) {
 const doc12URI = findMergedDoc([lib.URI1, lib.URI2]);
 
 xdmp.invokeFunction(
-  function() { merging.saveMergeModelsByUri([lib.URI3, lib.URI4], merging.getOptions(lib['OPTIONS-NAME'], con['FORMAT-XML'])) },
-  lib['INVOKE_OPTIONS']
+  function() { merging.saveMergeModelsByUri([lib.URI3, lib.URI4], merging.getOptions(lib.OPTIONSNAME, con.FORMATXML)) },
+  lib.INVOKE_OPTIONS
 );
 
 const doc34URI = findMergedDoc([lib.URI3, lib.URI4]);
 
 xdmp.invokeFunction(
   function() { merging.rollbackMerge(doc12URI, true) },
-  lib['INVOKE_OPTIONS']
+  lib.INVOKE_OPTIONS
 );
 
 xdmp.invokeFunction(
-  function() { merging.saveMergeModelsByUri([lib.URI2, doc34URI], merging.getOptions(lib['OPTIONS-NAME'], con['FORMAT-XML'])) },
-  lib['INVOKE_OPTIONS']
+  function() { merging.saveMergeModelsByUri([lib.URI2, doc34URI], merging.getOptions(lib.OPTIONSNAME, con.FORMATXML)) },
+  lib.INVOKE_OPTIONS
 );
 
 // examine doc1's history

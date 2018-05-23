@@ -8,6 +8,8 @@ import module namespace const = "http://marklogic.com/smart-mastering/constants"
   at "/ext/com.marklogic.smart-mastering/constants.xqy";
 import module namespace merging = "http://marklogic.com/smart-mastering/merging"
   at "/ext/com.marklogic.smart-mastering/merging.xqy";
+import module namespace merge-impl = "http://marklogic.com/smart-mastering/survivorship/merging"
+  at "/ext/com.marklogic.smart-mastering/survivorship/merging/base.xqy";
 
 import module namespace test = "http://marklogic.com/roxy/test-helper" at "/test/test-helper.xqy";
 import module namespace lib = "http://marklogic.com/smart-mastering/test" at "lib/lib.xqy";
@@ -32,7 +34,7 @@ let $merged-doc :=
   )
 
 let $merged-id := $merged-doc/es:headers/sm:id
-let $merged-uri := $merging:MERGED-DIR || $merged-id || ".xml"
+let $merged-uri := $merge-impl:MERGED-DIR || $merged-id || ".xml"
 
 (: verifiy that the docs were merged and that the higher # survived :)
 let $assertions := (

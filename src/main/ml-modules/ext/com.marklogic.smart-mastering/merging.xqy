@@ -90,12 +90,12 @@ declare function merging:get-option-names($format as xs:string)
 (:
  : Return all previously save merge options.
  :
+ : @param $format  either $const:FORMAT-XML or $const:FORMAT-JSON
  : @return A sequence of elements with the options.
  :)
-declare function merging:get-options()
-  as element(merging:options)*
+declare function merging:get-options($format as xs:string)
 {
-  impl:get-options()
+  impl:get-options($format)
 };
 
 (:

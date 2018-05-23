@@ -14,7 +14,7 @@ declare option xdmp:mapping "false";
 declare function proc-impl:process-match-and-merge($uri as xs:string)
   as element()*
 {
-  for $merging-options in merging:get-options()
+  for $merging-options in merging:get-options($const:FORMAT-XML)
   return
     proc-impl:process-match-and-merge($uri, $merging-options)
 };

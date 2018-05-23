@@ -9,7 +9,7 @@ import module namespace test = "http://marklogic.com/roxy/test-helper" at "/test
 
 (: test getting all options :)
 let $expected := test:get-test-file("sample-options.xml")/node()
-let $actual := merging:get-options()
+let $actual := merging:get-options($const:FORMAT-XML)
 let $assert-get-all-options := test:assert-equal-xml($expected, $actual)
 
 (: test getting options by name :)
