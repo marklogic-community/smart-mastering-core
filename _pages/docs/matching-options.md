@@ -7,8 +7,8 @@ permalink: /docs/matching-options/
 # Matching Options
 
 Smart Mastering Core offers a configuration-driven matching capability. The
-match process starts with a document (referred to as the "initial" document) and
-looks for other documents that might describe the same entity. Match
+match process starts with a document (referred to as the "candidate" document)
+and looks for other documents that might describe the same entity. Match
 configuration includes the properties to look for, how to compare them, and what
 thresholds to use for taking action on the matches.
 
@@ -93,7 +93,7 @@ Works section for more information about how match scores are calculated.
 
 This section really drives the matching process. For each `add` element, the
 matcher will add this element or property to the query used to find other
-documents that match the initial document. The `property-name` attribute must
+documents that match the candidate document. The `property-name` attribute must
 match the `name` attribute of a `property` element defined under
 `property-defs`. The `weight` attribute is the number of points awarded to
 a potential match if the values match.
@@ -121,10 +121,10 @@ subtracted from the score if the algorithm matches.
 
 Smart-mastering-core can be configured to take different actions based on the
 match scores. Each `threshold` element has an `above` attribute, which is the
-minimum absolute score a match must have against the initial document in order
+minimum absolute score a match must have against the candidate document in order
 to reach that threshold. A `threshold` element may also have a `label` attribute
 and an `action` attribute. If the `action` attribute is "merge", then the
-initial document and any document that reaches this threshold will be
+candidate document and any document that reaches this threshold will be
 automatically merged. For `action="notify"`, a notification will be recorded
 for a human reviewer.
 
