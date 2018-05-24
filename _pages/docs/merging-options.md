@@ -7,10 +7,11 @@ permalink: /docs/merging-options/
 # Merging Options
 
 Smart Mastering Core offers a configuration-driven merge capability. Merging
-takes two or more documents in the searchable collection, moves them to an
-archive collection, and creates a new document combining the original two. The
-new combined document will be in the searchable collection. Merge configuration
-includes the properties to merge and how to combine them.
+takes two or more documents in the `mdm-content` collection (which holds the
+data that is available for search), moves them to an `mdm-archive` collection,
+and creates a new document combining the original two. The new combined document
+will be in the `mdm-content` collection. Merge configuration includes the
+properties to merge and how to combine them.
 
 # Configuring Options
 
@@ -77,7 +78,8 @@ is the name under which a set of match options were previously stored.
 
 Calling the `sm:merge` service or `merging:save-merge-models-by-uri` does not
 require that the merge options be paired with a set of match options; the
-`match-options` element may be left out.
+`match-options` element may be left out. This will not affect the merging
+process at all.
 
 ### Property Definitions
 
@@ -93,14 +95,14 @@ nickname used to refer to this property in the rest of the configuration. The
 As part of creating a merged document, the merge process identifies the values
 the source documents have for each property, then selects which of them will be
 preserved in the merged document. The `algorithms/algorithm` elements list
-algorithms you can use to combine property values, in addition to the default
-behavior.
+algorithms you can use to combine property values, in addition to the
+`standard` algorithm, which implements the default behavior.
 
 An `algorithm` element must have `name` and `function` attributes. The `name`
 attribute is the name this algorithm will be referred to elsewhere in the
 configuration. The `function` attribute is the localname of the function that
 will be called. This element may also have an `at` attribute, indicating where
-to find the source code for this function, and a `namespace` attribute. 
+to find the source code for this function, and a `namespace` attribute.
 
 ### Merging
 
@@ -117,9 +119,9 @@ of one of the `property` elements defined under `property-defs`. The
 many values for this property should be copied from source documents to the
 merged document.
 
-#### Default Merging
+#### Standard Merging
 
-The default algorithm will keep up to 99 values for each property. A `merge`
+The standard algorithm will keep up to 99 values for each property. A `merge`
 element can specify a different number and can control the order in which the
 values are listed. The `merge` element for the standard algorithm can also
 specify a weighted preference for sources and a weight by which to prefer longer
@@ -137,7 +139,7 @@ algorithm.
   </merge>
 ```
 
-None of the elements inside the `merge` element is required.
+None of the elements inside the `merge` element are required.
 
 #### Custom Merging
 

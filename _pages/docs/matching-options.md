@@ -109,13 +109,15 @@ under the `extend` element depend on the implementation of the function.
 #### `reduce` elements
 
 In some cases, a combination of matching properties may suggest a match when
-there shouldn't be one. For instance, two Person records have the same family
-name, same street address, city, and zip code. That might be enough points to
-trigger a match, but if the given names are different, it's probably relatives
-living together. The `reduce` element gives a way to back off the scores in
-such cases. The `algorithm-ref` attribute must match the `name` attribute of an
-`algorithm` element under `algorithms`. The `weight` attribute will be
-subtracted from the score if the algorithm matches.
+there shouldn't be one. Consider two relatives living together. When matched,
+two Person records have the same family name, same street address, city, and zip
+code. That might be enough points to trigger a match even though the two given
+names differ.
+
+The `reduce` element gives a way to back off the scores in such cases. The
+`algorithm-ref` attribute must match the `name` attribute of an `algorithm`
+element under `algorithms`. The `weight` attribute will be subtracted from the
+score if the algorithm matches.
 
 ### Thresholds
 
@@ -139,9 +141,36 @@ recorded.
 
 High scores are relative to the configuration, rather than measured on an
 absolute scale. The maximum possible score is the sum of the weights of all of
-the `scoring/add/@weight` attributes. In the example configuration above, the
-maximum possible score is 50+8+6+5+3+1+3+6+8-4=86. Thresholds must be adjusted
-based on these values.
+the `scoring/add/@weight` attributes.
+
+```
+<scoring>
+  <add property-name="ssn" weight="50"/>
+  <add property-name="last-name" weight="8"/>
+  <add property-name="first-name" weight="6"/>
+  <add property-name="addr1" weight="5"/>
+  <add property-name="city" weight="3"/>
+  <add property-name="state" weight="1"/>
+  <add property-name="zip" weight="3"/>
+  <expand property-name="first-name" algorithm-ref="thesaurus" weight="6">
+    <thesaurus>/mdm/config/thesauri/first-name-synonyms.xml</thesaurus>
+    <distance-threshold>50</distance-threshold>
+  </expand>
+  <expand property-name="last-name" algorithm-ref="dbl-metaphone" weight="8">
+    <dictionary>name-dictionary.xml</dictionary>
+    <!--defaults to 100 distance -->
+  </expand>
+  <reduce algorithm-ref="std-reduce" weight="4">
+    <all-match>
+      <property>last-name</property>
+      <property>addr1</property>
+    </all-match>
+  </reduce>
+</scoring>
+```
+
+In the example configuration above, the maximum possible score is
+50+8+6+5+3+1+3+6+8-4=86. Thresholds must be adjusted based on these values.
 
 ## Saving Options
 
