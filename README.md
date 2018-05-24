@@ -61,7 +61,7 @@ Assuming you're using ml-gradle, you can easily integrate Smart Mastering into y
 As this project hasn't been published to the [jcenter](https://bintray.com/bintray/jcenter) repository yet, you'll first
 need to publish a copy of this project to your local Maven repository, which defaults to ~/.m2/repository. 
 
-To do so, just run the following command in this directory:
+To do so, clone this repository and run the following command in the project's root directory:
 
     ./gradlew publishToMavenLocal
     
@@ -84,8 +84,8 @@ And then just add the following to your dependencies block:
       mlRestApi "com.marklogic.community:smart-mastering-core:0.1.DEV"
     }
 
-This assumes that the version of the artifacts you published above is 0.1.DEV - if not, just change it to whatever 
-the version was used for publishing the artifacts. 
+This assumes that the version of the artifacts you published above is 0.1.DEV. You can find the version number by 
+looking at the version property in gradle.properties in your cloned copy of smart-mastering-core. 
 
 And that's it! Now, when you run mlDeploy, the modules in Smart Mastering will be automatically loaded into your
 modules database. To verify that the modules exist, you can either browse your modules database via qConsole, or you 
@@ -104,16 +104,16 @@ modules will again be loaded into your modules database.
 If necessary, create a `gradle-local.properties` file and override properties in
 `gradle.properties` as needed.
 
-Run `gradle mlDeploy`
+Run `./gradlew mlDeploy`
 
 ### Testing
 
 #### UI-based
-After running `gradle mlDeploy`, point a browser to `http://localhost:8042/test`.
+After running `./gradlew mlDeploy`, point a browser to `http://localhost:8042/test`.
 Click the `Run Tests` button.
 
 #### Command-line
-- `gradle mlUnitTest`
+- `./gradlew mlUnitTest`
 
 ### Publishing
 
@@ -121,7 +121,7 @@ Click the `Run Tests` button.
   - bintray_user
   - bintray_key
 - change the `version` property in `gradle.properties` to the new version number
-- `gradle bintrayUpload`
+- `./gradlew bintrayUpload`
 
 You must be part of the marklogic-community organization on bintray in order to publish.
 
