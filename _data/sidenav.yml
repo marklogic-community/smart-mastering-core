@@ -4,7 +4,9 @@ main:
       url: '/docs/',
       text: 'Docs',
       childPages: [
-        { url: '/docs/server-side/', text: 'Server Side (xqy, sjs)' },
+        { url: '/docs/how-to-use/', text: 'How to Use' },
+        { url: '/docs/rest/', text: 'REST API' },
+        { url: '/docs/libraries/', text: 'Libraries' },
         { url: '/docs/matching-options/', text: 'Matching Options' },
         { url: '/docs/merging-options/', text: 'Merging Options' }
       ]
