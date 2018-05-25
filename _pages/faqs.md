@@ -16,8 +16,8 @@ permalink: /faqs/
 Use the [#marklogic-smart-mastering](https://stackoverflow.com/questions/ask?tags=marklogic-smart-mastering) tag on StackOverflow to ask us a question.
 
 #### How does Smart Mastering relate the Data Hub Framework?
-Smart Mastering is a capability within the [Data Hub Framework][dhf],
-specifically its a type of flow applied to harmonized data.
+Smart Mastering is a capability within the [Data Hub Framework][dhf].
+Specifically it's a type of flow applied to harmonized data.
 
 
 <br>
