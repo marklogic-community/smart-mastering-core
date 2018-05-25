@@ -41,7 +41,6 @@ declare function auditing:audit-trace(
   $attachments
 )
 {
-  xdmp:log("auditing:audit-trace"),
   let $dateTime := fn:current-dateTime()
   let $username := xdmp:get-current-user()
   let $new-entity-id := $sm-prefix||$new-uri

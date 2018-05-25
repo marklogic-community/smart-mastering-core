@@ -333,7 +333,7 @@ declare function merge-impl:build-merge-models-by-final-properties-to-json(
           $docs ! object-node { "document-uri": fn:base-uri(.) }
         }),
         map:entry("sources", array-node {
-          $docs/envelope/headers/sources/object-node()
+          $docs/envelope/headers/sources
         }),
         (: TODO merging of carried forward headers :)
         for $name in fn:distinct-values($docs/envelope/headers/* ! fn:node-name(.))[fn:not(fn:string(.) = ("sources","id","merges"))]
@@ -368,7 +368,7 @@ declare function merge-impl:build-instance-body-by-final-properties(
           },
           map:map(),
           for $prop in $final-properties
-          let $prop-name := $prop => map:get("name")
+          let $prop-name := fn:string($prop => map:get("name"))
           let $prop-values := $prop => map:get("values")
           return
             map:entry($prop-name, $prop-values)
@@ -400,10 +400,12 @@ declare function merge-impl:build-instance-body-by-final-properties(
 declare function merge-impl:get-instances($docs)
 {
   for $doc in $docs
-  let $instance := $doc/(es:envelope|object-node("envelope"))/(es:instance|object-node("instance"))/(* except (es:info|object-node("info")))
+  let $instance := $doc/(es:envelope|object-node("envelope"))/(es:instance|object-node("instance"))/(*|object-node() except (es:info|object-node("info")))
   return
     if ($instance instance of element(MDM)) then
       $instance/*/*
+    else if (fn:node-name($instance) eq xs:QName("MDM")) then
+      $instance/object-node()/object-node()
     else
       $instance
 };
@@ -515,7 +517,7 @@ declare function merge-impl:build-final-properties(
   let $instance-props :=
     for $instance-prop in $instances/*[fn:node-name(.) = $prop]
     (: require the property to have a value :)
-    where fn:normalize-space(fn:string($instance-prop)) ne ""
+    where fn:normalize-space(fn:string-join(($instance-prop|$instance-prop//node()) ! fn:string())) ne ""
     return ($instance-prop/self::array-node()/*, $instance-prop except $instance-prop/self::array-node())
   return
     fn:fold-left(
@@ -608,14 +610,37 @@ declare function merge-impl:properties-are-equal(
 };
 
 (: Compare all keys and values between two maps :)
-declare function merge-impl:objects-equal($object1 as map:map, $object2 as map:map)
+declare function merge-impl:objects-equal($object1 as map:map, $object2 as map:map) as xs:boolean
 {
-  (:
-   : $map1 - $map2: find key-value pairs that exist in $map1 but not $map2
-   : $map1 + $map2: find the union of key-value pairs in the two maps
-  :)
-  map:count($object1 - $object2) = 0 and
-    map:count($object1 + $object2) = map:count($object1)
+  merge-impl:objects-equal-recursive($object1, $object2)
+};
+
+declare function merge-impl:objects-equal-recursive($object1, $object2) as xs:boolean
+{
+  typeswitch($object1)
+    case map:map return
+      let $k1 := map:keys($object1)
+      let $k2 := map:keys($object2)
+      let $counts-equal := fn:count($k1) eq fn:count($k2)
+      let $maps-equal :=
+        for $key in map:keys($object1)
+        let $v1 := map:get($object1, $key)
+        let $v2 := map:get($object2, $key)
+        return
+          merge-impl:objects-equal-recursive($v1, $v2)
+      return $counts-equal and fn:not($maps-equal = fn:false())
+    case json:array return
+      let $counts-equal := fn:count($object1) = fn:count($object2)
+      let $items-equal :=
+        let $o1 := json:array-values($object1)
+        let $o2 := json:array-values($object2)
+        for $item at $i in $o1
+        return
+          merge-impl:objects-equal-recursive($item, $o2[$i])
+      return
+        $counts-equal and fn:not($items-equal = fn:false())
+    default return
+      $object1 = $object2
 };
 
 declare function merge-impl:execute-algorithm(
@@ -701,7 +726,6 @@ declare function merge-impl:save-options(
   $options as node()
 )
 {
-  xdmp:log("inserting at " || $MERGING-OPTIONS-DIR||$name||".xml"),
   let $options :=
     if ($options instance of object-node()) then
       merge-impl:options-from-json($options)
