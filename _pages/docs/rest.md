@@ -1,0 +1,203 @@
+---
+layout: inner
+title: REST API
+lead_text: ''
+permalink: /docs/rest/
+---
+
+# Smart Mastering with REST APIs
+
+The Smart Mastering Core project includes a set of REST API extensions. Once
+you have included the core in your own project and run `gradle mlDeploy`,
+these REST extensions will be available to your project.
+
+Smart Mastering functionality consists of configuration-driven mastering and
+merging, as well as services to retrieve history for documents or individual
+properties within merged documents. This page will show you how to access this
+functionality using the REST APIs.
+
+## Match Options
+
+### sm-match-options
+
+Manage the available match options. See [/docs/matching-options/](/docs/matching-options/)
+for documentation of the matching options themselves.
+
+This service supports:
+
+- GET: retrieve a set of matching options
+  - parameters:
+    - `rs:name` -- the name under which a set of options were stored
+- PUT: create or replace a set of matching options
+  - parameters:
+    - `rs:name` -- the name under which the options are to be stored
+    - body of message -- the options, in either XML or JSON format
+- POST: identical to PUT
+
+### sm-match-option-names
+
+List the available matching options.
+
+- GET: retrieve the list
+  - the names will be returned as a JSON array of string values
+
+## Matching
+
+### sm-match
+
+- POST: identify matches for a particular document
+  - parameters
+    - `rs:uri` -- the URI of the document for which matches will be identified
+    - `rs:options` -- the name under which a set of options were previously
+    stored
+    - `rs:start` -- (optional) starting index of matches; defaults to 1
+    - `rs:pageLength` -- (optional) number of potential matches to return; if
+    not provided, the matching options' `max-scan` value will be used. If there
+    is no `max-scan` value, defaults to 20.
+    - body of message -- The body may include the following:
+      - a content document for which matches will be identified. If XML, there
+      must be an XML element with the localname of `document` (namespace is
+        ignored). If JSON, there must be a top-level property called `document`.
+      - matching options. If XML, there must be an XML element with a QName of
+      `matching:options`. If JSON, there must be a top-level property called
+      `options`.
+  - response
+    - The response will be a JSON array of objects representing potential
+    matches.
+  - usage
+    - Either the `rs:uri` parameter or a document in the message body must be
+    provided.
+    - Either the `rs:options` parameter or a set of options in the message body
+    must be provided.
+
+### sm-block-match
+
+Match blocks are used to manually prevent automatic merging of entities that
+score highly as matches. Ideally, adjusting the match weights well enough would
+solve such problems, but in practice, match blocks are available to handle
+outliers.
+
+- GET: retrieve a list of match blocks for a URI
+  - parameters
+    - `rs:uri` -- find match blocks that include this URI
+- POST: create a match block between two URIs
+  - parameters
+    - `rs:uri1`
+    - `rs:uri2`
+- DELETE: remove a match block between two URIs
+  - parameters
+    - `rs:uri1`
+    - `rs:uri2`
+
+### sm-notifications
+
+Notifications identify matches that are likely, but did not score high enough
+to automatically merge. Notifications should be presented to human users for
+review.
+
+- GET: retrieve a paged list of notifications
+  - parameters
+    - `rs:start` -- optional; integer defaulting to 1
+    - `rs:pageLength` -- optional; integer defaulting to 10
+- POST: update the status of a notification
+  - body of message: a JSON object with two properties
+    - "uris" -- an array of strings with the URIs of notifications to be updated
+    - "status" -- new status for the notifications; must be either "read" or
+    "unread".
+- DELETE: delete a notification
+  - parameters
+    - `rs:uri` -- the URI of the notification to be deleted
+
+## Merge Options
+
+Merge options control the way property values are combined when producing a new,
+merged document based on two or more original documents. For full documentation
+of merging options, see the [Merging Options](/docs/merging-options/) page.
+
+### sm-merge-options
+Manage the available merge options.
+
+- GET: retrieve a set of merging options
+  - parameters:
+    - `rs:name` -- the name under which a set of options were stored
+- PUT: create or replace a set of merging options
+  - parameters:
+    - `rs:name` -- the name under which the options are to be stored
+  - body of message -- the options, in either XML or JSON format
+- POST: identical to PUT
+
+###sm-merge-option-names
+
+List the available merging options.
+
+- GET: retrieve the list
+  - the names will be returned as a JSON array of string values
+
+## Merging
+
+### sm-merge
+
+- POST: Save or preview a merge document, combining two or more other documents.
+  - parameters
+    - `rs:primary-uri` -- the URI of the document that was used to look for
+    matches
+    - `rs:secondary-uri` -- one or more URIs of documents that matched the
+    primary
+    - `rs:options` -- the name of the merge options that will control how the
+    document properties will be combined
+    - `rs:preview` -- optional; if `true`, return the merged document, but do
+    not persist it to the database; else save it to the database and return the
+    merged document
+  - body of message
+    - may optionally contain a set of merging options in XML or JSON format
+  - usage
+    - Either the `rs:options` parameter or a set of options in the message body
+    must be provided.
+
+- DELETE: unmerge a previously merged document, restoring the original documents
+  - parameters
+    - `rs:mergedUri` -- the URI of the merged document
+    - `rs:retainAuditTrail` -- optional; if `true`, the merged document will be
+    moved to an archive collection; if `false`, the merged document will be
+    deleted. Defaults to `true`.
+
+## History
+
+Smart Mastering Core tracks the history of what merge and unmerge operations
+have been done to a document, as well as which original documents contributed
+values to a merged document.
+
+### sm-history-document
+
+- GET: retrieve the activity history of this document
+  - parameters
+    - `rs:uri` -- the URI of a document in the content database (may be a merged
+      document or an original source document)
+
+
+### sm-history-properties
+
+- GET: retrieve the source for each property in a merged document
+  - parameters
+    - `rs:uri` -- the URI of a merged document
+    - `rs:property` -- zero or more property names (repeat parameter for more
+      than one). If none are provided, returns information for all available
+      properties.
+
+## Other Services
+
+### mastering-stats
+
+- GET: convenience endpoint to gather some numbers about Smart Mastering data
+
+### sm-dictionaries
+
+- GET: retrieve any dictionaries used by Smart Mastering
+
+### sm-entity-services
+
+- GET: returns Entity Services descriptors present in the content database
+
+### sm-thesauri
+
+- GET: retrieve any thesauri used by Smart Mastering
