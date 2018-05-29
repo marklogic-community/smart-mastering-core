@@ -40,7 +40,7 @@ as element(results)
  : provided name.
  :
  : @param $document  document to find matches for
- : @param $options-name  name previously associated with match options using matcher:save-
+ : @param $options-name  name previously associated with match options using matcher:save-options
  : @param $include-matches  whether the response should list the matched properties for each potential match
  : @return  the queries used for search and the search results themselves
  :)
