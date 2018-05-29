@@ -54,6 +54,9 @@ List the available matching options.
     - `rs:pageLength` -- (optional) number of potential matches to return; if
     not provided, the matching options' `max-scan` value will be used. If there
     is no `max-scan` value, defaults to 20.
+    - `rs:includeMatches` -- (optional boolean) whether to include, for each
+    potential match, the list of properties that were good matches. Defaults to
+    `false`. 
     - body of message -- The body may include the following:
       - a content document for which matches will be identified. If XML, there
       must be an XML element with the localname of `document` (namespace is
