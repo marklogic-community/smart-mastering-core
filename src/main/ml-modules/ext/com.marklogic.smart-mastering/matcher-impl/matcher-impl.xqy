@@ -27,7 +27,8 @@ declare function match-impl:find-document-matches-by-options(
   $start as xs:integer,
   $page-length as xs:integer,
   $minimum-threshold,
-  $lock-on-search
+  $lock-on-search,
+  $include-matches as xs:boolean
 ) as element(results)
 {
   let $options :=
@@ -92,7 +93,8 @@ declare function match-impl:find-document-matches-by-options(
         $page-length,
         $scoring,
         $algorithms,
-        $options
+        $options,
+        $include-matches
       )
     }
   )
@@ -139,7 +141,8 @@ declare function match-impl:search(
   $page-length,
   $scoring,
   $algorithms,
-  $options
+  $options,
+  $include-matches as xs:boolean
 ) {
   let $range := $start to ($start + $page-length - 1)
   let $additional-documents :=
@@ -157,16 +160,18 @@ declare function match-impl:search(
         attribute uri {xdmp:node-uri($result)},
         attribute index {$range[fn:position() = $pos]},
         attribute total {cts:remainder($result)},
-        element matches {
-          cts:walk(
-            $result,
-            cts:or-query((
-              $match-query,
-              $boosting-query
-            )),
-            $cts:node/..
-          )
-        }
+        if ($include-matches) then
+          element matches {
+            cts:walk(
+              $result,
+              cts:or-query((
+                $match-query,
+                $boosting-query
+              )),
+              $cts:node/..
+            )
+          }
+        else ()
       }
     let $reduced-score := $score -
       fn:sum(

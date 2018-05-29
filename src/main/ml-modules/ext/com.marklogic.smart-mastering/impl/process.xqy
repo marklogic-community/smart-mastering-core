@@ -51,7 +51,8 @@ declare function proc-impl:process-match-and-merge-with-options($uri as xs:strin
         500
       )),
       $minimum-threshold,
-      $lock-on-query
+      $lock-on-query,
+      fn:false()
     )
   return (
     for $threshold in $thresholds
