@@ -55,12 +55,14 @@ function post(
       $options//*:max-scan ! xs:integer(.),
       20
     ))
+  let $include-matches := fn:head((map:get($params, "includeMatches"), fn:false()))
   let $results :=
     matcher:find-document-matches-by-options(
       $document,
       $options,
       $start,
-      $page-length
+      $page-length,
+      $include-matches
     )
   return
     matcher:results-to-json($results)

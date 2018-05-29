@@ -15,60 +15,7 @@ declare namespace sm = "http://marklogic.com/smart-mastering";
 
 declare option xdmp:mapping "false";
 
-(:
-
-Example matcher options:
-
-<options xmlns="http://marklogic.com/smart-mastering/matcher">
-  <property-defs>
-    <property namespace="" localname="IdentificationID" name="ssn"/>
-    <property namespace="" localname="PersonGivenName" name="first-name"/>
-    <property namespace="" localname="PersonSurName" name="last-name"/>
-    <property namespace="" localname="AddressPrivateMailboxText" name="addr1"/>
-    <property namespace="" localname="LocationCity" name="city"/>
-    <property namespace="" localname="LocationState" name="state"/>
-    <property namespace="" localname="LocationPostalCode" name="zip"/>
-  </property-defs>
-  <algorithms>
-    <algorithm name="std-reduce" function="standard-reduction"/>
-    <algorithm name="std-reduce-query" function="standard-reduction-query"/>
-    <algorithm name="dbl-metaphone" function="double-metaphone"/>
-  </algorithms>
-  <scoring>
-    <add property-name="ssn" weight="50"/>
-    <add property-name="last-name" weight="8"/>
-    <add property-name="first-name" weight="12"/>
-    <add property-name="addr1" weight="5"/>
-    <add property-name="city" weight="3"/>
-    <add property-name="state" weight="1"/>
-    <add property-name="zip" weight="3"/>
-    <expand property-name="first-name" algorithm-ref="dbl-metaphone" weight="6">
-      <dictionary>name-dictionary.xml</dictionary>
-      <distance-threshold>10</distance-threshold>
-    </expand>
-    <expand property-name="last-name" algorithm-ref="dbl-metaphone" weight="8">
-      <dictionary>name-dictionary.xml</dictionary>
-      <!--defaults to 100 distance -->
-    </expand>
-    <reduce algorithm-ref="std-reduce" weight="4">
-      <all-match>
-        <property>last-name</property>
-        <property>addr1</property>
-      </all-match>
-    </reduce>
-  </scoring>
-  <thresholds>
-    <threshold above="30" label="Possible Match"/>
-    <threshold above="50" label="Likely Match" action="notify"/>
-    <threshold above="75" label="Definitive Match" action="merge"/>
-    <!-- below 25 will be NOT-A-MATCH or no category -->
-  </thresholds>
-  <tuning>
-    <max-scan>200</max-scan>  <!-- never look at more than 200 -->
-    <initial-scan>20</initial-scan>
-  </tuning>
-</options>
-:)
+(: For example match options, see https://marklogic-community.github.io/smart-mastering-core/docs/matching-options/ :)
 
 (:
  : Starting with the specified document, look for potential matches based on the matching options saved under the
@@ -78,10 +25,33 @@ Example matcher options:
  : @param $options-name  name previously associated with match options using matcher:save-options
  : @return  the queries used for search and the search results themselves
  :)
-declare function matcher:find-document-matches-by-options-name($document, $options-name)
+declare function matcher:find-document-matches-by-options-name(
+  $document,
+  $options-name as xs:string
+)
+as element(results)
+{
+  matcher:find-document-matches-by-options($document, matcher:get-options-as-xml($options-name), fn:false())
+};
+
+
+(:
+ : Starting with the specified document, look for potential matches based on the matching options saved under the
+ : provided name.
+ :
+ : @param $document  document to find matches for
+ : @param $options-name  name previously associated with match options using matcher:save-options
+ : @param $include-matches  whether the response should list the matched properties for each potential match
+ : @return  the queries used for search and the search results themselves
+ :)
+declare function matcher:find-document-matches-by-options-name(
+  $document,
+  $options-name as xs:string,
+  $include-matches as xs:boolean
+)
   as element(results)
 {
-  matcher:find-document-matches-by-options($document, matcher:get-options-as-xml($options-name))
+  matcher:find-document-matches-by-options($document, matcher:get-options-as-xml($options-name), $include-matches)
 };
 
 (:
@@ -89,9 +59,14 @@ declare function matcher:find-document-matches-by-options-name($document, $optio
  :
  : @param $document  document to find matches for
  : @param $options  match options saved using matcher:save-options
+ : @param $include-matches  whether the response should list the matched properties for each potential match
  : @return the queries used for search and the search results themselves
  :)
-declare function matcher:find-document-matches-by-options($document, $options as element(matcher:options))
+declare function matcher:find-document-matches-by-options(
+  $document,
+  $options as element(matcher:options),
+  $include-matches as xs:boolean
+)
   as element(results)
 {
   matcher:find-document-matches-by-options(
@@ -101,7 +76,8 @@ declare function matcher:find-document-matches-by-options($document, $options as
     fn:head((
       $options//*:max-scan ! xs:integer(.),
       200
-    ))
+    )),
+    $include-matches
   )
 };
 
@@ -112,13 +88,15 @@ declare function matcher:find-document-matches-by-options($document, $options as
  : @param $options  match options saved using matcher:save-options
  : @param $start  starting index for potential match results (starts at 1)
  : @param $page-length  maximum number of results to return in this call
+ : @param $include-matches  whether the response should list the matched properties for each potential match
  : @return the queries used for search and the search results themselves
  :)
 declare function matcher:find-document-matches-by-options(
   $document,
   $options as element(matcher:options),
   $start as xs:int,
-  $page-length as xs:int
+  $page-length as xs:int,
+  $include-matches as xs:boolean
 ) as element(results)
 {
   match-impl:find-document-matches-by-options(
@@ -127,7 +105,8 @@ declare function matcher:find-document-matches-by-options(
     $start,
     $page-length,
     fn:min($options//*:thresholds/*:threshold/(@above|above) ! fn:number(.)),
-    fn:false()
+    fn:false(),
+    $include-matches
   )
 };
 
@@ -140,6 +119,7 @@ declare function matcher:find-document-matches-by-options(
  : @param $page-length  maximum number of results to return in this call
  : @param $minimum-threshold  TODO
  : @param $lock-on-search  TODO
+ : @param $include-matches  whether the response should list the matched properties for each potential match
  : @return the queries used for search and the search results themselves
  :)
 declare function matcher:find-document-matches-by-options(
@@ -148,10 +128,13 @@ declare function matcher:find-document-matches-by-options(
   $start as xs:integer,
   $page-length as xs:integer,
   $minimum-threshold as xs:double,
-  $lock-on-search as xs:boolean
+  $lock-on-search as xs:boolean,
+  $include-matches as xs:boolean
 ) as element(results)
 {
-  match-impl:find-document-matches-by-options($document, $options, $start, $page-length, $minimum-threshold, $lock-on-search)
+  match-impl:find-document-matches-by-options(
+    $document, $options, $start, $page-length, $minimum-threshold, $lock-on-search, $include-matches
+  )
 };
 
 (:
