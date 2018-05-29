@@ -13,14 +13,14 @@ declare function get(
 ) as document-node()*
 {
   let $start := (map:get($params, "start"), 1)[1] ! xs:int(.)
-  let $page-size := (map:get($params, "page-size"), 10)[1] ! xs:int(.)
+  let $page-size := (map:get($params, "pageLength"), 10)[1] ! xs:int(.)
   let $end := $start + $page-size - 1
   return
     document {
       object-node {
         "total": matcher:count-notifications(),
         "start": $start,
-        "page-size": $page-size,
+        "pageLength": $page-size,
         "notifications": matcher:get-notifications-as-json($start, $end)
       }
     }
@@ -31,7 +31,7 @@ declare function get(
  : @body  JSON object with two properties: uris and status. uris is an array containing URI strings. status must
  :        use the values of $matcher:STATUS-READ or $matcher:STATUS-UNREAD.
  :)
-declare function put(
+declare function post(
   $context as map:map,
   $params  as map:map,
   $input   as document-node()*

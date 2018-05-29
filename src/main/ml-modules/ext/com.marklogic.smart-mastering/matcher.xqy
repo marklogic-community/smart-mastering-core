@@ -40,7 +40,8 @@ as element(results)
  : provided name.
  :
  : @param $document  document to find matches for
- : @param $options-name  name previously associated with match options using matcher:save-options
+ : @param $options-name  name previously associated with match options using matcher:save-
+ : @param $include-matches  whether the response should list the matched properties for each potential match
  : @return  the queries used for search and the search results themselves
  :)
 declare function matcher:find-document-matches-by-options-name(
@@ -58,6 +59,7 @@ declare function matcher:find-document-matches-by-options-name(
  :
  : @param $document  document to find matches for
  : @param $options  match options saved using matcher:save-options
+ : @param $include-matches  whether the response should list the matched properties for each potential match
  : @return the queries used for search and the search results themselves
  :)
 declare function matcher:find-document-matches-by-options(
@@ -86,6 +88,7 @@ declare function matcher:find-document-matches-by-options(
  : @param $options  match options saved using matcher:save-options
  : @param $start  starting index for potential match results (starts at 1)
  : @param $page-length  maximum number of results to return in this call
+ : @param $include-matches  whether the response should list the matched properties for each potential match
  : @return the queries used for search and the search results themselves
  :)
 declare function matcher:find-document-matches-by-options(
@@ -116,6 +119,7 @@ declare function matcher:find-document-matches-by-options(
  : @param $page-length  maximum number of results to return in this call
  : @param $minimum-threshold  TODO
  : @param $lock-on-search  TODO
+ : @param $include-matches  whether the response should list the matched properties for each potential match
  : @return the queries used for search and the search results themselves
  :)
 declare function matcher:find-document-matches-by-options(
