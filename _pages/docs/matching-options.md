@@ -83,6 +83,8 @@ up matching with your custom code, add an `algorithm` element with attributes
 to this algorithm later in the configuration. The other three attributes are
 used to find the code.
 
+For an example, see [zip.xqy][zip.xqy].
+
 ### Scoring
 
 Matches are based on how many properties match, what algorithms are used to
@@ -186,3 +188,5 @@ with `rs:name` as a URL parameter and the options in the body of the request.
 
 To save match options using XQuery, import `matcher.xqy` and call the
 `matcher:save-options` function.
+
+[zip.xqy]: https://github.com/marklogic-community/smart-mastering-core/blob/master/src/main/ml-modules/ext/com.marklogic.smart-mastering/algorithms/zip.xqy
