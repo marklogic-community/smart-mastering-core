@@ -4,6 +4,7 @@ main:
       url: '/docs/',
       text: 'Docs',
       childPages: [
+        { url: '/docs/how-does-it-work/', text: 'How Does it Work' },
         { url: '/docs/how-to-use/', text: 'How to Use' },
         { url: '/docs/rest/', text: 'REST API' },
         { url: '/docs/libraries/', text: 'Libraries' },
