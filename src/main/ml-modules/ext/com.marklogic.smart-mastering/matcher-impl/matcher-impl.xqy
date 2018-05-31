@@ -26,7 +26,7 @@ declare function match-impl:find-document-matches-by-options(
   $options,
   $start as xs:integer,
   $page-length as xs:integer,
-  $minimum-threshold,
+  $minimum-threshold as xs:double,
   $lock-on-search,
   $include-matches as xs:boolean
 ) as element(results)
@@ -231,7 +231,16 @@ declare function match-impl:_results-json-config()
   )
 };
 
-declare function match-impl:minimum-threshold-combinations($query-results, $threshold)
+(:
+ : Identify a sequence of queries whose scores add up to the $threshold. A document must match at least one of these
+ : queries in order to be returned as a potential match.
+ :
+ : @param $query-results  a sequence of queries with weights
+ : @param $threshold  minimum weighted-score for a match to be relevant
+ : @return a sequence of queries; a document that matches any of these will have at least $threshold as a score
+ :)
+declare function match-impl:minimum-threshold-combinations($query-results, $threshold as xs:double)
+  as cts:query*
 {
   let $weighted-queries :=
     for $query in ($query-results//element(*,cts:query) except $query-results//(cts:and-query|cts:or-query))
@@ -239,6 +248,7 @@ declare function match-impl:minimum-threshold-combinations($query-results, $thre
     where fn:empty($weight) or $weight gt 0
     order by $weight descending empty least
     return $query
+  (: Each of $queries-ge-threshold has a weight high enough to hit the $threshold :)
   let $queries-ge-threshold := $weighted-queries[@weight][@weight ge $threshold]
   let $queries-lt-threshold := $weighted-queries except $queries-ge-threshold
   return (
@@ -247,35 +257,53 @@ declare function match-impl:minimum-threshold-combinations($query-results, $thre
   )
 };
 
+(:
+ : Find combinations of queries whose weights are individually below the threshold, but combined are above it.
+ :
+ : @param $remaining-queries  sequence of queries ordered by their weights, descending
+ : @param $combined-weight
+ : @param $threshold  the target value
+ : @param $accumulated-queries  accumlated sequence, building up to see whether it can hit the $threshold.
+ : @return a sequence of cts:and-queries, one for each required filter
+ : note: return type left off to allow for tail recursion optimization.
+ :)
 declare function match-impl:filter-for-required-queries(
-  $remaining-queries,
+  $remaining-queries as element()*,
   $combined-weight,
   $threshold,
-  $accumulated-queries
-) {
-  if ($threshold eq 0 or $combined-weight ge $threshold) then
+  $accumulated-queries as element()*
+)
+{
+  if ($threshold eq 0 or $combined-weight ge $threshold) then (
     cts:and-query(
       $accumulated-queries ! cts:query(.)
     )
+  )
   else
+    (: These two lines are only needed for the commented-out code below.
+    let $last-accumulated := fn:head(fn:reverse($accumulated-queries))
+    let $last-accumulated-weight := fn:head(($last-accumulated/@weight/fn:number(),1))
+    :)
     for $query at $pos in $remaining-queries
     let $query-weight := fn:head(($query/@weight ! fn:number(.), 1))
     let $new-combined-weight := $combined-weight + $query-weight
-    let $last-accumulated := fn:head(fn:reverse($accumulated-queries))
-    let $last-accumulated-weight := fn:min(($last-accumulated/@weight/fn:number(),1))
+    (: TODO: if this next if statement is true, also need to reduce $new-combined-weight. Commenting out until fixed. :)
+    (:
     let $accumulated-queries :=
       if (fn:exists($last-accumulated) and
         ($new-combined-weight - $last-accumulated-weight) ge $threshold) then
         $accumulated-queries except $last-accumulated
       else
         $accumulated-queries
-    return
+    :)
+    return (
       match-impl:filter-for-required-queries(
         fn:subsequence($remaining-queries, $pos + 1),
         $new-combined-weight,
         $threshold,
         ($accumulated-queries, $query)
       )
+    )
 };
 
 declare function match-impl:lock-on-search($query-results)
