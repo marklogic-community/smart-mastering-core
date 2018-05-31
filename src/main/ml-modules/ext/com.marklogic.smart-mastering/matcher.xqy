@@ -117,7 +117,8 @@ declare function matcher:find-document-matches-by-options(
  : @param $options  match options saved using matcher:save-options
  : @param $start  starting index for potential match results (starts at 1)
  : @param $page-length  maximum number of results to return in this call
- : @param $minimum-threshold  TODO
+ : @param $minimum-threshold  value of the lowest threshold score; the match query will require matches to score at
+                              least this high to be returned
  : @param $lock-on-search  TODO
  : @param $include-matches  whether the response should list the matched properties for each potential match
  : @return the queries used for search and the search results themselves
