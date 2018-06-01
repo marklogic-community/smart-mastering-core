@@ -10,7 +10,9 @@ Smart Mastering Core offers a configuration-driven matching capability. The
 match process starts with a document (referred to as the "candidate" document)
 and looks for other documents that might describe the same entity. Match
 configuration includes the properties to look for, how to compare them, and what
-thresholds to use for taking action on the matches.
+thresholds to use for taking action on the matches. The match process returns
+a relevance-ranked sequence of potential matches, based on the weights you
+specify.
 
 ## Configuring Options
 
@@ -143,7 +145,7 @@ recorded.
 
 High scores are relative to the configuration, rather than measured on an
 absolute scale. The maximum possible score is the sum of the weights of all of
-the `scoring/add/@weight` attributes.
+the weight attributes.
 
 ```
 <scoring>
@@ -174,6 +176,13 @@ the `scoring/add/@weight` attributes.
 In the example configuration above, the maximum possible score is
 50+8+6+5+3+1+3+6+8-4=86. Thresholds must be adjusted based on these values.
 
+This process is run as a normal search, which control over the scoring. For more
+information about how search works in MarkLogic, see [Understanding the Search
+Process][understanding-search]. The match process uses the simple scoring
+option, with the property weight controlling how much influence each should
+have. To read more about how scoring works in MarkLogic, see [Relevance Scores:
+Understanding and Customizing][scoring]. 
+
 ## Saving Options
 
 Matching options may be stored before starting the matching process. Doing so
@@ -190,3 +199,5 @@ To save match options using XQuery, import `matcher.xqy` and call the
 `matcher:save-options` function.
 
 [zip.xqy]: https://github.com/marklogic-community/smart-mastering-core/blob/master/src/main/ml-modules/ext/com.marklogic.smart-mastering/algorithms/zip.xqy
+[understanding-search]: http://docs.marklogic.com/guide/performance/unfiltered#id_13165
+[scoring]: http://docs.marklogic.com/guide/search-dev/relevance#chapter
