@@ -250,7 +250,7 @@ declare function match-impl:minimum-threshold-combinations($query-results, $thre
     return $query
   (: Each of $queries-ge-threshold has a weight high enough to hit the $threshold :)
   let $queries-ge-threshold := $weighted-queries[@weight][@weight ge $threshold]
-  let $queries-lt-threshold := $weighted-queries except $queries-ge-threshold
+  let $queries-lt-threshold := $weighted-queries[fn:empty(@weight) or @weight lt $threshold]
   return (
     $queries-ge-threshold ! cts:query(.),
     match-impl:filter-for-required-queries($queries-lt-threshold, 0, $threshold, ())
