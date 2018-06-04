@@ -24,7 +24,7 @@ most important collection is `$CONTENT-COLL`, which contains the current set of
 entities that should be used by an application. When a set of documents get
 merged, they are moved out of that collection and into the `$ARCHIVED-COLL`
 collection. The generated merged document will be in the `$CONTENT-COLL` and
-`$MERGED-COLL` collections. 
+`$MERGED-COLL` collections.
 
 ## Matching
 
@@ -32,21 +32,17 @@ The matching process begins with a document, which we'll call the "original"
 document. This document may be selected because it's just been inserted into the
 database, or because a process is cycling through all content.
 
-The original document contains a set of properties, each with values. The
-[match configuration][match-config] specifies what properties are to be used
-for matching. The heart of the matching process is using these property values
-to construct a query to be run against the other entity documents in the
-database. Each property that is involved in matching turns into a `cts:query`;
-these queries are bundled together and used to run a search to find potential
-matches.
+![Matching Process](/smart-mastering-core/images/matching.png)
 
-The assembled query has two parts: a match query and a boost query. The boost
-query consists of queries for all properties, with their respective weights. The
-match query is a subset of all the queries, chosen to ensure that any potential
-match that gets returned will have a score of at least the lowest threshold
-configured in the match options.
+1. The original document gets inserted into the database and the matching
+process begins.
+2. The matcher uses the [match configuration][match-config] and the original
+document to determine the properties and values that will be used for matching.
+3. The property values are turned into a query.
+4. The matcher runs the query to identify potential matches for the original
+document.
 
-The combined query will be run once, generating a score-ordered sequence of
+The query will be run once, generating a score-ordered sequence of
 potential matches, each of which is labeled according to a threshold of match
 probability. A match response will look like this:
 
