@@ -10,9 +10,10 @@ Smart Mastering Core offers a configuration-driven matching capability. The
 match process starts with a document (referred to as the "candidate" document)
 and looks for other documents that might describe the same entity. Match
 configuration includes the properties to look for, how to compare them, and what
-thresholds to use for taking action on the matches. The match process returns
-a relevance-ranked sequence of potential matches, based on the weights you
-specify.
+thresholds to use for taking action on the matches. Only the properties listed
+under the `scoring` element will be used to find and score potential matches. 
+The match process returns a relevance-ranked sequence of potential matches, based 
+on the weights you specify.
 
 ## Configuring Options
 
