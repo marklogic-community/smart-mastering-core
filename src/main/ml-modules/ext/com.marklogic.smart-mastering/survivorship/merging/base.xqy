@@ -21,6 +21,7 @@ declare namespace merging = "http://marklogic.com/smart-mastering/merging";
 declare namespace sm = "http://marklogic.com/smart-mastering";
 declare namespace es = "http://marklogic.com/entity-services";
 declare namespace prov = "http://www.w3.org/ns/prov#";
+declare namespace host = "http://marklogic.com/xdmp/status/host";
 
 declare option xdmp:mapping "false";
 
@@ -63,127 +64,153 @@ declare function merge-impl:build-merging-map($merging-xml)
   ))
 };
 
+(:
+ : Check whether all the URIs are already write-locked. If they are, they have been updated.
+ : ASSUMPTION: If a content doc has been updated, it's because it was archived, which means that it was already merged.
+ : Therefore, we don't want it to get merged into something else.
+ : Scenario this is here to prevent is doing match-and-merge on multiple documents within the same transaction:
+ : - docA -- docB is a good match, archive docA and docB; create docAB
+ : - docB -- docA is a good match. docA and docB are already archived, don't create docBA.
+ :
+ : @param $uris list of URIs to be checked
+ : @return fn:true() if this transaction already has write locks on ALL of the URIs
+ :)
+declare function merge-impl:all-merged($uris as xs:string*) as xs:boolean
+{
+  let $locks := xdmp:transaction-locks()/host:write/fn:string()
+  return
+    fn:fold-left(
+      function($z, $a) {$z and $a},
+      fn:true(),
+      for $uri in $uris
+      return $uri = $locks
+    )
+};
 
 declare function merge-impl:save-merge-models-by-uri(
   $uris as xs:string*,
   $merge-options as item()?
 )
 {
-  let $merge-options :=
-    if ($merge-options instance of object-node()) then
-      merge-impl:options-from-json($merge-options)
-    else
-      $merge-options
-  let $id := sem:uuid-string()
-  let $merge-uri := $MERGED-DIR||$id||".xml"
-  let $merged-uris := $uris[xdmp:document-get-collections(.) = $const:MERGED-COLL]
-  let $uris :=
-    for $uri in $uris
-    let $is-merged := $uri = $merged-uris
-    return
-      if ($is-merged) then
-        auditing:auditing-receipts-for-doc-uri($uri)
-          /prov:collection/@prov:id[. ne $uri] ! fn:string(.)
+  if (merge-impl:all-merged($uris)) then
+    xdmp:log("Skipping merge because all uris to be merged (" || fn:string-join($uris, ", ") ||
+      ") were already write-locked", "debug")
+  else
+    let $merge-options :=
+      if ($merge-options instance of object-node()) then
+        merge-impl:options-from-json($merge-options)
       else
-        $uri
-  let $parsed-properties :=
-      merge-impl:parse-final-properties-for-merge(
-        $uris,
+        $merge-options
+    let $id := sem:uuid-string()
+    let $merge-uri := $MERGED-DIR||$id||".xml"
+    let $merged-uris := $uris[xdmp:document-get-collections(.) = $const:MERGED-COLL]
+    let $uris :=
+      for $uri in $uris
+      let $is-merged := $uri = $merged-uris
+      return
+        if ($is-merged) then
+          auditing:auditing-receipts-for-doc-uri($uri)
+            /prov:collection/@prov:id[. ne $uri] ! fn:string(.)
+        else
+          $uri
+    let $parsed-properties :=
+        merge-impl:parse-final-properties-for-merge(
+          $uris,
+          $merge-options
+        )
+    let $final-properties := map:get($parsed-properties, "final-properties")
+    let $docs := map:get($parsed-properties, "documents")
+    let $instances := map:get($parsed-properties, "instances")
+    let $top-level-properties := map:get($parsed-properties, "top-level-properties")
+    let $sources := map:get($parsed-properties, "sources")
+    let $wrapper-qnames := map:get($parsed-properties, "wrapper-qnames")
+    let $merged-document :=
+      merge-impl:build-merge-models-by-final-properties(
+        $id,
+        $docs,
+        $wrapper-qnames,
+        $final-properties,
         $merge-options
       )
-  let $final-properties := map:get($parsed-properties, "final-properties")
-  let $docs := map:get($parsed-properties, "documents")
-  let $instances := map:get($parsed-properties, "instances")
-  let $top-level-properties := map:get($parsed-properties, "top-level-properties")
-  let $sources := map:get($parsed-properties, "sources")
-  let $wrapper-qnames := map:get($parsed-properties, "wrapper-qnames")
-  let $merged-document :=
-    merge-impl:build-merge-models-by-final-properties(
-      $id,
-      $docs,
-      $wrapper-qnames,
-      $final-properties,
-      $merge-options
-    )
-  let $_audit-trail :=
-    auditing:audit-trace(
-      $const:MERGE-ACTION,
-      $uris,
-      $merge-uri,
-      let $generated-entity-id := $auditing:sm-prefix ||$merge-uri
-      let $property-related-prov :=
-        for $prop in $final-properties,
-          $value in map:get($prop, "values")
-        let $type := fn:string(fn:node-name($value))
-        let $value-text := history:normalize-value-for-tracing($value)
-        let $hash := xdmp:sha512($value-text)
-        let $algorithm-info := map:get($prop, "algorithm")
-        let $algorithm-agent := "algorithm:"||$algorithm-info/name||";options:"||$algorithm-info/optionsReference
-        for $source in map:get($prop, "sources")
-        let $used-entity-id := $auditing:sm-prefix || $source/documentUri || $type || $hash
-        return (
-          element prov:entity {
-            attribute prov:id {$used-entity-id},
-            element prov:type {$type},
-            element prov:label {$source/name || ":" || $type},
-            element prov:location {fn:string($source/documentUri)},
-            element prov:value { $value-text }
-          },
-          element prov:wasDerivedFrom {
-            element prov:generatedEntity {
-              attribute prov:ref { $generated-entity-id }
+    let $_audit-trail :=
+      auditing:audit-trace(
+        $const:MERGE-ACTION,
+        $uris,
+        $merge-uri,
+        let $generated-entity-id := $auditing:sm-prefix ||$merge-uri
+        let $property-related-prov :=
+          for $prop in $final-properties,
+            $value in map:get($prop, "values")
+          let $type := fn:string(fn:node-name($value))
+          let $value-text := history:normalize-value-for-tracing($value)
+          let $hash := xdmp:sha512($value-text)
+          let $algorithm-info := map:get($prop, "algorithm")
+          let $algorithm-agent := "algorithm:"||$algorithm-info/name||";options:"||$algorithm-info/optionsReference
+          for $source in map:get($prop, "sources")
+          let $used-entity-id := $auditing:sm-prefix || $source/documentUri || $type || $hash
+          return (
+            element prov:entity {
+              attribute prov:id {$used-entity-id},
+              element prov:type {$type},
+              element prov:label {$source/name || ":" || $type},
+              element prov:location {fn:string($source/documentUri)},
+              element prov:value { $value-text }
             },
-            element prov:usedEntity {
-              attribute prov:ref { $used-entity-id }
+            element prov:wasDerivedFrom {
+              element prov:generatedEntity {
+                attribute prov:ref { $generated-entity-id }
+              },
+              element prov:usedEntity {
+                attribute prov:ref { $used-entity-id }
+              }
+            },
+            element prov:wasInfluencedBy {
+              element prov:influencee { attribute prov:ref { $used-entity-id }},
+              element prov:influencer { attribute prov:ref { $algorithm-agent }}
             }
+          )
+        let $prop-prov-entities := $property-related-prov[. instance of element(prov:entity)]
+        let $other-prop-prov := $property-related-prov except $prop-prov-entities
+        return (
+          element prov:hadMember {
+            element prov:collection { attribute prov:ref { $generated-entity-id } },
+            $prop-prov-entities
           },
-          element prov:wasInfluencedBy {
-            element prov:influencee { attribute prov:ref { $used-entity-id }},
-            element prov:influencer { attribute prov:ref { $algorithm-agent }}
+          $other-prop-prov,
+          for $agent-id in
+            fn:distinct-values(
+              $other-prop-prov[. instance of element(prov:wasInfluencedBy)]/
+                prov:influencer/
+                  @prov:ref ! fn:string(.)
+            )
+          return element prov:softwareAgent {
+            attribute prov:id {$agent-id},
+            element prov:label {fn:substring-before(fn:substring-after($agent-id,"algorithm:"), ";")},
+            element prov:location {fn:substring-after($agent-id,"options:")}
           }
         )
-      let $prop-prov-entities := $property-related-prov[. instance of element(prov:entity)]
-      let $other-prop-prov := $property-related-prov except $prop-prov-entities
-      return (
-        element prov:hadMember {
-          element prov:collection { attribute prov:ref { $generated-entity-id } },
-          $prop-prov-entities
-        },
-        $other-prop-prov,
-        for $agent-id in
-          fn:distinct-values(
-            $other-prop-prov[. instance of element(prov:wasInfluencedBy)]/
-              prov:influencer/
-                @prov:ref ! fn:string(.)
-          )
-        return element prov:softwareAgent {
-          attribute prov:id {$agent-id},
-          element prov:label {fn:substring-before(fn:substring-after($agent-id,"algorithm:"), ";")},
-          element prov:location {fn:substring-after($agent-id,"options:")}
-        }
       )
-    )
-  return (
-    $merged-document,
-    for $uri in fn:distinct-values(($uris, $merged-uris))[fn:doc-available(.)]
-    return
-      merge-impl:archive-document($uri),
-    xdmp:document-insert(
-      $merge-uri,
+    return (
       $merged-document,
-      (
-        xdmp:permission($const:MDM-ADMIN, "update"),
-        xdmp:permission($const:MDM-USER, "read")
-      ),
-      (
-        $const:CONTENT-COLL,
-        $const:MERGED-COLL,
-        fn:distinct-values(
-          $uris ! xdmp:document-get-collections(.)[fn:not(fn:starts-with(.,"mdm-"))]
+      for $uri in fn:distinct-values(($uris, $merged-uris))[fn:doc-available(.)]
+      return
+        merge-impl:archive-document($uri),
+      xdmp:document-insert(
+        $merge-uri,
+        $merged-document,
+        (
+          xdmp:permission($const:MDM-ADMIN, "update"),
+          xdmp:permission($const:MDM-USER, "read")
+        ),
+        (
+          $const:CONTENT-COLL,
+          $const:MERGED-COLL,
+          fn:distinct-values(
+            $uris ! xdmp:document-get-collections(.)[fn:not(fn:starts-with(.,"mdm-"))]
+          )
         )
       )
     )
-  )
 };
 
 
