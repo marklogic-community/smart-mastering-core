@@ -615,7 +615,7 @@ declare function merge-impl:objects-equal($object1 as map:map, $object2 as map:m
   merge-impl:objects-equal-recursive($object1, $object2)
 };
 
-declare function merge-impl:objects-equal-recursive($object1, $object2) as xs:boolean
+declare function merge-impl:objects-equal-recursive($object1, $object2)
 {
   typeswitch($object1)
     case map:map return
