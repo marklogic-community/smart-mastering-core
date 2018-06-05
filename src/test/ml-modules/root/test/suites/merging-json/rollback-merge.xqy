@@ -37,15 +37,13 @@ let $merged-doc :=
     $lib:INVOKE_OPTIONS
   )
 
-let $assertions := xdmp:eager(()
-(: TODO: uncomment me when https://github.com/marklogic-community/ml-unit-test/issues/19 is fixed
+let $assertions := xdmp:eager(
   let $smid := $merged-doc/*:envelope/*:headers/*:id/fn:string()
-  let $s1-dt := $merged-doc//*:source[*:name = "SOURCE1"]/*:dateTime/fn:string()
-  let $s2-dt := $merged-doc//*:source[*:name = "SOURCE2"]/*:dateTime/fn:string()
+  let $s1-dt := $merged-doc//*:sources[*:name = "SOURCE1"]/*:dateTime/fn:string()
+  let $s2-dt := $merged-doc//*:sources[*:name = "SOURCE2"]/*:dateTime/fn:string()
   let $expected := xdmp:to-json(xdmp:from-json-string('{"envelope":{"headers":{"id":"' || $smid || '","merges":[{"document-uri":"/source/1/doc1.json"},{"document-uri":"/source/2/doc2.json"}],"sources":[{"name":"SOURCE2","import-id":"mdm-import-b96735af-f7c3-4f95-9ea1-f884bc395e0f","user":"admin","dateTime":"' || $s2-dt || '"},{"name":"SOURCE1","import-id":"mdm-import-8cf89514-fb1d-45f1-b95f-8b69f3126f04","user":"admin","dateTime":"' || $s1-dt || '"}]}, "instance":{"MDM":{"Person":{"PersonType":{"Address":{"AddressType":{"AddressPrivateMailboxText":"45","AddressSecondaryUnitText":"JANA","LocationCityName":"SCRANTON","LocationPostalCode":"18505","LocationState":"PA"}}, "CaseAmount": 1287.9, "CaseStartDate":"20110406","CustomThing":["2","1"],"PersonBirthDate":"19801001","PersonName":{"PersonNameType":{"PersonGivenName":"LINDSEY","PersonSurName":"JONES"}}, "PersonSSNIdentification":{"PersonSSNIdentificationType":{"IdentificationID":"393225353"}}, "PersonSex":"F","Revenues":{"RevenuesType":{"Revenue":"4332"}}, "id":["6270654339","6986792174"]}}}}}}'))
   return
     test:assert-equal-json($expected, $merged-doc)
-:)
 )
 
 let $merged-id := $merged-doc/*:envelope/*:headers/*:id
