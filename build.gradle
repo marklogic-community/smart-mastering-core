@@ -8,7 +8,8 @@ buildscript {
     }
   }
   dependencies {
-    classpath "com.marklogic:ml-unit-test-client:0.10.0"
+    classpath "com.marklogic:ml-unit-test-client:0.11.1"
+    classpath "com.marklogic:ml-gradle:${mlGradleVersion}"
   }
 }
 
@@ -30,10 +31,10 @@ repositories {
 }
 
 dependencies {
-  mlRestApi "com.marklogic:ml-unit-test:0.10.0"
+  mlRestApi "com.marklogic:ml-unit-test-modules:0.11.1"
 
   // For running ml-unit-test tests via JUnit
-  testCompile "com.marklogic:ml-unit-test-client:0.10.0"
+  testCompile "com.marklogic:ml-unit-test-client:0.11.1"
   testCompile "junit:junit:4+"
 }
 
