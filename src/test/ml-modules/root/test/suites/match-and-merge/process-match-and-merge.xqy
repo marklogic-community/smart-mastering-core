@@ -1,7 +1,5 @@
 xquery version "1.0-ml";
 
-import module namespace matcher = "http://marklogic.com/smart-mastering/matcher"
-  at "/ext/com.marklogic.smart-mastering/matcher.xqy";
 import module namespace constants = "http://marklogic.com/smart-mastering/constants"
   at "/ext/com.marklogic.smart-mastering/constants.xqy";
 import module namespace process = "http://marklogic.com/smart-mastering/process-records"
