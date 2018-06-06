@@ -20,7 +20,7 @@ declare function proc-impl:process-match-and-merge($uri as xs:string)
 };
 
 declare function proc-impl:process-match-and-merge($uri as xs:string, $option-name as xs:string)
-  as item()?
+  as item()*
 {
   proc-impl:process-match-and-merge-with-options(
     $uri,
@@ -63,11 +63,11 @@ declare function proc-impl:process-match-and-merge-with-options($uri as xs:strin
       /*:results[@threshold = $threshold-label]
         /@uri ! fn:string(.)
     where fn:exists($document-uris)
+    order by $threshold/@above/fn:number() descending
     return (
       if ($threshold-action = $const:MERGE-ACTION) then
         merging:save-merge-models-by-uri(
-          ($uri,
-          $document-uris),
+          ($uri, $document-uris),
           $options
         )
       else if ($threshold-action = $const:NOTIFY-ACTION) then

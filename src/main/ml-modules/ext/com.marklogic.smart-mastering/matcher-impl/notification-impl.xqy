@@ -48,7 +48,8 @@ declare function notify-impl:save-match-notification(
           }
       }
     }
-  return
+  return (
+    $new-notification,
     if (fn:exists($existing-notification)) then (
       xdmp:node-replace(fn:head($existing-notification), $new-notification),
       for $extra-doc in fn:tail($existing-notification)
@@ -66,6 +67,7 @@ declare function notify-impl:save-match-notification(
         ),
         $const:NOTIFICATION-COLL
       )
+  )
 };
 
 declare function notify-impl:get-existing-match-notification(
