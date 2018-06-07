@@ -1,0 +1,22 @@
+xquery version "1.0-ml";
+
+import module namespace matcher = "http://marklogic.com/smart-mastering/matcher"
+  at "/ext/com.marklogic.smart-mastering/matcher.xqy";
+import module namespace constants = "http://marklogic.com/smart-mastering/constants"
+  at "/ext/com.marklogic.smart-mastering/constants.xqy";
+import module namespace lib = "http://marklogic.com/smart-mastering/test" at "lib/lib.xqy";
+
+import module namespace test = "http://marklogic.com/roxy/test-helper" at "/test/test-helper.xqy";
+
+declare option xdmp:mapping "false";
+
+let $doc := fn:doc($lib:URI2)
+let $options := matcher:get-options-as-xml($lib:SCORE-OPTIONS-NAME)
+let $max-score := fn:sum($options//*:add/@weight)
+let $actual := matcher:find-document-matches-by-options-name($doc, $lib:SCORE-OPTIONS-NAME)
+let $_ := xdmp:log(("max:", $max-score,"actual:",$actual))
+let $score := $actual//results[@uri="/source/3/doc3.xml"]/@score/xs:int(.)
+let $_ := xdmp:log(("score", $score))
+return (
+  test:assert-equal($max-score, $score)
+)

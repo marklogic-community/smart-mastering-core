@@ -63,16 +63,9 @@ declare function match-impl:find-document-matches-by-options(
     element match-query {
       $match-query
     }
-  let $serialized-match-query-combinations := $serialized-match-query/cts:and-query/cts:or-query//element(*, cts:query)
   let $reduced-boost := cts:query(
     element cts:or-query {
-      for $query in $serialized-query/cts:or-query/element(*, cts:query)
-      where fn:not(
-        some $match-combo in $serialized-match-query-combinations
-        satisfies fn:deep-equal($query, $match-combo)
-      )
-      return
-        $query
+      $serialized-query/cts:or-query/element(*, cts:query)
     }
   )
   let $_lock-on-search :=
@@ -252,9 +245,31 @@ declare function match-impl:minimum-threshold-combinations($query-results, $thre
   let $queries-ge-threshold := $weighted-queries[@weight][@weight ge $threshold]
   let $queries-lt-threshold := $weighted-queries[fn:empty(@weight) or @weight lt $threshold]
   return (
-    $queries-ge-threshold ! cts:query(.),
+    match-impl:strip-query-weights($queries-ge-threshold) ! cts:query(.),
     match-impl:filter-for-required-queries($queries-lt-threshold, 0, $threshold, ())
   )
+};
+
+(: sets the @weight attributes from cts:queries to 0 :)
+declare function match-impl:strip-query-weights($queries)
+{
+  for $query in $queries
+  return
+    typeswitch ($query)
+      case schema-element(cts:query) return
+        element { fn:node-name($query) } {
+          if (fn:ends-with(fn:local-name($query), "-query")) then
+            attribute { "weight" } { 0 }
+          else (),
+          $query/@*[fn:not(self::attribute(weight))],
+          match-impl:strip-query-weights($query/node())
+        }
+      case element() return
+        element { fn:node-name($query) } {
+          $query/@*,
+          match-impl:strip-query-weights($query/node())
+        }
+      default return $query
 };
 
 (:
@@ -276,7 +291,9 @@ declare function match-impl:filter-for-required-queries(
 {
   if ($threshold eq 0 or $combined-weight ge $threshold) then (
     cts:and-query(
-      $accumulated-queries ! cts:query(.)
+      for $query in $accumulated-queries
+      return
+        match-impl:strip-query-weights($query) ! cts:query(.)
     )
   )
   else

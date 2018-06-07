@@ -10,6 +10,7 @@ import module namespace test = "http://marklogic.com/roxy/test-helper" at "/test
 declare option xdmp:mapping "false";
 
 matcher:save-options($lib:MATCH-OPTIONS-NAME, test:get-test-file("match-options.xml")),
+matcher:save-options($lib:SCORE-OPTIONS-NAME, test:get-test-file("scoring-options.xml")),
 
 for $uri in map:keys($lib:TEST-DATA)
 let $doc := test:get-test-file(map:get($lib:TEST-DATA, $uri))
