@@ -26,14 +26,16 @@ declare option xdmp:mapping "false";
 let $actual :=
   xdmp:invoke-function(
     function() {
-      process:process-match-and-merge($lib:URI2, $lib:MERGE-OPTIONS-NAME),
-      process:process-match-and-merge($lib:URI3, $lib:MERGE-OPTIONS-NAME)
+      <result>{process:process-match-and-merge($lib:URI2, $lib:MERGE-OPTIONS-NAME)}</result>,
+      <result>{process:process-match-and-merge($lib:URI3, $lib:MERGE-OPTIONS-NAME)}</result>
     },
     $lib:INVOKE_OPTIONS
   )
 
 return (
-  test:assert-exists($actual[1]),
-  test:assert-not-exists($actual[2]),
-  test:assert-same-values(($lib:URI2, $lib:URI3), $actual[1]/es:headers/sm:merges/sm:document-uri/fn:string())
+  test:assert-exists(($actual[1]/node())),
+  test:assert-equal(xs:QName("es:envelope"), fn:node-name($actual[1]/node()[1])),
+  test:assert-equal(xs:QName("sm:notification"), fn:node-name($actual[1]/node()[2])),
+  test:assert-equal(xs:QName("sm:notification"), fn:node-name($actual[2]/node())),
+  test:assert-same-values(($lib:URI2, $lib:URI3), $actual[1]/es:envelope/es:headers/sm:merges/sm:document-uri/fn:string())
 )
