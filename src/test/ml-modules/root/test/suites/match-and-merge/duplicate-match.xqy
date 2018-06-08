@@ -1,11 +1,11 @@
 xquery version "1.0-ml";
 
 import module namespace matcher = "http://marklogic.com/smart-mastering/matcher"
-at "/ext/com.marklogic.smart-mastering/matcher.xqy";
+  at "/ext/com.marklogic.smart-mastering/matcher.xqy";
 import module namespace constants = "http://marklogic.com/smart-mastering/constants"
-at "/ext/com.marklogic.smart-mastering/constants.xqy";
+  at "/ext/com.marklogic.smart-mastering/constants.xqy";
 import module namespace process = "http://marklogic.com/smart-mastering/process-records"
-at "/ext/com.marklogic.smart-mastering/process-records.xqy";
+  at "/ext/com.marklogic.smart-mastering/process-records.xqy";
 import module namespace lib = "http://marklogic.com/smart-mastering/test" at "lib/lib.xqy";
 
 import module namespace test = "http://marklogic.com/roxy/test-helper" at "/test/test-helper.xqy";
@@ -36,6 +36,6 @@ return (
   test:assert-exists(($actual[1]/node())),
   test:assert-equal(xs:QName("es:envelope"), fn:node-name($actual[1]/node()[1])),
   test:assert-equal(xs:QName("sm:notification"), fn:node-name($actual[1]/node()[2])),
-  test:assert-equal(xs:QName("sm:notification"), fn:node-name($actual[2]/node())),
+  test:assert-equal(xs:QName("sm:notification"), fn:node-name($actual[2]/node()[1])),
   test:assert-same-values(($lib:URI2, $lib:URI3), $actual[1]/es:envelope/es:headers/sm:merges/sm:document-uri/fn:string())
 )

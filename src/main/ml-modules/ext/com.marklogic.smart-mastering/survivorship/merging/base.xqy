@@ -192,27 +192,43 @@ declare function merge-impl:save-merge-models-by-uri(
       )
     return (
       $merged-document,
-      for $uri in fn:distinct-values(($uris, $merged-uris))[fn:doc-available(.)]
-      return
-        merge-impl:archive-document($uri),
-      xdmp:document-insert(
-        $merge-uri,
-        $merged-document,
-        (
-          xdmp:permission($const:MDM-ADMIN, "update"),
-          xdmp:permission($const:MDM-USER, "read")
-        ),
-        (
-          $const:CONTENT-COLL,
-          $const:MERGED-COLL,
-          fn:distinct-values(
-            $uris ! xdmp:document-get-collections(.)[fn:not(fn:starts-with(.,"mdm-"))]
-          )
+      let $distinct-uris := fn:distinct-values(($uris, $merged-uris))[fn:doc-available(.)]
+      let $collections := (
+        $const:CONTENT-COLL,
+        $const:MERGED-COLL,
+        fn:distinct-values(
+          $distinct-uris ! xdmp:document-get-collections(.)[fn:not(fn:starts-with(.,"mdm-"))]
         )
       )
+      (: Can't archive these documents in the child transaction because this
+       : transaction (the parent) already has read locks on them. We do the
+       : merge in a child transaction so that for any notifications that get
+       : generated, we can check whether the docs have been merged already and
+       : have the notification report the new URI.
+       :)
+      let $_ := $distinct-uris ! merge-impl:archive-document(.)
+      return
+        xdmp:invoke-function(
+          function() {
+            merge-impl:record-merge($uris, $merge-uri, $merged-document, $collections)
+          },
+          map:new((map:entry("isolation", "different-transaction"), map:entry("update", "true")))
+        )
     )
 };
 
+declare function merge-impl:record-merge($uris, $merge-uri, $merged-document, $merged-doc-collections)
+{
+  xdmp:document-insert(
+    $merge-uri,
+    $merged-document,
+    (
+      xdmp:permission($const:MDM-ADMIN, "update"),
+      xdmp:permission($const:MDM-USER, "read")
+    ),
+    $merged-doc-collections
+  )
+};
 
 declare function merge-impl:rollback-merge(
   $merged-doc-uri as xs:string

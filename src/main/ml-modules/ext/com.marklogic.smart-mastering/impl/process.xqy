@@ -54,28 +54,27 @@ declare function proc-impl:process-match-and-merge-with-options($uri as xs:strin
       $lock-on-query,
       fn:false()
     )
+  let $merge-uris as xs:string* := $matching-results/results[@action = $const:MERGE-ACTION]/@uri/fn:string()
+  let $notifies := $matching-results/results[@action = $const:NOTIFY-ACTION]
   return (
-    for $threshold in $thresholds
-    let $threshold-label := $threshold/@label
-    let $threshold-action := $threshold/@action
-    let $document-uris :=
-      $matching-results
-      /*:results[@threshold = $threshold-label]
-        /@uri ! fn:string(.)
-    where fn:exists($document-uris)
-    order by $threshold/@above/fn:number() descending
-    return (
-      if ($threshold-action = $const:MERGE-ACTION) then
-        merging:save-merge-models-by-uri(
-          ($uri, $document-uris),
-          $options
-        )
-      else if ($threshold-action = $const:NOTIFY-ACTION) then
-        matcher:save-match-notification(
-          $threshold-label,
-          ($uri, $document-uris)
-        )
-      else ()
-    )
+    (: Must do merges before notifications so that notifications can update
+     : their URI references for docs that got merged. Those merges are done
+     : in a separate transaction so that they'll be visible.
+     :)
+    if (fn:exists($merge-uris)) then
+      merging:save-merge-models-by-uri(
+        ($uri, $merge-uris),
+        $options
+      )
+    else (),
+
+    let $threshold-labels := fn:distinct-values($notifies/@threshold/fn:string())
+    for $label in $threshold-labels
+    let $notify-uris := $notifies[@threshold eq $label]/@uri/fn:string()
+    return
+      matcher:save-match-notification(
+        $label,
+        ($uri, $notify-uris)
+      )
   )
 };
