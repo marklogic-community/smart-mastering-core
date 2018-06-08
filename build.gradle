@@ -17,7 +17,7 @@ plugins {
   id "java"
   id "maven-publish"
   id "com.jfrog.bintray" version "1.7.3"
-  id "com.marklogic.ml-gradle" version "3.6.3"
+  id "com.marklogic.ml-gradle" version "3.7.1"
   id 'net.saliman.properties' version '1.4.6'
 }
 
