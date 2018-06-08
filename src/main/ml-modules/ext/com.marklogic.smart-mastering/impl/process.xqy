@@ -20,7 +20,7 @@ declare function proc-impl:process-match-and-merge($uri as xs:string)
 };
 
 declare function proc-impl:process-match-and-merge($uri as xs:string, $option-name as xs:string)
-  as element()?
+  as item()?
 {
   proc-impl:process-match-and-merge-with-options(
     $uri,
