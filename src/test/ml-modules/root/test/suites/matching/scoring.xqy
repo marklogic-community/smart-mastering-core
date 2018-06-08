@@ -17,4 +17,13 @@ let $actual := matcher:find-document-matches-by-options-name($doc, $lib:SCORE-OP
 let $score := $actual//results[@uri="/source/3/doc3.xml"]/@score/xs:int(.)
 return (
   test:assert-equal($max-score, $score)
+),
+
+let $doc := fn:doc($lib:URI2)
+let $options := matcher:get-options-as-xml($lib:SCORE-OPTIONS-NAME2)
+let $max-score := fn:sum($options//*:add/@weight)
+let $actual := matcher:find-document-matches-by-options-name($doc, $lib:SCORE-OPTIONS-NAME2)
+let $score := $actual//results[@uri="/source/3/doc3.xml"]/@score/xs:int(.)
+return (
+  test:assert-equal($max-score, $score)
 )

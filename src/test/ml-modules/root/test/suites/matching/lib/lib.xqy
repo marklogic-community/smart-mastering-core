@@ -23,4 +23,5 @@ declare variable $TEST-DATA :=
 
 declare variable $MATCH-OPTIONS-NAME := "match-test";
 declare variable $SCORE-OPTIONS-NAME := "score-options";
+declare variable $SCORE-OPTIONS-NAME2 := "score-options2";
 

@@ -250,7 +250,9 @@ declare function match-impl:minimum-threshold-combinations($query-results, $thre
   )
 };
 
-(: sets the @weight attributes from cts:queries to 0 :)
+(: sets the @weight attributes from cts:queries to 0
+ : note: return type left off to allow for tail recursion optimization
+ :)
 declare function match-impl:strip-query-weights($queries)
 {
   for $query in $queries

@@ -15,7 +15,7 @@
     <algorithm name="dbl-metaphone" function="double-metaphone"/>
   </algorithms>
   <scoring>
-    <add property-name="state" weight="1"/>
+    <add property-name="state" weight="2"/>
   </scoring>
   <thresholds>
     <threshold above="1" label="Possible Match"/>
