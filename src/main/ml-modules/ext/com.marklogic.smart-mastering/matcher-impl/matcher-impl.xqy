@@ -72,23 +72,28 @@ declare function match-impl:find-document-matches-by-options(
     if ($lock-on-search) then
       match-impl:lock-on-search($serialized-match-query/cts:and-query/cts:or-query)
     else ()
+  let $results :=
+    match-impl:search(
+      $match-query,
+      $reduced-boost,
+      $minimum-threshold,
+      $thresholds,
+      $start,
+      $page-length,
+      $scoring,
+      $algorithms,
+      $options,
+      $include-matches
+    )
   return (
     $_lock-on-search,
     element results {
+      attribute total { xdmp:estimate(cts:search(fn:collection(), $match-query, "unfiltered")) },
+      attribute page-length { $page-length },
+      attribute start { $start },
       element boost-query {$reduced-boost},
       $serialized-match-query,
-      match-impl:search(
-        $match-query,
-        $reduced-boost,
-        $minimum-threshold,
-        $thresholds,
-        $start,
-        $page-length,
-        $scoring,
-        $algorithms,
-        $options,
-        $include-matches
-      )
+      $results
     }
   )
 };
@@ -138,60 +143,56 @@ declare function match-impl:search(
   $include-matches as xs:boolean
 ) {
   let $range := $start to ($start + $page-length - 1)
-  let $additional-documents :=
-    for $result at $pos in cts:search(
-      fn:collection(),
-      cts:boost-query(
-        $match-query,
-        $boosting-query
-      ),
-      ("unfiltered", "score-simple")
-    )[fn:position() = $range]
-    let $score := match-impl:simple-score($result)
-    let $result-stub :=
-      element results {
-        attribute uri {xdmp:node-uri($result)},
-        attribute index {$range[fn:position() = $pos]},
-        attribute total {cts:remainder($result)},
-        if ($include-matches) then
-          element matches {
-            cts:walk(
-              $result,
-              cts:or-query((
-                $match-query,
-                $boosting-query
-              )),
-              $cts:node/..
-            )
-          }
-        else ()
-      }
-    let $reduced-score := $score -
-      fn:sum(
-        for $reduction in $scoring/matcher:reduce
-        let $algorithm := map:get($algorithms, $reduction/@algorithm-ref)
-        where fn:exists($algorithm) and algorithms:execute-algorithm($algorithm, $result-stub, $reduction, $options)
-        return $reduction/@weight ! fn:number(.)
-      )
-    where $score ge $min-threshold
-    return
-      element results {
-        $result-stub/@*,
-        attribute score {$reduced-score},
-        let $selected-threshold := (
-          for $threshold in $thresholds/matcher:threshold
-          where $reduced-score ge fn:number($threshold/@above)
-          order by fn:number($threshold/@above) descending
-          return $threshold
-        )[1]
-        return (
-          attribute threshold { fn:string($selected-threshold/@label) },
-          attribute action { fn:string($selected-threshold/@action) }
-        ),
-        $result-stub/*
-      }
+  for $result at $pos in cts:search(
+    fn:collection(),
+    cts:boost-query(
+      $match-query,
+      $boosting-query
+    ),
+    ("unfiltered", "score-simple")
+  )[fn:position() = $range]
+  let $score := match-impl:simple-score($result)
+  let $result-stub :=
+    element result {
+      attribute uri {xdmp:node-uri($result)},
+      attribute index {$range[fn:position() = $pos]},
+      if ($include-matches) then
+        element matches {
+          cts:walk(
+            $result,
+            cts:or-query((
+              $match-query,
+              $boosting-query
+            )),
+            $cts:node/..
+          )
+        }
+      else ()
+    }
+  let $reduced-score := $score -
+    fn:sum(
+      for $reduction in $scoring/matcher:reduce
+      let $algorithm := map:get($algorithms, $reduction/@algorithm-ref)
+      where fn:exists($algorithm) and algorithms:execute-algorithm($algorithm, $result-stub, $reduction, $options)
+      return $reduction/@weight ! fn:number(.)
+    )
+  where $score ge $min-threshold
   return
-    $additional-documents
+    element result {
+      $result-stub/@*,
+      attribute score {$reduced-score},
+      let $selected-threshold := (
+        for $threshold in $thresholds/matcher:threshold
+        where $reduced-score ge fn:number($threshold/@above)
+        order by fn:number($threshold/@above) descending
+        return $threshold
+      )[1]
+      return (
+        attribute threshold { fn:string($selected-threshold/@label) },
+        attribute action { fn:string($selected-threshold/@action) }
+      ),
+      $result-stub/*
+    }
 };
 
 (:

@@ -60,7 +60,7 @@ declare function proc-impl:process-match-and-merge-with-options($uri as xs:strin
     let $threshold-action := $threshold/@action
     let $document-uris :=
       $matching-results
-      /*:results[@threshold = $threshold-label]
+      /*:result[@threshold = $threshold-label]
         /@uri ! fn:string(.)
     where fn:exists($document-uris)
     return (
