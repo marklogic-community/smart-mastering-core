@@ -11,14 +11,62 @@ import module namespace test = "http://marklogic.com/roxy/test-helper" at "/test
 declare option xdmp:mapping "false";
 
 let $doc := fn:doc($lib:URI2)
-let $actual := matcher:find-document-matches-by-options-name($doc, $lib:MATCH-OPTIONS-NAME, fn:true())
+let $options := matcher:get-options-as-xml($lib:MATCH-OPTIONS-NAME)
 return (
-  test:assert-true($actual instance of element(results)),
-  test:assert-equal($actual/@total/xs:int(.), fn:count($actual/result)),
-  test:assert-equal($actual/@total/xs:int(.), 5),
-  test:assert-not-exists($actual/result/@total),
-  for $r at $i in $actual/result
-  order by $r/@index/xs:int(.) ascending
-  return
-    test:assert-equal($i, $r/@index/xs:int(.))
+  (: test page length gt # of results :)
+  let $actual := matcher:find-document-matches-by-options($doc, $options, 1, 6, fn:true())
+  return (
+    test:assert-true($actual instance of element(results)),
+    test:assert-equal(6, $actual/@page-length/xs:int(.)),
+    test:assert-equal(5, fn:count($actual/result)),
+    test:assert-equal(1, $actual/@start/xs:int(.)),
+    test:assert-equal(5, $actual/@total/xs:int(.)),
+    test:assert-not-exists($actual/result/@total),
+    for $r at $i in $actual/result
+    order by $r/@index/xs:int(.) ascending
+    return
+      test:assert-equal($i, $r/@index/xs:int(.))
+  ),
+
+  (: test page length < # of results :)
+  let $actual := matcher:find-document-matches-by-options($doc, $options, 1, 2, fn:true())
+  return (
+    test:assert-true($actual instance of element(results)),
+    test:assert-equal(2, $actual/@page-length/xs:int(.)),
+    test:assert-equal(2, fn:count($actual/result)),
+    test:assert-equal(1, $actual/@start/xs:int(.)),
+    test:assert-equal(5, $actual/@total/xs:int(.)),
+    test:assert-not-exists($actual/result/@total),
+    for $r at $i in $actual/result
+    order by $r/@index/xs:int(.) ascending
+    return
+      test:assert-equal($i, $r/@index/xs:int(.))
+  ),
+
+  (: test last page :)
+  let $actual := matcher:find-document-matches-by-options($doc, $options, 5, 2, fn:true())
+  return (
+    test:assert-true($actual instance of element(results)),
+    test:assert-equal(2, $actual/@page-length/xs:int(.)),
+    test:assert-equal(1, fn:count($actual/result)),
+    test:assert-equal(5, $actual/@start/xs:int(.)),
+    test:assert-equal(5, $actual/@total/xs:int(.)),
+    test:assert-not-exists($actual/result/@total),
+    for $r at $i in $actual/result
+    order by $r/@index/xs:int(.) ascending
+    return
+      test:assert-equal($i + 4, $r/@index/xs:int(.))
+  ),
+
+  (: test no results :)
+  let $doc := fn:doc($lib:URI7)
+  let $actual := matcher:find-document-matches-by-options($doc, $options, 5, 2, fn:true())
+  return (
+    test:assert-true($actual instance of element(results)),
+    test:assert-equal(2, $actual/@page-length/xs:int(.)),
+    test:assert-equal(0, fn:count($actual/result)),
+    test:assert-equal(5, $actual/@start/xs:int(.)),
+    test:assert-equal(0, $actual/@total/xs:int(.)),
+    test:assert-not-exists($actual/result/@total)
+  )
 )

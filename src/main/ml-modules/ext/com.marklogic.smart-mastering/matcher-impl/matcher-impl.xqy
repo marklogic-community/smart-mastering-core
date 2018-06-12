@@ -88,7 +88,9 @@ declare function match-impl:find-document-matches-by-options(
   return (
     $_lock-on-search,
     element results {
-      attribute total { fn:count($results) },
+      attribute total { xdmp:estimate(cts:search(fn:collection(), $match-query, "unfiltered")) },
+      attribute page-length { $page-length },
+      attribute start { $start },
       element boost-query {$reduced-boost},
       $serialized-match-query,
       $results
