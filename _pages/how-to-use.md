@@ -2,10 +2,10 @@
 layout: inner
 title: How to Apply Smart Mastering
 lead_text: ''
-permalink: /docs/how-to-use/
+permalink: /how-to-use/
 ---
 
-# How to Apply Smart Mastering
+# How Do I Use It?
 
 To use Smart Mastering in your project, start by adding it to your project as
 shown in the [minimal-project example][minproject].

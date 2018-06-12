@@ -1,16 +1,16 @@
 main:
-    - { url: '/', text: 'Getting Started' }
-    - {
-      url: '/docs/',
-      text: 'Docs',
-      childPages: [
-        { url: '/docs/how-does-it-work/', text: 'How Does it Work' },
-        { url: '/docs/how-to-use/', text: 'How to Use' },
-        { url: '/docs/rest/', text: 'REST API' },
-        { url: '/docs/libraries/', text: 'Libraries' },
-        { url: '/docs/matching-options/', text: 'Matching Options' },
-        { url: '/docs/merging-options/', text: 'Merging Options' }
-      ]
-    }
-    - { url: '/faqs/', text: 'FAQs' }
-    - { absurl: 'https://github.com/marklogic-community/smart-mastering-core', text: 'Smart Mastering on GitHub' }
+  - { url: '/', text: 'Getting Started' }
+  - { url: '/how-does-it-work/', text: 'How Does it Work?' }
+  - { url: '/how-to-use/', text: 'How do I Use it?' }
+  - {
+    url: '/docs/',
+    text: 'Docs',
+    childPages: [
+      { url: '/docs/rest/', text: 'REST API' },
+      { url: '/docs/libraries/', text: 'Libraries' },
+      { url: '/docs/matching-options/', text: 'Matching Options' },
+      { url: '/docs/merging-options/', text: 'Merging Options' }
+    ]
+  }
+  - { url: '/faqs/', text: 'FAQs' }
+  - { absurl: 'https://github.com/marklogic-community/smart-mastering-core', text: 'Smart Mastering on GitHub' }

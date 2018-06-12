@@ -2,7 +2,7 @@
 layout: inner
 title: How Does it Work?
 lead_text: ''
-permalink: /docs/how-does-it-work/
+permalink: /how-does-it-work/
 ---
 
 # How Does it Work?
