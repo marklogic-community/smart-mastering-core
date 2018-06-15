@@ -231,19 +231,19 @@ declare function matcher:allow-match($uri1 as xs:string, $uri2 as xs:string)
 (:
  : Paged retrieval of notifications
  :)
-declare function matcher:get-notifications-as-xml($start as xs:int, $end as xs:int)
+declare function matcher:get-notifications-as-xml($start as xs:int, $end as xs:int, $extractions as map:map)
   as element(sm:notification)*
 {
-  notify-impl:get-notifications-as-xml($start, $end)
+  notify-impl:get-notifications-as-xml($start, $end, $extractions)
 };
 
 (:
  : Paged retrieval of notifications
  :)
-declare function matcher:get-notifications-as-json($start as xs:int, $end as xs:int)
+declare function matcher:get-notifications-as-json($start as xs:int, $end as xs:int, $extractions as map:map)
   as array-node()
 {
-  notify-impl:get-notifications-as-json($start, $end)
+  notify-impl:get-notifications-as-json($start, $end, $extractions)
 };
 
 (:
