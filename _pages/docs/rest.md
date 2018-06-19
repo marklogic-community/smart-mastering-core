@@ -102,7 +102,37 @@ review.
   - parameters
     - `rs:start` -- optional; integer defaulting to 1
     - `rs:pageLength` -- optional; integer defaulting to 10
-- POST: update the status of a notification
+- POST: retrieve a paged list of notifications with the option to pass in a configuration  
+  - parameters
+    - `rs:start` -- optional; integer defaulting to 1
+    - `rs:pageLength` -- optional; integer defaulting to 10
+    - `post body`  
+JSON object with a JSON object of "extractions"  
+extractions look like:  
+`{ "name": "QName" }`  
+<br/>
+when run, the value inside the document at QName will be returned  
+in a key/value extractions section under the key "name".  
+<br/>
+example:  
+`body => { "firstName", "PersonFirstName" }`  
+<br/>
+this would extract the value in the PersonFirstName field  
+<br/>
+`<Person><PersonFirstName>Bob</PersonFirstName><PersonLastName>Smith</PersonLastName></Person>`
+<br/>
+<br/>
+returns:  
+`{
+  ...
+  extractions: {
+    "/uri1.xml": {
+      "firstName": "Bob"
+    }
+  }
+}`  
+
+- PUT: update the status of a notification
   - body of message: a JSON object with two properties
     - "uris" -- an array of strings with the URIs of notifications to be updated
     - "status" -- new status for the notifications; must be either "read" or
