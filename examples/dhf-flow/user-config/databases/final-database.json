@@ -1,0 +1,24 @@
+{
+  "range-element-index" : [ {
+    "scalar-type" : "string",
+    "namespace-uri" : "",
+    "localname" : "PersonGivenName",
+    "collation" : "http://marklogic.com/collation/",
+    "range-value-positions" : false,
+    "invalid-values" : "reject"
+  }, {
+    "scalar-type" : "string",
+    "namespace-uri" : "",
+    "localname" : "PersonSurName",
+    "collation" : "http://marklogic.com/collation/",
+    "range-value-positions" : false,
+    "invalid-values" : "reject"
+  }, {
+    "scalar-type" : "string",
+    "namespace-uri" : "http://marklogic.com/agile-mastering",
+    "localname" : "name",
+    "collation" : "http://marklogic.com/collation/",
+    "range-value-positions" : false,
+    "invalid-values" : "reject"
+  } ]
+}
