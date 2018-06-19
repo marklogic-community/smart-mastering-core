@@ -11,7 +11,11 @@ declare namespace sm = "http://marklogic.com/smart-mastering";
 
 declare option xdmp:mapping "false";
 
-let $actual := matcher:get-notifications-as-xml(1, 10)
+let $extractions := map:new((
+  map:entry("lastName", "PersonSurName"),
+  map:entry("stuff", "junk")
+))
+let $actual := matcher:get-notifications-as-xml(1, 10, $extractions)
 let $likely := $actual[sm:threshold-label = $lib:LBL-LIKELY]
 let $possible := $actual[sm:threshold-label = $lib:LBL-POSSIBLE]
 
@@ -30,5 +34,14 @@ return (
   test:assert-same-values(
     $lib:URI-SET2,
     $possible/sm:document-uris/sm:document-uri/fn:string()
-  )
+  ),
+
+  test:assert-equal(3, fn:count($likely/sm:extractions)),
+  test:assert-equal(6, fn:count($likely/sm:extractions/sm:extraction)),
+  test:assert-equal("JONES", $likely/sm:extractions[@uri = $lib:URI1]/sm:extraction[@name="lastName"]/fn:string()),
+  test:assert-equal("JONES", $likely/sm:extractions[@uri = $lib:URI2]/sm:extraction[@name="lastName"]/fn:string()),
+  test:assert-equal("JONES", $likely/sm:extractions[@uri = $lib:URI3]/sm:extraction[@name="lastName"]/fn:string()),
+  test:assert-equal("", $likely/sm:extractions[@uri = $lib:URI1]/sm:extraction[@name="stuff"]/fn:string()),
+  test:assert-equal("", $likely/sm:extractions[@uri = $lib:URI2]/sm:extraction[@name="stuff"]/fn:string()),
+  test:assert-equal("", $likely/sm:extractions[@uri = $lib:URI3]/sm:extraction[@name="stuff"]/fn:string())
 )

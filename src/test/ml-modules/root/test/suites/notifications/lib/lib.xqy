@@ -15,13 +15,28 @@ declare variable $INVOKE_OPTIONS :=
 declare variable $LBL-LIKELY := "Likely Match";
 declare variable $LBL-POSSIBLE := "Possible Match";
 
-declare variable $URI-SET1 := ("/content1.xml", "/content2.xml", "/content3.xml");
-declare variable $URI-SET2 := ("/content4.xml", "/content5.xml");
+declare variable $URI1 := "/content1.xml";
+declare variable $URI2 := "/content2.xml";
+declare variable $URI3 := "/content3.xml";
+declare variable $URI4 := "/content4.xml";
+declare variable $URI5 := "/content5.xml";
+
+declare variable $URI-SET1 := ($URI1, $URI2, $URI3);
+declare variable $URI-SET2 := ($URI4, $URI5);
+
+declare variable $TEST-DATA :=
+  map:new((
+    map:entry($URI1, "content1.xml"),
+    map:entry($URI2, "content2.xml"),
+    map:entry($URI3, "content3.xml"),
+    map:entry($URI4, "content4.xml"),
+    map:entry($URI5, "content5.xml")
+  ));
 
 (: Get a notification without creating a lock. :)
 declare function lib:get-notification($label, $uris)
 {
-  xdmp:invoke-function(function() { notify-impl:get-existing-match-notification($label, $uris) }, $INVOKE_OPTIONS)
+  xdmp:invoke-function(function() { notify-impl:get-existing-match-notification($label, $uris, map:map()) }, $INVOKE_OPTIONS)
 };
 
 (: Call the save-match-nofication function in a different transaction :)

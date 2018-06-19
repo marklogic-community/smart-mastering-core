@@ -7,6 +7,9 @@ import module namespace matcher = "http://marklogic.com/smart-mastering/matcher"
 
 declare option xdmp:mapping "false";
 
+(:
+ : Get a page of notifications
+ :)
 declare function get(
   $context as map:map,
   $params  as map:map
@@ -15,13 +18,63 @@ declare function get(
   let $start := (map:get($params, "start"), 1)[1] ! xs:int(.)
   let $page-size := (map:get($params, "pageLength"), 10)[1] ! xs:int(.)
   let $end := $start + $page-size - 1
+  let $extractions := map:map()
   return
     document {
       object-node {
         "total": matcher:count-notifications(),
         "start": $start,
         "pageLength": $page-size,
-        "notifications": matcher:get-notifications-as-json($start, $end)
+        "notifications": matcher:get-notifications-as-json($start, $end, $extractions)
+      }
+    }
+};
+
+(:
+ : Get a page of notifications
+ : @body  JSON object with a JSON object of "extractions"
+ :        extractions look like:
+ :        "name": "QName"
+ :
+ :        when run, the value inside the document at QName will be returned
+ :        in a key/value extractions section under the key "name".
+ :
+ :        example:
+ :        body => { "firstName", "PersonFirstName" }
+ :
+ :        this would extract the value in the PersonFirstName field
+ :        <Person>
+ :          <PersonFirstName>Bob</PersonFirstName>
+ :          <PersonLastName>Smith</PersonLastName>
+ :        </Person>
+ :
+ :        returns:
+ :        {
+ :           ...
+ :           extractions: {
+ :             "/uri1.xml": {
+ :               "firstName": "Bob"
+ :             }
+ :           }
+ :        }
+ :)
+declare function post(
+  $context as map:map,
+  $params  as map:map,
+  $input   as document-node()*
+) as document-node()?
+{
+  let $start := (map:get($params, "start"), 1)[1] ! xs:int(.)
+  let $page-size := (map:get($params, "pageLength"), 10)[1] ! xs:int(.)
+  let $end := $start + $page-size - 1
+  let $extractions := $input/node()
+  return
+    document {
+      object-node {
+        "total": matcher:count-notifications(),
+        "start": $start,
+        "pageLength": $page-size,
+        "notifications": matcher:get-notifications-as-json($start, $end, $extractions)
       }
     }
 };
@@ -31,7 +84,7 @@ declare function get(
  : @body  JSON object with two properties: uris and status. uris is an array containing URI strings. status must
  :        use the values of $matcher:STATUS-READ or $matcher:STATUS-UNREAD.
  :)
-declare function post(
+declare function put(
   $context as map:map,
   $params  as map:map,
   $input   as document-node()*
