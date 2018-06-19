@@ -21,7 +21,6 @@ let $options :=
   </options>
 let $resp := test:http-get('/v1/resources/sm-notifications', $options)[2]/object-node()
 let $actual := $resp/notifications
-let $_ := xdmp:log(("actual", $actual))
 let $likely := $resp/notifications[thresholdLabel = $lib:LBL-LIKELY]
 let $possible := $resp/notifications[thresholdLabel = $lib:LBL-POSSIBLE]
 
@@ -55,13 +54,16 @@ let $options :=
       <username>admin</username>
       <password>admin</password>
     </authentication>
+    <headers>
+      <Content-Type>application/json</Content-Type>
+    </headers>
+    <format xmlns="xdmp:document-get">json</format>
   </options>
-let $resp := test:http-get('/v1/resources/sm-notifications', $options)[2]/object-node()
+let $uri := test:easy-url('/v1/resources/sm-notifications')
+let $resp := xdmp:http-post($uri, $options, xdmp:to-json($extractions))[2]/object-node()
 let $actual := $resp/notifications
-let $_ := xdmp:log(("actual", $actual))
 let $likely := $resp/notifications[thresholdLabel = $lib:LBL-LIKELY]
 let $possible := $resp/notifications[thresholdLabel = $lib:LBL-POSSIBLE]
-
 return (
   test:assert-equal(2, fn:count($actual)),
 
@@ -77,39 +79,53 @@ return (
   test:assert-same-values(
     $lib:URI-SET2,
     $possible/uris/node()/fn:string()
-  )
-)
-
-(:
-
-let $actual := matcher:get-notifications-as-xml(1, 10, $extractions)
-let $likely := $actual[sm:threshold-label = $lib:LBL-LIKELY]
-let $possible := $actual[sm:threshold-label = $lib:LBL-POSSIBLE]
-
-return (
-  test:assert-equal(2, fn:count($actual)),
-
-  test:assert-exists($likely),
-  test:assert-equal(3, fn:count($likely/sm:document-uris/sm:document-uri)),
-  test:assert-same-values(
-    $lib:URI-SET1,
-    $likely/sm:document-uris/sm:document-uri/fn:string()
   ),
+  test:assert-equal(3, fn:count($likely/extractions/node())),
+  test:assert-equal(6, fn:count($likely/extractions/node()/node())),
+  test:assert-equal("JONES", ($likely/extractions/node()/lastName/fn:string())[1]),
+  test:assert-equal("JONES", ($likely/extractions/node()/lastName/fn:string())[2]),
+  test:assert-equal("JONES", ($likely/extractions/node()/lastName/fn:string())[3]),
+  test:assert-equal("", ($likely/extractions/node()/stuff/fn:string())[1]),
+  test:assert-equal("", ($likely/extractions/node()/stuff/fn:string())[2]),
+  test:assert-equal("", ($likely/extractions/node()/stuff/fn:string())[3])
+),
 
-  test:assert-exists($possible),
-  test:assert-equal(2, fn:count($possible/sm:document-uris/sm:document-uri)),
-  test:assert-same-values(
-    $lib:URI-SET2,
-    $possible/sm:document-uris/sm:document-uri/fn:string()
-  ),
 
-  test:assert-equal(3, fn:count($likely/sm:extractions)),
-  test:assert-equal(6, fn:count($likely/sm:extractions/sm:extraction)),
-  test:assert-equal("JONES", $likely/sm:extractions[@uri = $lib:URI1]/sm:extraction[@name="lastName"]/fn:string()),
-  test:assert-equal("JONES", $likely/sm:extractions[@uri = $lib:URI2]/sm:extraction[@name="lastName"]/fn:string()),
-  test:assert-equal("JONES", $likely/sm:extractions[@uri = $lib:URI3]/sm:extraction[@name="lastName"]/fn:string()),
-  test:assert-equal("", $likely/sm:extractions[@uri = $lib:URI1]/sm:extraction[@name="stuff"]/fn:string()),
-  test:assert-equal("", $likely/sm:extractions[@uri = $lib:URI2]/sm:extraction[@name="stuff"]/fn:string()),
-  test:assert-equal("", $likely/sm:extractions[@uri = $lib:URI3]/sm:extraction[@name="stuff"]/fn:string())
-)
-:)
+(: TEST PUT - TOGGLE READ/UNREAD STATUS :)
+let $uris := cts:uri-match("/com.marklogic.smart-mastering/matcher/notifications/*")
+let $body := object-node {
+  "uris": array-node { $uris },
+  "status": "read"
+}
+let $options :=
+  <options xmlns="xdmp:http">
+    <authentication method="digest">
+      <username>admin</username>
+      <password>admin</password>
+    </authentication>
+    <headers>
+      <Content-Type>application/json</Content-Type>
+    </headers>
+    <format xmlns="xdmp:document-get">json</format>
+  </options>
+let $uri := test:easy-url('/v1/resources/sm-notifications')
+let $resp := xdmp:http-put($uri, $options, $body)
+return
+(),
+
+(: do this here to force the above put to complete :)
+let $options :=
+  <options xmlns="xdmp:http">
+    <authentication method="digest">
+      <username>admin</username>
+      <password>admin</password>
+    </authentication>
+    <headers>
+      <Content-Type>application/json</Content-Type>
+    </headers>
+    <format xmlns="xdmp:document-get">json</format>
+  </options>
+let $resp := test:http-get('/v1/resources/sm-notifications', $options)[2]/object-node()
+let $actual := $resp/notifications
+return
+  test:assert-equal(("read", "read"), $actual//*:status/fn:string())
