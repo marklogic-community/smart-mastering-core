@@ -35,21 +35,11 @@ declare function notify-impl:save-match-notification(
       },
       element sm:threshold-label {$threshold-label},
       element sm:document-uris {
-        let $distinct-uris :=
-          fn:distinct-values((
-            $uris,
-            $existing-notification
-            /sm:document-uris
-              /sm:document-uri ! fn:string(.)
-          ))
-        for $uri in $distinct-uris
-        return
-          element sm:document-uri {
-            $uri
-          }
+        notify-impl:find-notify-uris($uris, $existing-notification)
       }
     }
-  return
+  return (
+    $new-notification,
     if (fn:exists($existing-notification)) then (
       xdmp:node-replace(fn:head($existing-notification), $new-notification),
       for $extra-doc in fn:tail($existing-notification)
@@ -67,6 +57,42 @@ declare function notify-impl:save-match-notification(
         ),
         $const:NOTIFICATION-COLL
       )
+  )
+};
+
+(:
+ : It may be the case that one of the URIs has already been merged with some
+ : other document. In that case, replace it with the URI of the doc it was
+ : merged into. This can happen when process-match-and-merge gets run multiple
+ : times in a single transaction. Document merges happen in a child transaction
+ : so that they will be visible here.
+ :)
+declare function notify-impl:find-notify-uris($uris as xs:string*, $existing-notification)
+  as element(sm:document-uri)*
+{
+  (: check each URI to see whether it appears in a merged document :)
+  let $updated-uris :=
+    for $uri in $uris
+    let $merged-uri :=
+      cts:uris((), (),
+        cts:and-query((
+          cts:collection-query($const:CONTENT-COLL),
+          cts:collection-query($const:MERGED-COLL),
+          cts:element-value-query(xs:QName("sm:document-uri"), $uri))
+        ))
+    return fn:head(($merged-uri, $uri))
+  let $distinct-uris :=
+    fn:distinct-values((
+      $updated-uris,
+      $existing-notification
+      /sm:document-uris
+        /sm:document-uri ! fn:string(.)
+    ))
+  for $uri in $distinct-uris
+  return
+    element sm:document-uri {
+      $uri
+    }
 };
 
 declare function notify-impl:get-existing-match-notification(

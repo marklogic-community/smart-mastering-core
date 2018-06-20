@@ -18,6 +18,8 @@ import module namespace opt-impl = "http://marklogic.com/smart-mastering/options
   at "/ext/com.marklogic.smart-mastering/matcher-impl/options-impl.xqy";
 
 declare namespace matcher = "http://marklogic.com/smart-mastering/matcher";
+declare namespace sm = "http://marklogic.com/smart-mastering";
+declare namespace es = "http://marklogic.com/entity-services";
 
 declare option xdmp:mapping "false";
 
@@ -72,18 +74,21 @@ declare function match-impl:find-document-matches-by-options(
     if ($lock-on-search) then
       match-impl:lock-on-search($serialized-match-query/cts:and-query/cts:or-query)
     else ()
-  let $results :=
-    match-impl:search(
-      $match-query,
-      $reduced-boost,
-      $minimum-threshold,
-      $thresholds,
-      $start,
-      $page-length,
-      $scoring,
-      $algorithms,
-      $options,
-      $include-matches
+  let $matches :=
+    match-impl:drop-redundant(
+      $document,
+      match-impl:search(
+        $match-query,
+        $reduced-boost,
+        $minimum-threshold,
+        $thresholds,
+        $start,
+        $page-length,
+        $scoring,
+        $algorithms,
+        $options,
+        $include-matches
+      )
     )
   return (
     $_lock-on-search,
@@ -93,8 +98,48 @@ declare function match-impl:find-document-matches-by-options(
       attribute start { $start },
       element boost-query {$reduced-boost},
       $serialized-match-query,
-      $results
+      $matches
     }
+  )
+};
+
+(:
+ : Does each item in $s1 appear in $s2?
+ :)
+declare function match-impl:seq-contains($s1, $s2)
+{
+  every $s in $s1 satisfies $s = $s2
+};
+
+(:
+ : Merges happen in a child transaction. If we're calling match functions
+ : multiple times within the same transaction, a merge document may end up
+ : matching. In case that happens, remove it and its source documents from the
+ : list of matches.
+ : Rule: if all sources from a merged document are in the list of documents to
+ :       be merged, drop the merged document and the sources.
+ :)
+declare function match-impl:drop-redundant($uri, $matches as element(results)*)
+  as element(results)*
+{
+  let $drop := map:map()
+  let $merge-results := $matches[@action=$const:MERGE-ACTION]
+  let $merge-uris := ($uri, $merge-results/@uri/fn:string())
+  let $merges :=
+    for $merge in $merge-results
+    return
+      if (xdmp:document-get-collections($merge/@uri) = $const:MERGED-COLL) then
+        let $sources := fn:doc($merge/@uri)/es:envelope/es:headers/sm:merges/sm:document-uri/fn:string()
+        return
+          if (match-impl:seq-contains($sources, $merge-uris)) then
+            ($sources ! map:put($drop, ., fn:true()))
+          else ()
+      else
+        $merge
+  let $drop-uris := map:keys($drop)
+  return (
+    $merges except $merge-results[@uri = $drop-uris],
+    $matches[@action ne $const:MERGE-ACTION]
   )
 };
 
@@ -332,9 +377,9 @@ declare function match-impl:lock-on-search($query-results)
   let $required-queries := $query-results/element(*,cts:query)
   for $required-query in $required-queries
   let $lock-uri := "/com.marklogic.smart-mastering/query-lock/"||
-  fn:normalize-unicode(
-    fn:normalize-space(fn:lower-case(fn:string($required-query)))
-  )
+    fn:normalize-unicode(
+      fn:normalize-space(fn:lower-case(fn:string($required-query)))
+    )
   return
     fn:function-lookup(xs:QName("xdmp:lock-for-update"),1)($lock-uri)
 };
