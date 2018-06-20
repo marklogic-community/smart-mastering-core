@@ -119,8 +119,8 @@ declare function match-impl:seq-contains($s1, $s2)
  : Rule: if all sources from a merged document are in the list of documents to
  :       be merged, drop the merged document and the sources.
  :)
-declare function match-impl:drop-redundant($uri, $matches as element(results)*)
-  as element(results)*
+declare function match-impl:drop-redundant($uri, $matches as element(result)*)
+  as element(result)*
 {
   let $drop := map:map()
   let $merge-results := $matches[@action=$const:MERGE-ACTION]
