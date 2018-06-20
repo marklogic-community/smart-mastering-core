@@ -16,6 +16,8 @@ import module namespace const = "http://marklogic.com/smart-mastering/constants"
   at "/ext/com.marklogic.smart-mastering/constants.xqy";
 import module namespace matcher = "http://marklogic.com/smart-mastering/matcher"
   at "/ext/com.marklogic.smart-mastering/matcher.xqy";
+import module namespace sem = "http://marklogic.com/semantics"
+  at "/MarkLogic/semantics.xqy";
 
 declare namespace merging = "http://marklogic.com/smart-mastering/merging";
 declare namespace sm = "http://marklogic.com/smart-mastering";
@@ -349,6 +351,16 @@ declare function merge-impl:build-merge-models-by-final-properties-to-xml(
         $docs/es:envelope/es:headers/*[fn:empty(self::sm:*)]
       }
     </es:headers>
+    <es:triples>{
+      sem:rdf-serialize(
+        sem:sparql(
+          'construct { ?s ?p ?o } where { ?s ?p ?o }',
+          (), "map",
+          sem:store((), cts:document-query(("/source/1/doc1.xml", "/source/2/doc2.xml")))
+        ),
+        "triplexml"
+      )/sem:triple
+    }</es:triples>
     <es:instance>{
       merge-impl:build-instance-body-by-final-properties(
         $final-properties,

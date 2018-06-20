@@ -11,7 +11,23 @@
       </smart-mastering:source>
     </smart-mastering:sources>
   </headers>
-  <triples/>
+  <triples xmlns:sem="http://marklogic.com/semantics">
+    <sem:triple>
+      <sem:subject>http://marklogic.com/sm-core/lindsey-jones</sem:subject>
+      <sem:predicate>http://marklogic.com/sm-core/lives-in</sem:predicate>
+      <sem:object>http://dbpedia.org/resource/Scranton,_Pennsylvania</sem:object>
+    </sem:triple>
+    <sem:triple>
+      <sem:subject>http://marklogic.com/sm-core/lindsey-jones</sem:subject>
+      <sem:predicate>http://marklogic.com/sm-core/ssn</sem:predicate>
+      <sem:object datatype="http://www.w3.org/2001/XMLSchema#string">393225353</sem:object>
+    </sem:triple>
+    <sem:triple>
+      <sem:subject>http://marklogic.com/sm-core/scranton</sem:subject>
+      <sem:predicate>http://marklogic.com/sm-core/is-in</sem:predicate>
+      <sem:object datatype="http://www.w3.org/2001/XMLSchema#string">Pennsylvania</sem:object>
+    </sem:triple>
+  </triples>
   <instance>
     <MDM xmlns="">
       <Person>
