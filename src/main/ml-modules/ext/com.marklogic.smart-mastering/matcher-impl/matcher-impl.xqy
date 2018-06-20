@@ -137,10 +137,13 @@ declare function match-impl:drop-redundant($uri, $matches as element(result)*)
       else
         $merge
   let $drop-uris := map:keys($drop)
-  return (
+  let $results := (
     $merges except $merge-results[@uri = $drop-uris],
     $matches[@action ne $const:MERGE-ACTION]
   )
+  for $result in $results
+  order by $result/@index
+  return $result
 };
 
 declare function match-impl:build-query($document, $property-defs, $scoring, $algorithms, $options)
