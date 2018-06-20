@@ -54,8 +54,8 @@ declare function proc-impl:process-match-and-merge-with-options($uri as xs:strin
       $lock-on-query,
       fn:false()
     )
-  let $merge-uris as xs:string* := $matching-results/results[@action = $const:MERGE-ACTION]/@uri/fn:string()
-  let $notifies := $matching-results/results[@action = $const:NOTIFY-ACTION]
+  let $merge-uris as xs:string* := $matching-results/result[@action = $const:MERGE-ACTION]/@uri/fn:string()
+  let $notifies := $matching-results/result[@action = $const:NOTIFY-ACTION]
   return (
     (: Must do merges before notifications so that notifications can update
      : their URI references for docs that got merged. Those merges are done

@@ -23,7 +23,8 @@ declare function notify-impl:save-match-notification(
   let $existing-notification :=
     notify-impl:get-existing-match-notification(
       $threshold-label,
-      $uris
+      $uris,
+      map:map()
     )
   let $new-notification :=
     element sm:notification {
@@ -96,10 +97,12 @@ declare function notify-impl:find-notify-uris($uris as xs:string*, $existing-not
 
 declare function notify-impl:get-existing-match-notification(
   $threshold-label as xs:string,
-  $uris as xs:string*
+  $uris as xs:string*,
+  $extractions as map:map
 ) as element(sm:notification)*
 {
-  cts:search(fn:collection()/sm:notification,
+  let $keys := map:keys($extractions)
+  for $notification in cts:search(fn:collection()/sm:notification,
     cts:and-query((
       cts:element-value-query(
         xs:QName("sm:threshold-label"),
@@ -111,7 +114,44 @@ declare function notify-impl:get-existing-match-notification(
       )
     ))
   )
+  return
+    if (fn:exists($keys)) then
+      notify-impl:enhance-notification-xml($notification, $extractions)
+    else
+      $notification
 };
+
+declare function notify-impl:enhance-notification-xml(
+  $notification as element(sm:notification),
+  $extractions as map:map)
+as element(sm:notification)
+{
+  element sm:notification {
+    $notification/@*,
+    attribute xml:base { xdmp:node-uri($notification) },
+    $notification/node(),
+
+    (: build extractions :)
+    let $keys := map:keys($extractions)
+    where fn:exists($keys)
+    return
+      for $uri in $notification/sm:document-uris/sm:document-uri
+      let $doc := fn:doc($uri)
+      return
+        element sm:extractions {
+          attribute uri { $uri },
+          for $key in map:keys($extractions)
+          let $xpath := "$doc//*:" || map:get($extractions, $key)
+          let $value := xdmp:value($xpath)
+          return
+            element sm:extraction {
+              attribute name { $key },
+              $value
+            }
+        }
+  }
+};
+
 
 (:
  : Delete the specified notification
@@ -125,7 +165,8 @@ declare function notify-impl:delete-notification($uri as xs:string)
 (:
  : Translate a notifcation into JSON.
  :)
-declare function notify-impl:notification-to-json($notification as element(sm:notification))
+declare function notify-impl:notification-to-json(
+  $notification as element(sm:notification))
   as object-node()
 {
   object-node {
@@ -141,14 +182,17 @@ declare function notify-impl:notification-to-json($notification as element(sm:no
       return
         object-node { "uri": $uri/fn:string() }
     },
-    "names": xdmp:to-json(
+    "extractions": xdmp:to-json(
       let $o := json:object()
       let $_ :=
-        for $uri in $notification/sm:document-uris/sm:document-uri
-        let $doc := fn:doc($uri)
-        let $name := $doc//*:PersonGivenName || " " || $doc//*:PersonSurName
+        for $extractions in $notification/sm:extractions
+        let $ee := json:object()
+        let $_ :=
+          for $extraction in $extractions/sm:extraction
+          return
+            map:put($ee, $extraction/@name, $extraction/fn:data(.))
         return
-          map:put($o, $uri, $name)
+          map:put($o, $extractions/@uri, $ee)
       return $o
     )
   }
@@ -157,20 +201,25 @@ declare function notify-impl:notification-to-json($notification as element(sm:no
 (:
  : Paged retrieval of notifications
  :)
-declare function notify-impl:get-notifications-as-xml($start as xs:int, $end as xs:int)
+declare function notify-impl:get-notifications-as-xml(
+  $start as xs:int,
+  $end as xs:int,
+  $extractions as map:map)
 as element(sm:notification)*
 {
-  (fn:collection($const:NOTIFICATION-COLL)[$start to $end])/sm:notification
+  for $n in (fn:collection($const:NOTIFICATION-COLL)[$start to $end])/sm:notification
+  return
+    notify-impl:enhance-notification-xml($n, $extractions)
 };
 
 (:
  : Paged retrieval of notifications
  :)
-declare function notify-impl:get-notifications-as-json($start as xs:int, $end as xs:int)
+declare function notify-impl:get-notifications-as-json($start as xs:int, $end as xs:int, $extractions as map:map)
 as array-node()
 {
   array-node {
-    notify-impl:get-notifications-as-xml($start, $end) ! notify-impl:notification-to-json(.)
+    notify-impl:get-notifications-as-xml($start, $end, $extractions) ! notify-impl:notification-to-json(.)
   }
 };
 
