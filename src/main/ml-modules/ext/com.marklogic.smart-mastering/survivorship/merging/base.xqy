@@ -336,39 +336,41 @@ declare function merge-impl:build-merge-models-by-final-properties-to-xml(
   $merge-options as item()?
 )
 {
-  <es:envelope>
-    <es:headers>
-      <sm:id>{$id}</sm:id>
-      <sm:merges>{
-        $docs/es:envelope/es:headers/sm:merges/sm:document-uri,
-        $docs ! element sm:document-uri { xdmp:node-uri(.) }
-      }</sm:merges>
-      <sm:sources>{
-        $docs/es:envelope/es:headers/sm:sources/sm:source
-      }</sm:sources>
-      {
-        (: TODO Add logic for merging headers :)
-        $docs/es:envelope/es:headers/*[fn:empty(self::sm:*)]
-      }
-    </es:headers>
-    <es:triples>{
-      sem:rdf-serialize(
-        sem:sparql(
-          'construct { ?s ?p ?o } where { ?s ?p ?o }',
-          (), "map",
-          sem:store((), cts:document-query(("/source/1/doc1.xml", "/source/2/doc2.xml")))
-        ),
-        "triplexml"
-      )/sem:triple
-    }</es:triples>
-    <es:instance>{
-      merge-impl:build-instance-body-by-final-properties(
-        $final-properties,
-        $wrapper-qnames,
-        "xml"
-      )
-    }</es:instance>
-  </es:envelope>
+  let $uris := $docs ! xdmp:node-uri(.)
+  return
+    <es:envelope>
+      <es:headers>
+        <sm:id>{$id}</sm:id>
+        <sm:merges>{
+          $docs/es:envelope/es:headers/sm:merges/sm:document-uri,
+          $uris ! element sm:document-uri { . }
+        }</sm:merges>
+        <sm:sources>{
+          $docs/es:envelope/es:headers/sm:sources/sm:source
+        }</sm:sources>
+        {
+          (: TODO Add logic for merging headers :)
+          $docs/es:envelope/es:headers/*[fn:empty(self::sm:*)]
+        }
+      </es:headers>
+      <es:triples>{
+        sem:rdf-serialize(
+          sem:sparql(
+            'construct { ?s ?p ?o } where { ?s ?p ?o }',
+            (), "map",
+            sem:store((), cts:document-query($uris))
+          ),
+          "triplexml"
+        )/sem:triple
+      }</es:triples>
+      <es:instance>{
+        merge-impl:build-instance-body-by-final-properties(
+          $final-properties,
+          $wrapper-qnames,
+          "xml"
+        )
+      }</es:instance>
+    </es:envelope>
 };
 
 declare function merge-impl:build-merge-models-by-final-properties-to-json(
@@ -379,30 +381,39 @@ declare function merge-impl:build-merge-models-by-final-properties-to-json(
   $merge-options as item()?
 )
 {
-  object-node {
-    "envelope": object-node {
-      "headers": xdmp:to-json(map:new((
-        map:entry("id", $id),
-        map:entry("merges", array-node {
-          $docs/envelope/headers/merges/object-node(),
-          $docs ! object-node { "document-uri": fn:base-uri(.) }
-        }),
-        map:entry("sources", array-node {
-          $docs/envelope/headers/sources
-        }),
-        (: TODO merging of carried forward headers :)
-        for $name in fn:distinct-values($docs/envelope/headers/* ! fn:node-name(.))[fn:not(fn:string(.) = ("sources","id","merges"))]
-        let $values := $docs/envelope/headers/*[fn:node-name(.) = $name]
-        return map:entry(fn:string($name), $values)
-      ))
-      )/object-node(),
-      "instance": merge-impl:build-instance-body-by-final-properties(
-        $final-properties,
-        $wrapper-qnames,
-        "json"
-      )
+  let $uris := $docs ! xdmp:node-uri(.)
+  return
+    object-node {
+      "envelope": object-node {
+        "headers": xdmp:to-json(map:new((
+          map:entry("id", $id),
+          map:entry("merges", array-node {
+            $docs/envelope/headers/merges/object-node(),
+            $uris ! object-node { "document-uri": . }
+          }),
+          map:entry("sources", array-node {
+            $docs/envelope/headers/sources
+          }),
+          (: TODO merging of carried forward headers :)
+          for $name in fn:distinct-values($docs/envelope/headers/* ! fn:node-name(.))[fn:not(fn:string(.) = ("sources","id","merges"))]
+          let $values := $docs/envelope/headers/*[fn:node-name(.) = $name]
+          return map:entry(fn:string($name), $values)
+        ))
+        )/object-node(),
+        "triples": array-node {
+          sem:sparql(
+            'construct { ?s ?p ?o } where { ?s ?p ?o }',
+            (), "map",
+            sem:store((), cts:document-query($uris))
+          )
+        },
+        "instance": merge-impl:build-instance-body-by-final-properties(
+          $final-properties,
+          $wrapper-qnames,
+          "json"
+        )
+      }
     }
-  }
 };
 
 declare function merge-impl:build-instance-body-by-final-properties(

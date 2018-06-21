@@ -14,7 +14,23 @@
         }
       ]
     },
-    "triples": [],
+    "triple": [
+      {
+        "subject": "http://marklogic.com/sm-core/lindsey-jones",
+        "predicate": "http://marklogic.com/sm-core/lives-in",
+        "object": "http://dbpedia.org/resource/Scranton,_Pennsylvania"
+      },
+      {
+        "subject": "http://marklogic.com/sm-core/lindsey-jones",
+        "predicate": "http://marklogic.com/sm-core/ssn",
+        "object": { "value": "393225353", "datatype": "xs:string" }
+      },
+      {
+        "subject": "http://marklogic.com/sm-core/scranton",
+        "predicate": "http://marklogic.com/sm-core/is-in",
+        "object": { "value": "Pennsylvania", "datatype": "xs:string" }
+      }
+    ],
     "instance": {
       "MDM": {
         "Person": {

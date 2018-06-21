@@ -28,12 +28,12 @@ let $merged-doc :=
     function() {
       merging:save-merge-models-by-uri(
         map:keys($lib:TEST-DATA),
-        merging:get-options($lib:OPTIONS-NAME, $const:FORMAT-XML))
+        merging:get-options($lib:OPTIONS-NAME, $const:FORMAT-JSON))
     },
     $lib:INVOKE_OPTIONS
   )
 
-let $triples := $merged-doc/es:triples/node()
+let $triples := $merged-doc/envelope/triples/node()
 
 return (
   (: each source doc has three triples, but one of each has the same s/p/o. :)

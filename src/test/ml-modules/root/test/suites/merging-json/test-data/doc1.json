@@ -14,7 +14,23 @@
         }
       ]
     },
-    "triples": [],
+    "triple": [
+      {
+        "subject": "http://marklogic.com/sm-core/lindsey-jones",
+        "predicate": "http://marklogic.com/sm-core/lives-in",
+        "object": "http://dbpedia.org/resource/Springfield,_Ohio"
+      },
+      {
+        "subject": "http://marklogic.com/sm-core/lindsey-jones",
+        "predicate": "http://marklogic.com/sm-core/ssn",
+        "object": { "value": "393225353", "datatype": "xs:string" }
+      },
+      {
+        "subject": "http://marklogic.com/sm-core/springfield",
+        "predicate": "http://marklogic.com/sm-core/is-in",
+        "object": { "value": "Ohio", "datatype": "xs:string" }
+      }
+    ],
     "instance": {
       "MDM": {
         "Person": {
