@@ -354,14 +354,11 @@ declare function merge-impl:build-merge-models-by-final-properties-to-xml(
         }
       </es:headers>
       <es:triples>{
-        sem:rdf-serialize(
-          sem:sparql(
-            'construct { ?s ?p ?o } where { ?s ?p ?o }',
-            (), "map",
-            sem:store((), cts:document-query($uris))
-          ),
-          "triplexml"
-        )/sem:triple
+        sem:sparql(
+          'construct { ?s ?p ?o } where { ?s ?p ?o }',
+          (), "map",
+          sem:store((), cts:document-query($uris))
+        )
       }</es:triples>
       <es:instance>{
         merge-impl:build-instance-body-by-final-properties(
