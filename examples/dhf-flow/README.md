@@ -9,10 +9,7 @@ This example shows you how to integrate Smart Mastering with your Data Hub Flows
   mlUsername=admin
   mlPassword=admin
   ```
-- Open a Terminal or Dos prompt into this folder
-- Install the Example Data Hub into MarkLogic  
-  **\*nix:** `./gradlew mlDeploy`  
-  **windows:** `gradlew.bat mlDeploy`  
+- Open a Terminal or Command Prompt into this folder
 - Setup the Example  
   **\*nix:** `./gradlew setupExample`  
   **windows:** `gradlew.bat setupExample`  
@@ -27,7 +24,7 @@ As with any DHF (Data Hub Framework) Harmonize flow you can run it via gradle or
 
 ### Running via Gradle
 
-- Open a Terminal or Dos prompt into this folder
+- Open a Terminal or Command Prompt into this folder
 - Run the Harmonize Flow  
   **\*nix:** `./gradlew hubRunFlow -PentityName=MDM -PflowName=SmartMaster`  
   **windows:** `gradlew.bat hubRunFlow -PentityName=MDM -PflowName=SmartMaster`  

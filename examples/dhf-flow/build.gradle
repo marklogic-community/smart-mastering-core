@@ -175,13 +175,21 @@ task harmonize(type: com.marklogic.gradle.task.RunFlowTask) {
 
 // this is a convenience task to setup the example project
 // for you completely
-task setupExample {
+task loadCode {
   dependsOn mlReloadModules
   dependsOn deployMatchOptions
   dependsOn deployMergeOptions
   dependsOn importThesauri
   dependsOn loadData
   dependsOn harmonize
+  mustRunAfter mlDeploy
+}
+
+// this is a convenience task to setup the example project
+// for you completely
+task setupExample {
+  dependsOn mlDeploy
+  dependsOn loadCode
 }
 
 //////////////////////////////////////////////////////////////
