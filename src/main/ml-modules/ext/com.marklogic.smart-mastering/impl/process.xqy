@@ -16,7 +16,7 @@ declare function proc-impl:process-match-and-merge($uri as xs:string)
 {
   for $merging-options in merging:get-options($const:FORMAT-XML)
   return
-    proc-impl:process-match-and-merge($uri, $merging-options)
+    proc-impl:process-match-and-merge-with-options($uri, $merging-options)
 };
 
 declare function proc-impl:process-match-and-merge($uri as xs:string, $option-name as xs:string)

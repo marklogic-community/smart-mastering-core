@@ -1,0 +1,93 @@
+{
+  "info": {
+    "title": "PersonName",
+    "version": "0.0.1"
+  },
+  "definitions": {
+    "PersonName": {
+      "required": [],
+      "rangeIndex": [],
+      "wordLexicon": [],
+      "properties": {
+        "PersonNamePrefixText": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "PersonGivenName": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "PersonMiddleName": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "PersonSurName": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "PersonNameSuffixText": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "PersonMaidenName": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "PersonFullName": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "PersonNameCategory": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "PersonNameSalutationText": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "PersonOfficialGivenName": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "PersonPreferredName": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "PersonSurNamePrefixText": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "PersonNameAugmentationPoint": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        }
+      }
+    }
+  }
+}

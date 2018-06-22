@@ -1,0 +1,113 @@
+{
+  "info" : {
+    "title" : "Person",
+    "version" : "0.0.1"
+  },
+  "definitions" : {
+    "Person" : {
+      "description" : "A data type for a human being.",
+      "required" : [ ],
+      "rangeIndex" : [ ],
+      "wordLexicon" : [ ],
+      "properties" : {
+        "PersonAccentText" : {
+          "datatype" : "array",
+          "items" : {
+            "datatype" : "string"
+          }
+        },
+        "PersonBloodType" : {
+          "datatype" : "array",
+          "items" : {
+            "datatype" : "string"
+          }
+        },
+        "PersonDescriptionText" : {
+          "datatype" : "array",
+          "items" : {
+            "datatype" : "string"
+          }
+        },
+        "PersonEducationLevelText" : {
+          "datatype" : "array",
+          "items" : {
+            "datatype" : "string"
+          }
+        },
+        "PersonName" : {
+          "datatype" : "array",
+          "items" : {
+            "$ref" : "#/definitions/PersonName"
+          }
+        },
+        "PersonRace" : {
+          "datatype" : "string"
+        },
+        "PersonSex" : {
+          "datatype" : "string"
+        },
+        "PersonBirthDate" : {
+          "datatype" : "array",
+          "items" : {
+            "datatype" : "string"
+          }
+        },
+        "PersonSSNIdentification" : {
+          "datatype" : "array",
+          "items" : {
+            "$ref" : "#/definitions/PersonSSNIdentification"
+          }
+        },
+        "PersonUnionStatus" : {
+          "datatype" : "array",
+          "items" : {
+            "datatype" : "string"
+          }
+        },
+        "PersonNationality" : {
+          "datatype" : "array",
+          "items" : {
+            "datatype" : "string"
+          }
+        },
+        "PersonPrimaryLanguage" : {
+          "datatype" : "array",
+          "items" : {
+            "datatype" : "string"
+          }
+        },
+        "IncidentCategoryCodeDate" : {
+          "datatype" : "array",
+          "items" : {
+            "datatype" : "string"
+          }
+        },
+        "CaseStartDate" : {
+          "datatype" : "array",
+          "items" : {
+            "datatype" : "string"
+          }
+        },
+        "CaseAmount" : {
+          "datatype" : "array",
+          "items" : {
+            "datatype" : "string"
+          }
+        },
+        "Revenue" : {
+          "datatype" : "array",
+          "items" : {
+            "datatype" : "string"
+          }
+        },
+        "Address" : {
+          "datatype" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Address"
+          }
+        }
+      }
+    }
+  }
+}
+
