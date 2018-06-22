@@ -1,6 +1,6 @@
-# Data Hub Framework Flow Example
+# Data Hub Framework Triggers Example
 
-This example shows you how to integrate Smart Mastering with your Data Hub by using triggers to kick off the mastering process.
+This example includes triggers that will run Smart Mastering against your data as it is harmonized.
 
 ## Setup
 
@@ -9,12 +9,12 @@ This example shows you how to integrate Smart Mastering with your Data Hub by us
   mlUsername=admin
   mlPassword=admin
   ```
-- Open a Terminal or Dos prompt into this folder
+- Open a Terminal or Command Prompt into this folder
 - Setup the Example  
   **\*nix:** `./gradlew setupExample`  
   **windows:** `gradlew.bat setupExample`  
 
-You have just installed a Data Hub Project into MarkLogic. You also loaded 3 data sets and harmonized them. If none of that makes sense, check out our [Data Hub Framework documentation](https://marklogic.github.io/marklogic-data-hub/).
+You have just installed a Data Hub Project into MarkLogic. You also loaded 3 data sets. If none of that makes sense, check out our [Data Hub Framework documentation](https://marklogic.github.io/marklogic-data-hub/).
 
 ## Mastering your Data
 
@@ -24,7 +24,7 @@ As with any DHF (Data Hub Framework) Harmonize flow you can run it via gradle or
 
 ### Running via Gradle
 
-- Open a Terminal or Dos prompt into this folder
+- Open a Terminal or Command Prompt into this folder
 - Run the Harmonize Flow  
   **\*nix:** `./gradlew hubRunFlow -PentityName=MDM -PflowName=MDMHarmonize`  
   **windows:** `gradlew.bat hubRunFlow -PentityName=MDM -PflowName=MDMHarmonize`  
@@ -81,5 +81,5 @@ The file should look like this:
 
 When you run the `gradle mlDeploy` command the triggers get configured for you. Similarly, the triggers are deployed when you use QuickStart to install your Hub.
 
-All the other code in this project is necessary for a functioning Data Hub. We've purposely trimmed it down to bare essentials so you can focus on the Harmonization piece.
+All the other code in this project is necessary for a functioning Data Hub. We've purposely trimmed it down to bare essentials so you can focus on the Mastering piece.
 
