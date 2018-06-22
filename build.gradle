@@ -45,6 +45,7 @@ bintray {
   pkg {
     repo = 'Maven'
     name = "smart-mastering-core"
+    userOrg = 'marklogic-community'
     licenses = ["Apache-2.0"]
     vcsUrl = "https://github.com/marklogic-community/smart-mastering-core.git"
     version {
