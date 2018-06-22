@@ -1,0 +1,25 @@
+{
+  "info" : {
+    "title" : "MDM",
+    "version" : "0.0.1",
+    "baseUri" : "http://release.niem.gov/niem/niem-core/3.0/",
+    "description" : "NIEM Core."
+  },
+  "definitions" : {
+    "MDM" : {
+      "description" : "The MDM entity root.",
+      "required" : [ ],
+      "rangeIndex" : [ ],
+      "wordLexicon" : [ ],
+      "properties" : {
+        "Person" : {
+          "$ref" : "#/definitions/Person"
+        },
+        "id" : {
+          "datatype" : "string",
+          "collation" : "http://marklogic.com/collation/codepoint"
+        }
+      }
+    }
+  }
+}

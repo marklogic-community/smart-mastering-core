@@ -1,0 +1,203 @@
+buildscript {
+  repositories {
+    mavenLocal()
+    jcenter()
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath "com.marklogic:ml-gradle:3.6.3"
+  }
+}
+
+plugins {
+  id 'net.saliman.properties' version '1.4.6'
+  id 'com.marklogic.ml-data-hub' version '3.0.0'
+
+  // for making REST calls
+  id "org.tenne.rest" version "0.4.2"
+}
+
+repositories {
+  mavenLocal()
+  jcenter()
+  mavenCentral()
+
+  // Needed for ml-unit-test-client dependency until it's available via jcenter()
+  maven {
+    url {"https://dl.bintray.com/rjrudin/maven/"}
+  }
+
+  // Needed for smart-mastering-core dependency until it's available via jcenter()
+  maven {
+    url {"https://dl.bintray.com/marklogic-community/Maven/"}
+  }
+}
+
+configurations {
+  mlcp
+}
+
+dependencies {
+  // this magical line will include the Smart Mastering
+  // libraries and deploy them alongside your code
+  mlRestApi "com.marklogic.community:smart-mastering-core:${smartMasteringVersion}"
+
+  // MLCP dependencies
+  mlcp "com.marklogic:mlcp:9.0.5"
+}
+
+// this task runs MLCP to ingest the CRM data
+// note that we have pre-processed this data for you
+// to simplify the example so you can focus on the
+// Smart Mastering parts. This represents data that
+// originally came from a CRM system
+task loadCRMData(type: com.marklogic.gradle.task.MlcpTask) {
+  mustRunAfter mlLoadModules
+  classpath = configurations.mlcp
+  command = "IMPORT"
+  database = mlStagingDbName
+  port = Integer.parseInt(mlStagingPort, 10)
+  input_file_path = "data/Persons/CRM"
+  output_collections = "mdm-content,mdm-source://CRM"
+  output_permissions = "rest-reader,read,rest-writer,update"
+  output_uri_replace = ".*/data/Persons,''"
+  transform_module = "/MarkLogic/data-hub-framework/transforms/mlcp-flow-transform.xqy"
+  transform_namespace = "http://marklogic.com/data-hub/mlcp-flow-transform"
+  transform_param = "entity-name=MDM,flow-name=MDMImport"
+  args = ["-modules_root","/"]
+}
+
+// this task runs MLCP to ingest the Oracle data
+// note that we have pre-processed this data for you
+// to simplify the example so you can focus on the
+// Smart Mastering parts. This represents data that
+// originally came from an oracle database
+task loadOracleData(type: com.marklogic.gradle.task.MlcpTask) {
+  mustRunAfter mlLoadModules
+  classpath = configurations.mlcp
+  command = "IMPORT"
+  database = mlStagingDbName
+  port = Integer.parseInt(mlStagingPort, 10)
+  input_file_path = "data/Persons/Oracle"
+  output_collections = "mdm-content,mdm-source://Oracle"
+  output_permissions = "rest-reader,read,rest-writer,update"
+  output_uri_replace = ".*/data/Persons,''"
+  transform_module = "/MarkLogic/data-hub-framework/transforms/mlcp-flow-transform.xqy"
+  transform_namespace = "http://marklogic.com/data-hub/mlcp-flow-transform"
+  transform_param = "entity-name=MDM,flow-name=MDMImport"
+  args = ["-modules_root","/"]
+}
+
+// this task runs MLCP to ingest the CSV_FILE data
+// note that we have pre-processed this data for you
+// to simplify the example so you can focus on the
+// Smart Mastering parts. This represents data that
+// originally came from a CSV File
+task loadCSVFileData(type: com.marklogic.gradle.task.MlcpTask) {
+  mustRunAfter mlLoadModules
+  classpath = configurations.mlcp
+  command = "IMPORT"
+  database = mlStagingDbName
+  port = Integer.parseInt(mlStagingPort, 10)
+  input_file_path = "data/Persons/CSV_FILE"
+  output_collections = "mdm-content,mdm-source://CSV_FILE"
+  output_permissions = "rest-reader,read,rest-writer,update"
+  output_uri_replace = ".*/data/Persons,''"
+  transform_module = "/MarkLogic/data-hub-framework/transforms/mlcp-flow-transform.xqy"
+  transform_namespace = "http://marklogic.com/data-hub/mlcp-flow-transform"
+  transform_param = "entity-name=MDM,flow-name=MDMImport"
+  args = ["-modules_root","/"]
+}
+
+// convenience task to group all 3 loading tasks into 1
+task loadData {
+  dependsOn loadCRMData
+  dependsOn loadOracleData
+  dependsOn loadCSVFileData
+}
+
+// import 2 thesaurus files so we can do name lookups
+task importThesauri(type: com.marklogic.gradle.task.MlcpTask) {
+  mustRunAfter mlLoadModules
+  classpath = configurations.mlcp
+  command = "IMPORT"
+  database = mlFinalDbName
+  input_file_path = "data/thesauri"
+  output_collections = "mdm-thesauri,mdm-configuration"
+  output_permissions = "rest-reader,read,rest-writer,update"
+  output_uri_replace = ".*/data,'/mdm/config'"
+}
+
+// this is a convenience task to deploy match options
+// easily from gradle
+task deployMatchOptions(type: org._10ne.gradle.rest.RestTask) {
+  mustRunAfter mlLoadModules
+  httpMethod = 'post'
+  uri = 'http://' + mlHost + ':' + mlFinalPort + '/v1/resources/sm-match-options?rs:name=mlw-match'
+  username = mlUsername
+  password = mlPassword
+  requestBody = file('smart-mastering-config/mdm-match-options.xml').text
+  contentType = groovyx.net.http.ContentType.XML
+  responseHandler = {}
+}
+
+// this is a convenience task to deploy merge options
+// easily from gradle
+task deployMergeOptions(type: org._10ne.gradle.rest.RestTask) {
+  mustRunAfter mlLoadModules
+  httpMethod = 'post'
+  uri = 'http://' + mlHost + ':' + mlFinalPort + '/v1/resources/sm-merge-options?rs:name=mlw-merge'
+  username = mlUsername
+  password = mlPassword
+  requestBody = file('smart-mastering-config/mdm-merge-options.xml').text
+  contentType = groovyx.net.http.ContentType.XML
+  responseHandler = {}
+}
+
+// this task runs the MDM => MDMHarmonize flow
+// which moves the staging data into the Final DB
+// This flow can also be run via QuickStart
+task harmonize(type: com.marklogic.gradle.task.RunFlowTask) {
+  mustRunAfter importThesauri
+  mustRunAfter deployMatchOptions
+  mustRunAfter deployMergeOptions
+  mustRunAfter loadCRMData
+  mustRunAfter loadOracleData
+  mustRunAfter loadCSVFileData
+  mustRunAfter loadData
+
+  entityName = "MDM"
+  flowName = "MDMHarmonize"
+  batchSize = 100
+  threadCount = 4
+}
+
+// this is a convenience task to setup the example project
+// for you completely
+task setupExample {
+  dependsOn mlReloadModules
+  dependsOn deployMatchOptions
+  dependsOn deployMergeOptions
+  dependsOn importThesauri
+  dependsOn loadData
+  dependsOn harmonize
+}
+
+//////////////////////////////////////////////////////////////
+// bug workaround!
+// Use this until bug 910 gets fixed
+// https://github.com/marklogic/marklogic-data-hub/issues/910
+task mlGradleLoadModules(type: com.marklogic.gradle.task.client.LoadModulesTask) {
+  dependsOn mlPrepareRestApiDependencies
+  mustRunAfter mlClearModulesDatabase
+}
+
+task mlGradleWatch(type: com.marklogic.gradle.task.client.WatchTask)
+task mlGradleDeleteModuleTimestampsFile(type: com.marklogic.gradle.task.DeleteModuleTimestampsFileTask)
+
+mlLoadModules.dependsOn mlGradleLoadModules
+mlWatch.dependsOn mlGradleWatch
+mlDeleteModuleTimestampsFile.dependsOn mlGradleDeleteModuleTimestampsFile
+// end bug workaround
+//////////////////////////////////////////////////////////////

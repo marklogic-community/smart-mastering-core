@@ -129,3 +129,8 @@ You must be part of the marklogic-community organization on bintray in order to 
 [sm-demo]: https://github.com/marklogic-community/smart-mastering-demo/tree/develop/examples/smart-mastering
 [stackoverflow]: http://stackoverflow.com/questions/ask?tags=marklogic
 [requests]: mailto:community-requests@marklogic.com
+
+
+### How do I uninstall?
+
+`./gradlew mlUndeploy -Pconfirm=true`
