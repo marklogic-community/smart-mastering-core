@@ -1,0 +1,21 @@
+{
+  "name": "smart-mastering-create",
+  "description": "my trigger",
+  "event": {
+    "data-event": {
+      "collection-scope": {
+        "uri": "mdm-content"
+      },
+      "document-content": {
+        "update-kind": "create"
+      },
+      "when": "post-commit"
+    }
+  },
+  "module": "ext/com.marklogic.smart-mastering/match-and-merge-trigger.xqy",
+  "module-db": "%%mlModulesDbName%%",
+  "module-root": "/",
+  "enabled": true,
+  "recursive": true,
+  "task-priority": "normal"
+}

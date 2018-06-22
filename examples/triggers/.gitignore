@@ -1,0 +1,6 @@
+build/
+.tmp/
+.gradle/
+.DS_Store
+!gradle-local.properties
+.gradletasknamecache

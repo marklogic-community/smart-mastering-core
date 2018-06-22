@@ -1,0 +1,88 @@
+{
+  "info": {
+    "title": "Address",
+    "version": "0.0.1"
+  },
+  "definitions": {
+    "Address": {
+      "required": [],
+      "rangeIndex": [],
+      "wordLexicon": [],
+      "properties": {
+        "AddressFullText": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "AddressPrivateMailboxText": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "AddressSecondaryUnitText": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "AddressDeliveryPoint": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "AddressRecipientName": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "LocationCityName": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "LocationCounty": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "LocationState": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "LocationCountry": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "LocationPostalCode": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "LocationPostalExtensionCode": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "AddressUrbanizationName": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        }
+
+      }
+    }
+  }
+}
