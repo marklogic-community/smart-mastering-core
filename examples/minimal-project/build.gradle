@@ -5,7 +5,10 @@ plugins {
 repositories {
   mavenLocal()
 
-  // Eventually, jcenter() will be used once smart-mastering-core is available there
+  // Needed for smart-mastering-core dependency until it's available via jcenter()
+  maven {
+    url {"https://dl.bintray.com/marklogic-community/Maven/"}
+  }
 }
 
 dependencies {
