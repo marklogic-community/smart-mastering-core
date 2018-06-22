@@ -1,0 +1,39 @@
+{
+  "info": {
+    "title": "PersonSSNIdentification",
+    "version": "0.0.1"
+  },
+  "definitions": {
+    "PersonSSNIdentification": {
+      "required": [],
+      "rangeIndex": [],
+      "wordLexicon": [],
+      "properties": {
+        "IdentificationID": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "IdentificationCategory": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "IdentificationCategoryDescriptionText": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "IdentificationSourceText": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        }
+      }
+    }
+  }
+}
