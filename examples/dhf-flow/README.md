@@ -59,6 +59,11 @@ Don't get overwhelmed by all the code in this project. To run Smart Mastering fr
 import module namespace process = "http://marklogic.com/smart-mastering/process-records"
   at "/ext/com.marklogic.smart-mastering/process-records.xqy";
 
+(:
+ : this id is the uri of the document being processed
+ : we are telling the Smart Mastering library to find matches
+ : for this uri
+ :)
 process:process-match-and-merge($id)
 ```
 
