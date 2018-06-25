@@ -24,7 +24,8 @@ most important collection is `$CONTENT-COLL`, which contains the current set of
 entities that should be used by an application. When a set of documents get
 merged, they are moved out of that collection and into the `$ARCHIVED-COLL`
 collection. The generated merged document will be in the `$CONTENT-COLL` and
-`$MERGED-COLL` collections.
+`$MERGED-COLL` collections. Documents can also be unmerged, in which case the
+merged document will go to the `$ARCHIVED-COLL`. 
 
 ## Matching
 
