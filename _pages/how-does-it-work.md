@@ -46,7 +46,7 @@ The query will be run once, generating a score-ordered sequence of
 potential matches, each of which is labeled according to a threshold of match
 probability. A match response will look like this:
 
-    <results uri="/source/3/doc3.json" index="1" total="5" score="79" threshold="Definitive Match" action="merge">
+    <result uri="/source/3/doc3.json" index="1" score="79" threshold="Definitive Match" action="merge">
 
 ### Matching Algorithms
 
@@ -86,8 +86,8 @@ There is a standard algorithm available to combine properties, which is
 described on the [Merging Options][merge-config] page.
 
 Smart Mastering Core also supports custom merge algorithms. This function takes
-the `xs:QName` for a property, values from the input documents, and the
-`merging/merge` configuration of this property (see
+the `xs:QName` for an XML element or a JSON property name, values from the 
+input documents, and the `merging/merge` configuration of this property (see
 [merging options][merge-config]). The function returns an ordered list of
 property values, with the length of the sequence and the ordering defined by the
 algorithm. Note that the algorithm does not need to only gather or choose among
