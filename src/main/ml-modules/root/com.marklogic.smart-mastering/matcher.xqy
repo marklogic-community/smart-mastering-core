@@ -1,5 +1,14 @@
 xquery version "1.0-ml";
 
+(:~
+ : API to find matches for a particular document. Matching is driven by a
+ : match configuration. The matching process works by using the properties in a
+ : document to create a query, which is then used to find other documents that
+ : are potential matches. The match options include weights for the properties,
+ : which become weights in the query used to find matches.
+ :
+ : @see https://marklogic-community.github.io/smart-mastering-core/docs/matching-options/
+ :)
 module namespace matcher = "http://marklogic.com/smart-mastering/matcher";
 
 import module namespace blocks-impl = "http://marklogic.com/smart-mastering/blocks-impl"
@@ -17,7 +26,7 @@ declare option xdmp:mapping "false";
 
 (: For example match options, see https://marklogic-community.github.io/smart-mastering-core/docs/matching-options/ :)
 
-(:
+(:~
  : Starting with the specified document, look for potential matches based on the matching options saved under the
  : provided name.
  :
