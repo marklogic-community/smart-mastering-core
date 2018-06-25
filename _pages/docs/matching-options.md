@@ -199,6 +199,6 @@ with `rs:name` as a URL parameter and the options in the body of the request.
 To save match options using XQuery, import `matcher.xqy` and call the
 `matcher:save-options` function.
 
-[zip.xqy]: https://github.com/marklogic-community/smart-mastering-core/blob/master/src/main/ml-modules/ext/com.marklogic.smart-mastering/algorithms/zip.xqy
+[zip.xqy]: https://github.com/marklogic-community/smart-mastering-core/blob/master/src/main/ml-modules/com.marklogic.smart-mastering/algorithms/zip.xqy
 [understanding-search]: http://docs.marklogic.com/guide/performance/unfiltered#id_13165
 [scoring]: http://docs.marklogic.com/guide/search-dev/relevance#chapter
