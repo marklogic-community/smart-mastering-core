@@ -70,7 +70,7 @@ The file should look like this:
       "when": "post-commit"
     }
   },
-  "module": "ext/com.marklogic.smart-mastering/match-and-merge-trigger.xqy",
+  "module": "com.marklogic.smart-mastering/match-and-merge-trigger.xqy",
   "module-db": "%%mlModulesDbName%%",
   "module-root": "/",
   "enabled": true,
