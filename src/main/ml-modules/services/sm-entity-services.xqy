@@ -2,7 +2,7 @@ xquery version "1.0-ml";
 
 module namespace ext = "http://marklogic.com/rest-api/resource/sm-entity-services";
 
-import module namespace sm-es = "http://marklogic.com/smart-mastering/entity-services" at "/ext/com.marklogic.smart-mastering/sm-entity-services.xqy";
+import module namespace sm-es = "http://marklogic.com/smart-mastering/entity-services" at "/com.marklogic.smart-mastering/sm-entity-services.xqy";
 
 declare default function namespace "http://www.w3.org/2005/xpath-functions";
 

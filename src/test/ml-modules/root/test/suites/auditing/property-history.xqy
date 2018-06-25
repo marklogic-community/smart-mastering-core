@@ -1,9 +1,9 @@
 xquery version "1.0-ml";
 
 import module namespace history = "http://marklogic.com/smart-mastering/auditing/history"
-  at "/ext/com.marklogic.smart-mastering/auditing/history.xqy";
+  at "/com.marklogic.smart-mastering/auditing/history.xqy";
 import module namespace const = "http://marklogic.com/smart-mastering/constants"
-  at "/ext/com.marklogic.smart-mastering/constants.xqy";
+  at "/com.marklogic.smart-mastering/constants.xqy";
 
 import module namespace test = "http://marklogic.com/roxy/test-helper" at "/test/test-helper.xqy";
 

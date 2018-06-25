@@ -3,13 +3,13 @@ xquery version "1.0-ml";
 module namespace matcher = "http://marklogic.com/smart-mastering/matcher";
 
 import module namespace blocks-impl = "http://marklogic.com/smart-mastering/blocks-impl"
-  at "/ext/com.marklogic.smart-mastering/matcher-impl/blocks-impl.xqy";
+  at "/com.marklogic.smart-mastering/matcher-impl/blocks-impl.xqy";
 import module namespace match-impl = "http://marklogic.com/smart-mastering/matcher-impl"
-  at "/ext/com.marklogic.smart-mastering/matcher-impl/matcher-impl.xqy";
+  at "/com.marklogic.smart-mastering/matcher-impl/matcher-impl.xqy";
 import module namespace notify-impl = "http://marklogic.com/smart-mastering/notification-impl"
-  at "/ext/com.marklogic.smart-mastering/matcher-impl/notification-impl.xqy";
+  at "/com.marklogic.smart-mastering/matcher-impl/notification-impl.xqy";
 import module namespace opt-impl = "http://marklogic.com/smart-mastering/options-impl"
-  at "/ext/com.marklogic.smart-mastering/matcher-impl/options-impl.xqy";
+  at "/com.marklogic.smart-mastering/matcher-impl/options-impl.xqy";
 
 declare namespace sm = "http://marklogic.com/smart-mastering";
 

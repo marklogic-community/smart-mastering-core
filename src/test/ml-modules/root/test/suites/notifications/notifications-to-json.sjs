@@ -1,7 +1,7 @@
 const test = require('/test/test-helper.xqy');
-const con = require('/ext/com.marklogic.smart-mastering/constants.xqy');
-const matcher = require('/ext/com.marklogic.smart-mastering/matcher.xqy');
-const notify = require('/ext/com.marklogic.smart-mastering/matcher-impl/notification-impl.xqy');
+const con = require('/com.marklogic.smart-mastering/constants.xqy');
+const matcher = require('/com.marklogic.smart-mastering/matcher.xqy');
+const notify = require('/com.marklogic.smart-mastering/matcher-impl/notification-impl.xqy');
 const lib = require('/test/suites/notifications/lib/lib.xqy');
 
 const extractions = {

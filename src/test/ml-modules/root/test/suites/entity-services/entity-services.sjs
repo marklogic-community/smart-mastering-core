@@ -1,6 +1,6 @@
 const test = require("/test/test-helper.xqy");
 
-const esImpl = require("/ext/com.marklogic.smart-mastering/impl/sm-es-impl.xqy");
+const esImpl = require("/com.marklogic.smart-mastering/impl/sm-es-impl.xqy");
 
 const actual = esImpl.getEntityDescriptors();
 

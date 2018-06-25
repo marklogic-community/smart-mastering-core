@@ -1,7 +1,7 @@
 xquery version "1.0-ml";
 
 import module namespace match-impl = "http://marklogic.com/smart-mastering/matcher-impl"
-  at "/ext/com.marklogic.smart-mastering/matcher-impl/matcher-impl.xqy";
+  at "/com.marklogic.smart-mastering/matcher-impl/matcher-impl.xqy";
 
 import module namespace test = "http://marklogic.com/roxy/test-helper" at "/test/test-helper.xqy";
 

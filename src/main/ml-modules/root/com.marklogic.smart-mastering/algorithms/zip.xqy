@@ -16,7 +16,7 @@ declare option xdmp:mapping "false";
  :    name="zip-code"
  :    function="zip-match"
  :    namespace="http://marklogic.com/smart-mastering/algorithms"
- :    at="/ext/com.marklogic.smart-mastering"/>
+ :    at="/com.marklogic.smart-mastering"/>
  : </algorithms>
  : <scoring>
  :   <add property-name="zip" weight="5"/>

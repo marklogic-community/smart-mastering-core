@@ -6,7 +6,7 @@ import module namespace spell = "http://marklogic.com/xdmp/spell"
   at "/MarkLogic/spell.xqy";
 
 import module namespace const = "http://marklogic.com/smart-mastering/constants"
-  at "/ext/com.marklogic.smart-mastering/constants.xqy";
+  at "/com.marklogic.smart-mastering/constants.xqy";
 
 declare option xdmp:mapping "false";
 

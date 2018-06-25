@@ -3,7 +3,7 @@ xquery version "1.0-ml";
 module namespace resource = "http://marklogic.com/rest-api/resource/sm-match-option-names";
 
 import module namespace matcher = "http://marklogic.com/smart-mastering/matcher"
-  at "/ext/com.marklogic.smart-mastering/matcher.xqy";
+  at "/com.marklogic.smart-mastering/matcher.xqy";
 
 declare function get(
   $context as map:map,

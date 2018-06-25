@@ -5,7 +5,7 @@ import module namespace process = "http://marklogic.com/smart-mastering/process-
   at "process-records.xqy";
 
 import module namespace const = "http://marklogic.com/smart-mastering/constants"
-  at "/ext/com.marklogic.smart-mastering/constants.xqy";
+  at "/com.marklogic.smart-mastering/constants.xqy";
 
 declare option xdmp:mapping "false";
 

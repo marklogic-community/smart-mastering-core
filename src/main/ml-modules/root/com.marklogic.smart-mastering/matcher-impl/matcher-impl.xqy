@@ -7,15 +7,15 @@ xquery version "1.0-ml";
 module namespace match-impl = "http://marklogic.com/smart-mastering/matcher-impl";
 
 import module namespace algorithms = "http://marklogic.com/smart-mastering/algorithms"
-  at  "/ext/com.marklogic.smart-mastering/algorithms/base.xqy";
+  at  "/com.marklogic.smart-mastering/algorithms/base.xqy";
 import module namespace blocks-impl = "http://marklogic.com/smart-mastering/blocks-impl"
-  at "/ext/com.marklogic.smart-mastering/matcher-impl/blocks-impl.xqy";
+  at "/com.marklogic.smart-mastering/matcher-impl/blocks-impl.xqy";
 import module namespace const = "http://marklogic.com/smart-mastering/constants"
-  at "/ext/com.marklogic.smart-mastering/constants.xqy";
+  at "/com.marklogic.smart-mastering/constants.xqy";
 import module namespace json="http://marklogic.com/xdmp/json"
   at "/MarkLogic/json/json.xqy";
 import module namespace opt-impl = "http://marklogic.com/smart-mastering/options-impl"
-  at "/ext/com.marklogic.smart-mastering/matcher-impl/options-impl.xqy";
+  at "/com.marklogic.smart-mastering/matcher-impl/options-impl.xqy";
 
 declare namespace matcher = "http://marklogic.com/smart-mastering/matcher";
 declare namespace sm = "http://marklogic.com/smart-mastering";

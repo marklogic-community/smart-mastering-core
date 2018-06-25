@@ -3,9 +3,9 @@ xquery version "1.0-ml";
 module namespace diff = "http://marklogic.com/demo/xml-diff";
 
 import module namespace mem = "http://maxdewpoint.blogspot.com/memory-operations/functional"
-  at "/ext/mlpm_modules/XQuery-XML-Memory-Operations/memory-operations-functional.xqy";
+  at "/mlpm_modules/XQuery-XML-Memory-Operations/memory-operations-functional.xqy";
 import module namespace xq3 = "http://maxdewpoint.blogspot.com/xq3-ml-extensions"
-  at "/ext/mlpm_modules/xq3-ml-extensions/xq3.xqy";
+  at "/mlpm_modules/xq3-ml-extensions/xq3.xqy";
 
 declare variable $memoization as map:map := map:map();
 
