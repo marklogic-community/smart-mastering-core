@@ -1,15 +1,18 @@
 xquery version "1.0-ml";
 
+(:~
+ : Defines a match algorithm for matching between 9- and 5-digit US zip codes.
+ :)
 module namespace algorithms = "http://marklogic.com/smart-mastering/algorithms";
 
 declare namespace matcher = "http://marklogic.com/smart-mastering/matcher";
 
 declare option xdmp:mapping "false";
 
-(:
+(:~
  : Allow matches between 5- and 9-digit US ZIP codes. For each zip in $expand-values, generates a query to match values
  : that have the same first five digits. To add this algorithm to your match configuration, add XML like the following,
- : assuming that you have configured a property named "zip". Change the weights to work with your other properties. 
+ : assuming that you have configured a property named "zip". Change the weights to work with your other properties.
  :
  : <algorithms>
  :  <algorithm

@@ -13,8 +13,6 @@ This capability is experimental. Be prepared for the interface and
 implementation to change significantly. We welcome your input to guide this 
 development process. 
 
-Additional documentation on usage coming with the first Community release. 
-
 - [Requirements](#requirements)
 - [Using](#using)
 - [Development](#development)
@@ -27,6 +25,9 @@ Additional documentation on usage coming with the first Community release.
 reference it so that you don't need to install Gradle
 
 ## Using
+
+Documentation on how Smart Mastering Core works and how to use it is available 
+at [GitHub][docs].
 
 To use the Smart Mastering Core in your own project, follow these instructions.
 This assumes that you're using ml-gradle in your project.
@@ -93,9 +94,8 @@ can go to your application's REST server and see that the Smart Mastering servic
 
     http://localhost:(your REST port)/v1/config/resources 
 
-You can then run ml-gradle tasks such as mlLoadModules and mlReloadModules, and the Smart Mastering
-modules will again be loaded into your modules database. 
-
+You can then run ml-gradle tasks such as `mlLoadModules` and `mlReloadModules`, 
+and the Smart Mastering modules will again be loaded into your modules database. 
 
 ## Development
 
@@ -130,7 +130,8 @@ You must be part of the marklogic-community organization on bintray in order to 
 [stackoverflow]: http://stackoverflow.com/questions/ask?tags=marklogic
 [requests]: mailto:community-requests@marklogic.com
 
-
 ### How do I uninstall?
 
 `./gradlew mlUndeploy -Pconfirm=true`
+
+[docs]: https://marklogic-community.github.io/smart-mastering-core/
