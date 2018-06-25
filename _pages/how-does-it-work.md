@@ -102,4 +102,4 @@ suite][merging-suite].
 [zip.xqy]: https://github.com/marklogic-community/smart-mastering-core/blob/master/src/main/ml-modules/root/com.marklogic.smart-mastering/algorithms/zip.xqy
 [merge-config]: /docs/merging-options/
 [constants]: https://github.com/marklogic-community/smart-mastering-core/blob/master/src/main/ml-modules/root/com.marklogic.smart-mastering/constants.xqy
-[merging-suite]: https://github.com/marklogic-community/smart-mastering-core/tree/master/src/test/ml-modules/root/test/suites/merging
+[merging-suite]: https://github.com/marklogic-community/smart-mastering-core/tree/master/src/test/ml-modules/root/test/suites/merging-xml
