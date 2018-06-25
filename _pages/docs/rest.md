@@ -20,7 +20,7 @@ functionality using the REST APIs.
 
 ### sm-match-options
 
-Manage the available match options. See [/docs/matching-options/](/docs/matching-options/)
+Manage the available match options. See [/docs/matching-options/](../matching-options/)
 for documentation of the matching options themselves.
 
 This service supports:
@@ -145,7 +145,7 @@ returns:
 
 Merge options control the way property values are combined when producing a new,
 merged document based on two or more original documents. For full documentation
-of merging options, see the [Merging Options](/docs/merging-options/) page.
+of merging options, see the [Merging Options](../merging-options/) page.
 
 ### sm-merge-options
 Manage the available merge options.
