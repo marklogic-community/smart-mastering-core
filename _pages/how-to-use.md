@@ -10,7 +10,7 @@ permalink: /how-to-use/
 To use Smart Mastering in your project, start by adding it to your project as
 shown in the [minimal-project example][minproject].
 
-Define your [match](/docs/matching-options) and [merge](/docs/merging-options)
+Define your [match](../docs/matching-options) and [merge](../docs/merging-options)
 options. These will control how matches are identified and how properties are
 merged into a new document.
 
