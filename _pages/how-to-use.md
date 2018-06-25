@@ -59,8 +59,8 @@ this collection.
 [minproject]: https://github.com/marklogic-community/smart-mastering-core/tree/master/examples/minimal-project
 [sm-demo-flow]: https://github.com/marklogic-community/smart-mastering-demo/tree/develop/examples/smart-mastering/plugins/entities/MDM/harmonize/SmartMaster
 [sm-demo-flow-writer]: https://github.com/marklogic-community/smart-mastering-demo/blob/develop/examples/smart-mastering/plugins/entities/MDM/harmonize/SmartMaster/writer/writer.xqy
-[match-and-merge]: https://github.com/marklogic-community/smart-mastering-core/blob/master/src/main/ml-modules/com.marklogic.smart-mastering/process-records.xqy
-[trigger]: https://github.com/marklogic-community/smart-mastering-core/blob/master/src/main/ml-modules/com.marklogic.smart-mastering/match-and-merge-trigger.xqy
+[match-and-merge]: https://github.com/marklogic-community/smart-mastering-core/blob/master/src/main/ml-modules/root/com.marklogic.smart-mastering/process-records.xqy
+[trigger]: https://github.com/marklogic-community/smart-mastering-core/blob/master/src/main/ml-modules/root/com.marklogic.smart-mastering/match-and-merge-trigger.xqy
 [trigger-doc]: http://docs.marklogic.com/guide/app-dev/triggers#chapter
 [ml-gradle-trigger]: https://github.com/marklogic-community/ml-gradle/tree/master/examples/triggers-project
-[constants]: https://github.com/marklogic-community/smart-mastering-core/blob/master/src/main/ml-modules/com.marklogic.smart-mastering/constants.xqy
+[constants]: https://github.com/marklogic-community/smart-mastering-core/blob/master/src/main/ml-modules/root/com.marklogic.smart-mastering/constants.xqy
