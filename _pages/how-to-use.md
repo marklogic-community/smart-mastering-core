@@ -37,7 +37,7 @@ an example of how to deploy triggers with ml-gradle.
 ### Custom Approach
 
 You can also access the Smart Mastering functionality by directly calling the
-[REST API extensions](/docs/rest) or [XQuery libraries](/docs/libraries).
+[REST API extensions](../docs/rest) or [XQuery libraries](../docs/libraries).
 
 ## Collections
 
