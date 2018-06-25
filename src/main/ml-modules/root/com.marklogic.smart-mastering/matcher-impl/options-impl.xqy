@@ -7,9 +7,9 @@ xquery version "1.0-ml";
 module namespace opt-impl = "http://marklogic.com/smart-mastering/options-impl";
 
 import module namespace algorithms = "http://marklogic.com/smart-mastering/algorithms"
-  at "/ext/com.marklogic.smart-mastering/algorithms/base.xqy";
+  at "/com.marklogic.smart-mastering/algorithms/base.xqy";
 import module namespace const = "http://marklogic.com/smart-mastering/constants"
-  at "/ext/com.marklogic.smart-mastering/constants.xqy";
+  at "/com.marklogic.smart-mastering/constants.xqy";
 import module namespace json="http://marklogic.com/xdmp/json"
   at "/MarkLogic/json/json.xqy";
 

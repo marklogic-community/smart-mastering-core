@@ -1,7 +1,7 @@
 xquery version "1.0-ml";
 
 import module namespace merging = "http://marklogic.com/smart-mastering/merging"
-  at "/ext/com.marklogic.smart-mastering/merging.xqy";
+  at "/com.marklogic.smart-mastering/merging.xqy";
 
 import module namespace test = "http://marklogic.com/roxy/test-helper" at "/test/test-helper.xqy";
 

@@ -13,9 +13,9 @@ import module namespace json="http://marklogic.com/xdmp/json"
 import module namespace merge-impl = "http://marklogic.com/smart-mastering/survivorship/merging"
   at  "standard.xqy";
 import module namespace const = "http://marklogic.com/smart-mastering/constants"
-  at "/ext/com.marklogic.smart-mastering/constants.xqy";
+  at "/com.marklogic.smart-mastering/constants.xqy";
 import module namespace matcher = "http://marklogic.com/smart-mastering/matcher"
-  at "/ext/com.marklogic.smart-mastering/matcher.xqy";
+  at "/com.marklogic.smart-mastering/matcher.xqy";
 import module namespace sem = "http://marklogic.com/semantics"
   at "/MarkLogic/semantics.xqy";
 

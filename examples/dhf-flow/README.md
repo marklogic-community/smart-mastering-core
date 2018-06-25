@@ -46,7 +46,7 @@ As with any DHF (Data Hub Framework) Harmonize flow you can run it via gradle or
 
 ### What did I just do?
 
-You just ran a [Harmonize Flow](https://marklogic.github.io/marklogic-data-hub/understanding/how-it-works/#harmonize-flows) which runs a function from the Smart Mastering code library: [process:process-match-and-merge](https://github.com/marklogic-community/smart-mastering-core/blob/master/src/main/ml-modules/ext/com.marklogic.smart-mastering/process-records.xqy#L10).
+You just ran a [Harmonize Flow](https://marklogic.github.io/marklogic-data-hub/understanding/how-it-works/#harmonize-flows) which runs a function from the Smart Mastering code library: [process:process-match-and-merge](https://github.com/marklogic-community/smart-mastering-core/blob/master/src/main/ml-modules/com.marklogic.smart-mastering/process-records.xqy#L10).
 
 If you like, you can read up on [how Smart Mastering works](https://marklogic-community.github.io/smart-mastering-core/how-does-it-work/).
 
@@ -54,7 +54,7 @@ Don't get overwhelmed by all the code in this project. To run Smart Mastering fr
 
 ```xquery
 import module namespace process = "http://marklogic.com/smart-mastering/process-records"
-  at "/ext/com.marklogic.smart-mastering/process-records.xqy";
+  at "/com.marklogic.smart-mastering/process-records.xqy";
 
 (:
  : this id is the uri of the document being processed

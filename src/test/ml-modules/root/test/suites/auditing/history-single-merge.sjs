@@ -1,9 +1,9 @@
 declareUpdate();
 
 const test = require('/test/test-helper.xqy');
-const history = require('/ext/com.marklogic.smart-mastering/auditing/history.xqy');
-const con = require('/ext/com.marklogic.smart-mastering/constants.xqy');
-const merging = require('/ext/com.marklogic.smart-mastering/merging.xqy');
+const history = require('/com.marklogic.smart-mastering/auditing/history.xqy');
+const con = require('/com.marklogic.smart-mastering/constants.xqy');
+const merging = require('/com.marklogic.smart-mastering/merging.xqy');
 const lib = require('lib/lib.xqy');
 
 const mergedURI = cts.uris(null, "limit=1", cts.collectionQuery(con['MERGED-COLL']));

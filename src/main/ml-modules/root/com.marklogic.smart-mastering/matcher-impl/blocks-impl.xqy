@@ -7,7 +7,7 @@ xquery version "1.0-ml";
 module namespace blocks-impl = "http://marklogic.com/smart-mastering/blocks-impl";
 
 import module namespace const = "http://marklogic.com/smart-mastering/constants"
-  at "/ext/com.marklogic.smart-mastering/constants.xqy";
+  at "/com.marklogic.smart-mastering/constants.xqy";
 import module namespace sem = "http://marklogic.com/semantics"
   at "/MarkLogic/semantics.xqy";
 

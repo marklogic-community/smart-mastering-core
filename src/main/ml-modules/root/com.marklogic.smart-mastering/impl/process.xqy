@@ -3,11 +3,11 @@ xquery version "1.0-ml";
 module namespace proc-impl = "http://marklogic.com/smart-mastering/process-records/impl";
 
 import module namespace const = "http://marklogic.com/smart-mastering/constants"
-  at "/ext/com.marklogic.smart-mastering/constants.xqy";
+  at "/com.marklogic.smart-mastering/constants.xqy";
 import module namespace matcher = "http://marklogic.com/smart-mastering/matcher"
-  at "/ext/com.marklogic.smart-mastering/matcher.xqy";
+  at "/com.marklogic.smart-mastering/matcher.xqy";
 import module namespace merging = "http://marklogic.com/smart-mastering/merging"
-  at "/ext/com.marklogic.smart-mastering/merging.xqy";
+  at "/com.marklogic.smart-mastering/merging.xqy";
 
 declare option xdmp:mapping "false";
 

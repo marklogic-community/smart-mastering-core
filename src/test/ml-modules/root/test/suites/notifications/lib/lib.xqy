@@ -3,9 +3,9 @@ xquery version "1.0-ml";
 module namespace lib = "http://marklogic.com/smart-mastering/test/notification";
 
 import module namespace matcher = "http://marklogic.com/smart-mastering/matcher"
-  at "/ext/com.marklogic.smart-mastering/matcher.xqy";
+  at "/com.marklogic.smart-mastering/matcher.xqy";
 import module namespace notify-impl = "http://marklogic.com/smart-mastering/notification-impl"
-  at "/ext/com.marklogic.smart-mastering/matcher-impl/notification-impl.xqy";
+  at "/com.marklogic.smart-mastering/matcher-impl/notification-impl.xqy";
 
 declare variable $INVOKE_OPTIONS :=
   <options xmlns="xdmp:eval">

@@ -3,18 +3,18 @@ xquery version "1.0-ml";
 module namespace auditing = "http://marklogic.com/smart-mastering/auditing";
 
 import module namespace diff = "http://marklogic.com/demo/xml-diff"
-  at "/ext/mlpm_modules/marklogic-xml-diff/diff.xqy";
+  at "/mlpm_modules/marklogic-xml-diff/diff.xqy";
 import module namespace mem = "http://maxdewpoint.blogspot.com/memory-operations/functional"
-  at "/ext/mlpm_modules/XQuery-XML-Memory-Operations/memory-operations-functional.xqy";
+  at "/mlpm_modules/XQuery-XML-Memory-Operations/memory-operations-functional.xqy";
 import module namespace sem = "http://marklogic.com/semantics"
   at "/MarkLogic/semantics.xqy";
 
 
 import module namespace xq3 = "http://maxdewpoint.blogspot.com/xq3-ml-extensions"
-  at "/ext/mlpm_modules/xq3-ml-extensions/xq3.xqy";
+  at "/mlpm_modules/xq3-ml-extensions/xq3.xqy";
 
 import module namespace const = "http://marklogic.com/smart-mastering/constants"
-  at "/ext/com.marklogic.smart-mastering/constants.xqy";
+  at "/com.marklogic.smart-mastering/constants.xqy";
 
 declare namespace prov = "http://www.w3.org/ns/prov#";
 declare namespace foaf = "http://xmlns.com/foaf/0.1/";

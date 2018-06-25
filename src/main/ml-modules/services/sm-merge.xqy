@@ -3,9 +3,9 @@ xquery version "1.0-ml";
 module namespace resource = "http://marklogic.com/rest-api/resource/sm-merge";
 
 import module namespace merging = "http://marklogic.com/smart-mastering/merging"
-  at "/ext/com.marklogic.smart-mastering/merging.xqy";
+  at "/com.marklogic.smart-mastering/merging.xqy";
 import module namespace const = "http://marklogic.com/smart-mastering/constants"
-  at "/ext/com.marklogic.smart-mastering/constants.xqy";
+  at "/com.marklogic.smart-mastering/constants.xqy";
 
 declare namespace rapi = "http://marklogic.com/rest-api";
 

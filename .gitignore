@@ -4,3 +4,4 @@ build
 .tmp
 *.iml
 gradle-local.properties
+.gradletasknamecache

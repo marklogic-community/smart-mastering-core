@@ -7,7 +7,7 @@ xquery version "1.0-ml";
 module namespace notify-impl = "http://marklogic.com/smart-mastering/notification-impl";
 
 import module namespace const = "http://marklogic.com/smart-mastering/constants"
-  at "/ext/com.marklogic.smart-mastering/constants.xqy";
+  at "/com.marklogic.smart-mastering/constants.xqy";
 import module namespace json="http://marklogic.com/xdmp/json"
   at "/MarkLogic/json/json.xqy";
 

@@ -1,6 +1,6 @@
 const test = require('/test/test-helper.xqy');
 const lib = require('/test/suites/matching/lib/lib.xqy');
-const matcher = require('/ext/com.marklogic.smart-mastering/matcher.xqy');
+const matcher = require('/com.marklogic.smart-mastering/matcher.xqy');
 
 const actual = matcher.getOptionsAsJson(lib['MATCH-OPTIONS-NAME']);
 
