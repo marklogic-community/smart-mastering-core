@@ -6,3 +6,4 @@ build
 *.iml
 gradle-local.properties
 _site
+.jekyll-metadata
