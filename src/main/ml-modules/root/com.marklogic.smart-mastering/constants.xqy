@@ -46,3 +46,9 @@ declare variable $PRED-MATCH-BLOCK := sem:iri("http://marklogic.com/smart-master
 (: Formats for functions that accept a format parameter :)
 declare variable $FORMAT-JSON as xs:string := "json";
 declare variable $FORMAT-XML  as xs:string := "xml";
+
+(: Trace Events :)
+declare variable $TRACE-MATCH-RESULTS := "SM-MATCH";
+
+(: ERRORS :)
+declare variable $NO-MERGE-OPTIONS-ERROR := xs:QName("SM-NO-MERGING-OPTIONS");

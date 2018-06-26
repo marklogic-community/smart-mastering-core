@@ -14,9 +14,14 @@ declare option xdmp:mapping "false";
 declare function proc-impl:process-match-and-merge($uri as xs:string)
   as element()*
 {
-  for $merging-options in merging:get-options($const:FORMAT-XML)
+  let $merging-options := merging:get-options($const:FORMAT-XML)
   return
-    proc-impl:process-match-and-merge-with-options($uri, $merging-options)
+    if (fn:exists($merging-options)) then
+      for $merging-options in merging:get-options($const:FORMAT-XML)
+      return
+        proc-impl:process-match-and-merge-with-options($uri, $merging-options)
+    else
+      fn:error($const:NO-MERGE-OPTIONS-ERROR, "No Merging Options are present. See: https://marklogic-community.github.io/smart-mastering-core/docs/merging-options/")
 };
 
 declare function proc-impl:process-match-and-merge($uri as xs:string, $option-name as xs:string)
@@ -33,6 +38,7 @@ declare function proc-impl:process-match-and-merge($uri as xs:string, $option-na
  :)
 declare function proc-impl:process-match-and-merge-with-options($uri as xs:string, $options as item())
 {
+  let $_ := xdmp:trace($const:TRACE-MATCH-RESULTS, "processing: " || $uri)
   let $matching-options := matcher:get-options-as-xml(fn:string($options/merging:match-options))
   let $thresholds := $matching-options/matcher:thresholds/matcher:threshold[@action = ($const:MERGE-ACTION, $const:NOTIFY-ACTION)]
   let $threshold-labels := $thresholds/@label
@@ -54,6 +60,7 @@ declare function proc-impl:process-match-and-merge-with-options($uri as xs:strin
       $lock-on-query,
       fn:false()
     )
+  let $_ := xdmp:trace($const:TRACE-MATCH-RESULTS, $matching-results)
   let $merge-uris as xs:string* := $matching-results/result[@action = $const:MERGE-ACTION]/@uri/fn:string()
   let $notifies := $matching-results/result[@action = $const:NOTIFY-ACTION]
   return (

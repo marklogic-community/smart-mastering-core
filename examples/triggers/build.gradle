@@ -32,6 +32,11 @@ repositories {
   maven {
     url {"https://dl.bintray.com/marklogic-community/Maven/"}
   }
+
+  // needed for the mlcp dependencies
+  maven {
+    url {"http://developer.marklogic.com/maven2/"}
+  }
 }
 
 configurations {
