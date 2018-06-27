@@ -10,6 +10,12 @@
         <smart-mastering:dateTime>2018-04-26T16:40:16.760311Z</smart-mastering:dateTime>
       </smart-mastering:source>
     </smart-mastering:sources>
+    <unconfigured>unconfigured value 2a</unconfigured>
+    <shallow xmlns="">shallow value 2</shallow>
+    <custom xmlns="">
+      <this><has><a><deep><path>deep value 2</path></deep></a></has></this>
+      <unconfigured>unconfigured value 2b</unconfigured>
+    </custom>
   </headers>
   <triples xmlns:sem="http://marklogic.com/semantics">
     <sem:triple>
