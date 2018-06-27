@@ -339,20 +339,9 @@ declare function merge-impl:build-merge-models-by-final-properties-to-xml(
   let $uris := $docs ! xdmp:node-uri(.)
   return
     <es:envelope>
-      <es:headers>
-        <sm:id>{$id}</sm:id>
-        <sm:merges>{
-          $docs/es:envelope/es:headers/sm:merges/sm:document-uri,
-          $uris ! element sm:document-uri { . }
-        }</sm:merges>
-        <sm:sources>{
-          $docs/es:envelope/es:headers/sm:sources/sm:source
-        }</sm:sources>
-        {
-          (: TODO Add logic for merging headers :)
-          $docs/es:envelope/es:headers/*[fn:empty(self::sm:*)]
-        }
-      </es:headers>
+      {
+        merge-impl:build-headers($id, $docs, $uris, $final-properties)
+      }
       <es:triples>{
         sem:sparql(
           'construct { ?s ?p ?o } where { ?s ?p ?o }',
@@ -368,6 +357,29 @@ declare function merge-impl:build-merge-models-by-final-properties-to-xml(
         )
       }</es:instance>
     </es:envelope>
+};
+
+declare function merge-impl:build-headers(
+  $id as xs:string,
+  $docs as node()*,
+  $uris as xs:string*,
+  $final-properties as item()*
+) as element(es:headers)
+{
+  <es:headers>
+    <sm:id>{$id}</sm:id>
+    <sm:merges>{
+      $docs/es:envelope/es:headers/sm:merges/sm:document-uri,
+      $uris ! element sm:document-uri { . }
+    }</sm:merges>
+    <sm:sources>{
+      $docs/es:envelope/es:headers/sm:sources/sm:source
+    }</sm:sources>
+    {
+      (: TODO Add logic for merging headers :)
+      $docs/es:envelope/es:headers/*[fn:empty(self::sm:*)]
+    }
+  </es:headers>
 };
 
 declare function merge-impl:build-merge-models-by-final-properties-to-json(
