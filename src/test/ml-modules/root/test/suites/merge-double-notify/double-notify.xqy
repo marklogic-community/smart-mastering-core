@@ -1,12 +1,15 @@
 xquery version "1.0-ml";
 
 (:
- : Scenario: We run process-match-and-merge on a document (doc1.xml). One other document (doc2.xml) scores high enough
- : to be automatically merged. Another document (doc3.xml) scores high enough to generate a notification.
+ : Scenario: We run process-match-and-merge on a document (doc1.xml). Then we run
+ : it again on doc2.xml
+ : The idea is to reproduce a use case that caused 2 notification to be created
+ : where only 1 should be.
  :
  : Desired result:
  :   - create merged document (doc12.xml)
- :   - create notification that refers to the merged doc instead of the original (doc3.xml, doc12.xml)
+ :   - create notification that refers to the merged doc
+ :   - ensure only 1 notification is created
  :)
 
 import module namespace const = "http://marklogic.com/smart-mastering/constants"
