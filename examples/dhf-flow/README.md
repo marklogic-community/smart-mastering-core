@@ -66,3 +66,56 @@ process:process-match-and-merge($id)
 
 All the other code in this project is necessary for a functioning Data Hub. We've purposely trimmed it down to bare essentials so you can focus on the Harmonization piece.
 
+### Profiling this example
+
+There are two profiling mechanisms available in this project. The first is the
+built-in gradle profiler:
+
+```
+gradle --profile runMastering
+```
+
+This will write an HTML profile report to 
+`./build/reports/profile/profile-$DATETIME.html`.
+
+There's also a custom profiling class that prints per-task execution time to
+the terminal:
+
+```
+gradle -Pprofile runMastering
+```
+
+Example output:
+
+```
+:runMastering
+Running Flow: [MDM:SmartMaster]
+        with batch size: 100
+        with thread count: 4
+        with Source DB: data-hub-STAGING
+        with Destination DB: data-hub-FINAL
+
+
+Output:
+{
+  "jobId" : "e8954555-a33c-465a-9664-d671ddde2930",
+  "flowType" : "harmonize",
+  "flowName" : "SmartMaster",
+  "entityName" : "MDM",
+  "jobName" : null,
+  "startTime" : "2018-06-28T15:04:03.611Z",
+  "endTime" : "2018-06-28T15:04:04.408Z",
+  "jobOutput" : null,
+  "status" : "FINISHED",
+  "successfulEvents" : 7,
+  "failedEvents" : 0,
+  "successfulBatches" : 1,
+  "failedBatches" : 0
+}
+
+BUILD SUCCESSFUL
+
+Total time: 2.204 secs
+Task timings:
+     1.268s  :runMastering
+```

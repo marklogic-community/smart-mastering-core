@@ -197,6 +197,25 @@ task setupExample {
   dependsOn loadCode
 }
 
+// a convenience task to run the Smart Mastering flow
+task runMastering(type: com.marklogic.gradle.task.RunFlowTask) {
+  mustRunAfter importThesauri
+  mustRunAfter deployMatchOptions
+  mustRunAfter deployMergeOptions
+  mustRunAfter loadCRMData
+  mustRunAfter loadOracleData
+  mustRunAfter loadCSVFileData
+  mustRunAfter loadData
+  mustRunAfter mlDeploy
+  mustRunAfter loadCode
+  mustRunAfter setupExample
+
+  entityName = "MDM"
+  flowName = "SmartMaster"
+  batchSize = 100
+  threadCount = 4
+}
+
 task clearStagingDatabase(type: com.marklogic.gradle.task.databases.ClearDatabaseTask) {
   doFirst {
     project.ext.database = project.properties.mlStagingDbName
@@ -252,3 +271,46 @@ mlWatch.dependsOn mlGradleWatch
 mlDeleteModuleTimestampsFile.dependsOn mlGradleDeleteModuleTimestampsFile
 // end bug workaround
 //////////////////////////////////////////////////////////////
+
+/////////////////
+// PROFILING
+////////////////
+import java.util.concurrent.TimeUnit
+class TimingsListener implements TaskExecutionListener, BuildListener {
+  private long startTime
+  private timings = []
+
+  @Override
+  void beforeExecute(Task task) {
+    startTime = System.nanoTime()
+  }
+
+  @Override
+  void afterExecute(Task task, TaskState taskState) {
+    timings.add([
+      TimeUnit.MILLISECONDS.convert(System.nanoTime() -
+         startTime, TimeUnit.NANOSECONDS),
+      task.path
+    ])
+  }
+
+  @Override
+  void buildFinished(BuildResult result) {
+    println "Task timings:"
+    for (timing in timings)
+      printf "%10.3fs  %s\n", (timing[0] / 1000), timing[1]
+  }
+
+  @Override
+  void buildStarted(Gradle gradle) {}
+  @Override
+  void projectsEvaluated(Gradle gradle) {}
+  @Override
+  void projectsLoaded(Gradle gradle) {}
+  @Override
+  void settingsEvaluated(Settings settings) {}
+}
+
+if (project.hasProperty('profile')) {
+  gradle.addListener new TimingsListener()
+}
