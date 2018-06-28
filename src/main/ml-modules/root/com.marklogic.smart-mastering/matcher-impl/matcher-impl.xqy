@@ -14,6 +14,8 @@ import module namespace const = "http://marklogic.com/smart-mastering/constants"
   at "/com.marklogic.smart-mastering/constants.xqy";
 import module namespace json="http://marklogic.com/xdmp/json"
   at "/MarkLogic/json/json.xqy";
+import module namespace notify-impl = "http://marklogic.com/smart-mastering/notification-impl"
+  at "/com.marklogic.smart-mastering/matcher-impl/notification-impl.xqy";
 import module namespace opt-impl = "http://marklogic.com/smart-mastering/options-impl"
   at "/com.marklogic.smart-mastering/matcher-impl/options-impl.xqy";
 
@@ -136,10 +138,26 @@ declare function match-impl:drop-redundant($uri, $matches as element(result)*)
           else ()
       else
         $merge
+  let $notification-results := $matches[@action=$const:NOTIFY-ACTION]
+  let $notification-uris := $notification-results/@uri
+  let $notifications :=
+    let $nots := xdmp:invoke-function(
+      function() {
+        notify-impl:get-existing-match-notification((), $notification-uris, map:map())
+      },
+      map:entry("isolation", "different-transaction")
+    )
+    for $notification in $nots
+    let $sources := $notification/sm:document-uris/sm:document-uri[fn:not(. = $notification-uris)]
+    return
+      if (match-impl:seq-contains($sources, $notification-uris)) then
+        ($sources ! map:put($drop, ., fn:true()))
+      else ()
   let $drop-uris := map:keys($drop)
   let $results := (
     $merges except $merge-results[@uri = $drop-uris],
-    $matches[@action ne $const:MERGE-ACTION]
+    $notification-results except $notification-results[@uri = $drop-uris],
+    $matches[fn:not(@action = $const:MERGE-ACTION or @action = $const:NOTIFY-ACTION)]
   )
   for $result in $results
   order by $result/@index

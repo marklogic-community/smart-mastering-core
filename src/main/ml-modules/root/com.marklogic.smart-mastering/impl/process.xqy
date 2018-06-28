@@ -79,9 +79,14 @@ declare function proc-impl:process-match-and-merge-with-options($uri as xs:strin
     for $label in $threshold-labels
     let $notify-uris := $notifies[@threshold eq $label]/@uri/fn:string()
     return
-      matcher:save-match-notification(
-        $label,
-        ($uri, $notify-uris)
+      (: do this in a separate transaction so that we can see notifications
+       : and avoid creating double notifications
+       :)
+      xdmp:invoke-function(
+        function() {
+          matcher:save-match-notification($label, ($uri, $notify-uris))
+        },
+        map:new((map:entry("isolation", "different-transaction"), map:entry("update", "true")))
       )
   )
 };
