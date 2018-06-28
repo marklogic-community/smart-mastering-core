@@ -96,7 +96,7 @@ declare function notify-impl:find-notify-uris($uris as xs:string*, $existing-not
 };
 
 declare function notify-impl:get-existing-match-notification(
-  $threshold-label as xs:string,
+  $threshold-label as xs:string?,
   $uris as xs:string*,
   $extractions as map:map
 ) as element(sm:notification)*
@@ -104,14 +104,18 @@ declare function notify-impl:get-existing-match-notification(
   let $keys := map:keys($extractions)
   for $notification in cts:search(fn:collection()/sm:notification,
     cts:and-query((
-      cts:element-value-query(
-        xs:QName("sm:threshold-label"),
-        $threshold-label
-      ),
-      cts:element-value-query(
-        xs:QName("sm:document-uri"),
-        $uris
-      )
+      if (fn:exists($threshold-label)) then
+        cts:element-value-query(
+          xs:QName("sm:threshold-label"),
+          $threshold-label
+        )
+      else (),
+      if (fn:exists($uris)) then
+        cts:element-value-query(
+          xs:QName("sm:document-uri"),
+          $uris
+        )
+      else ()
     ))
   )
   return

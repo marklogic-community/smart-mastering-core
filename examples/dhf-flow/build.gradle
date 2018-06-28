@@ -197,6 +197,44 @@ task setupExample {
   dependsOn loadCode
 }
 
+task clearStagingDatabase(type: com.marklogic.gradle.task.databases.ClearDatabaseTask) {
+  doFirst {
+    project.ext.database = project.properties.mlStagingDbName
+    project.ext.confirm = "true"
+  }
+  outputs.upToDateWhen { false }
+}
+task clearFinalDatabase(type: com.marklogic.gradle.task.databases.ClearDatabaseTask) {
+  doFirst {
+    project.ext.database = project.properties.mlFinalDbName
+    project.ext.confirm = "true"
+  }
+  outputs.upToDateWhen { false }
+}
+task clearTraceDatabase(type: com.marklogic.gradle.task.databases.ClearDatabaseTask) {
+  doFirst {
+    project.ext.database = project.properties.mlTraceDbName
+    project.ext.confirm = "true"
+  }
+  outputs.upToDateWhen { false }
+}
+task clearJobDatabase(type: com.marklogic.gradle.task.databases.ClearDatabaseTask) {
+  doFirst {
+    project.ext.database = project.properties.mlJobDbName
+    project.ext.confirm = "true"
+  }
+  outputs.upToDateWhen { false }
+}
+
+// convenience task to reset the demo
+// by removing the data
+task resetExample {
+  dependsOn clearStagingDatabase
+  dependsOn clearFinalDatabase
+  dependsOn clearTraceDatabase
+  dependsOn clearJobDatabase
+}
+
 //////////////////////////////////////////////////////////////
 // bug workaround!
 // Use this until bug 910 gets fixed
