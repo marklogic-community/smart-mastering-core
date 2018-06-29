@@ -1,17 +1,20 @@
-This is a "bare minimum" Gradle project that depends on smart-mastering-core.
+This is a "bare minimum" Gradle project that depends on MarkLogic Smart Mastering. It shows the least amount of configuration 
+necessary to deploy a new application to MarkLogic that includes the Smart Mastering modules.
 
-To try it out, first ensure that you've published smart-mastering-core to your local Maven repository. See the
-README file in the root of this repository for instructions on doing that.
-
-You'll need to know the version number of smart-mastering-core that you published locally - it defaults to 0.1.DEV. 
-Verify that the value in gradle.properties is correct and run a deployment:
+To try it out, just run the following command - this uses the [Gradle wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html) 
+so that you don't need Gradle installed locally (just a JVM, version 1.8 or higher):
 
     gradle mlDeploy
-    
-This deploys a new REST server to port 8800 by default. After the deployment is done, go to the following URL:
+
+This deploys a new REST server to port 8800 by default (to change the port or any other property, modify the 
+gradle.properties file in this directory). After the deployment is done, go to the following URL:
 
     http://localhost:8800/v1/config/resources
 
 And you'll see all of the Smart Mastering services deployed, which verifies that this project was able to resolve the
 com.marklogic.community:smart-mastering-core dependency and load all of the Smart Mastering modules into your new 
 application's modules database. 
+
+The Smart Mastering modules themselves are located under ./build/mlRestApi/smart-mastering-core. The ml-gradle plugin 
+handles downloading the modules package from a Maven repository and then ensuring that the modules are loaded as part of
+the mlDeploy, mlLoadModules, mlReloadModules, and mlWatch tasks. 
