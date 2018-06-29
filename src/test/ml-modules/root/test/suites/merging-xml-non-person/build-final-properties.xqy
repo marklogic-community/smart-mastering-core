@@ -30,7 +30,6 @@ let $actual := merging-impl:build-final-properties(
   $sources
 )
 
-let $_ := xdmp:log(("actual", $actual))
 let $orgname-map :=
   for $map in $actual
   where map:contains(-$map, "OrgName")

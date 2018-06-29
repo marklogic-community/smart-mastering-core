@@ -34,15 +34,59 @@ let $merged-doc :=
     },
     $lib:INVOKE_OPTIONS
   )
-let $_ := xdmp:log($merged-doc)
 
 let $assertions := xdmp:eager(
   let $smid := $merged-doc/es:headers/sm:id/fn:string()
   let $s1-dt := $merged-doc//sm:source[sm:name = "SOURCE1"]/sm:dateTime/fn:string()
   let $s2-dt := $merged-doc//sm:source[sm:name = "SOURCE2"]/sm:dateTime/fn:string()
-  let $expected-headers := <es:headers><sm:id xmlns:sm="http://marklogic.com/smart-mastering">{$smid}</sm:id><sm:merges xmlns:sm="http://marklogic.com/smart-mastering"><sm:document-uri>/source/2/doc2.xml</sm:document-uri><sm:document-uri>/source/1/doc1.xml</sm:document-uri></sm:merges><sm:sources xmlns:sm="http://marklogic.com/smart-mastering"><sm:source><sm:name>SOURCE2</sm:name><sm:import-id>mdm-import-b96735af-f7c3-4f95-9ea1-f884bc395e0f</sm:import-id><sm:user>admin</sm:user><sm:dateTime>{$s2-dt}</sm:dateTime></sm:source><sm:source><sm:name>SOURCE1</sm:name><sm:import-id>mdm-import-8cf89514-fb1d-45f1-b95f-8b69f3126f04</sm:import-id><sm:user>admin</sm:user><sm:dateTime>{$s1-dt}</sm:dateTime></sm:source></sm:sources></es:headers>
-  (:let $expected-instance := <es:instance><MDM><Person><PersonType><PersonName><PersonNameType><PersonSurName>JONES</PersonSurName><PersonGivenName>LINDSEY</PersonGivenName></PersonNameType></PersonName><Address><AddressType><LocationState>PA</LocationState><AddressPrivateMailboxText>45</AddressPrivateMailboxText><AddressSecondaryUnitText>JANA</AddressSecondaryUnitText><LocationPostalCode>18505</LocationPostalCode><LocationCityName>SCRANTON</LocationCityName></AddressType></Address><id>6270654339</id><id>6986792174</id><PersonBirthDate>19801001</PersonBirthDate><CaseAmount>1287.9</CaseAmount><CustomThing>2</CustomThing><CustomThing>1</CustomThing><PersonSSNIdentification><PersonSSNIdentificationType><IdentificationID>393225353</IdentificationID></PersonSSNIdentificationType></PersonSSNIdentification><Revenues><RevenuesType><Revenue>4332</Revenue></RevenuesType></Revenues><CaseStartDate>20110406</CaseStartDate><PersonSex>F</PersonSex></PersonType></Person></MDM></es:instance>:)
-  let $expected-instance := <es:instance><MDM><Organization><OrgType><OrgName>Global Corp</OrgName><Address><AddressType><LocationState>PA</LocationState><AddressPrivateMailboxText>45</AddressPrivateMailboxText><AddressSecondaryUnitText>JANA</AddressSecondaryUnitText><LocationPostalCode>18505</LocationPostalCode><LocationCityName>SCRANTON</LocationCityName></AddressType></Address><id>6270654339</id><id>6986792174</id><IncorporationDate>19801001</IncorporationDate><AnnualRevenue>1287.9</AnnualRevenue><CustomThing>2</CustomThing><CustomThing>1</CustomThing><OrgEIN>393225353</OrgEIN></OrgType></Organization></MDM></es:instance>
+  let $expected-headers :=
+    <es:headers>
+      <sm:id xmlns:sm="http://marklogic.com/smart-mastering">{$smid}</sm:id>
+      <sm:merges xmlns:sm="http://marklogic.com/smart-mastering">
+        <sm:document-uri>/source/2/doc2.xml</sm:document-uri>
+        <sm:document-uri>/source/1/doc1.xml</sm:document-uri>
+      </sm:merges>
+      <sm:sources xmlns:sm="http://marklogic.com/smart-mastering">
+        <sm:source>
+          <sm:name>SOURCE2</sm:name>
+          <sm:import-id>mdm-import-b96735af-f7c3-4f95-9ea1-f884bc395e0f</sm:import-id>
+          <sm:user>admin</sm:user>
+          <sm:dateTime>{$s2-dt}</sm:dateTime>
+        </sm:source>
+        <sm:source>
+          <sm:name>SOURCE1</sm:name>
+          <sm:import-id>mdm-import-8cf89514-fb1d-45f1-b95f-8b69f3126f04</sm:import-id>
+          <sm:user>admin</sm:user>
+          <sm:dateTime>{$s1-dt}</sm:dateTime>
+        </sm:source>
+      </sm:sources>
+    </es:headers>
+  let $expected-instance :=
+    <es:instance>
+      <MDM>
+        <Organization>
+          <OrgType>
+            <OrgName>Global Corp</OrgName>
+            <Address>
+              <AddressType>
+                <LocationState>PA</LocationState>
+                <AddressPrivateMailboxText>45</AddressPrivateMailboxText>
+                <AddressSecondaryUnitText>JANA</AddressSecondaryUnitText>
+                <LocationPostalCode>18505</LocationPostalCode>
+                <LocationCityName>SCRANTON</LocationCityName>
+              </AddressType>
+            </Address>
+            <id>6270654339</id>
+            <id>6986792174</id>
+            <IncorporationDate>19801001</IncorporationDate>
+            <AnnualRevenue>1287.9</AnnualRevenue>
+            <CustomThing>2</CustomThing>
+            <CustomThing>1</CustomThing>
+            <OrgEIN>393225353</OrgEIN>
+          </OrgType>
+        </Organization>
+      </MDM>
+    </es:instance>
   let $expected-triples :=
     <es:triples>
       <sem:triple xmlns:es="http://marklogic.com/entity-services" xmlns:sem="http://marklogic.com/semantics">
