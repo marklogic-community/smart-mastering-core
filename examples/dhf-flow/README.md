@@ -4,7 +4,7 @@ This example shows you how to integrate Smart Mastering with your Data Hub Flows
 
 ## Setup
 
-- Add your username and password to **gradle-local.properties**
+- Create the file **gradle-local.properties** in the same directory as this README file and add your MarkLogic admin username and password to it:
   ```
   mlUsername=admin
   mlPassword=admin
