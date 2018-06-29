@@ -55,8 +55,7 @@ $ cd smart-mastering-core
 $ git remote add upstream git://github.com/marklogic-community/smart-mastering-core.git
 ```
 
-All bug fixes and new features currently go into the master branch. This will 
-change when we're a little further along. 
+All bug fixes and new features go into the develop branch. 
 
 We ask that you open an issue in the [issue tracker][] and get agreement from
 at least one of the project maintainers before you start coding.
@@ -71,7 +70,7 @@ Okay, so you have decided to fix something. Create a feature branch
 and start hacking:
 
 ```sh
-$ git checkout -b my-feature-branch -t origin/master
+$ git checkout -b my-feature-branch -t origin/develop
 ```
 
 #### Formatting code
@@ -121,7 +120,7 @@ Use `git rebase` (not `git merge`) to sync your work from time to time.
 
 ```sh
 $ git fetch upstream
-$ git rebase upstream/master
+$ git rebase upstream/develop
 ```
 
 
@@ -184,10 +183,10 @@ from the main (upstream) repository:
     git push origin --delete my-feature-branch
     ```
 
-* Check out the master branch:
+* Check out the develop branch:
 
     ```shell
-    git checkout master -f
+    git checkout develop -f
     ```
 
 * Delete the local branch:
@@ -196,10 +195,10 @@ from the main (upstream) repository:
     git branch -D my-feature-branch
     ```
 
-* Update your master with the latest upstream version:
+* Update your develop with the latest upstream version:
 
     ```shell
-    git pull --ff upstream master
+    git pull --ff upstream develop
     ```
 
 [issue tracker]: https://github.com/marklogic-community/smart-mastering-core/issues
