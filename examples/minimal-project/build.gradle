@@ -1,10 +1,8 @@
 plugins {
-  id "com.marklogic.ml-gradle" version "3.6.3"
+  id "com.marklogic.ml-gradle" version "3.8.0"
 }
 
 repositories {
-  mavenLocal()
-
   // Needed for smart-mastering-core dependency until it's available via jcenter()
   maven {
     url {"https://dl.bintray.com/marklogic-community/Maven/"}
