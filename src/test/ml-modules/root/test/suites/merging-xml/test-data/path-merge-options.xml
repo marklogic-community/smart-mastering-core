@@ -1,11 +1,11 @@
 <options xmlns="http://marklogic.com/smart-mastering/merging">
   <match-options>basic</match-options>
-  <property-defs>
+  <property-defs xmlns:es="http://marklogic.com/entity-services">
     <property namespace="" localname="IdentificationID" name="ssn"/>
     <property namespace="" localname="PersonName" name="name"/>
     <property namespace="" localname="Address" name="address"/>
-    <property path="/headers/shallow" name="shallow"/>
-    <property path="/headers/custom/this/has/a/deep/path" name="deep"/>
+    <property path="/es:headers/shallow" name="shallow"/>
+    <property path="/es:headers/custom/this/has/a/deep/path" name="deep"/>
   </property-defs>
   <algorithms>
     <algorithm name="name" function="name"/>
@@ -32,7 +32,6 @@
       </double-metaphone>
     </merge>
     <merge property-name="shallow" algorithm-ref="standard" max-values="1">
-    </merge>
       <source-weights>
         <source name="SOURCE1" weight="10"></source>
       </source-weights>
