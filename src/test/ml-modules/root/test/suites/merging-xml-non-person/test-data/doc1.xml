@@ -1,0 +1,55 @@
+<envelope xmlns="http://marklogic.com/entity-services">
+  <headers>
+    <smart-mastering:id xmlns:smart-mastering="http://marklogic.com/smart-mastering">bbc806e4-ff00-4585-9d46-877edbc3248e</smart-mastering:id>
+    <smart-mastering:id xmlns:smart-mastering="http://marklogic.com/smart-mastering">66cbe731-7b56-4c91-9257-18a973008277</smart-mastering:id>
+    <smart-mastering:sources xmlns:smart-mastering="http://marklogic.com/smart-mastering">
+      <smart-mastering:source>
+        <smart-mastering:name>SOURCE1</smart-mastering:name>
+        <smart-mastering:import-id>mdm-import-8cf89514-fb1d-45f1-b95f-8b69f3126f04</smart-mastering:import-id>
+        <smart-mastering:user>admin</smart-mastering:user>
+        <smart-mastering:dateTime>2018-04-26T16:40:02.1386Z</smart-mastering:dateTime>
+      </smart-mastering:source>
+    </smart-mastering:sources>
+  </headers>
+  <triples xmlns:sem="http://marklogic.com/semantics">
+    <sem:triple>
+      <sem:subject>http://marklogic.com/sm-core/global-corp</sem:subject>
+      <sem:predicate>http://marklogic.com/sm-core/headquartered-in</sem:predicate>
+      <sem:object>http://dbpedia.org/resource/Springfield,_Ohio</sem:object>
+    </sem:triple>
+    <sem:triple>
+      <sem:subject>http://marklogic.com/sm-core/global-corp</sem:subject>
+      <sem:predicate>http://marklogic.com/sm-core/ein</sem:predicate>
+      <sem:object datatype="http://www.w3.org/2001/XMLSchema#string">393225353</sem:object>
+    </sem:triple>
+    <sem:triple>
+      <sem:subject>http://marklogic.com/sm-core/springfield</sem:subject>
+      <sem:predicate>http://marklogic.com/sm-core/is-in</sem:predicate>
+      <sem:object datatype="http://www.w3.org/2001/XMLSchema#string">Ohio</sem:object>
+    </sem:triple>
+  </triples>
+  <instance>
+    <MDM xmlns="">
+      <Organization>
+        <OrgType>
+          <OrgName>Global Corp</OrgName>
+          <Address>
+            <AddressType>
+              <LocationState>OH</LocationState>
+              <AddressPrivateMailboxText>72980</AddressPrivateMailboxText>
+              <AddressSecondaryUnitText>LONDONDERRY</AddressSecondaryUnitText>
+              <LocationPostalCode>45505</LocationPostalCode>
+              <LocationCityName>SPRINGFIELD</LocationCityName>
+            </AddressType>
+          </Address>
+          <id>6986792174</id>
+          <IncorporationDate>19801001</IncorporationDate>
+          <AnnualRevenue>1287.9</AnnualRevenue>
+          <CustomThing>1</CustomThing>
+          <OrgEIN>393225353</OrgEIN>
+        </OrgType>
+      </Organization>
+    </MDM>
+  </instance>
+  <attachments/>
+</envelope>
