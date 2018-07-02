@@ -14,7 +14,7 @@ let $doc := fn:doc($lib:URI2)
 let $options := matcher:get-options-as-xml($lib:MATCH-OPTIONS-NAME)
 return (
   (: test page length gt # of results :)
-  let $actual := matcher:find-document-matches-by-options($doc, $options, 1, 6, fn:true())
+  let $actual := matcher:find-document-matches-by-options($doc, $options, 1, 6, fn:true(), cts:and-query(()))
   return (
     test:assert-true($actual instance of element(results)),
     test:assert-equal(6, $actual/@page-length/xs:int(.)),
@@ -29,7 +29,7 @@ return (
   ),
 
   (: test page length < # of results :)
-  let $actual := matcher:find-document-matches-by-options($doc, $options, 1, 2, fn:true())
+  let $actual := matcher:find-document-matches-by-options($doc, $options, 1, 2, fn:true(), cts:and-query(()))
   return (
     test:assert-true($actual instance of element(results)),
     test:assert-equal(2, $actual/@page-length/xs:int(.)),
@@ -44,7 +44,7 @@ return (
   ),
 
   (: test last page :)
-  let $actual := matcher:find-document-matches-by-options($doc, $options, 5, 2, fn:true())
+  let $actual := matcher:find-document-matches-by-options($doc, $options, 5, 2, fn:true(), cts:and-query(()))
   return (
     test:assert-true($actual instance of element(results)),
     test:assert-equal(2, $actual/@page-length/xs:int(.)),
@@ -60,7 +60,7 @@ return (
 
   (: test no results :)
   let $doc := fn:doc($lib:URI7)
-  let $actual := matcher:find-document-matches-by-options($doc, $options, 5, 2, fn:true())
+  let $actual := matcher:find-document-matches-by-options($doc, $options, 5, 2, fn:true(), cts:and-query(()))
   return (
     test:assert-true($actual instance of element(results)),
     test:assert-equal(2, $actual/@page-length/xs:int(.)),

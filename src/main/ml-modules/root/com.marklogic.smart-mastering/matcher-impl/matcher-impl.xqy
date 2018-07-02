@@ -32,7 +32,8 @@ declare function match-impl:find-document-matches-by-options(
   $page-length as xs:integer,
   $minimum-threshold as xs:double,
   $lock-on-search,
-  $include-matches as xs:boolean
+  $include-matches as xs:boolean,
+  $filter-query as cts:query
 ) as element(results)
 {
   let $options :=
@@ -82,6 +83,7 @@ declare function match-impl:find-document-matches-by-options(
       match-impl:search(
         $match-query,
         $reduced-boost,
+        $filter-query,
         $minimum-threshold,
         $thresholds,
         $start,
@@ -199,6 +201,7 @@ declare function match-impl:build-query($document, $property-defs, $scoring, $al
 declare function match-impl:search(
   $match-query,
   $boosting-query,
+  $filter-query as cts:query,
   $min-threshold,
   $thresholds,
   $start,
@@ -209,12 +212,17 @@ declare function match-impl:search(
   $include-matches as xs:boolean
 ) {
   let $range := $start to ($start + $page-length - 1)
+  let $query :=
+    cts:and-query((
+      cts:query(match-impl:strip-query-weights(document { $filter-query }/element())),
+      cts:boost-query(
+        $match-query,
+        $boosting-query
+      )
+    ))
   for $result at $pos in cts:search(
     fn:collection(),
-    cts:boost-query(
-      $match-query,
-      $boosting-query
-    ),
+    $query,
     ("unfiltered", "score-simple")
   )[fn:position() = $range]
   let $score := match-impl:simple-score($result)
@@ -327,9 +335,7 @@ declare function match-impl:strip-query-weights($queries)
     typeswitch ($query)
       case schema-element(cts:query) return
         element { fn:node-name($query) } {
-          if (fn:ends-with(fn:local-name($query), "-query")) then
-            attribute { "weight" } { 0 }
-          else (),
+          attribute { "weight" } { 0 },
           $query/@*[fn:not(self::attribute(weight))],
           match-impl:strip-query-weights($query/node())
         }

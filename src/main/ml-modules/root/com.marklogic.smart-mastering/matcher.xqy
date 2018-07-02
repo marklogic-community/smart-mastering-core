@@ -40,7 +40,12 @@ declare function matcher:find-document-matches-by-options-name(
 )
 as element(results)
 {
-  matcher:find-document-matches-by-options($document, matcher:get-options-as-xml($options-name), fn:false())
+  matcher:find-document-matches-by-options(
+    $document,
+    matcher:get-options-as-xml($options-name),
+    fn:false(),
+    cts:and-query(())
+  )
 };
 
 
@@ -51,16 +56,18 @@ as element(results)
  : @param $document  document to find matches for
  : @param $options-name  name previously associated with match options using matcher:save-options
  : @param $include-matches  whether the response should list the matched properties for each potential match
+ : @param $filter-query  a cts:query used to filter the matched results
  : @return  the queries used for search and the search results themselves
  :)
 declare function matcher:find-document-matches-by-options-name(
   $document,
   $options-name as xs:string,
-  $include-matches as xs:boolean
+  $include-matches as xs:boolean,
+  $filter-query as cts:query
 )
   as element(results)
 {
-  matcher:find-document-matches-by-options($document, matcher:get-options-as-xml($options-name), $include-matches)
+  matcher:find-document-matches-by-options($document, matcher:get-options-as-xml($options-name), $include-matches, $filter-query)
 };
 
 (:
@@ -69,12 +76,14 @@ declare function matcher:find-document-matches-by-options-name(
  : @param $document  document to find matches for
  : @param $options  match options saved using matcher:save-options
  : @param $include-matches  whether the response should list the matched properties for each potential match
+ : @param $filter-query  a cts:query used to filter the matched results
  : @return the queries used for search and the search results themselves
  :)
 declare function matcher:find-document-matches-by-options(
   $document,
   $options as element(matcher:options),
-  $include-matches as xs:boolean
+  $include-matches as xs:boolean,
+  $filter-query as cts:query
 )
   as element(results)
 {
@@ -86,7 +95,8 @@ declare function matcher:find-document-matches-by-options(
       $options//*:max-scan ! xs:integer(.),
       200
     )),
-    $include-matches
+    $include-matches,
+    $filter-query
   )
 };
 
@@ -98,6 +108,7 @@ declare function matcher:find-document-matches-by-options(
  : @param $start  starting index for potential match results (starts at 1)
  : @param $page-length  maximum number of results to return in this call
  : @param $include-matches  whether the response should list the matched properties for each potential match
+ : @param $filter-query  a cts:query used to filter the matched results
  : @return the queries used for search and the search results themselves
  :)
 declare function matcher:find-document-matches-by-options(
@@ -105,7 +116,8 @@ declare function matcher:find-document-matches-by-options(
   $options as element(matcher:options),
   $start as xs:int,
   $page-length as xs:int,
-  $include-matches as xs:boolean
+  $include-matches as xs:boolean,
+  $filter-query as cts:query
 ) as element(results)
 {
   match-impl:find-document-matches-by-options(
@@ -115,7 +127,8 @@ declare function matcher:find-document-matches-by-options(
     $page-length,
     fn:min($options//*:thresholds/*:threshold/(@above|above) ! fn:number(.)),
     fn:false(),
-    $include-matches
+    $include-matches,
+    $filter-query
   )
 };
 
@@ -130,6 +143,7 @@ declare function matcher:find-document-matches-by-options(
                               least this high to be returned
  : @param $lock-on-search  TODO
  : @param $include-matches  whether the response should list the matched properties for each potential match
+ : @param $filter-query  a cts:query used to filter the matched results
  : @return the queries used for search and the search results themselves
  :)
 declare function matcher:find-document-matches-by-options(
@@ -139,11 +153,12 @@ declare function matcher:find-document-matches-by-options(
   $page-length as xs:integer,
   $minimum-threshold as xs:double,
   $lock-on-search as xs:boolean,
-  $include-matches as xs:boolean
+  $include-matches as xs:boolean,
+  $filter-query
 ) as element(results)
 {
   match-impl:find-document-matches-by-options(
-    $document, $options, $start, $page-length, $minimum-threshold, $lock-on-search, $include-matches
+    $document, $options, $start, $page-length, $minimum-threshold, $lock-on-search, $include-matches, $filter-query
   )
 };
 

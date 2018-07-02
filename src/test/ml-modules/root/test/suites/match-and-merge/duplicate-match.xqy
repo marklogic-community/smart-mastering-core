@@ -23,6 +23,35 @@ declare option xdmp:mapping "false";
  : been merged and do nothing.
  :)
 
+(: test with filtering query :)
+let $actual :=
+  xdmp:invoke-function(
+    function() {
+      <result>{
+        let $q := cts:not-query(cts:document-query($lib:URI4))
+        return
+          process:process-match-and-merge($lib:URI2, $lib:MERGE-OPTIONS-NAME, $q)
+      }</result>,
+      <result>{
+        let $q := cts:not-query(cts:document-query($lib:URI4))
+        return
+          process:process-match-and-merge($lib:URI3, $lib:MERGE-OPTIONS-NAME, $q)
+      }</result>
+    },
+    $lib:INVOKE_OPTIONS
+  )
+
+
+return (
+  test:assert-equal(2, fn:count($actual)),
+  test:assert-exists(($actual[1]/node())),
+  test:assert-equal(xs:QName("es:envelope"), fn:node-name($actual[1]/node()[1])),
+  test:assert-equal(xs:QName("sm:notification"), fn:node-name($actual[1]/node()[2])),
+  test:assert-equal(xs:QName("sm:notification"), fn:node-name($actual[2]/node()[1])),
+  test:assert-same-values(($lib:URI2, $lib:URI3), $actual[1]/es:envelope/es:headers/sm:merges/sm:document-uri/fn:string())
+),
+
+(: test w/o filtering query :)
 let $actual :=
   xdmp:invoke-function(
     function() {
@@ -33,9 +62,8 @@ let $actual :=
   )
 
 return (
+  test:assert-equal(2, fn:count($actual)),
   test:assert-exists(($actual[1]/node())),
-  test:assert-equal(xs:QName("es:envelope"), fn:node-name($actual[1]/node()[1])),
-  test:assert-equal(xs:QName("sm:notification"), fn:node-name($actual[1]/node()[2])),
-  test:assert-equal(xs:QName("sm:notification"), fn:node-name($actual[2]/node()[1])),
-  test:assert-same-values(($lib:URI2, $lib:URI3), $actual[1]/es:envelope/es:headers/sm:merges/sm:document-uri/fn:string())
+  test:assert-equal(xs:QName("sm:notification"), fn:node-name($actual[1]/node()[1])),
+  test:assert-equal(xs:QName("sm:notification"), fn:node-name($actual[2]/node()[1]))
 )
