@@ -31,7 +31,7 @@ declare function process:process-match-and-merge($uri as xs:string)
  :)
 declare function process:process-match-and-merge($uri as xs:string, $option-name as xs:string)
 {
-  proc-impl:process-match-and-merge($uri, $option-name, cts:and-query(()))
+  proc-impl:process-match-and-merge($uri, $option-name, cts:true-query())
 };
 
 (:
@@ -41,7 +41,7 @@ declare function process:process-match-and-merge($uri as xs:string, $option-name
  :
  : @param $uri  URI of the target document
  : @param $option-name  the name of a set of merge options, which include a reference to a set of match options
- : @param $filter-query  a cts:query used to filter the matched results
+ : @param $filter-query  a cts:query used to restrict matches to a set, such as a specific entity type or collection
  : @return merged docs, if any, otherwise any notification documents
  :)
 declare function process:process-match-and-merge(

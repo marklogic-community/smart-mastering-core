@@ -19,7 +19,7 @@ declare function proc-impl:process-match-and-merge($uri as xs:string)
     if (fn:exists($merging-options)) then
       for $merging-options in merging:get-options($const:FORMAT-XML)
       return
-        proc-impl:process-match-and-merge-with-options($uri, $merging-options, cts:and-query(()))
+        proc-impl:process-match-and-merge-with-options($uri, $merging-options, cts:true-query())
     else
       fn:error($const:NO-MERGE-OPTIONS-ERROR, "No Merging Options are present. See: https://marklogic-community.github.io/smart-mastering-core/docs/merging-options/")
 };
