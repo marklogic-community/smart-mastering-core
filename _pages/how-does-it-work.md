@@ -39,8 +39,8 @@ database, or because a process is cycling through all content.
 process begins.
 2. The matcher uses the [match configuration][match-config] and the original
 document to determine the properties and values that will be used for matching.
-3. The property values are turned into a query.
-4. The matcher runs the query to identify potential matches for the original
+3. The property values are turned into a query that optionally gets combined with a user-provided filtering query used to restrict matches to a set, such as a specific entity type or collection.
+4. The matcher runs the combined query to identify potential matches for the original
 document.
 
 The query will be run once, generating a score-ordered sequence of
