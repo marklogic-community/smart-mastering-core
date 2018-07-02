@@ -17,7 +17,11 @@ declare option xdmp:mapping "false";
 
 let $actual :=
   xdmp:invoke-function(
-    function() { process:process-match-and-merge($lib:URI2, $lib:MERGE-OPTIONS-NAME) },
+    function() {
+      let $q := cts:not-query(cts:document-query($lib:URI4))
+      return
+        process:process-match-and-merge($lib:URI2, $lib:MERGE-OPTIONS-NAME, $q)
+    },
     $lib:INVOKE_OPTIONS
   )
 

@@ -19,24 +19,31 @@ declare function proc-impl:process-match-and-merge($uri as xs:string)
     if (fn:exists($merging-options)) then
       for $merging-options in merging:get-options($const:FORMAT-XML)
       return
-        proc-impl:process-match-and-merge-with-options($uri, $merging-options)
+        proc-impl:process-match-and-merge-with-options($uri, $merging-options, cts:true-query())
     else
       fn:error($const:NO-MERGE-OPTIONS-ERROR, "No Merging Options are present. See: https://marklogic-community.github.io/smart-mastering-core/docs/merging-options/")
 };
 
-declare function proc-impl:process-match-and-merge($uri as xs:string, $option-name as xs:string)
+declare function proc-impl:process-match-and-merge(
+  $uri as xs:string,
+  $option-name as xs:string,
+  $filter-query as cts:query)
   as item()*
 {
   proc-impl:process-match-and-merge-with-options(
     $uri,
-    merging:get-options($option-name, $const:FORMAT-XML)
+    merging:get-options($option-name, $const:FORMAT-XML),
+    $filter-query
   )
 };
 
 (:
  : The workhorse function.
  :)
-declare function proc-impl:process-match-and-merge-with-options($uri as xs:string, $options as item())
+declare function proc-impl:process-match-and-merge-with-options(
+  $uri as xs:string,
+  $options as item(),
+  $filter-query as cts:query)
 {
   let $_ := xdmp:trace($const:TRACE-MATCH-RESULTS, "processing: " || $uri)
   let $matching-options := matcher:get-options-as-xml(fn:string($options/merging:match-options))
@@ -58,7 +65,8 @@ declare function proc-impl:process-match-and-merge-with-options($uri as xs:strin
       )),
       $minimum-threshold,
       $lock-on-query,
-      fn:false()
+      fn:false(),
+      $filter-query
     )
   let $_ := xdmp:trace($const:TRACE-MATCH-RESULTS, $matching-results)
   let $merge-uris as xs:string* := $matching-results/result[@action = $const:MERGE-ACTION]/@uri/fn:string()

@@ -11,7 +11,7 @@ import module namespace test = "http://marklogic.com/roxy/test-helper" at "/test
 declare option xdmp:mapping "false";
 
 let $doc := fn:doc($lib:URI2)
-let $actual := matcher:find-document-matches-by-options-name($doc, $lib:MATCH-OPTIONS-NAME, fn:true())
+let $actual := matcher:find-document-matches-by-options-name($doc, $lib:MATCH-OPTIONS-NAME, fn:true(), cts:true-query())
 return (
   let $def-match := $actual/result[@threshold="Definitive Match"]
   return (
