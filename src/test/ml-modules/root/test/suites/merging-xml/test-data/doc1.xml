@@ -12,8 +12,8 @@
     </smart-mastering:sources>
     <unconfigured>unconfigured value 1a</unconfigured>
     <shallow xmlns="">shallow value 1</shallow>
-    <custom xmlns="">
-      <this><has><a><deep><path>deep value 1</path></deep></a></has></this>
+    <custom xmlns="" xmlns:has="has">
+      <this><has:a><deep><path>deep value 1</path></deep></has:a></this>
       <unconfigured>unconfigured value 1b</unconfigured>
     </custom>
   </headers>

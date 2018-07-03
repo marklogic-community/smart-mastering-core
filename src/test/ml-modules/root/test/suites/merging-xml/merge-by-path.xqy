@@ -16,6 +16,7 @@ import module namespace lib = "http://marklogic.com/smart-mastering/test" at "li
 
 declare namespace es = "http://marklogic.com/entity-services";
 declare namespace sm = "http://marklogic.com/smart-mastering";
+declare namespace has = "has";
 
 (: Force update mode :)
 declare option xdmp:update "true";
@@ -50,7 +51,7 @@ let $merged-doc :=
 
 return (
   test:assert-equal("shallow value 1", $merged-doc/es:headers/shallow/fn:string()),
-  test:assert-equal("deep value 12", $merged-doc/es:headers/custom/this/has/a/deep/path/fn:string()),
+  test:assert-equal("deep value 12", $merged-doc/es:headers/custom/this/has:a/deep/path/fn:string()),
   test:assert-same-values(("unconfigured value 1a", "unconfigured value 2a"), $merged-doc/es:headers/es:unconfigured/fn:string()),
   test:assert-same-values(("unconfigured value 1b", "unconfigured value 2b"), $merged-doc/es:headers/custom/unconfigured/fn:string())
 )

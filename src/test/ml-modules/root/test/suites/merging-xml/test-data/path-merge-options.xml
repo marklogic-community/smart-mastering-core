@@ -1,12 +1,16 @@
 <options xmlns="http://marklogic.com/smart-mastering/merging">
   <match-options>basic</match-options>
-  <property-defs xmlns:es="http://marklogic.com/entity-services">
-    <property namespace="" localname="IdentificationID" name="ssn"/>
-    <property namespace="" localname="PersonName" name="name"/>
-    <property namespace="" localname="Address" name="address"/>
-    <property path="/es:headers/shallow" name="shallow"/>
-    <property path="/es:headers/custom/this/has/a/deep/path" name="deep"/>
-  </property-defs>
+  <m:property-defs
+    xmlns:es="http://marklogic.com/entity-services"
+    xmlns:m="http://marklogic.com/smart-mastering/merging"
+    xmlns:has="has"
+    xmlns="">
+    <m:property namespace="" localname="IdentificationID" name="ssn"/>
+    <m:property namespace="" localname="PersonName" name="name"/>
+    <m:property namespace="" localname="Address" name="address"/>
+    <m:property path="/es:envelope/es:headers/shallow" name="shallow"/>
+    <m:property path="/es:envelope/es:headers/custom/this/has:a/deep/path" name="deep"/>
+  </m:property-defs>
   <algorithms>
     <algorithm name="name" function="name"/>
     <algorithm name="address" function="address"/>
