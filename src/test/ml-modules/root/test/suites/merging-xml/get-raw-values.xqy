@@ -33,7 +33,8 @@ let $actual :=
   merge-impl:get-raw-values(
     $docs,
     $shallow-prop,
-    $sources
+    $sources,
+    ()
   )
 (:
  : Expecting all values from sources:
@@ -76,7 +77,11 @@ let $actual :=
   merge-impl:get-raw-values(
     $docs,
     $deep-prop,
-    $sources
+    $sources,
+    map:new((
+      map:entry("es", "http://marklogic.com/entity-services"),
+      map:entry("has", "has")
+    ))
   )
 
 (:
@@ -85,7 +90,7 @@ let $actual :=
       "sources":[{"name":"SOURCE1", "dateTime":"2018-04-26T16:40:16.760311Z", "documentUri":"/source/1/doc1.xml"},{"name":"SOURCE2", "dateTime":"2018-04-26T16:40:16.760311Z", "documentUri":"/source/2/doc2.xml"}],
       "values":"<path xmlns=\"\">deep value 1</path><path xmlns=\"\">deep value 2</path>",
       "namespaces": [{"es": "http://marklogic.com/entity-services"}],
-      "path":"/es:envelope/es:headers/custom/this/has/a/deep/path",
+      "path":"/es:envelope/es:headers/custom/this/has:a/deep/path",
       "propQName": "path"
     }
  :)
