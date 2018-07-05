@@ -60,8 +60,57 @@ let $assertions := xdmp:eager(
           <sm:dateTime>{$s1-dt}</sm:dateTime>
         </sm:source>
       </sm:sources>
+      <custom xmlns:has="has">
+        <this><has:a><deep><path>deep value 2</path></deep></has:a></this>
+        <unconfigured>unconfigured value 2b</unconfigured>
+      </custom>
+      <custom xmlns:has="has">
+        <this><has:a><deep><path>deep value 1</path></deep></has:a></this>
+        <unconfigured>unconfigured value 1b</unconfigured>
+      </custom>
+      <shallow>shallow value 2</shallow>
+      <shallow>shallow value 1</shallow>
+      <es:unconfigured>unconfigured value 2a</es:unconfigured>
+      <es:unconfigured>unconfigured value 1a</es:unconfigured>
     </es:headers>
-  let $expected-instance := <es:instance><MDM><Person><PersonType><PersonName><PersonNameType><PersonSurName>JONES</PersonSurName><PersonGivenName>LINDSEY</PersonGivenName></PersonNameType></PersonName><Address><AddressType><LocationState>PA</LocationState><AddressPrivateMailboxText>45</AddressPrivateMailboxText><AddressSecondaryUnitText>JANA</AddressSecondaryUnitText><LocationPostalCode>18505</LocationPostalCode><LocationCityName>SCRANTON</LocationCityName></AddressType></Address><id>6270654339</id><id>6986792174</id><PersonBirthDate>19801001</PersonBirthDate><CaseAmount>1287.9</CaseAmount><CustomThing>2</CustomThing><CustomThing>1</CustomThing><PersonSSNIdentification><PersonSSNIdentificationType><IdentificationID>393225353</IdentificationID></PersonSSNIdentificationType></PersonSSNIdentification><Revenues><RevenuesType><Revenue>4332</Revenue></RevenuesType></Revenues><CaseStartDate>20110406</CaseStartDate><PersonSex>F</PersonSex></PersonType></Person></MDM></es:instance>
+  let $expected-instance :=
+    <es:instance>
+      <MDM>
+        <Person>
+          <PersonType>
+            <PersonName>
+              <PersonNameType>
+                <PersonSurName>JONES</PersonSurName>
+                <PersonGivenName>LINDSEY</PersonGivenName>
+              </PersonNameType>
+            </PersonName>
+            <Address>
+              <AddressType>
+                <LocationState>PA</LocationState>
+                <AddressPrivateMailboxText>45</AddressPrivateMailboxText>
+                <AddressSecondaryUnitText>JANA</AddressSecondaryUnitText>
+                <LocationPostalCode>18505</LocationPostalCode>
+                <LocationCityName>SCRANTON</LocationCityName>
+              </AddressType>
+            </Address>
+            <id>6270654339</id>
+            <id>6986792174</id>
+            <PersonBirthDate>19801001</PersonBirthDate>
+            <CaseAmount>1287.9</CaseAmount>
+            <CustomThing>2</CustomThing>
+            <CustomThing>1</CustomThing>
+            <PersonSSNIdentification>
+              <PersonSSNIdentificationType>
+                <IdentificationID>393225353</IdentificationID>
+              </PersonSSNIdentificationType>
+            </PersonSSNIdentification>
+            <Revenues><RevenuesType><Revenue>4332</Revenue></RevenuesType></Revenues>
+            <CaseStartDate>20110406</CaseStartDate>
+            <PersonSex>F</PersonSex>
+          </PersonType>
+        </Person>
+      </MDM>
+    </es:instance>
   let $expected-triples :=
     <es:triples>
       <sem:triple>
