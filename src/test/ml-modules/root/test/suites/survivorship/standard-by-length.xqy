@@ -12,7 +12,7 @@ import module namespace std = "http://marklogic.com/smart-mastering/survivorship
 import module namespace test = "http://marklogic.com/roxy/test-helper" at "/test/test-helper.xqy";
 
 let $property-spec :=
-  <merge property-name="name"  max-values="2" xmlns="http://marklogic.com/smart-mastering/survivorship/merging">
+  <merge property-name="name"  max-values="2" xmlns="http://marklogic.com/smart-mastering/merging">
     <length weight="8" />
     <source-weights>
       <source name="good-source" weight="1"/>
