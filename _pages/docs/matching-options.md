@@ -130,7 +130,7 @@ score if the algorithm matches.
 
 ### Actions
 
-You can provide your own custom action handlers. These get called when a match is made. Smart-mastering-core provides two default action handlers: notify and merge.
+You can provide your own custom action handler functions. Custom actions are called after merge and notify have run. These actions will be called in a separate transaction, so the results of each call will be visible to the actions called after it.
 
 ```xml
 <actions>
@@ -144,7 +144,7 @@ Each custom action can define four properties:
 - **namespace** - the namespace of the module containing the function
 - **at** - the uri location of the module containing the function
 
-Your custom action will be called with two parameters:
+Your custom action will be called with three parameters:
 
 ```
 $uri - the uri of the document being matched
