@@ -685,12 +685,15 @@ declare function merge-impl:parse-final-properties-for-merge(
 
 (:~
  : TODO
+ : @param $merge-options an element or object containing the merge options
+ : @param $docs the source documents the header values will be drawn from
+ : @param $sources TODO
  : @return sequence of maps. First map is the mapping from namespace prefixes
  :         to namespace URIs, as configured on the property-defs element. The
  :         rest of the maps are final header values.
  :)
 declare function merge-impl:build-final-headers(
-  $merge-options as element(merging:options),
+  $merge-options,
   $docs,
   $sources
 ) as map:map*
@@ -1100,8 +1103,8 @@ declare function merge-impl:_options-json-config()
   let $config := json:config("custom")
   return (
     map:put($config, "array-element-names", ("algorithm","threshold","scoring","property", "reduce", "add", "expand")),
-    map:put($config, "element-namespace", "http://marklogic.com/smart-mastering/matcher"),
-    map:put($config, "element-namespace-prefix", "matcher"),
+    map:put($config, "element-namespace", "http://marklogic.com/smart-mastering/merging"),
+    map:put($config, "element-namespace-prefix", "merging"),
     map:put($config, "attribute-names",
       ("name","localname", "namespace", "function",
         "at", "property-name", "weight", "above", "label","algorithm-ref")
