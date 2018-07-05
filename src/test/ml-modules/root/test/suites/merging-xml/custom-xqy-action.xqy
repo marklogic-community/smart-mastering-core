@@ -24,7 +24,7 @@ declare option xdmp:mapping "false";
 
 let $assertions :=
   test:assert-false(xdmp:invoke-function(function() {
-    fn:doc-available("/sjs-action-output.json")
+    fn:doc-available("/xqy-action-output.xml")
   }, $lib:INVOKE_OPTIONS))
 
 (: Merge a couple documents :)
