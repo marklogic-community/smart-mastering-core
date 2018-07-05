@@ -50,7 +50,6 @@ declare function merging:standard(
               /m:source-weights
               /m:source[@name = $source/name]/@weight
         ))
-      let $_ := xdmp:log("source score=" || $source-score)
       let $weight := $length-score + $source-score
       stable order by $weight descending, $source-dateTime descending
       return
