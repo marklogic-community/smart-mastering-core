@@ -58,10 +58,14 @@ Here's an example of match configuration options.
       </all-match>
     </reduce>
   </scoring>
+  <actions>
+    <action name="my-custom-action" function="custom-action" namespace="http://marklogic.com/smart-mastering/action" at="/custom-action.xqy" />
+  </actions>
   <thresholds>
     <threshold above="30" label="Possible Match"/>
     <threshold above="50" label="Likely Match" action="notify"/>
     <threshold above="68" label="Definitive Match" action="merge"/>
+    <threshold above="75" label="Custom Match" action="my-custom-action"/>
     <!-- below 25 will be NOT-A-MATCH or no category -->
   </thresholds>
   <tuning>
@@ -123,6 +127,31 @@ The `reduce` element gives a way to back off the scores in such cases. The
 `algorithm-ref` attribute must match the `name` attribute of an `algorithm`
 element under `algorithms`. The `weight` attribute will be subtracted from the
 score if the algorithm matches.
+
+### Actions
+
+You can provide your own custom action handlers. These get called when a match is made. Smart-mastering-core provides two default action handlers: notify and merge.
+
+```xml
+<actions>
+  <action name="my-custom-action" function="custom-action" namespace="http://marklogic.com/smart-mastering/action" at="/custom-action.xqy" />
+</actions>
+```
+
+Each custom action can define four properties:
+- **name** - the name of the custom action
+- **function** - the name of the custom function to invoke
+- **namespace** - the namespace of the module containing the function
+- **at** - the uri location of the module containing the function
+
+Your custom action will be called with two parameters:
+
+```
+$uri - the uri of the document being matched
+$matches - either an array (sjs) or sequence (xqy) of matches
+$merge-options - the merge options as xml (for xqy) or json (for sjs)
+```
+
 
 ### Thresholds
 
