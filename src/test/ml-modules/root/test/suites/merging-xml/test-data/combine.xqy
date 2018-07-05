@@ -10,15 +10,27 @@ declare function combine:combine(
 {
   let $values :=
     for $property in $properties
-    let $value := map:get($property, "values")
-    return $value
+    return map:get($property, "values")
   return
-    (: turn ("shallow value 1", "shallow value 2") into "shallow value 12" :)
-    fn:fold-left(
-      function($z, $a) {
-        $z || fn:replace($a, "[^\d]+", "")
-      },
-      fn:head($values),
-      fn:tail($values)
-    )
+    map:new((
+      map:entry("sources", $properties ! map:get(., "sources")),
+      map:entry("name", $property-name),
+      map:entry(
+        "values",
+        (: turn ("deep value 1", "deep value 2") into "deep value 12" :)
+        <path xmlns="" xmlns:has="has">
+          {
+            fn:fold-left(
+              function($z, $a) {
+                $z || fn:replace($a, "[^\d]+", "")
+              },
+              "deep value ",
+              for $v in $values
+              order by $v
+              return $v
+            )
+          }
+        </path>
+      )
+    ))
 };

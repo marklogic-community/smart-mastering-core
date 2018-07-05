@@ -33,6 +33,7 @@ let $merged-doc :=
     },
     $lib:INVOKE_OPTIONS
   )
+let $_ := xdmp:log("merged doc: " || xdmp:quote($merged-doc/es:headers))
 (:
  : Expecting this for <headers>:
 

@@ -393,31 +393,15 @@ declare function merge-impl:build-headers(
       $docs/es:envelope/es:headers/sm:sources/sm:source
     }</sm:sources>
     {
-      (: TODO Add logic for merging headers
-      let $config :=
-        array-node {
-          object-node {
-            "algorithm": object-node{"name":"standard", "optionsReference":"/com.marklogic.smart-mastering/options/merging/cust-xqy-test-options.xml"},
-            "sources": array-node { object-node {"name":"SOURCE1", "dateTime":"2018-04-26T16:40:16.760311Z", "documentUri":"/source/1/doc1.xml"},object-node{"name":"SOURCE2", "dateTime":"2018-04-26T16:40:16.760311Z", "documentUri":"/source/2/doc2.xml"}},
-            "values":'<shallow xmlns="">shallow value 1</shallow>',
-            "path":"/shallow"
-          },
-          object-node {
-            "algorithm":object-node {"name":"standard", "optionsReference":"/com.marklogic.smart-mastering/options/merging/cust-xqy-test-options.xml"},
-            "sources":object-node{"name":"SOURCE1", "dateTime":"2018-04-26T16:40:16.760311Z", "documentUri":"/source/1/doc1.xml"},
-            "values":"<path>deep value 12</path>",
-            "path":"/custom/this/has/a/deep/path"
-          }
-        }
-      :)
-      let $configured-paths := $final-headers ! map:get(., "path")
+      (: remove "/*:envelope/*:headers" from the paths; already accounted for :)
+      let $configured-paths := $final-headers ! map:get(., "path") ! fn:replace(., "/.*headers(/.*)", "$1")
       let $anc-path-map := map:new(merge-impl:config-paths-and-ancestors($configured-paths) ! map:entry(., 1))
       let $combined :=
         let $m := map:map()
         let $populate := merge-impl:combine("", $anc-path-map, $configured-paths, ($docs/es:envelope/es:headers/*[fn:empty(self::sm:*)]), $m)
         let $add-merged-values := merge-impl:add-merged-values($final-headers, $m)
         return $m
-      let $_ := xdmp:log("headers ns map: " || xdmp:quote($headers-ns-map))
+      let $_ := xdmp:log("combined: " || xdmp:quote($combined))
       return merge-impl:map-to-xml($combined, $headers-ns-map)
     }
   </es:headers>
@@ -491,8 +475,11 @@ declare function merge-impl:add-merged-part($m, $path-parts as xs:string*, $valu
 declare function merge-impl:add-merged-values($config, $m)
 {
   for $config-part in $config
-  let $key := map:get($config-part, "path")
+  (: remove "/*:envelope/*:headers" from the paths; already accounted for :)
+  let $key := fn:replace(map:get($config-part, "path"), "/.*headers(/.*)", "$1")
   let $values := map:get($config-part, "values")
+  let $_ := xdmp:log("config-part: " || xdmp:quote($config-part))
+  let $_ := xdmp:log("adding key=" || $key || " with value=" || xdmp:quote($values))
   return
     merge-impl:add-merged-part($m, fn:tokenize($key, "/")[fn:not(. = "")], $values)
 };
@@ -506,13 +493,29 @@ declare function merge-impl:map-to-xml($m as map:map, $ns-map as map:map)
 {
   for $path in map:keys($m)
   let $value := map:get($m, $path)
+  let $_ := xdmp:log("map value: " || xdmp:quote($value))
   return
     if ($value instance of map:map) then
-      element { xdmp:with-namespaces($ns-map, xs:QName($path)) } {
-        merge-impl:map-to-xml($value, $ns-map)
-      }
-    else
+      if (map:contains($value, "sources") and map:contains($value, "values") and map:contains($value, "name")) then
+        map:get($value, "values")
+      else
+        element { xdmp:with-namespaces($ns-map, xs:QName($path)) } {
+          merge-impl:map-to-xml($value, $ns-map)
+        }
+    else if ($value instance of object-node()+) then (
+      xdmp:log("case: object"),
+      let $node := $value/values
+      let $_ := xdmp:log("node: " || xdmp:quote($node))
+      return (
+        (: We already have the element itself, just need to get its contents :)
+        $node/@*,
+        $node/node()
+      )
+    )
+    else (
+      xdmp:log("case: else"),
       $value
+    )
 };
 
 declare function merge-impl:build-merge-models-by-final-properties-to-json(
@@ -740,21 +743,19 @@ declare function merge-impl:build-final-headers(
           map:entry("sources", 1),
           map:entry("values",
             (: get the merged values :)
-            xdmp:quote(
-              if (fn:exists($algorithm)) then
-                merge-impl:execute-algorithm(
-                  $algorithm,
-                  map:get(fn:head($raw-values), "name"),
-                  $raw-values,
-                  $property-spec
-                )
-              else
-                merge-impl:standard(
-                  map:get(fn:head($raw-values), "name"),
-                  $raw-values,
-                  $property-spec
-                )
-            )
+            if (fn:exists($algorithm)) then
+              merge-impl:execute-algorithm(
+                $algorithm,
+                map:get(fn:head($raw-values), "name"),
+                $raw-values,
+                $property-spec
+              )
+            else
+              merge-impl:standard(
+                map:get(fn:head($raw-values), "name"),
+                $raw-values,
+                $property-spec
+              )
           ),
           map:entry("path", $property/@path/fn:string())
         ))
