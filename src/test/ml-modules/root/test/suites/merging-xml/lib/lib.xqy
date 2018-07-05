@@ -14,5 +14,12 @@ declare variable $TEST-DATA :=
   ));
 
 declare variable $OPTIONS-NAME := "test-options";
+
 declare variable $OPTIONS-NAME-CUST-XQY := "cust-xqy-test-options";
 declare variable $OPTIONS-NAME-CUST-SJS := "cust-sjs-test-options";
+
+declare variable $OPTIONS-NAME-CUST-ACTION-XQY-MATCH := "custom-xqy-action-match-options";
+declare variable $OPTIONS-NAME-CUST-ACTION-XQY-MERGE := "custom-xqy-action-merge-options";
+declare variable $OPTIONS-NAME-CUST-ACTION-SJS-MATCH := "custom-sjs-action-match-options";
+declare variable $OPTIONS-NAME-CUST-ACTION-SJS-MERGE := "custom-sjs-action-merge-options";
+

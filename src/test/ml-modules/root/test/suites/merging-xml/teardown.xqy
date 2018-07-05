@@ -11,4 +11,9 @@ xdmp:directory-delete("/source/"),
 xdmp:collection-delete($const:CONTENT-COLL),
 xdmp:collection-delete($const:AUDITING-COLL),
 xdmp:collection-delete($const:MERGED-COLL),
-sem:graph-delete(sem:iri("http://marklogic.com/semantics#default-graph"))
+sem:graph-delete(sem:iri("http://marklogic.com/semantics#default-graph")),
+for $uri in ("/xqy-action-output.xml", "/sjs-action-output.json")
+return
+  if (fn:doc-available($uri)) then
+    xdmp:document-delete($uri)
+  else ()

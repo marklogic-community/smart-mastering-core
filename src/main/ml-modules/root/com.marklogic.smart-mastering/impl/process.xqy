@@ -4,10 +4,15 @@ module namespace proc-impl = "http://marklogic.com/smart-mastering/process-recor
 
 import module namespace const = "http://marklogic.com/smart-mastering/constants"
   at "/com.marklogic.smart-mastering/constants.xqy";
+import module namespace fun-ext = "http://marklogic.com/smart-mastering/function-extension"
+  at "../function-extension/base.xqy";
 import module namespace matcher = "http://marklogic.com/smart-mastering/matcher"
   at "/com.marklogic.smart-mastering/matcher.xqy";
 import module namespace merging = "http://marklogic.com/smart-mastering/merging"
   at "/com.marklogic.smart-mastering/merging.xqy";
+import module namespace merge-impl = "http://marklogic.com/smart-mastering/survivorship/merging"
+  at "/com.marklogic.smart-mastering/survivorship/merging/base.xqy";
+
 
 declare option xdmp:mapping "false";
 
@@ -69,20 +74,21 @@ declare function proc-impl:process-match-and-merge-with-options(
       $filter-query
     )
   let $_ := xdmp:trace($const:TRACE-MATCH-RESULTS, $matching-results)
-  let $merge-uris as xs:string* := $matching-results/result[@action = $const:MERGE-ACTION]/@uri/fn:string()
-  let $notifies := $matching-results/result[@action = $const:NOTIFY-ACTION]
   return (
     (: Must do merges before notifications so that notifications can update
      : their URI references for docs that got merged. Those merges are done
      : in a separate transaction so that they'll be visible.
      :)
-    if (fn:exists($merge-uris)) then
-      merging:save-merge-models-by-uri(
-        ($uri, $merge-uris),
-        $options
-      )
-    else (),
+    let $merge-uris as xs:string* := $matching-results/result[@action = $const:MERGE-ACTION]/@uri/fn:string()
+    return
+      if (fn:exists($merge-uris)) then
+        merging:save-merge-models-by-uri(
+          ($uri, $merge-uris),
+          $options
+        )
+      else (),
 
+    let $notifies := $matching-results/result[@action = $const:NOTIFY-ACTION]
     let $threshold-labels := fn:distinct-values($notifies/@threshold/fn:string())
     for $label in $threshold-labels
     let $notify-uris := $notifies[@threshold eq $label]/@uri/fn:string()
@@ -95,6 +101,34 @@ declare function proc-impl:process-match-and-merge-with-options(
           matcher:save-match-notification($label, ($uri, $notify-uris))
         },
         map:new((map:entry("isolation", "different-transaction"), map:entry("update", "true")))
+      ),
+
+    let $actions := $matching-results/result/@action[fn:not(. = $const:NOTIFY-ACTION or . = $const:MERGE-ACTION)]
+    for $action in fn:distinct-values($actions)
+    let $action-xml := $matching-options//*:action[@name = $action]
+    let $action-func :=
+      fun-ext:function-lookup(
+        fn:string($action-xml/@function),
+        fn:string($action-xml/@namespace),
+        fn:string($action-xml/@at),
+        ()
       )
+    let $filtered-matches := $matching-results/result[@action = $action]
+    return
+      if (fn:exists($filtered-matches)) then
+        xdmp:invoke-function(
+          function() {
+            if (fn:ends-with(xdmp:function-module($action-func), "sjs")) then
+              let $filtered-matches := json:to-array($filtered-matches)
+              let $options := merge-impl:options-to-json($options)
+              return
+                xdmp:apply($action-func, $uri, $filtered-matches, $options)
+            else
+              xdmp:apply($action-func, $uri, $filtered-matches, $options)
+          },
+          map:new((map:entry("isolation", "different-transaction"), map:entry("update", "true")))
+        )
+      else ()
+
   )
 };
