@@ -89,6 +89,13 @@ declare function merge-impl:all-merged($uris as xs:string*) as xs:boolean
     )
 };
 
+(:~
+ : Merge the documents as specified by the merge options and update the
+ : involved files in the database.
+ : @param $uris URIs of the source documents that will be merged
+ : @param $merge-options specification of how options are to be merged
+ : @return in-memory copy of the merge result
+ :)
 declare function merge-impl:save-merge-models-by-uri(
   $uris as xs:string*,
   $merge-options as item()?
@@ -216,14 +223,22 @@ declare function merge-impl:save-merge-models-by-uri(
       return
         xdmp:invoke-function(
           function() {
-            merge-impl:record-merge($uris, $merge-uri, $merged-document, $collections)
+            merge-impl:record-merge($merge-uri, $merged-document, $collections)
           },
           map:new((map:entry("isolation", "different-transaction"), map:entry("update", "true")))
         )
     )
 };
 
-declare function merge-impl:record-merge($uris, $merge-uri, $merged-document, $merged-doc-collections)
+(:~
+ : Insert the merged document into the database.
+ : @param $merge-uri  the URI for the merged document
+ : @param $merged-document  merged content
+ : @param $merged-doc-collections  collections for the merged document
+ : @return  ()
+ :)
+declare function merge-impl:record-merge($merge-uri, $merged-document, $merged-doc-collections)
+  as empty-sequence()
 {
   xdmp:document-insert(
     $merge-uri,
@@ -276,6 +291,13 @@ declare function merge-impl:rollback-merge(
   )
 };
 
+(:~
+ : Construct a merged document from the given URIs, but do not update the
+ : database.
+ : @param $uris  URIs of the source documents that will be merged
+ : @param $merge-options  specification of how options are to be merged
+ : @return in-memory copy of the merge result
+ :)
 declare function merge-impl:build-merge-models-by-uri(
   $uris as xs:string*,
   $merge-options as item()?
@@ -355,7 +377,7 @@ declare function merge-impl:build-merge-models-by-final-properties-to-xml(
   return
     <es:envelope>
       {
-        merge-impl:build-headers($id, $docs, $uris, $final-properties, $final-headers, $headers-ns-map)
+        merge-impl:build-headers($id, $docs, $uris, $final-headers, $headers-ns-map)
       }
       <es:triples>{
         sem:sparql(
@@ -374,11 +396,20 @@ declare function merge-impl:build-merge-models-by-final-properties-to-xml(
     </es:envelope>
 };
 
+(:~
+ : Construct the <es:headers> element using merged values.
+ : @param $id  identifier for the merged document
+ : @param $docs  source documents; merged doc values drawn from these
+ : @param $uris  URIs of the source documents
+ : @param $final-headers  the result of merging headers from the source documents
+ : @param $headers-ns-map  map of namespace prefixes to namespace URIs; used to
+ :                         interpret paths in $final-headers
+ : @return constructed <es:headers> element
+ :)
 declare function merge-impl:build-headers(
   $id as xs:string,
   $docs as node()*,
   $uris as xs:string*,
-  $final-properties as item()*,
   $final-headers as item()*,
   $headers-ns-map as map:map
 ) as element(es:headers)
@@ -393,15 +424,30 @@ declare function merge-impl:build-headers(
       $docs/es:envelope/es:headers/sm:sources/sm:source
     }</sm:sources>
     {
+      (: Combine the merged non-Smart-Mastering namespace headers. Some will be
+       : configured and merged; some will not be configured and will just get
+       : copied over. :)
+
       (: remove "/*:envelope/*:headers" from the paths; already accounted for :)
       let $configured-paths := $final-headers ! map:get(., "path") ! fn:replace(., "/.*headers(/.*)", "$1")
+      (: Identify the full and partial paths of the configured paths. Record in
+       : a map for quick access. :)
       let $anc-path-map := map:new(merge-impl:config-paths-and-ancestors($configured-paths) ! map:entry(., 1))
       let $combined :=
         let $m := map:map()
-        let $populate := merge-impl:combine("", $anc-path-map, $configured-paths, ($docs/es:envelope/es:headers/*[fn:empty(self::sm:*)]), $m)
+        let $populate :=
+          merge-impl:combine(
+            "",
+            $anc-path-map,
+            $configured-paths,
+            ($docs/es:envelope/es:headers/*[fn:empty(self::sm:*)]),
+            $m
+          )
         let $add-merged-values := merge-impl:add-merged-values($final-headers, $m)
         return $m
-      return merge-impl:map-to-xml($combined, $headers-ns-map)
+      (: Having built a map of XPaths -> elements, generate a properly-nested
+       : list of XML elements. :)
+      return merge-impl:map-to-xml($headers-ns-map, $combined)
     }
   </es:headers>
 };
@@ -422,15 +468,43 @@ declare function merge-impl:config-paths-and-ancestors($paths as xs:string*) as 
   )
 };
 
-declare function merge-impl:combine($path as xs:string, $anc-path-map as map:map, $configured-paths as xs:string*, $headers as element()*, $m as map:map)
+(:~
+ : Work through the original header elements recursively. Elements that weren't
+ : configured for merging pass through and will become part of the merged
+ : document. Any element that conflicts with a configured path will be skipped.
+
+
+ : The map:map parameter will have keys that are element names and values that
+ : are either XML to be included in the merged document, or another map:map.
+ : This structure allows us to combine overlapping XPaths.
+ : @param $path  current path being processed, relative to /es:envelope/es:headers
+ : @param $anc-path-map  "ancestor path map"; used to quickly determine whether
+ :                       the current path is part of a configured path
+ : @param $configured-paths  sequence of full configured paths
+ : @param $headers  all the header elements from the source documents
+ : @param $m  recursive map:map where the keys are element names and the values
+ :            are either map:maps (for the next level of elements down) or
+ :            values to include in the merged document
+ : @return ()  (no "as" clause to allow for tail call optimization)
+ :)
+declare function merge-impl:combine(
+  $path as xs:string,
+  $anc-path-map as map:map,
+  $configured-paths as xs:string*,
+  $headers as element()*,
+  $m as map:map
+)
 {
   for $current in $headers
   let $curr-path := $path || "/" || fn:node-name($current)
   let $key := xdmp:key-from-QName(fn:node-name($current))
   return
     if (fn:not(map:get($anc-path-map, $curr-path))) then
+      (: This path is not related to any configured path, so we can just pass
+       : any elements through. :)
       map:put($m, $key, (map:get($m, $key), $current))
     else if ($curr-path = $configured-paths) then
+      (: Any elements here will be replaced by the calculated merged elements :)
       ()
     else
       let $children := $current/element()
@@ -450,7 +524,19 @@ declare function merge-impl:combine($path as xs:string, $anc-path-map as map:map
           map:put($m, $key, (map:get($m, $key), $current))
 };
 
-declare function merge-impl:add-merged-part($m, $path-parts as xs:string*, $value)
+(:~
+ : Helper function for add-merged-values.
+ : @param $m  a map:map where the keys are element names and the values are
+ :            nested maps or elements to be put in the merged document
+ : @param $path-parts  the path to an element, tokenized by "/"
+ : @param $value  the merged value for this header
+ : @return ()  no "as" clause to allow for tail call optimization
+ :)
+declare function merge-impl:add-merged-part(
+  $m as map:map,
+  $path-parts as xs:string*,
+  $value
+)
 {
   let $key := fn:head($path-parts)
   return
@@ -471,24 +557,30 @@ declare function merge-impl:add-merged-part($m, $path-parts as xs:string*, $valu
         map:put($m, $key, $value)
 };
 
-declare function merge-impl:add-merged-values($config, $m)
+(:~
+ : Combine the calculated merged header elements with those that are being
+ : passed through.
+ : @param $final-headers  a sequence of maps having "path" and "values"
+ : @param $m  a map:map where the keys are element names and the values are
+ :            nested maps or elements to be put in the merged document
+ : @return ()  works by modifying $m
+ :)
+declare function merge-impl:add-merged-values($final-headers, $m as map:map)
 {
-  for $config-part in $config
+  for $header in $final-headers
   (: remove "/*:envelope/*:headers" from the paths; already accounted for :)
-  let $key := fn:replace(map:get($config-part, "path"), "/.*headers(/.*)", "$1")
-  let $values := map:get($config-part, "values")
-  let $_ := xdmp:log("config-part: " || xdmp:quote($config-part))
-  let $_ := xdmp:log("adding key=" || $key || " with value=" || xdmp:quote($values))
+  let $key := fn:replace(map:get($header, "path"), "/.*headers(/.*)", "$1")
   return
-    merge-impl:add-merged-part($m, fn:tokenize($key, "/")[fn:not(. = "")], $values)
+    merge-impl:add-merged-part($m, fn:tokenize($key, "/")[fn:not(. = "")], map:get($header, "values"))
 };
 
 (:~
  : Converts a map to XML, where the keys are XPaths and the values are elements.
- : @param $m the map with XPath -> element mappings
  : @param $ns-map a map of namespace prefixes to namespace URIs
+ : @param $m the map with XPath -> element mappings
+ : @return a sequence of elements (no "as" clause to allow tail call optimization)
  :)
-declare function merge-impl:map-to-xml($m as map:map, $ns-map as map:map)
+declare function merge-impl:map-to-xml($ns-map as map:map, $m as map:map)
 {
   for $path in map:keys($m)
   let $value := map:get($m, $path)
@@ -498,7 +590,7 @@ declare function merge-impl:map-to-xml($m as map:map, $ns-map as map:map)
         map:get($value, "values")
       else
         element { xdmp:with-namespaces($ns-map, xs:QName($path)) } {
-          merge-impl:map-to-xml($value, $ns-map)
+          merge-impl:map-to-xml($ns-map, $value)
         }
     else if ($value instance of object-node()+) then (
       $value/values

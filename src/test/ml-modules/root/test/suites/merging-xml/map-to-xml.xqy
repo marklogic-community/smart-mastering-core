@@ -80,7 +80,7 @@ let $ns-map :=
   map:new((
     map:entry("has", "has")
   ))
-let $actual := merge-impl:map-to-xml($m, $ns-map)
+let $actual := merge-impl:map-to-xml($ns-map, $m)
 (:
  : Expecting:
  (
