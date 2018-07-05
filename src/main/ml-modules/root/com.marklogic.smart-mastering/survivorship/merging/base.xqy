@@ -401,7 +401,6 @@ declare function merge-impl:build-headers(
         let $populate := merge-impl:combine("", $anc-path-map, $configured-paths, ($docs/es:envelope/es:headers/*[fn:empty(self::sm:*)]), $m)
         let $add-merged-values := merge-impl:add-merged-values($final-headers, $m)
         return $m
-      let $_ := xdmp:log("combined: " || xdmp:quote($combined))
       return merge-impl:map-to-xml($combined, $headers-ns-map)
     }
   </es:headers>
@@ -493,7 +492,6 @@ declare function merge-impl:map-to-xml($m as map:map, $ns-map as map:map)
 {
   for $path in map:keys($m)
   let $value := map:get($m, $path)
-  let $_ := xdmp:log("map value: " || xdmp:quote($value))
   return
     if ($value instance of map:map) then
       if (map:contains($value, "sources") and map:contains($value, "values") and map:contains($value, "name")) then
@@ -503,19 +501,10 @@ declare function merge-impl:map-to-xml($m as map:map, $ns-map as map:map)
           merge-impl:map-to-xml($value, $ns-map)
         }
     else if ($value instance of object-node()+) then (
-      xdmp:log("case: object"),
-      let $node := $value/values
-      let $_ := xdmp:log("node: " || xdmp:quote($node))
-      return (
-        (: We already have the element itself, just need to get its contents :)
-        $node/@*,
-        $node/node()
-      )
+      $value/values
     )
-    else (
-      xdmp:log("case: else"),
+    else
       $value
-    )
 };
 
 declare function merge-impl:build-merge-models-by-final-properties-to-json(
@@ -775,7 +764,7 @@ declare function merge-impl:get-raw-values(
   $docs,
   $property as element(merging:property),
   $sources,
-  $ns-map as map:map
+  $ns-map as map:map?
 ) as map:map*
 {
   let $wrapped := map:map()
@@ -810,7 +799,7 @@ declare function merge-impl:build-final-properties(
 ) as map:map*
 {
   let $top-level-properties := fn:distinct-values($instances/* ! fn:node-name(.))
-  let $property-defs := $merge-options/merging:property-defs[fn:exists(@localname)]
+  let $property-defs := $merge-options/merging:property-defs[fn:exists(merging:property/@localname)]
   let $algorithms-map := merge-impl:build-merging-map($merge-options)
   let $merge-options-uri := $merge-options ! xdmp:node-uri(.)
   let $merge-options-ref :=
