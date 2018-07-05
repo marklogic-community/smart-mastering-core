@@ -811,11 +811,29 @@ declare function merge-impl:archive-document($uri as xs:string)
 
 declare variable $options-json-config := merge-impl:_options-json-config();
 
+(: Removes whitespace nodes to keep the output json from options-to-json clean :)
+declare function merge-impl:remove-whitespace($xml)
+{
+  for $x in $xml
+  return
+    typeswitch($x)
+      case element() return
+        element { fn:node-name($x) } {
+          merge-impl:remove-whitespace(($x/@*, $x/node()))
+        }
+      case text() return
+        if (fn:string-length(fn:normalize-space($x)) > 0) then
+          $x
+        else ()
+      default return $x
+};
+
 declare function merge-impl:options-to-json($options-xml)
 {
   if (fn:exists($options-xml)) then
     xdmp:to-json(
-      json:transform-to-json-object($options-xml, $options-json-config)
+      json:transform-to-json-object(
+        merge-impl:remove-whitespace($options-xml), $options-json-config)
     )/node()
   else ()
 };
@@ -836,6 +854,8 @@ declare function merge-impl:_options-json-config()
       ("name","localname", "namespace", "function",
         "at", "property-name", "weight", "above", "label","algorithm-ref")
     ),
+    map:put($config, "camel-case", fn:true()),
+    map:put($config, "whitepsace", "ignore"),
     $config
   )
 };

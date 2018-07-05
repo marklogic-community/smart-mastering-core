@@ -34,7 +34,6 @@ let $merged-doc :=
   )
 
 let $triples := $merged-doc/es:triples/node()
-let $_ := xdmp:log(("triples", $triples))
 return (
   (: each source doc has three triples, but one of each has the same s/p/o. :)
   test:assert-equal(5, fn:count($triples))

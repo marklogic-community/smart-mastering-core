@@ -62,7 +62,8 @@ function post(
       $options,
       $start,
       $page-length,
-      $include-matches
+      $include-matches,
+      cts:true-query()
     )
   return
     matcher:results-to-json($results)
