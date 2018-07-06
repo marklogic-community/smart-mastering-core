@@ -358,6 +358,7 @@ declare function merge-impl:build-merge-models-by-final-properties(
       $docs,
       $wrapper-qnames,
       $final-properties,
+      $final-headers,
       $merge-options
     )
 };
@@ -377,7 +378,7 @@ declare function merge-impl:build-merge-models-by-final-properties-to-xml(
   return
     <es:envelope>
       {
-        merge-impl:build-headers($id, $docs, $uris, $final-headers, $headers-ns-map)
+        merge-impl:build-headers($id, $docs, $uris, $final-headers, $headers-ns-map, $const:FORMAT-XML)
       }
       <es:triples>{
         sem:sparql(
@@ -404,52 +405,73 @@ declare function merge-impl:build-merge-models-by-final-properties-to-xml(
  : @param $final-headers  the result of merging headers from the source documents
  : @param $headers-ns-map  map of namespace prefixes to namespace URIs; used to
  :                         interpret paths in $final-headers
- : @return constructed <es:headers> element
+ : @param $format  $const:FORMAT-XML or $const:FORMAT-JSON
+ : @return constructed <es:headers> element or object-node
  :)
 declare function merge-impl:build-headers(
   $id as xs:string,
   $docs as node()*,
   $uris as xs:string*,
   $final-headers as item()*,
-  $headers-ns-map as map:map
-) as element(es:headers)
+  $headers-ns-map as map:map?,
+  $format as xs:string
+)
 {
-  <es:headers>
-    <sm:id>{$id}</sm:id>
-    <sm:merges>{
-      $docs/es:envelope/es:headers/sm:merges/sm:document-uri,
-      $uris ! element sm:document-uri { . }
-    }</sm:merges>
-    <sm:sources>{
-      $docs/es:envelope/es:headers/sm:sources/sm:source
-    }</sm:sources>
-    {
-      (: Combine the merged non-Smart-Mastering namespace headers. Some will be
-       : configured and merged; some will not be configured and will just get
-       : copied over. :)
+  (: Combine the merged non-Smart-Mastering namespace headers. Some will be
+    : configured and merged; some will not be configured and will just get
+    : copied over. :)
 
-      (: remove "/*:envelope/*:headers" from the paths; already accounted for :)
-      let $configured-paths := $final-headers ! map:get(., "path") ! fn:replace(., "/.*headers(/.*)", "$1")
-      (: Identify the full and partial paths of the configured paths. Record in
-       : a map for quick access. :)
-      let $anc-path-map := map:new(merge-impl:config-paths-and-ancestors($configured-paths) ! map:entry(., 1))
-      let $combined :=
-        let $m := map:map()
-        let $populate :=
-          merge-impl:combine(
-            "",
-            $anc-path-map,
-            $configured-paths,
-            ($docs/es:envelope/es:headers/*[fn:empty(self::sm:*)]),
-            $m
-          )
-        let $add-merged-values := merge-impl:add-merged-values($final-headers, $m)
-        return $m
-      (: Having built a map of XPaths -> elements, generate a properly-nested
-       : list of XML elements. :)
-      return merge-impl:map-to-xml($headers-ns-map, $combined)
-    }
-  </es:headers>
+  (: remove "/*:envelope/*:headers" from the paths; already accounted for :)
+  let $configured-paths := $final-headers ! map:get(., "path") ! fn:replace(., "/.*headers(/.*)", "$1")
+  (: Identify the full and partial paths of the configured paths. Record in
+    : a map for quick access. :)
+  let $anc-path-map := map:new(merge-impl:config-paths-and-ancestors($configured-paths) ! map:entry(., 1))
+  let $combined :=
+    let $m := map:map()
+    let $populate :=
+      merge-impl:combine(
+        "",
+        $anc-path-map,
+        $configured-paths,
+        $docs/
+          (es:envelope|object-node("envelope"))/
+            (es:headers|object-node("headers"))/
+              *[fn:empty(self::sm:*)],
+        $m
+      )
+    let $add-merged-values := merge-impl:add-merged-values($final-headers, $m)
+    return $m
+  (: Having built a map of XPaths -> elements, generate a properly-nested
+    : list of XML elements. :)
+  return
+    if ($format = $const:FORMAT-XML) then
+      <es:headers>
+        <sm:id>{$id}</sm:id>
+        <sm:merges>{
+          $docs/es:envelope/es:headers/sm:merges/sm:document-uri,
+          $uris ! element sm:document-uri { . }
+        }</sm:merges>
+        <sm:sources>{
+          $docs/es:envelope/es:headers/sm:sources/sm:source
+        }</sm:sources>
+        {
+          merge-impl:map-to-xml($headers-ns-map, $combined)
+        }
+      </es:headers>
+    else
+      xdmp:to-json(
+        map:new((
+          map:entry("id", $id),
+          map:entry("merges", array-node {
+            $docs/envelope/headers/merges/object-node(),
+            $uris ! object-node { "document-uri": . }
+          }),
+          map:entry("sources", array-node {
+            $docs/envelope/headers/sources
+          }),
+          merge-impl:map-to-json($combined)
+        ))
+      )/object-node()
 };
 
 (:~
@@ -491,7 +513,7 @@ declare function merge-impl:combine(
   $path as xs:string,
   $anc-path-map as map:map,
   $configured-paths as xs:string*,
-  $headers as element()*,
+  $headers,
   $m as map:map
 )
 {
@@ -507,7 +529,7 @@ declare function merge-impl:combine(
       (: Any elements here will be replaced by the calculated merged elements :)
       ()
     else
-      let $children := $current/element()
+      let $children := $current/node()
       return
         if (fn:exists($children)) then
           let $child-map := map:map()
@@ -599,11 +621,36 @@ declare function merge-impl:map-to-xml($ns-map as map:map, $m as map:map)
       $value
 };
 
+(:~
+ : The incoming structure is a nested set of map:maps, where the leaf nodes
+ : contain the name of a property, the values for it, and the sources where
+ : those values came from. Return a map:map that simplifies the leaf nodes to
+ : just the values.
+ :)
+declare function merge-impl:map-to-json($m as map:map)
+{
+  if (map:contains($m, "sources") and map:contains($m, "values") and map:contains($m, "name")) then
+    (: Extract the values and return those :)
+    map:get($m, "values")
+  else
+    map:new(
+      for $key in map:keys($m)
+      let $value := map:get($m, $key)
+      return
+        if ($value instance of map:map) then
+          map:entry($key, merge-impl:map-to-json($value))
+        else
+          (: Unconfigured values :)
+          map:entry($key, $value)
+    )
+};
+
 declare function merge-impl:build-merge-models-by-final-properties-to-json(
   $id as xs:string,
   $docs as node()*,
   $wrapper-qnames as xs:QName*,
   $final-properties as item()*,
+  $final-headers as item()*,
   $merge-options as item()?
 )
 {
@@ -611,21 +658,7 @@ declare function merge-impl:build-merge-models-by-final-properties-to-json(
   return
     object-node {
       "envelope": object-node {
-        "headers": xdmp:to-json(map:new((
-          map:entry("id", $id),
-          map:entry("merges", array-node {
-            $docs/envelope/headers/merges/object-node(),
-            $uris ! object-node { "document-uri": . }
-          }),
-          map:entry("sources", array-node {
-            $docs/envelope/headers/sources
-          }),
-          (: TODO merging of carried forward headers :)
-          for $name in fn:distinct-values($docs/envelope/headers/* ! fn:node-name(.))[fn:not(fn:string(.) = ("sources","id","merges"))]
-          let $values := $docs/envelope/headers/*[fn:node-name(.) = $name]
-          return map:entry(fn:string($name), $values)
-        ))
-        )/object-node(),
+        "headers": merge-impl:build-headers($id, $docs, $uris, $final-headers, (), $const:FORMAT-JSON),
         "triples": array-node {
           sem:sparql(
             'construct { ?s ?p ?o } where { ?s ?p ?o }',

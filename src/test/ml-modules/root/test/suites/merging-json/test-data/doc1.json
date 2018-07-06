@@ -12,7 +12,21 @@
           "user": "admin",
           "dateTime": "2018-04-26T16:40:02.1386Z"
         }
-      ]
+      ],
+      "unconfigured": "unconfigured value 1a",
+      "shallow": "shallow value 1",
+      "custom": {
+        "this": {
+          "has": {
+            "a": {
+              "deep": {
+                "path": "deep value 1"
+              }
+            }
+          }
+        },
+        "unconfigured": "unconfigured value 1b"
+      }
     },
     "triple": [
       {

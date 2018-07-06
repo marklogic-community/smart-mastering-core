@@ -1,7 +1,7 @@
 xquery version "1.0-ml";
 
 (:
- : Test the custom xqy algorithm feature.
+ : Test merging by path.
  :)
 
 import module namespace const = "http://marklogic.com/smart-mastering/constants"
@@ -33,7 +33,6 @@ let $merged-doc :=
     },
     $lib:INVOKE_OPTIONS
   )
-let $_ := xdmp:log("merged doc: " || xdmp:quote($merged-doc/es:headers))
 (:
  : Expecting this for <headers>:
 
