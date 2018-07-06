@@ -2,10 +2,11 @@ xquery version "1.0-ml";
 
 module namespace merging = "http://marklogic.com/smart-mastering/survivorship/merging";
 
+declare namespace m = "http://marklogic.com/smart-mastering/merging";
 (:
  : This is the default method of combining the set of values for a property across entities that are being merged.
  : Sample $property-spec:
- :     <merge property-name="name"  max-values="1">
+ :     <merge property-name="name" max-values="1" xmlns="http://marklogic.com/smart-mastering/merging">
  :       <length weight="8" />
  :       <source-weights>
  :         <source name="good-source" weight="2"/>
@@ -16,7 +17,7 @@ module namespace merging = "http://marklogic.com/smart-mastering/survivorship/me
  : @param $property-name  The name of the property being merged
  : @param $all-properties  A sequence of maps, each with "name" (the name of the property), "sources" (the URIs of the
  :                         lineage docs the value came from), and "values" (a value for that property).
- : @param $property-spec  The /merging:merging/merging:merge element of merge options that corresponds to a particular property
+ : @param $property-spec  The /m:merging/m:merge element of merge options that corresponds to a particular property
  :
  : @return selected property value(s)
  :)
@@ -30,7 +31,7 @@ declare function merging:standard(
     (
       let $length-weight :=
         fn:head((
-          $property-spec/merging:length/@weight ! fn:number(.),
+          $property-spec/m:length/@weight ! fn:number(.),
           0
         ))
       for $property in merging:standard-condense-properties(
@@ -46,8 +47,8 @@ declare function merging:standard(
           for $source in $sources
           return
             $property-spec
-              /merging:source-weights
-              /merging:source[@name = $source/name]/@weight
+              /m:source-weights
+              /m:source[@name = $source/name]/@weight
         ))
       let $weight := $length-score + $source-score
       stable order by $weight descending, $source-dateTime descending
