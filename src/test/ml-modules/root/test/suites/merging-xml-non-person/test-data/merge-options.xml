@@ -7,7 +7,6 @@
   </property-defs>
   <algorithms>
     <algorithm name="name" function="name"/>
-    <algorithm name="address" function="address"/>
   </algorithms>
   <merging>
     <merge property-name="ssn" algorithm-ref="user-defined">
@@ -21,12 +20,10 @@
       <thesaurus>/mdm/config/thesauri/first-name-synonyms.xml</thesaurus>
       <length weight="8" />
     </merge>
-    <merge property-name="address" algorithm-ref="address" max-values="1">
-      <postal-code prefer="zip+4" />
-      <length weight="8" />
-      <double-metaphone>
-        <distance-threshold>50</distance-threshold>
-      </double-metaphone>
+    <merge property-name="address" algorithm-ref="standard" max-values="1">
+      <source-weights>
+        <source name="SOURCE2" weight="10"></source>
+      </source-weights>
     </merge>
   </merging>
 </options>

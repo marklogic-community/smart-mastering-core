@@ -53,10 +53,22 @@ let $assertions := (
         "options": object-node{
           "matchOptions": "custom-sjs-action-match-options",
           "propertyDefs": object-node {
-            "property": object-node {
+            "property": array-node {
+              object-node {
               "namespace": "",
-              "localname": "Address",
-              "name": "address"
+              "localname": "IdentificationID",
+              "name": "ssn"
+              },
+              object-node {
+                "namespace": "",
+                "localname": "PersonName",
+                "name": "name"
+              },
+              object-node {
+                "namespace": "",
+                "localname": "Address",
+                "name": "address"
+              }
             }
           },
           "merging": object-node {

@@ -24,5 +24,5 @@ merging:save-options($lib:OPTIONS-NAME-CUST-ACTION-SJS-MERGE, test:get-test-file
 test:load-test-file("custom-merge-xqy.xqy", xdmp:modules-database(), "/custom-merge-xqy.xqy"),
 test:load-test-file("custom-merge-sjs.sjs", xdmp:modules-database(), "/custom-merge-sjs.sjs"),
 test:load-test-file("custom-action-xqy.xqy", xdmp:modules-database(), "/custom-action.xqy"),
-test:load-test-file("custom-action-sjs.sjs", xdmp:modules-database(), "/custom-action.sjs")
+test:load-test-file("custom-action-sjs.sjs", xdmp:modules-database(), "/custom-action.sjs"),
 test:load-test-file("combine.xqy", xdmp:modules-database(), "/combine.xqy")
