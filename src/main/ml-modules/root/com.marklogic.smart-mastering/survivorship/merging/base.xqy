@@ -724,7 +724,12 @@ declare function merge-impl:get-sources($docs)
 declare variable $PROPKEY-HEADERS-NS-MAP := "headers-ns-map";
 
 (:~
- : TODO
+ : Extract the instance parts from the source documents and pass them to
+ : functions that will do the property and header merges. Return a map with
+ : that data.
+ : @param $uris  URIs of the source documents
+ : @param $merge-options  these control how the source data get merged together
+ : @return map:map with merged information from the source docs
  :)
 declare function merge-impl:parse-final-properties-for-merge(
   $uris as xs:string*,
@@ -776,16 +781,18 @@ declare function merge-impl:parse-final-properties-for-merge(
 };
 
 (:~
- : TODO
- : @param $merge-options an element or object containing the merge options
- : @param $docs the source documents the header values will be drawn from
- : @param $sources TODO
+ : Build a sequence of maps that contain, for each configured header, the
+ : algorithm used to do the merging, the merged values, and the sources of
+ : those values (embedded in the values).
+ : @param $merge-options  an element or object containing the merge options
+ : @param $docs  the source documents the header values will be drawn from
+ : @param $sources  information about the source of the header data
  : @return sequence of maps. First map is the mapping from namespace prefixes
  :         to namespace URIs, as configured on the property-defs element. The
  :         rest of the maps are final header values.
  :)
 declare function merge-impl:build-final-headers(
-  $merge-options,
+  $merge-options as element(merging:options),
   $docs,
   $sources
 ) as map:map*
@@ -824,7 +831,6 @@ declare function merge-impl:build-final-headers(
       if (fn:exists($raw-values)) then
         map:new((
           map:entry("algorithm", $algorithm-info),
-          map:entry("sources", 1),
           map:entry("values",
             (: get the merged values :)
             if (fn:exists($algorithm)) then
@@ -849,11 +855,13 @@ declare function merge-impl:build-final-headers(
 
 (:~
  : Identify and merge any headers whose paths are given in the merge options.
- : @param $docs TODO
- : @param $property TODO
- : @param $sources TODO
+ : @param $docs  the source documents
+ : @param $property  the property specification, which includes the path to
+ :                   look for source values
+ : @param $sources  structure reflecting the origin of the data
  : @param $ns-map maps from namespace prefixes to namespace URIs
- : @return TODO
+ : @return a sequence of maps, one for each value of this property found in a
+ :         source document
  :)
 declare function merge-impl:get-raw-values(
   $docs,
