@@ -146,7 +146,6 @@ let $assertions := xdmp:eager(
     test:assert-equal-xml($expected-instance, $merged-doc/es:instance)
   )
 )
-
 let $merged-id := $merged-doc/es:headers/sm:id
 let $merged-uri := $merging-impl:MERGED-DIR || $merged-id || ".xml"
 
