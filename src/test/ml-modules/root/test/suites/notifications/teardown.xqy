@@ -6,4 +6,6 @@ import module namespace const = "http://marklogic.com/smart-mastering/constants"
 declare option xdmp:mapping "false";
 
 (: Clear out any notifications :)
-xdmp:collection-delete($const:NOTIFICATION-COLL)
+xdmp:collection-delete($const:NOTIFICATION-COLL),
+
+xdmp:collection-delete($const:CONTENT-COLL)
