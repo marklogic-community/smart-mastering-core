@@ -216,7 +216,7 @@ declare function matcher:results-to-json($results-xml)
  : @param $uri  input URI
  : @return JSON array of URIs
  :)
-declare function matcher:get-blocks($uri as xs:string)
+declare function matcher:get-blocks($uri as xs:string?)
   as array-node()
 {
   blocks-impl:get-blocks($uri)
