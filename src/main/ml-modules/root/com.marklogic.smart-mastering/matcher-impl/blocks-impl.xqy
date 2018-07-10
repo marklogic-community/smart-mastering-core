@@ -18,24 +18,26 @@ declare option xdmp:mapping "false";
  : @param $uri  input URI
  : @return JSON array of URIs
  :)
-declare function blocks-impl:get-blocks($uri as xs:string)
+declare function blocks-impl:get-blocks($uri as xs:string?)
   as array-node()
 {
-  let $solution :=
-    sem:sparql(
-      "select distinct(?uri as ?blocked) where { ?uri ?isBlocked ?target }",
-      map:new((
-        map:entry("target", sem:iri($uri)),
-        map:entry("isBlocked", $const:PRED-MATCH-BLOCK)
-      )),
-      "map"
-    )
-  return
-    array-node {
-      if (fn:exists($solution)) then
-        $solution ! fn:string(map:get(., "blocked"))
-      else ()
-    }
+  array-node {
+    if (fn:exists($uri)) then
+      let $solution :=
+        sem:sparql(
+          "select distinct(?uri as ?blocked) where { ?uri ?isBlocked ?target }",
+          map:new((
+            map:entry("target", sem:iri($uri)),
+            map:entry("isBlocked", $const:PRED-MATCH-BLOCK)
+          )),
+          "map"
+        )
+      return
+        if (fn:exists($solution)) then
+          $solution ! fn:string(map:get(., "blocked"))
+        else ()
+    else ()
+  }
 };
 
 (:
