@@ -36,22 +36,145 @@ let $merged-doc :=
     },
     $lib:INVOKE_OPTIONS
   )
-
-let $assertions := xdmp:eager(
+let $assertions := (
   let $smid := $merged-doc/*:envelope/*:headers/*:id/fn:string()
-  let $s1-dt := $merged-doc//*:sources[*:name = "SOURCE1"]/*:dateTime/fn:string()
-  let $s2-dt := $merged-doc//*:sources[*:name = "SOURCE2"]/*:dateTime/fn:string()
+  let $expected-headers :=
+    object-node {
+      "custom": array-node {
+        object-node {
+          "this": object-node {
+            "has": object-node {
+              "a": object-node {
+                "deep": object-node {
+                  "path": "deep value 2"
+                }
+              }
+            }
+          },
+          "unconfigured": "unconfigured value 2b"
+        },
+        object-node {
+          "this": object-node {
+            "has": object-node {
+              "a": object-node {
+                "deep": object-node {
+                  "path": "deep value 1"
+                }
+              }
+            }
+          },
+          "unconfigured": "unconfigured value 1b"
+        }
+      },
+      "shallow": array-node {
+        "shallow value 2",
+        "shallow value 1"
+      },
+      "sources": array-node {
+        object-node {
+          "name":"SOURCE2",
+          "import-id":"mdm-import-b96735af-f7c3-4f95-9ea1-f884bc395e0f",
+          "user":"admin",
+          "dateTime": $merged-doc//*:sources[*:name = "SOURCE2"]/*:dateTime/fn:string()
+        },
+        object-node {
+          "name":"SOURCE1",
+          "import-id":"mdm-import-8cf89514-fb1d-45f1-b95f-8b69f3126f04",
+          "user":"admin",
+          "dateTime": $merged-doc//*:sources[*:name = "SOURCE1"]/*:dateTime/fn:string()
+        }
+      },
+      "unconfigured": array-node {
+        "unconfigured value 2a",
+        "unconfigured value 1a"
+      },
+      "merges": array-node {
+        object-node {"document-uri":"/source/1/doc1.json"},
+        object-node {"document-uri":"/source/2/doc2.json"}
+      },
+      "id": $smid
+    }
   let $expected-triples :=
-    '"triples": [
-      {"triple": { "subject": "http://marklogic.com/sm-core/scranton", "predicate": "http://marklogic.com/sm-core/is-in", "object": { "datatype": "xs:string", "value": "Pennsylvania" } }},
-      {"triple": { "subject": "http://marklogic.com/sm-core/springfield", "predicate": "http://marklogic.com/sm-core/is-in", "object": { "datatype": "xs:string", "value": "Ohio" } }},
-      {"triple": { "subject": "http://marklogic.com/sm-core/lindsey-jones", "predicate": "http://marklogic.com/sm-core/lives-in", "object": "http://dbpedia.org/resource/Scranton,_Pennsylvania" }},
-      {"triple": { "subject": "http://marklogic.com/sm-core/lindsey-jones", "predicate": "http://marklogic.com/sm-core/lives-in", "object": "http://dbpedia.org/resource/Springfield,_Ohio" }},
-      {"triple": { "subject": "http://marklogic.com/sm-core/lindsey-jones", "predicate": "http://marklogic.com/sm-core/ssn", "object": { "datatype": "xs:string", "value": "393225353" } }}
-    ],'
-  let $expected := xdmp:to-json(xdmp:from-json-string('{"envelope":{"headers":{"id":"' || $smid || '","merges":[{"document-uri":"/source/1/doc1.json"},{"document-uri":"/source/2/doc2.json"}],"sources":[{"name":"SOURCE2","import-id":"mdm-import-b96735af-f7c3-4f95-9ea1-f884bc395e0f","user":"admin","dateTime":"' || $s2-dt || '"},{"name":"SOURCE1","import-id":"mdm-import-8cf89514-fb1d-45f1-b95f-8b69f3126f04","user":"admin","dateTime":"' || $s1-dt || '"}]},' || $expected-triples || ' "instance":{"MDM":{"Person":{"PersonType":{"Address":{"AddressType":{"AddressPrivateMailboxText":"45","AddressSecondaryUnitText":"JANA","LocationCityName":"SCRANTON","LocationPostalCode":"18505","LocationState":"PA"}}, "CaseAmount": 1287.9, "CaseStartDate":"20110406","CustomThing":["2","1"],"PersonBirthDate":"19801001","PersonName":{"PersonNameType":{"PersonGivenName":"LINDSEY","PersonSurName":"JONES"}}, "PersonSSNIdentification":{"PersonSSNIdentificationType":{"IdentificationID":"393225353"}}, "PersonSex":"F","Revenues":{"RevenuesType":{"Revenue":"4332"}}, "id":["6270654339","6986792174"]}}}}}}'))
-  return
+    array-node {
+      object-node { "triple": object-node {
+        "subject": "http://marklogic.com/sm-core/scranton",
+        "predicate": "http://marklogic.com/sm-core/is-in",
+        "object": object-node { "datatype": "xs:string", "value": "Pennsylvania" }
+      }},
+      object-node { "triple": object-node {
+        "subject": "http://marklogic.com/sm-core/springfield",
+        "predicate": "http://marklogic.com/sm-core/is-in",
+        "object": object-node { "datatype": "xs:string", "value": "Ohio" }
+      }},
+      object-node { "triple": object-node {
+        "subject": "http://marklogic.com/sm-core/lindsey-jones",
+        "predicate": "http://marklogic.com/sm-core/lives-in",
+        "object": "http://dbpedia.org/resource/Scranton,_Pennsylvania"
+      }},
+      object-node { "triple": object-node {
+        "subject": "http://marklogic.com/sm-core/lindsey-jones",
+        "predicate": "http://marklogic.com/sm-core/lives-in",
+        "object": "http://dbpedia.org/resource/Springfield,_Ohio"
+      }},
+      object-node { "triple": object-node {
+        "subject": "http://marklogic.com/sm-core/lindsey-jones",
+        "predicate": "http://marklogic.com/sm-core/ssn",
+        "object": object-node { "datatype": "xs:string", "value": "393225353" }
+      }}
+    }
+  let $expected-instance :=
+    object-node {
+      "MDM": object-node {
+        "Person": object-node {
+          "PersonType": object-node {
+            "Address": object-node {
+              "AddressType": object-node {
+                "AddressPrivateMailboxText":"45",
+                "AddressSecondaryUnitText":"JANA",
+                "LocationCityName":"SCRANTON",
+                "LocationPostalCode":"18505",
+                "LocationState":"PA"
+              }
+            },
+            "CaseAmount": 1287.9,
+            "CaseStartDate":"20110406",
+            "CustomThing": array-node { "2","1" },
+            "PersonBirthDate":"19801001",
+            "PersonName": object-node {
+              "PersonNameType": object-node {
+                "PersonGivenName":"LINDSEY",
+                "PersonSurName":"JONES"
+              }
+            },
+            "PersonSex":"F",
+            "PersonSSNIdentification": object-node {
+              "PersonSSNIdentificationType": object-node {
+                "IdentificationID":"393225353"
+              }
+            },
+            "Revenues": object-node {
+              "RevenuesType": object-node {
+                "Revenue":"4332"
+              }
+            },
+            "id": array-node {"6270654339","6986792174"}
+          }
+        }
+      }
+    }
+    let $expected :=
+      document {
+        object-node {
+          "envelope": object-node {
+            "headers": $expected-headers,
+            "triples": $expected-triples,
+            "instance": $expected-instance
+          }
+        }
+      }
+  return (
     test:assert-equal-json($expected, $merged-doc)
+  )
 )
 
 let $merged-id := $merged-doc/*:envelope/*:headers/*:id

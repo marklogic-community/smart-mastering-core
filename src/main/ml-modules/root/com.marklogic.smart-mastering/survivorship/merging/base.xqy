@@ -421,30 +421,44 @@ declare function merge-impl:build-headers(
     : configured and merged; some will not be configured and will just get
     : copied over. :)
 
+  let $is-xml := $format = $const:FORMAT-XML
   (: remove "/*:envelope/*:headers" from the paths; already accounted for :)
   let $configured-paths := $final-headers ! map:get(., "path") ! fn:replace(., "/.*headers(/.*)", "$1")
   (: Identify the full and partial paths of the configured paths. Record in
     : a map for quick access. :)
   let $anc-path-map := map:new(merge-impl:config-paths-and-ancestors($configured-paths) ! map:entry(., 1))
+  (: Identify the non-Smart-Mastering headers from the source documents.
+   : Anything else will either be passed through to the merged document or
+   : replaced by merged values. :)
+  let $non-sm-headers :=
+    if ($is-xml) then
+      $docs/es:envelope/es:headers/*[fn:empty(self::sm:*)]
+    else
+      let $sm-keys := ("id", "sources")
+      let $sm-map := fn:data($docs/object-node("envelope")/object-node("headers"))
+      return
+        let $m := map:map()
+        let $_ :=
+          for $map in $sm-map
+          for $key in map:keys($map)
+          where fn:not($key = $sm-keys)
+          return map:put($m, $key, (map:get($m, $key), map:get($map, $key)))
+        return $m
+  (: Build a map that combines the unconfigured (pass-through) values from the
+   : source docs with the merged values. :)
   let $combined :=
     let $m := map:map()
     let $populate :=
-      merge-impl:combine(
-        "",
-        $anc-path-map,
-        $configured-paths,
-        $docs/
-          (es:envelope|object-node("envelope"))/
-            (es:headers|object-node("headers"))/
-              *[fn:empty(self::sm:*)],
-        $m
-      )
+      if ($is-xml) then
+        merge-impl:prep-unconfigured-xml("", $anc-path-map, $configured-paths, $non-sm-headers, $m)
+      else
+        merge-impl:prep-unconfigured-json("", $anc-path-map, $configured-paths, $non-sm-headers, $m)
     let $add-merged-values := merge-impl:add-merged-values($final-headers, $m)
     return $m
   (: Having built a map of XPaths -> elements, generate a properly-nested
-    : list of XML elements. :)
+   : list of XML elements or JSON properties. :)
   return
-    if ($format = $const:FORMAT-XML) then
+    if ($is-xml) then
       <es:headers>
         <sm:id>{$id}</sm:id>
         <sm:merges>{
@@ -491,11 +505,67 @@ declare function merge-impl:config-paths-and-ancestors($paths as xs:string*) as 
 };
 
 (:~
+ : Work through the original header properties recursively. Properties that weren't
+ : configured for merging pass through and will become part of the merged
+ : document. Any property that conflicts with a configured path will be skipped.
+ :
+ : The $m parameter will have keys that are property names and values that
+ : are either JSON to be included in the merged document, or another map:map.
+ : This structure allows us to combine overlapping XPaths.
+ : @param $path  current path being processed, relative to /envelope/headers
+ : @param $anc-path-map  "ancestor path map"; used to quickly determine whether
+ :                       the current path is part of a configured path
+ : @param $configured-paths  sequence of full configured paths
+ : @param $headers  all the non-Smart Mastering header objects from the source
+ :                  documents
+ : @param $m  recursive map:map where the keys are property names and the values
+ :            are either map:maps (for the next level of properties down) or
+ :            values to include in the merged document
+ : @return ()  (no "as" clause to allow for tail call optimization)
+ :)
+declare function merge-impl:prep-unconfigured-json(
+  $path as xs:string,
+  $anc-path-map as map:map,
+  $configured-paths as xs:string*,
+  $headers as map:map*,
+  $m as map:map
+)
+{
+  for $header in $headers
+  for $key in map:keys($header)
+  let $curr-path := $path || "/" || $key
+  let $current := map:get($header, $key)
+  return
+    if (fn:not(map:get($anc-path-map, $curr-path))) then
+      (: This path is not related to any configured path, so we can just pass
+        : any elements through. :)
+      map:put($m, $key, (map:get($m, $key), $current))
+    else if ($curr-path = $configured-paths) then
+      (: Any elements here will be replaced by the calculated merged elements :)
+      ()
+    else
+      if (fn:exists($current)) then
+        let $child-map := map:map()
+        let $populate :=
+          merge-impl:prep-unconfigured-json($curr-path, $anc-path-map, $configured-paths, $current, $child-map)
+        return
+          if (map:keys($child-map)) then
+            map:put(
+              $m, $key,
+              if (map:contains($m, $key)) then map:get($m, $key) + $child-map
+              else $child-map
+            )
+          else ()
+      else
+        map:put($m, $key, (map:get($m, $key), $current))
+
+};
+
+(:~
  : Work through the original header elements recursively. Elements that weren't
  : configured for merging pass through and will become part of the merged
  : document. Any element that conflicts with a configured path will be skipped.
-
-
+ :
  : The map:map parameter will have keys that are element names and values that
  : are either XML to be included in the merged document, or another map:map.
  : This structure allows us to combine overlapping XPaths.
@@ -503,13 +573,14 @@ declare function merge-impl:config-paths-and-ancestors($paths as xs:string*) as 
  : @param $anc-path-map  "ancestor path map"; used to quickly determine whether
  :                       the current path is part of a configured path
  : @param $configured-paths  sequence of full configured paths
- : @param $headers  all the header elements from the source documents
+ : @param $headers  all the non-Smart Mastering header elements from the source
+ :                  documents
  : @param $m  recursive map:map where the keys are element names and the values
  :            are either map:maps (for the next level of elements down) or
  :            values to include in the merged document
  : @return ()  (no "as" clause to allow for tail call optimization)
  :)
-declare function merge-impl:combine(
+declare function merge-impl:prep-unconfigured-xml(
   $path as xs:string,
   $anc-path-map as map:map,
   $configured-paths as xs:string*,
@@ -523,17 +594,17 @@ declare function merge-impl:combine(
   return
     if (fn:not(map:get($anc-path-map, $curr-path))) then
       (: This path is not related to any configured path, so we can just pass
-       : any elements through. :)
+        : any elements through. :)
       map:put($m, $key, (map:get($m, $key), $current))
     else if ($curr-path = $configured-paths) then
       (: Any elements here will be replaced by the calculated merged elements :)
       ()
     else
-      let $children := $current/node()
+      let $children := $current/element()
       return
         if (fn:exists($children)) then
           let $child-map := map:map()
-          let $populate := merge-impl:combine($curr-path, $anc-path-map, $configured-paths, $children, $child-map)
+          let $populate := merge-impl:prep-unconfigured-xml($curr-path, $anc-path-map, $configured-paths, $children, $child-map)
           return
             if (map:keys($child-map)) then
               map:put(
