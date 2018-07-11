@@ -17,7 +17,7 @@ import module namespace merge-impl = "http://marklogic.com/smart-mastering/survi
 declare option xdmp:mapping "false";
 
 declare function proc-impl:process-match-and-merge($uri as xs:string)
-  as element()*
+  as item()*
 {
   let $merging-options := merging:get-options($const:FORMAT-XML)
   return

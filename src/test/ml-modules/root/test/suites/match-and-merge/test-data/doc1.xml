@@ -13,6 +13,10 @@
   </headers>
   <triples/>
   <instance>
+    <info>
+      <title>MDM</title>
+      <version>1.0.0</version>
+    </info>
     <MDM xmlns="">
       <Person>
         <PersonType>
