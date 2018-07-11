@@ -66,7 +66,7 @@ function post(
       cts:true-query()
     )
   return
-    matcher:results-to-json($results)
+    document { matcher:results-to-json($results) }
 };
 
 declare function delete(

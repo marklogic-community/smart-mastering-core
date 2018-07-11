@@ -283,7 +283,7 @@ declare function match-impl:_results-json-config()
 {
   let $config := json:config("custom")
   return (
-    map:put($config, "array-element-names", ("results","matches",xs:QName("cts:option"),xs:QName("cts:text"),xs:QName("cts:element"))),
+    map:put($config, "array-element-names", ("result","matches",xs:QName("cts:option"),xs:QName("cts:text"),xs:QName("cts:element"))),
     map:put($config, "full-element-names",
       (xs:QName("cts:query"),
       xs:QName("cts:and-query"),
@@ -417,6 +417,6 @@ declare function match-impl:results-to-json($results-xml)
   if (fn:exists($results-xml)) then
     xdmp:to-json(
       json:transform-to-json-object($results-xml, $results-json-config)
-    )
+    )/node()
   else ()
 };
