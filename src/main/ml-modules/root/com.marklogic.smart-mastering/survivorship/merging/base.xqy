@@ -796,7 +796,7 @@ declare function merge-impl:build-instance-body-by-final-properties(
 declare function merge-impl:get-instances($docs)
 {
   for $doc in $docs
-  let $instance := $doc/(es:envelope|object-node("envelope"))/(es:instance|object-node("instance"))/(*|object-node() except (es:info|object-node("info")))
+  let $instance := $doc/(es:envelope|object-node("envelope"))/(es:instance|object-node("instance"))/((*|object-node()) except (es:info|object-node("info")))
   return
     if ($instance instance of element(MDM)) then
       $instance/*/*
