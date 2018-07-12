@@ -18,17 +18,23 @@ properties to merge and how to combine them.
 Here's an example of merge configuration options.
 
 ```
-<options xmlns="http://marklogic.com/smart-mastering/survivorship/merging">
+<options xmlns="http://marklogic.com/smart-mastering/merging">
   <match-options>mlw-match</match-options>
-  <property-defs>
-    <property namespace="" localname="IdentificationID" name="ssn"/>
-    <property namespace="" localname="PersonName" name="name"/>
-    <property namespace="" localname="Address" name="address"/>
-    <property namespace="" localname="PersonBirthDate" name="dob"/>
-    <property namespace="" localname="CaseStartDate" name="caseStartDate"/>
-    <property namespace="" localname="IncidentCategoryCodeDate" name="incidentDate"/>
-    <property namespace="" localname="PersonSex" name="sex"/>
-  </property-defs>
+  <m:property-defs
+    xmlns:es="http://marklogic.com/entity-services"
+    xmlns:m="http://marklogic.com/smart-mastering/merging"
+    xmlns:has="has"
+    xmlns="">
+    <m:property namespace="" localname="IdentificationID" name="ssn"/>
+    <m:property namespace="" localname="PersonName" name="name"/>
+    <m:property namespace="" localname="Address" name="address"/>
+    <m:property namespace="" localname="PersonBirthDate" name="dob"/>
+    <m:property namespace="" localname="CaseStartDate" name="caseStartDate"/>
+    <m:property namespace="" localname="IncidentCategoryCodeDate" name="incidentDate"/>
+    <m:property namespace="" localname="PersonSex" name="sex"/>
+    <m:property path="/es:envelope/es:headers/shallow" name="shallow"/>
+    <m:property path="/es:envelope/es:headers/custom/this/has:a/deep/path" name="deep"/>
+  </m:property-defs>
   <algorithms>
     <algorithm name="name" function="name"/>
     <algorithm name="address" function="address"/>
@@ -83,12 +89,39 @@ process at all.
 
 ### Property Definitions
 
+#### Instance Properties
+
 When merging documents, all properties defined for an entity will be merged. The
 `property-defs/property` elements specify the properties where the process of
 merging values will be configured. The `namespace` and `localname` attributes
 specify an XML element or JSON property. The `name` attribute provides a
 nickname used to refer to this property in the rest of the configuration. The
 `name` attribute values must be unique within this configuration.
+
+#### Path Properties
+
+In addition to properties defined for an entity, properties may also be 
+specified by path. The presence of a path attribute indicates that the property
+is not part of the entity instance definition. Currently, only paths starting
+with /es:envelope/es:headers (for XML) or /envelope/headers (for JSON) are 
+supported. Control of the merging process using algorithms works the same for
+path properties as it does for instance properties. 
+
+Note that namespace prefixes used in the property path attributes must be 
+defined on the `property-defs` element. The default namespace and any prefixed
+namespaced used on `property-defs` will be used to interpret the path. 
+
+In the example above, there are four namespace specifications on `property-defs`:
+
+- xmlns:es="http://marklogic.com/entity-services"
+- xmlns:m="http://marklogic.com/smart-mastering/merging"
+- xmlns:has="has"
+- xmlns=""
+
+Because the default namespace is "", the `m:` prefix is used for 
+`property-defs` and `property` elements. The values of the path attributes will 
+use these namespaces. Thus in `/es:envelope/es:headers/custom/this/has:a/deep/path`, 
+any `custom` elements will be in the default (blank) namespace. 
 
 ### Algorithms
 
