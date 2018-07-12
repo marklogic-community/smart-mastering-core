@@ -46,6 +46,10 @@
       }
     ],
     "instance": {
+      "info": {
+        "title": "Example",
+        "version": "1.0.0"
+      },
       "MDM": {
         "Person": {
           "PersonType": {
