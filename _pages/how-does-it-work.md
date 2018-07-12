@@ -15,6 +15,8 @@ make up Smart Mastering.
 The Smart Mastering process focuses on one document at a time, identifying
 any other documents that appear to represent the same entity (Matching) and
 then combining the values in those documents to create a new document (Merging).
+Matching and merging are run across either [harmonized][mlu] XML or harmonized 
+JSON documents. 
 
 ## Collections
 
@@ -48,6 +50,10 @@ potential matches, each of which is labeled according to a threshold of match
 probability. A match response will look like this:
 
     <result uri="/source/3/doc3.json" index="1" score="79" threshold="Definitive Match" action="merge">
+
+Smart Mastering expects that the documents it is working with are either all
+XML or all JSON, rather than mixed. If the content that mastering runs on is
+mixed, then behavior is undefined. 
 
 ### Matching Algorithms
 
@@ -104,3 +110,4 @@ suite][merging-suite].
 [merge-config]: ../docs/merging-options/
 [constants]: https://github.com/marklogic-community/smart-mastering-core/blob/master/src/main/ml-modules/root/com.marklogic.smart-mastering/constants.xqy
 [merging-suite]: https://github.com/marklogic-community/smart-mastering-core/tree/master/src/test/ml-modules/root/test/suites/merging-xml
+[mlu]: https://mlu.marklogic.com/ondemand/931812fc
