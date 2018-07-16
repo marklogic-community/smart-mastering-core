@@ -114,9 +114,14 @@ declare function history:document-history($doc-uri as xs:string)
 
 declare function history:normalize-value-for-tracing($value as node())
 {
-  fn:normalize-space(
+  let $nodes := $value//(text()|number-node()|boolean-node())
+  let $nodes := if (fn:exists($nodes)) then
+    $nodes
+  else 
+    $value
+  return fn:normalize-space(
     fn:string-join(
-      for $node in $value//(text()|number-node()|boolean-node())
+      for $node in $nodes
       order by xdmp:key-from-QName(fn:node-name($node)), xdmp:key-from-QName(fn:node-name($node/..))
       return $node,
       " "
