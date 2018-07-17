@@ -19,6 +19,11 @@
       "kind": "execute"
     },
     {
+      "privilege-name": "xdbc:insert-in",
+      "action": "http://marklogic.com/xdmp/privileges/xdbc-insert-in",
+      "kind": "execute"
+    },
+    {
       "privilege-name": "xdmp:eval",
       "action": "http://marklogic.com/xdmp/privileges/xdmp-eval",
       "kind": "execute"
