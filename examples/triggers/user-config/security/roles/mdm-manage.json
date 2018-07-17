@@ -1,0 +1,5 @@
+{
+  "role-name": "mdm-manage",
+  "description": "Smart Mastering Management API role",
+  "role": ["manage-admin", "rest-admin", "security"]
+}

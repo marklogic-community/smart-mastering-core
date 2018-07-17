@@ -140,8 +140,8 @@ task deployMatchOptions(type: org._10ne.gradle.rest.RestTask) {
   mustRunAfter mlLoadModules
   httpMethod = 'post'
   uri = 'http://' + mlHost + ':' + mlFinalPort + '/v1/resources/sm-match-options?rs:name=mlw-match'
-  username = mlUsername
-  password = mlPassword
+  username = mlAppAdminUsername
+  password = mlAppAdminPassword
   requestBody = file('smart-mastering-config/mdm-match-options.xml').text
   contentType = groovyx.net.http.ContentType.XML
   responseHandler = {}
@@ -153,8 +153,8 @@ task deployMergeOptions(type: org._10ne.gradle.rest.RestTask) {
   mustRunAfter mlLoadModules
   httpMethod = 'post'
   uri = 'http://' + mlHost + ':' + mlFinalPort + '/v1/resources/sm-merge-options?rs:name=mlw-merge'
-  username = mlUsername
-  password = mlPassword
+  username = mlAppAdminUsername
+  password = mlAppAdminPassword
   requestBody = file('smart-mastering-config/mdm-merge-options.xml').text
   contentType = groovyx.net.http.ContentType.XML
   responseHandler = {}
@@ -172,6 +172,8 @@ task loadCode {
 // this is a convenience task to setup the example project
 // for you completely
 task setupExample {
+  mustRunAfter mlDeploySecurity
+  dependsOn mlDeploySecurity
   dependsOn mlDeploy
   dependsOn loadCode
 }
