@@ -14,19 +14,7 @@ declare variable $property-list := (
 
 declare option xdmp:mapping "false";
 
-let $assertions := ()
-
 let $merged-uri := cts:uris((), "limit=1", cts:collection-query($const:MERGED-COLL))
 let $actual as map:map := history:property-history($merged-uri)
-let $assertions := (
-  $assertions,
+return
   test:assert-same-values($property-list, map:keys($actual))
-)
-
-(: normalize-value-for-tracing should not return empty for text nodes :)
-let $assertions := (
-  $assertions,
-  test:assert-equal('textValue', history:normalize-value-for-tracing(text{'textValue'}))
-)
-
-return $assertions

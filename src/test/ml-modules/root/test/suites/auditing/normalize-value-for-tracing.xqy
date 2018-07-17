@@ -75,5 +75,12 @@ test:assert-equal(
       </PersonSSNIdentificationType>
     </PersonSSNIdentification>
   )
-)
+),
 
+(: should not return empty for text nodes :)
+test:assert-equal(
+  "textValue",
+  history:normalize-value-for-tracing(
+    text{'textValue'}
+  )
+)
