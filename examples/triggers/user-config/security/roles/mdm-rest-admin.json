@@ -1,11 +1,16 @@
 {
   "role-name": "mdm-rest-admin",
   "description": "Smart Mastering Management API role",
-  "role": ["manage-admin", "rest-admin"],
+  "role": ["manage-admin", "rest-admin", "mdm-user"],
   "privilege": [
     {
       "privilege-name": "any-uri",
       "action": "http://marklogic.com/xdmp/privileges/any-uri",
+      "kind": "execute"
+    },
+    {
+      "privilege-name": "sem:sparql",
+      "action": "http://marklogic.com/xdmp/privileges/sem-sparql",
       "kind": "execute"
     },
     {
@@ -16,6 +21,11 @@
     {
       "privilege-name": "xdbc:eval-in",
       "action": "http://marklogic.com/xdmp/privileges/xdbc-eval-in",
+      "kind": "execute"
+    },
+    {
+      "privilege-name": "xdbc:insert-in",
+      "action": "http://marklogic.com/xdmp/privileges/xdbc-insert-in",
       "kind": "execute"
     },
     {
