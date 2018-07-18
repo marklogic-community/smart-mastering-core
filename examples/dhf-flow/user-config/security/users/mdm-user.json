@@ -1,0 +1,6 @@
+{
+  "user-name": "mdm-user",
+  "password": "mdm-user",
+  "description": "Smart Mastering user",
+  "role": ["mdm-user"]
+}

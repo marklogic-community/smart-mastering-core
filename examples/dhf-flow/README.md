@@ -4,11 +4,41 @@ This example shows you how to integrate Smart Mastering with your Data Hub Flows
 
 ## Setup
 
-- Create the file **gradle-local.properties** in the same directory as this README file and add your MarkLogic admin username and password to it:
-  ```
-  mlUsername=admin
-  mlPassword=admin
-  ```
+### Configure Users (if necessary)
+
+This project is set up to create a few roles and users with minimal privileges. 
+To override the passwords set in **gradle.properties**, create a file called 
+**gradle-local.properties** in the same directory as this README file. In that
+file, add these lines:
+
+```
+mlSecurityUsername=admin
+mlSecurityPassword=admin
+
+mlUsername=mdm-user
+mlPassword=mdm-user
+
+mlRestAdminUsername=mdm-rest-admin
+mlRestAdminPassword=mdm-rest-admin
+
+mlAppAdminUsername=mdm-admin
+mlAppAdminPassword=mdm-admin
+
+mlManageUsername=mdm-manage
+mlManagePassword=mdm-manage
+```
+
+The `mlSecurityUsername` user is used to create the other users and roles, so 
+it must have the `admin` role or the `security` and `manage-admin` roles, 
+provided with MarkLogic. 
+
+Change the `mlSecurityPassword` to match your `admin` user password. 
+
+To change the usernames or passwords for the other users, change them both in
+**gradle-local.properties** and in **user-config/security/users/*.json**. 
+
+### Run the Setup Command
+
 - Open a Terminal or Command Prompt into this folder
 - Setup the Example  
   **\*nix:** `./gradlew setupExample`  

@@ -1,0 +1,6 @@
+{
+  "user-name": "mdm-manage",
+  "password": "mdm-manage",
+  "description": "Smart Mastering Management API user",
+  "role": ["mdm-manage"]
+}
