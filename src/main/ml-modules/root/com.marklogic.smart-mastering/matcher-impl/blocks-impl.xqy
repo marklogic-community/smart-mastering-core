@@ -2,6 +2,13 @@ xquery version "1.0-ml";
 
 (:
  : This is an implementation library, not an interface to the Smart Mastering functionality.
+ :
+ : Match blocks prevent automatic merges from happening. They can be created
+ : manually and are automatically created when a merge gets rolled back.
+ : Blocks are implemented here as managed RDF triples of the form:
+ :   <uri1> $const:PRED-MATCH-BLOCK <uri2>
+ : The reverse triple also gets stored:
+ :   <uri2> $const:PRED-MATCH-BLOCK <uri1>
  :)
 
 module namespace blocks-impl = "http://marklogic.com/smart-mastering/blocks-impl";
@@ -41,7 +48,11 @@ declare function blocks-impl:get-blocks($uri as xs:string?)
 };
 
 (:
- : Block all pairs of URIs from matching.
+ : Block all pairs of URIs from matching. This function will start with URI #1
+ : and call matcher:block-match with it each of the remaining URIs. It then
+ : recurses on the tail, repeating the process of blocking URI #2 from matching
+ : with the remaining URIs (3, 4). This stops when there are zero or one URIs
+ : remaining.
  : No return type specified to allow tail call optimization.
  :
  : @param uris the sequence of URIs
@@ -91,9 +102,13 @@ as empty-sequence()
  :)
 declare function blocks-impl:allow-match($uri1 as xs:string, $uri2 as xs:string)
 {
-  sem:database-nodes((
+  let $nodes := sem:database-nodes((
     cts:triples(sem:iri($uri1), $const:PRED-MATCH-BLOCK, sem:iri($uri2)),
     cts:triples(sem:iri($uri2), $const:PRED-MATCH-BLOCK, sem:iri($uri1))
-  )) ! xdmp:node-delete(.)
+  ))
+  return (
+    $nodes ! xdmp:node-delete(.),
+    fn:exists($nodes)
+  )
 };
 

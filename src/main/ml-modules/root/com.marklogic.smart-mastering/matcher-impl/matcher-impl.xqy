@@ -2,6 +2,19 @@ xquery version "1.0-ml";
 
 (:
  : This is an implementation library, not an interface to the Smart Mastering functionality.
+ :
+ : The process of matching starts with one document, which is not required to
+ : be in the database. The match options specify what properties are to be used
+ : to find matches. See match options documentation for details. The options
+ : may specify multiple thresholds, each of which corresponds to an action.
+ :
+ : Implementation notes: the configured properties are used to generate a boost
+ : query. The match part of the query identifies a set of subqueries that a
+ : document must match in order to get a score above the lowest threshold.
+ : Match queries all have their scores set to zero. The boost part of the query
+ : is used to provide the score.
+
+ : @see https://marklogic-community.github.io/smart-mastering-core/docs/matching-options/
  :)
 
 module namespace match-impl = "http://marklogic.com/smart-mastering/matcher-impl";
@@ -25,13 +38,28 @@ declare namespace es = "http://marklogic.com/entity-services";
 
 declare option xdmp:mapping "false";
 
+(:
+ : Find documents that are potential matches for the provided document.
+ : @param $document  a source document to draw values from
+ : @param $options  XML or JSON representation of match options
+ : @param $start  paging: 1-based index
+ : @param $page-length  paging: number of results to return
+ : @param $minimum-threshold  the required score for the lowest-scoring
+ :                            threshold (see match options)
+ : @param $lock-on-search
+ : @param $include-matches  if true, the response will include, for each result,
+ :                          the properties that earned points for the match
+ :                          (similar) to snippets
+ : @param $filter-query  a cts:query that reduces the scope of documents that
+ :                       will be searched for matches
+ :)
 declare function match-impl:find-document-matches-by-options(
   $document,
   $options,
   $start as xs:integer,
   $page-length as xs:integer,
   $minimum-threshold as xs:double,
-  $lock-on-search,
+  $lock-on-search as xs:boolean,
   $include-matches as xs:boolean,
   $filter-query as cts:query
 ) as element(results)
@@ -41,12 +69,9 @@ declare function match-impl:find-document-matches-by-options(
       opt-impl:options-from-json($options)
     else
       $options
-  let $tuning := $options/matcher:tuning
-  let $property-defs := $options/matcher:property-defs
-  let $thresholds := $options/matcher:thresholds
   let $scoring := $options/matcher:scoring
   let $algorithms := algorithms:build-algorithms-map($options/matcher:algorithms)
-  let $query := match-impl:build-query($document, $property-defs, $scoring, $algorithms, $options)
+  let $query := match-impl:build-query($document, $scoring, $algorithms, $options)
   let $serialized-query := element boost-query {$query}
   let $minimum-threshold-combinations :=
     match-impl:minimum-threshold-combinations($serialized-query, $minimum-threshold)
@@ -79,13 +104,12 @@ declare function match-impl:find-document-matches-by-options(
     else ()
   let $matches :=
     match-impl:drop-redundant(
-      $document,
+      xdmp:node-uri($document),
       match-impl:search(
         $match-query,
         $reduced-boost,
         $filter-query,
         $minimum-threshold,
-        $thresholds,
         $start,
         $page-length,
         $scoring,
@@ -122,6 +146,9 @@ declare function match-impl:seq-contains($s1, $s2)
  : list of matches.
  : Rule: if all sources from a merged document are in the list of documents to
  :       be merged, drop the merged document and the sources.
+ : @param $uri  URI of the original document
+ : @param $matches  matches that have been found for the original document
+ : @result a subset of the $matches passed in
  :)
 declare function match-impl:drop-redundant($uri, $matches as element(result)*)
   as element(result)*
@@ -143,13 +170,13 @@ declare function match-impl:drop-redundant($uri, $matches as element(result)*)
   let $notification-results := $matches[@action=$const:NOTIFY-ACTION]
   let $notification-uris := $notification-results/@uri
   let $notifications :=
-    let $nots := xdmp:invoke-function(
+    let $notifications := xdmp:invoke-function(
       function() {
         notify-impl:get-existing-match-notification((), $notification-uris, map:map())
       },
       map:entry("isolation", "different-transaction")
     )
-    for $notification in $nots
+    for $notification in $notifications
     let $sources := $notification/sm:document-uris/sm:document-uri[fn:not(. = $notification-uris)]
     return
       if (match-impl:seq-contains($sources, $notification-uris)) then
@@ -166,60 +193,83 @@ declare function match-impl:drop-redundant($uri, $matches as element(result)*)
   return $result
 };
 
-declare function match-impl:build-query($document, $property-defs, $scoring, $algorithms, $options)
+(:
+ : Build the boost query as specified by the match options.
+ : @param $document  the source document from which property values are drawn
+ : @param $property-defs  part of match options; identifies properties
+ : @param $scoring  part of match options;
+ : @param $algorithms  part of match options;
+ : @param $options  full match options; included here to pass into algorithm functions
+ : @return a cts:or-query that will be used as a boost query
+ :)
+declare function match-impl:build-query($document, $scoring, $algorithms, $options)
 {
-  cts:or-query((
-    for $score in $scoring/*
-    let $property-name := $score/@property-name
-    let $property-def := $property-defs/matcher:property[@name = $property-name]
-    where fn:exists($property-def)
-    return
-      let $qname := fn:QName($property-def/@namespace, $property-def/@localname)
-      let $values := $document//*[fn:node-name(.) eq $qname] ! fn:normalize-space(.)[.]
-      where fn:exists($values)
+  let $property-defs := $options/matcher:property-defs
+  return
+    cts:or-query((
+      for $score in $scoring/*
+      let $property-name := $score/@property-name
+      let $property-def := $property-defs/matcher:property[@name = $property-name]
+      where fn:exists($property-def)
       return
-        if ($score instance of element(matcher:add)) then
-          cts:element-value-query(
-            $qname,
-            $values,
-            ("case-insensitive"),
-            $score/@weight
-          )
-        else if ($score instance of element(matcher:expand)) then
-          let $algorithm := map:get($algorithms, $score/@algorithm-ref)
-          where fn:exists($algorithm)
-          return algorithms:execute-algorithm($algorithm, $values, $score, $options)
-        else ()
-  (:,
-    for $reduction in $scoring/matcher:reduce
-    let $algorithm := map:get($algorithms, concat($reduction/@algorithm-ref, '-query'))
-    where fn:exists($algorithm)
-    return algorithms:execute-algorithm($algorithm, $document, $reduction, $options):)
-  ))
+        let $qname := fn:QName($property-def/@namespace, $property-def/@localname)
+        let $values := $document//*[fn:node-name(.) eq $qname] ! fn:normalize-space(.)[.]
+        where fn:exists($values)
+        return
+          if ($score instance of element(matcher:add)) then
+            cts:element-value-query(
+              $qname,
+              $values,
+              ("case-insensitive"),
+              $score/@weight
+            )
+          else if ($score instance of element(matcher:expand)) then
+            let $algorithm := map:get($algorithms, $score/@algorithm-ref)
+            where fn:exists($algorithm)
+            return algorithms:execute-algorithm($algorithm, $values, $score, $options)
+          else ()
+    (:,
+      for $reduction in $scoring/matcher:reduce
+      let $algorithm := map:get($algorithms, concat($reduction/@algorithm-ref, '-query'))
+      where fn:exists($algorithm)
+      return algorithms:execute-algorithm($algorithm, $document, $reduction, $options):)
+    ))
 };
 
+(:
+ : Execute the generated search and construct the response.
+ : @param $match-query  a query built such that any matches will score at least
+ :                      high enough to reach the lowest threshold
+ : @param $boosting-query  a query that is used to score matches
+ : @param $filter-query  a query to reduce the universe of match candidates
+ : @param $min-threshold  lowest score required to hit a threshold
+ : @param $start  paging: 1-based index
+ : @param $page-length  paging
+ : @param $scoring  part of match options
+ : @param $algorithms  map derived from match options
+ : @param $options  full match options; included to pass to reduce algorithm
+ : @param $include-matches
+ : @return
+ :)
 declare function match-impl:search(
   $match-query,
   $boosting-query,
   $filter-query as cts:query,
-  $min-threshold,
-  $thresholds,
-  $start,
-  $page-length,
-  $scoring,
-  $algorithms,
-  $options,
+  $min-threshold as xs:double,
+  $start as xs:int,
+  $page-length as xs:int,
+  $scoring as element(matcher:scoring),
+  $algorithms as map:map,
+  $options as element(matcher:options),
   $include-matches as xs:boolean
 ) {
   let $range := $start to ($start + $page-length - 1)
   let $query :=
     cts:and-query((
       cts:query(match-impl:strip-query-weights(document { $filter-query }/element())),
-      cts:boost-query(
-        $match-query,
-        $boosting-query
-      )
+      cts:boost-query($match-query, $boosting-query)
     ))
+  let $thresholds := $options/matcher:thresholds
   for $result at $pos in cts:search(
     fn:collection(),
     $query,
@@ -234,10 +284,7 @@ declare function match-impl:search(
         element matches {
           cts:walk(
             $result,
-            cts:or-query((
-              $match-query,
-              $boosting-query
-            )),
+            cts:or-query(($match-query, $boosting-query)),
             $cts:node/..
           )
         }
@@ -272,11 +319,13 @@ declare function match-impl:search(
 (:
  : score-simple gives 8pts per matching term and multiplies the results by 256 (MarkLogic documentation)
  : this reduces the magnitude of the score
+ : @see http://docs.marklogic.com/guide/search-dev/relevance#id_37592
  :)
 declare function match-impl:simple-score($item) {
   cts:score($item) div (256 * 8)
 };
 
+(: Configuration used to convert XML match results to JSON. :)
 declare variable $results-json-config := match-impl:_results-json-config();
 
 declare function match-impl:_results-json-config()
@@ -411,6 +460,9 @@ declare function match-impl:lock-on-search($query-results)
     fn:function-lookup(xs:QName("xdmp:lock-for-update"),1)($lock-uri)
 };
 
+(:
+ : Convert XML match results to JSON.
+ :)
 declare function match-impl:results-to-json($results-xml)
   as object-node()?
 {

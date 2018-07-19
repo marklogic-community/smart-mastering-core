@@ -18,7 +18,7 @@ declare option xdmp:mapping "false";
 declare function notify-impl:save-match-notification(
   $threshold-label as xs:string,
   $uris as xs:string*
-)
+) as element(sm:notification)
 {
   let $existing-notification :=
     notify-impl:get-existing-match-notification(
@@ -48,7 +48,7 @@ declare function notify-impl:save-match-notification(
     ) else
       xdmp:document-insert(
         "/com.marklogic.smart-mastering/matcher/notifications/" ||
-        sem:uuid-string() || ".xml",
+          sem:uuid-string() || ".xml",
         $new-notification,
         (
           xdmp:default-permissions(),
@@ -162,6 +162,7 @@ as element(sm:notification)
  : TODO: do we want to add any provenance tracking to this?
  :)
 declare function notify-impl:delete-notification($uri as xs:string)
+  as empty-sequence()
 {
   xdmp:document-delete($uri)
 };
@@ -252,7 +253,7 @@ as xs:int
 declare function notify-impl:update-notification-status(
   $uri as xs:string+,
   $status as xs:string
-)
+) as empty-sequence()
 {
   xdmp:node-replace(
     fn:doc($uri)/sm:notification/sm:meta/sm:status,
