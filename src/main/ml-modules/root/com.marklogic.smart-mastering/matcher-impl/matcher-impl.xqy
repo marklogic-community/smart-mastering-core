@@ -154,6 +154,8 @@ declare function match-impl:drop-redundant($uri, $matches as element(result)*)
   as element(result)*
 {
   let $drop := map:map()
+
+  (: Look for merge-results that have already happened since matching ran :)
   let $merge-results := $matches[@action=$const:MERGE-ACTION]
   let $merge-uris := ($uri, $merge-results/@uri/fn:string())
   let $merges :=
@@ -167,12 +169,14 @@ declare function match-impl:drop-redundant($uri, $matches as element(result)*)
           else ()
       else
         $merge
+
+  (: Look for notification-results that have already happened since matching ran :)
   let $notification-results := $matches[@action=$const:NOTIFY-ACTION]
   let $notification-uris := $notification-results/@uri
   let $notifications :=
     let $notifications := xdmp:invoke-function(
       function() {
-        notify-impl:get-existing-match-notification((), $notification-uris, map:map())
+        notify-impl:get-existing-match-notification((), $notification-uris)
       },
       map:entry("isolation", "different-transaction")
     )
@@ -182,6 +186,7 @@ declare function match-impl:drop-redundant($uri, $matches as element(result)*)
       if (match-impl:seq-contains($sources, $notification-uris)) then
         ($sources ! map:put($drop, ., fn:true()))
       else ()
+
   let $drop-uris := map:keys($drop)
   let $results := (
     $merges except $merge-results[@uri = $drop-uris],
