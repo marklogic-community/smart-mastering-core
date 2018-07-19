@@ -15,6 +15,25 @@ matching functions in matcher.xqy will get results that look like the response
 below. 
 
 ```
+import module namespace matcher = "http://marklogic.com/smart-mastering/matcher"
+  at "/com.marklogic.smart-mastering/matcher.xqy";
+
+let $document := (: get a document :)
+let $options := matcher:get-options-as-xml("my-match-options")
+return
+  matcher:find-document-matches-by-options(
+    $document,
+    $options,
+    1, (: $start :)
+    10, (: $page-length :)
+    fn:true(), (: $include-matches :)
+    cts:collection-query("Person")
+  )
+```
+
+Returns:
+
+```
   <results total="2" page-length="6" start="1">
     <boost-query>
       <cts:or-query xmlns:cts="http://marklogic.com/cts">
@@ -92,8 +111,27 @@ below.
 The matches elements can be included or skipped, based on the 
 `$include-matches` parameter. 
 
-Passing these results to `matcher:results-to-json` returns a structure like 
-this:
+In some cases, it may be more convenient to have the results formatted as JSON. In that case, pass the XML to the `matcher:results-to-json` function (illustrated here using [SJS][sjs], but works the same in XQuery):
+
+```
+const matcher = require("/com.marklogic.smart-mastering/matcher.xqy");
+
+const document = // get a document
+const options = matcher.getOptionsAsXml("my-match-options");
+
+matcher:resultsToJson(
+  matcher.findDocumentMatchesByOptions(
+    document,
+    options,
+    1, // start
+    10, // pageLength
+    true, // includeMatches
+    cts.collectionQuery("Person")
+  )
+)
+```
+
+The JSON result looks like this:
 
 ```
 {
@@ -212,3 +250,5 @@ this:
   }
 }
 ```
+
+[sjs]: http://docs.marklogic.com/guide/jsref/language#chapter
