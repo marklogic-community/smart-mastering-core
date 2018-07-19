@@ -9,7 +9,8 @@ main:
       { url: '/docs/rest/', text: 'REST API' },
       { url: '/docs/libraries/', text: 'Libraries' },
       { url: '/docs/matching-options/', text: 'Matching Options' },
-      { url: '/docs/merging-options/', text: 'Merging Options' }
+      { url: '/docs/merging-options/', text: 'Merging Options' },
+      { url: '/docs/security/', text: 'Security' }
     ]
   }
   - { url: '/faqs/', text: 'FAQs' }
