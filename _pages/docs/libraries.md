@@ -28,9 +28,10 @@ library modules to look in and the high-level functionality available in them.
 
 ## Matching
 
-The [`matcher.xqy` module][matcher] provides functions to store, retrieve, delete, and list
-match options; find potential matches for a document; and to store, retrieve,
-delete, and list match blocks.
+The [`matcher.xqy` module][matcher] provides functions to store, retrieve, 
+delete, and list match options; find potential matches for a document; and to 
+store, retrieve, delete, and list match blocks. To see what the results of the 
+match functions look like, see [Match Results](../docs/match-results). 
 
 ## Merging
 
