@@ -6,3 +6,7 @@ build
 gradle-local.properties
 .gradletasknamecache
 docs
+.classpath
+.project
+.settings/
+.vscode/

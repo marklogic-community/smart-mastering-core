@@ -2,6 +2,22 @@ xquery version "1.0-ml";
 
 (:
  : This is an implementation library, not an interface to the Smart Mastering functionality.
+ :
+ : Notifications are used to record matches that do not have high enough
+ : confidence to automerge. This way a human reviewer can have a set of
+ : potential matches to review. Notification documents include a list of URIs
+ : and a threshold level.
+ :
+ : Functionality in this module provides for saving (creating), finding,
+ : reading, counting, updating the status of, and deleting notifications.
+ :
+ : Notification documents are stored as XML, but a function here can convert
+ : them to JSON.
+ :
+ : Notifications may be supplemented with information from the source documents
+ : that they refer to. This is useful when presenting information to users. For
+ : instance, if the documents contain Person entities, you might want to show
+ : the full names of the people referred to in each notification.
  :)
 
 module namespace notify-impl = "http://marklogic.com/smart-mastering/notification-impl";
@@ -15,17 +31,20 @@ declare namespace sm = "http://marklogic.com/smart-mastering";
 
 declare option xdmp:mapping "false";
 
+(:
+ : Create a new notification document. If there is already a notification for
+ : this combination of label and URIs, that notification will be replaced.
+ : @param $threshold-label  a human-readable label
+ : @param $uris  sequence of URIs of the documents that might be matches
+ : @return in-memory version of the notification document
+ :)
 declare function notify-impl:save-match-notification(
   $threshold-label as xs:string,
   $uris as xs:string*
-)
+) as element(sm:notification)
 {
   let $existing-notification :=
-    notify-impl:get-existing-match-notification(
-      $threshold-label,
-      $uris,
-      map:map()
-    )
+    notify-impl:get-existing-match-notification($threshold-label, $uris)
   let $new-notification :=
     element sm:notification {
       element sm:meta {
@@ -48,7 +67,7 @@ declare function notify-impl:save-match-notification(
     ) else
       xdmp:document-insert(
         "/com.marklogic.smart-mastering/matcher/notifications/" ||
-        sem:uuid-string() || ".xml",
+          sem:uuid-string() || ".xml",
         $new-notification,
         (
           xdmp:default-permissions(),
@@ -66,9 +85,15 @@ declare function notify-impl:save-match-notification(
  : merged into. This can happen when process-match-and-merge gets run multiple
  : times in a single transaction. Document merges happen in a child transaction
  : so that they will be visible here.
+ : @param $uris  sequence of uris for a notification
+ : @param $existing-notification  sequence of notification docs that were
+ :                                already in the database
+ : @return sequence of elements holding updated, distinct URIs
  :)
-declare function notify-impl:find-notify-uris($uris as xs:string*, $existing-notification)
-  as element(sm:document-uri)*
+declare function notify-impl:find-notify-uris(
+  $uris as xs:string*,
+  $existing-notification as element(sm:notification)*
+) as element(sm:document-uri)*
 {
   (: check each URI to see whether it appears in a merged document :)
   let $updated-uris :=
@@ -95,13 +120,18 @@ declare function notify-impl:find-notify-uris($uris as xs:string*, $existing-not
     }
 };
 
+(:
+ : Find notifications that have the same label and an overlapping set of URIs.
+ : @param $threshold-label  a human-readable label
+ : @param $uris  sequence of content document URIs that would appear in a
+ :               notification document together
+ : @return return related notification documents
+ :)
 declare function notify-impl:get-existing-match-notification(
   $threshold-label as xs:string?,
-  $uris as xs:string*,
-  $extractions as map:map
+  $uris as xs:string*
 ) as element(sm:notification)*
 {
-  let $keys := map:keys($extractions)
   for $notification in cts:search(fn:collection()/sm:notification,
     cts:and-query((
       if (fn:exists($threshold-label)) then
@@ -119,12 +149,23 @@ declare function notify-impl:get-existing-match-notification(
     ))
   )
   return
-    if (fn:exists($keys)) then
-      notify-impl:enhance-notification-xml($notification, $extractions)
-    else
-      $notification
+    $notification
 };
 
+(:
+ : Retrieve data from the source documents and add it to the notification XML.
+ : Note that we decided *not* to store extracted information in the
+ : notification document, as the properties to be requested could change, or
+ : different properties could be requested for different use cases within the
+ : same application. Thus, extracted values are added dynamically.
+ : @param $notification  a notification document
+ : @param $extractions  map of information to extract from source documents and
+ :                      add to returned version of notification. map key: the
+ :                      label that will be used for this extraction; map value:
+ :                      localname of the element/property to be read from the
+ :                      source docs
+ : @return dynamic version of the notification doc, supplemented with extracted info
+ :)
 declare function notify-impl:enhance-notification-xml(
   $notification as element(sm:notification),
   $extractions as map:map)
@@ -159,9 +200,11 @@ as element(sm:notification)
 
 (:
  : Delete the specified notification
+ : @param $uri  URI of the notification document itself
  : TODO: do we want to add any provenance tracking to this?
  :)
 declare function notify-impl:delete-notification($uri as xs:string)
+  as empty-sequence()
 {
   xdmp:document-delete($uri)
 };
@@ -249,10 +292,15 @@ as xs:int
   )
 };
 
+(:
+ : Modify the status of a notification document. While the intended values are
+ : $const:STATUS-READ and $const:STATUS-UNREAD, no restrictions are placed on
+ : the value here.
+ :)
 declare function notify-impl:update-notification-status(
   $uri as xs:string+,
   $status as xs:string
-)
+) as empty-sequence()
 {
   xdmp:node-replace(
     fn:doc($uri)/sm:notification/sm:meta/sm:status,

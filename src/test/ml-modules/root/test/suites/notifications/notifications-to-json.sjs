@@ -9,7 +9,16 @@ const extractions = {
   "stuff": "junk"
 };
 
-const notificationXML = notify.getExistingMatchNotification(lib['LBL-LIKELY'], lib['URI-SET1'], extractions);
+const notificationsXML = matcher.getNotifications(1, 5, extractions, con['FORMAT-XML']);
+
+let notificationXML = null;
+for (const notification of notificationsXML) {
+  // Pick out the notification we're interested in
+  if (fn.head(notification.xpath("/*:threshold-label/fn:string()")) === lib['LBL-LIKELY']) {
+    notificationXML = notification;
+  }
+}
+
 const notificationURI = fn.baseUri(notificationXML);
 const notification = notify.notificationToJson(notificationXML);
 

@@ -36,7 +36,7 @@ declare variable $TEST-DATA :=
 (: Get a notification without creating a lock. :)
 declare function lib:get-notification($label, $uris)
 {
-  xdmp:invoke-function(function() { notify-impl:get-existing-match-notification($label, $uris, map:map()) }, $INVOKE_OPTIONS)
+  xdmp:invoke-function(function() { notify-impl:get-existing-match-notification($label, $uris) }, $INVOKE_OPTIONS)
 };
 
 (: Call the save-match-nofication function in a different transaction :)
