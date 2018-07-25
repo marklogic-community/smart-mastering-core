@@ -15,6 +15,8 @@ import module namespace matcher = "http://marklogic.com/smart-mastering/matcher"
 
 import module namespace test = "http://marklogic.com/roxy/test-helper" at "/test/test-helper.xqy";
 import module namespace lib = "http://marklogic.com/smart-mastering/test" at "lib/lib.xqy";
+import module namespace tel = "http://marklogic.com/smart-mastering/telemetry"
+  at "/com.marklogic.smart-mastering/telemetry.xqy";
 
 declare namespace es = "http://marklogic.com/entity-services";
 declare namespace sm = "http://marklogic.com/smart-mastering";
@@ -23,6 +25,8 @@ declare namespace sm = "http://marklogic.com/smart-mastering";
 declare option xdmp:update "true";
 
 declare option xdmp:mapping "false";
+
+let $telemetry-count := tel:get-usage-count()
 
 (: Merge a couple documents :)
 let $merged-doc :=
@@ -165,7 +169,12 @@ let $unmerge :=
 (: And now there should be blocks :)
 let $assertions := (
   $assertions,
-  map:keys($lib:TEST-DATA) ! test:assert-exists(matcher:get-blocks(.)/node())
+  map:keys($lib:TEST-DATA) ! test:assert-exists(matcher:get-blocks(.)/node()),
+  xdmp:invoke-function(
+    function() {
+      test:assert-equal($telemetry-count + 1, tel:get-usage-count())
+    }
+  )
 )
 
 return $assertions

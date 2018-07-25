@@ -31,6 +31,8 @@ import module namespace notify-impl = "http://marklogic.com/smart-mastering/noti
   at "/com.marklogic.smart-mastering/matcher-impl/notification-impl.xqy";
 import module namespace opt-impl = "http://marklogic.com/smart-mastering/options-impl"
   at "/com.marklogic.smart-mastering/matcher-impl/options-impl.xqy";
+import module namespace tel = "http://marklogic.com/smart-mastering/telemetry"
+  at "/com.marklogic.smart-mastering/telemetry.xqy";
 
 declare namespace matcher = "http://marklogic.com/smart-mastering/matcher";
 declare namespace sm = "http://marklogic.com/smart-mastering";
@@ -64,6 +66,9 @@ declare function match-impl:find-document-matches-by-options(
   $filter-query as cts:query
 ) as element(results)
 {
+  (: increment usage count :)
+  tel:increment(),
+
   let $options :=
     if ($options instance of object-node()) then
       opt-impl:options-from-json($options)
