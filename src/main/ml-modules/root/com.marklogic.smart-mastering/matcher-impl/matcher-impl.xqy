@@ -219,15 +219,27 @@ declare function match-impl:build-query($document, $scoring, $algorithms, $optio
       return
         let $qname := fn:QName($property-def/@namespace, $property-def/@localname)
         let $values := $document//*[fn:node-name(.) eq $qname] ! fn:normalize-space(.)[.]
+        let $is-json := fn:exists(($document/object-node(), $document/array-node()))
         where fn:exists($values)
         return
           if ($score instance of element(matcher:add)) then
-            cts:element-value-query(
-              $qname,
-              $values,
-              ("case-insensitive"),
-              $score/@weight
-            )
+            (: in older version of MarkLogic element-value-query would work
+               with json too, but in newer versions of MarkLogic we
+               need a separate json query :)
+            if ($is-json) then
+              cts:json-property-value-query(
+                fn:string($qname),
+                $values,
+                ("case-insensitive"),
+                $score/@weight
+              )
+            else
+              cts:element-value-query(
+                $qname,
+                $values,
+                ("case-insensitive"),
+                $score/@weight
+              )
           else if ($score instance of element(matcher:expand)) then
             let $algorithm := map:get($algorithms, $score/@algorithm-ref)
             where fn:exists($algorithm)
@@ -287,10 +299,16 @@ declare function match-impl:search(
       attribute index {$range[fn:position() = $pos]},
       if ($include-matches) then
         element matches {
+          (: rather than store the entire node and risk mixing
+             content type (json != xml) we store the path to the
+             node instead :)
           cts:walk(
             $result,
-            cts:or-query(($match-query, $boosting-query)),
-            $cts:node/..
+            cts:or-query((
+              $match-query,
+              $boosting-query
+            )),
+            $cts:node/<match>{xdmp:path(., fn:true())}</match>
           )
         }
       else ()
