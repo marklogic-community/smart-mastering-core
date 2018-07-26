@@ -92,6 +92,7 @@ declare function merging:merge-complementing-properties(
     let $complementing-indexes-map := map:map()
     let $current-property := fn:head($remaining-properties)
     let $current-property-values := $current-property => map:get("values")
+    let $current-property-values-by-type := merging:group-properties-by-type($current-property-values)
     let $following-properties := fn:tail($remaining-properties)
     let $is-nested := fn:count(fn:head($current-property-values)/*) eq 1 and fn:exists($current-property-values/*/*)
     let $complementing-properties :=
@@ -106,7 +107,10 @@ declare function merging:merge-complementing-properties(
         (
           fn:empty($sub-values)
             and
-          $prop-values = $current-property-values
+          merging:are-grouped-nodes-complementary(
+            $current-property-values-by-type,
+            merging:group-properties-by-type($prop-values)
+          )
         )
         or
         (
@@ -116,9 +120,9 @@ declare function merging:merge-complementing-properties(
             $sub-value-qn in fn:node-name($sub-value),
             $counterpart-sub-value in $current-property-values/(.|*)/*[fn:node-name(.) eq $sub-value-qn]
           satisfies
-            $sub-value eq ""
+            fn:string($sub-value) eq ""
               or
-            $counterpart-sub-value = ($sub-value, ""))
+            $counterpart-sub-value = $sub-value)
         )
       return
         let $_set-index :=
@@ -169,14 +173,28 @@ declare function merging:merge-complementing-properties(
                       return
                         map:entry(
                           fn:string($prop-name),
-                          fn:head($all-complementing-values/*[fn:node-name(.) eq $prop-name][fn:normalize-space()])
+                          fn:head($all-complementing-values/(.|*)/*[fn:node-name(.) eq $prop-name][fn:normalize-space()])
                         )
                     ))
                     )/object-node()
                   )
                 }
               else
-                $all-complementing-values
+                let $group-by-node-type := merging:group-properties-by-type($all-complementing-values/(.[fn:empty(self::array-node())]/node()|.))
+                for $type in map:keys($group-by-node-type)
+                let $values := map:get($group-by-node-type, $type)
+                (: try to preserve original document order as best we can :)
+                order by fn:max($values ! fn:count(./preceding-sibling::node())) ascending
+                return
+                  switch ($type)
+                    case "null" return
+                      null-node {}
+                    case "number" return
+                      fn:distinct-values($values ! fn:number(.)) ! number-node {.}
+                    case "boolean" return
+                      fn:distinct-values($values ! fn:boolean(.)) ! boolean-node {.}
+                    default return
+                      fn:distinct-values($values ! fn:string(.)) ! text {.}
             )),
             map:entry("name", $current-property-name)
           ))
@@ -195,3 +213,39 @@ declare function merging:merge-complementing-properties(
         $merged-properties
       )
 };
+
+declare function merging:are-grouped-nodes-complementary($grouped-nodes-1 as map:map, $grouped-nodes-2 as map:map)
+{
+  every $node-kind in fn:distinct-values((map:keys($grouped-nodes-1),map:keys($grouped-nodes-2)))
+  satisfies (
+    let $nodes-of-kind-1 := map:get($grouped-nodes-1, $node-kind)
+    let $nodes-of-kind-2 := map:get($grouped-nodes-2, $node-kind)
+    let $nodes-1-is-min-count := fn:count($nodes-of-kind-1) lt fn:count($nodes-of-kind-2)
+    let $min-set-of-nodes :=
+      if ($nodes-1-is-min-count) then
+        $nodes-of-kind-1
+      else
+        $nodes-of-kind-2
+    let $max-set-of-nodes :=
+      if ($nodes-1-is-min-count) then
+        $nodes-of-kind-2
+      else
+        $nodes-of-kind-1
+    return
+      every $n in $min-set-of-nodes satisfies
+      $n = $max-set-of-nodes
+  )
+};
+
+
+declare function merging:group-properties-by-type($nodes as node()*)
+{
+  let $group-by-node-type := map:map()
+  let $_group-by-node-type :=
+    for $val in $nodes
+    let $type := xdmp:node-kind($val)
+    return
+      map:put($group-by-node-type, $type, (map:get($group-by-node-type, $type),$val))
+  return $group-by-node-type
+};
+

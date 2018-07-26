@@ -139,6 +139,11 @@ let $assertions := (
             "CaseAmount": 1287.9,
             "CaseStartDate":"20110406",
             "CustomThing": array-node { "2","1" },
+            "ArrayOfVariousThings": array-node {
+              "string",
+              42,
+              fn:true()
+            },
             "PersonBirthDate":"19801001",
             "PersonName": object-node {
               "PersonNameType": object-node {
