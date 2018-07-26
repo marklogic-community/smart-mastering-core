@@ -2,6 +2,8 @@ xquery version "1.0-ml";
 
 module namespace tel = "http://marklogic.com/smart-mastering/telemetry";
 
+declare namespace um = "http://marklogic.com/xdmp/usage-meters";
+
 declare option xdmp:mapping "false";
 
 declare variable $incremented := fn:false();
@@ -21,5 +23,5 @@ declare function tel:increment()
 
 declare function tel:get-usage-count() as xs:int
 {
-  (xdmp:feature-metric-status()/*:feature-metrics/*:features/*:feature[@name=$usage-count]/data(), 0)[1]
+  fn:head((xdmp:feature-metric-status()/um:feature-metrics/um:features/um:feature[@name=$usage-count]/data(), 0))
 };
