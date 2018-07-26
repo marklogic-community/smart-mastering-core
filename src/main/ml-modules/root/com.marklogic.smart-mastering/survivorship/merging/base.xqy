@@ -18,6 +18,8 @@ import module namespace matcher = "http://marklogic.com/smart-mastering/matcher"
   at "/com.marklogic.smart-mastering/matcher.xqy";
 import module namespace sem = "http://marklogic.com/semantics"
   at "/MarkLogic/semantics.xqy";
+import module namespace tel = "http://marklogic.com/smart-mastering/telemetry"
+  at "/com.marklogic.smart-mastering/telemetry.xqy";
 
 declare namespace merging = "http://marklogic.com/smart-mastering/merging";
 declare namespace sm = "http://marklogic.com/smart-mastering";
@@ -101,6 +103,7 @@ declare function merge-impl:save-merge-models-by-uri(
   $merge-options as item()?
 )
 {
+  tel:increment(),
   if (merge-impl:all-merged($uris)) then
     xdmp:log("Skipping merge because all uris to be merged (" || fn:string-join($uris, ", ") ||
       ") were already write-locked", "debug")

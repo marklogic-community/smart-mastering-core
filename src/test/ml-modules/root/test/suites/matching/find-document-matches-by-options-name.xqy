@@ -6,10 +6,14 @@ import module namespace constants = "http://marklogic.com/smart-mastering/consta
   at "/com.marklogic.smart-mastering/constants.xqy";
 import module namespace lib = "http://marklogic.com/smart-mastering/test" at "lib/lib.xqy";
 
+import module namespace tel = "http://marklogic.com/smart-mastering/telemetry"
+  at "/com.marklogic.smart-mastering/telemetry.xqy";
+
 import module namespace test = "http://marklogic.com/roxy/test-helper" at "/test/test-helper.xqy";
 
 declare option xdmp:mapping "false";
 
+let $telemetry-count := tel:get-usage-count()
 let $doc := fn:doc($lib:URI2)
 let $actual := matcher:find-document-matches-by-options-name($doc, $lib:MATCH-OPTIONS-NAME)
 return (
@@ -18,7 +22,8 @@ return (
     test:assert-same-values(($lib:URI3, $lib:URI5, $lib:URI6) ! attribute uri {.}, $def-match/@uri),
     test:assert-equal(3, fn:count($def-match/@threshold[. = "Definitive Match"])),
     test:assert-equal(3, fn:count($def-match/@action[. = $constants:MERGE-ACTION])),
-    test:assert-not-exists($def-match/matches)
+    test:assert-not-exists($def-match/matches),
+    test:assert-equal($telemetry-count + 1, tel:get-usage-count())
   ),
 
   let $likely-match := $actual/result[@threshold="Likely Match"]

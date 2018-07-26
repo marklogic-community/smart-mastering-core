@@ -12,7 +12,8 @@ import module namespace merging = "http://marklogic.com/smart-mastering/merging"
   at "/com.marklogic.smart-mastering/merging.xqy";
 import module namespace merge-impl = "http://marklogic.com/smart-mastering/survivorship/merging"
   at "/com.marklogic.smart-mastering/survivorship/merging/base.xqy";
-
+import module namespace tel = "http://marklogic.com/smart-mastering/telemetry"
+  at "/com.marklogic.smart-mastering/telemetry.xqy";
 
 declare option xdmp:mapping "false";
 
@@ -50,6 +51,9 @@ declare function proc-impl:process-match-and-merge-with-options(
   $options as item(),
   $filter-query as cts:query)
 {
+  (: increment usage count :)
+  tel:increment(),
+
   let $_ := xdmp:trace($const:TRACE-MATCH-RESULTS, "processing: " || $uri)
   let $matching-options := matcher:get-options-as-xml(fn:string($options/merging:match-options))
   let $thresholds := $matching-options/matcher:thresholds/matcher:threshold[@action = ($const:MERGE-ACTION, $const:NOTIFY-ACTION)]
