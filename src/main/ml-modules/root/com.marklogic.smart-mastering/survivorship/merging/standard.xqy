@@ -180,21 +180,33 @@ declare function merging:merge-complementing-properties(
                   )
                 }
               else
-                let $group-by-node-type := merging:group-properties-by-type($all-complementing-values/(.[fn:empty(self::array-node())]/node()|.))
-                for $type in map:keys($group-by-node-type)
-                let $values := map:get($group-by-node-type, $type)
-                (: try to preserve original document order as best we can :)
-                order by fn:max($values ! fn:count(./preceding-sibling::node())) ascending
-                return
-                  switch ($type)
-                    case "null" return
-                      null-node {}
-                    case "number" return
-                      fn:distinct-values($values ! fn:number(.)) ! number-node {.}
-                    case "boolean" return
-                      fn:distinct-values($values ! fn:boolean(.)) ! boolean-node {.}
-                    default return
-                      fn:distinct-values($values ! fn:string(.)) ! text {.}
+                let $original-values := $all-complementing-values/(.[fn:empty(self::array-node())]/node()|.)
+                let $group-by-node-type := merging:group-properties-by-type($original-values)
+                let $new-values :=
+                  for $type in map:keys($group-by-node-type)
+                  let $values := map:get($group-by-node-type, $type)
+                  return
+                    switch ($type)
+                      case "null" return
+                        null-node {}
+                      case "number" return
+                        fn:distinct-values($values ! fn:number(.)) ! number-node {.}
+                      case "boolean" return
+                        fn:distinct-values($values ! fn:boolean(.)) ! boolean-node {.}
+                      default return
+                        fn:distinct-values($values ! fn:string(.)) ! text {.}
+                for $new-value in $new-values
+                let $comparable-nodes :=
+                  typeswitch($new-value)
+                  case null-node() return map:get($group-by-node-type, 'null')
+                  case number-node() return map:get($group-by-node-type, 'number')
+                  case boolean-node() return map:get($group-by-node-type, 'boolean')
+                  default return
+                    map:keys($group-by-node-type)[fn:not(. = ("null","number","boolean"))] !
+                    map:get($group-by-node-type, .)
+                let $matching-nodes := $comparable-nodes[. = $new-value]
+                order by fn:max($matching-nodes ! fn:count(./preceding-sibling::node())) ascending
+                return $new-value
             )),
             map:entry("name", $current-property-name)
           ))
