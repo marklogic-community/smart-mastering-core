@@ -73,6 +73,9 @@
             "PersonBirthDate": "19801001",
             "CaseAmount": 1287.9,
             "CustomThing": "2",
+            "ArrayOfVariousThings": [
+              "string"
+            ],
             "PersonSSNIdentification": {
               "PersonSSNIdentificationType": {
                 "IdentificationID": "393225353"

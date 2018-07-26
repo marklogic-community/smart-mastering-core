@@ -154,7 +154,10 @@ declare function merge-impl:save-merge-models-by-uri(
         let $property-related-prov :=
           for $prop in $final-properties,
             $value in map:get($prop, "values")
-          let $type := fn:string(fn:node-name($value))
+          (: Due to how JSON is constructed, we can't rely on the node having a node name.
+             Pull the node name from the name entry of the property map.
+          :)
+          let $type := fn:string(map:get($prop, "name"))
           let $value-text := history:normalize-value-for-tracing($value)
           let $hash := xdmp:sha512($value-text)
           let $algorithm-info := map:get($prop, "algorithm")
@@ -801,7 +804,8 @@ declare function merge-impl:get-instances($docs)
     if ($instance instance of element(MDM)) then
       $instance/*/*
     else if (fn:node-name($instance) eq xs:QName("MDM")) then
-      $instance/object-node()/object-node()
+      (: Ensure we navigating a array at the instance root :)
+      $instance/(array-node()|.)/object-node()/object-node()
     else
       $instance
 };
@@ -1057,7 +1061,19 @@ declare function merge-impl:build-final-properties(
       else
         let $wrapped-properties :=
           for $doc at $pos in $docs
-          let $props-for-instance := $instance-props[fn:root(.) is $doc]
+          let $props-for-instance :=
+            for $prop-val in $instance-props[fn:root(.) is $doc]
+            return
+              (: Propertly extract values from arrays :)
+              if ($prop-val instance of array-node()) then
+                let $children := $prop-val/node()
+                return
+                  if (fn:exists($children/*[fn:node-name(.) eq $prop])) then
+                    $children/*[fn:node-name(.) eq $prop]
+                  else
+                    $children
+              else
+                $prop-val
           for $prop-value in $props-for-instance
           (:let $normalized-value := history:normalize-value-for-tracing($prop-value)
             let $source-details := $prop-history-info//object-node(fn:string($prop))/object-node($normalized-value)/sourceDetails

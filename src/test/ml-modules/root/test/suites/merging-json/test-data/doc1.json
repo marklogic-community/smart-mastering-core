@@ -74,6 +74,11 @@
             "PersonSex": "F",
             "CaseAmount": 1287.9,
             "CustomThing": "1",
+            "ArrayOfVariousThings": [
+              "string",
+              42,
+              true
+            ],
             "PersonSSNIdentification": {
               "PersonSSNIdentificationType": {
                 "IdentificationID": "393225353"
