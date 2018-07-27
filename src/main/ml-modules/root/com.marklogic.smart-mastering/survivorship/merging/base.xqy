@@ -813,7 +813,9 @@ declare function merge-impl:get-instances($docs)
       $instance
 };
 
-declare function merge-impl:get-sources($docs)
+declare function merge-impl:get-sources(
+  $docs,
+  $merge-options as element(merging:options))
   as object-node()*
 {
   for $source in
@@ -821,7 +823,11 @@ declare function merge-impl:get-sources($docs)
     /(es:headers|object-node("headers"))
     /(sm:sources|array-node("sources"))
     /(sm:source|object-node())
-  let $last-updated := $source/*:dateTime[. castable as xs:dateTime] ! xs:dateTime(.)
+  let $last-updated-qname := $merge-options/merging:algorithms/merging:algorithm[@name="standard"]/merging:last-updated/fn:QName(@namespace, @localname)
+  let $last-updated :=
+    if (fn:exists($last-updated-qname)) then
+      $source/*[fn:node-name(.) = $last-updated-qname][. castable as xs:dateTime] ! xs:dateTime(.)
+    else ()
   order by $last-updated descending
   return
     object-node {
@@ -868,7 +874,7 @@ declare function merge-impl:parse-final-properties-for-merge(
             /(sm:document-uri|documentUri))
       return
         history:property-history($doc-uri, ()) ! xdmp:to-json(.)/object-node():)
-  let $sources := get-sources($docs)
+  let $sources := get-sources($docs, $merge-options)
   let $final-properties := merge-impl:build-final-properties(
     $merge-options,
     $instances,

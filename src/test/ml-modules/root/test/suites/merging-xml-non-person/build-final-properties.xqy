@@ -21,7 +21,7 @@ declare function local:all-true($seq as xs:boolean*) as xs:boolean
 let $uris := map:keys($lib:TEST-DATA)
 let $docs := $uris ! fn:doc(.)
 let $merge-options := merging:get-options($lib:OPTIONS-NAME, $const:FORMAT-XML)
-let $sources := merging-impl:get-sources($docs)
+let $sources := merging-impl:get-sources($docs, $merge-options)
 let $instances := merging-impl:get-instances($docs)
 let $actual := merging-impl:build-final-properties(
   $merge-options,

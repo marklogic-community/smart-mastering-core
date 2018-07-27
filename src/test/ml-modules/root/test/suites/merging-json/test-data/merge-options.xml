@@ -7,6 +7,9 @@
   </property-defs>
   <algorithms>
     <algorithm name="name" function="name"/>
+    <algorithm name="standard" function="standard">
+      <last-updated namespace="" localname="dateTime"/>
+    </algorithm>
   </algorithms>
   <merging>
     <merge property-name="ssn" algorithm-ref="user-defined">

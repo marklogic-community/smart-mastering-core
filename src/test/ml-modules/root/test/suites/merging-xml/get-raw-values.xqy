@@ -27,7 +27,7 @@ let $deep-prop := $options/merging:property-defs/merging:property[@name="deep"]
 
 let $docs := map:keys($lib:TEST-DATA) ! fn:doc(.)
 
-let $sources := merge-impl:get-sources($docs)
+let $sources := merge-impl:get-sources($docs, $options)
 
 let $actual :=
   merge-impl:get-raw-values(
