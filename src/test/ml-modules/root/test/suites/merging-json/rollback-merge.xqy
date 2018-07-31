@@ -127,42 +127,42 @@ let $assertions := (
       "MDM": object-node {
         "Person": object-node {
           "PersonType": object-node {
-            "Address": object-node {
-              "AddressType": object-node {
-                "AddressPrivateMailboxText":"45",
-                "AddressSecondaryUnitText":"JANA",
-                "LocationCityName":"SCRANTON",
-                "LocationPostalCode":"18505",
-                "LocationState":"PA"
-              }
-            },
-            "CaseAmount": 1287.9,
-            "CaseStartDate":"20110406",
-            "CustomThing": array-node { "2","1" },
-            "ArrayOfVariousThings": array-node {
-              "string",
-              42,
-              fn:true()
-            },
-            "PersonBirthDate":"19801001",
-            "PersonName": object-node {
-              "PersonNameType": object-node {
-                "PersonGivenName":"LINDSEY",
-                "PersonSurName":"JONES"
-              }
-            },
-            "PersonSex":"F",
             "PersonSSNIdentification": object-node {
               "PersonSSNIdentificationType": object-node {
                 "IdentificationID":"393225353"
               }
             },
+            "CustomThing": array-node { "1","2" },
+            "ArrayOfVariousThings": array-node {
+              "string",
+              42,
+              fn:true()
+            },
+            "Address": object-node {
+              "AddressType": object-node {
+                "LocationState":"PA",
+                "AddressPrivateMailboxText":"45",
+                "AddressSecondaryUnitText":"JANA",
+                "LocationPostalCode":"18505",
+                "LocationCityName":"SCRANTON"
+              }
+            },
+            "PersonSex":"F",
+            "PersonBirthDate":"19801001",
+            "PersonName": object-node {
+              "PersonNameType": object-node {
+                "PersonSurName":"JONES",
+                "PersonGivenName":"LINDSEY"
+              }
+            },
+            "CaseStartDate":"20110406",
             "Revenues": object-node {
               "RevenuesType": object-node {
                 "Revenue":"4332"
               }
             },
-            "id": array-node {"6270654339","6986792174"}
+            "CaseAmount": 1287.9,
+            "id": array-node {"6986792174","6270654339"}
           }
         }
       }

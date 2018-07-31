@@ -56,20 +56,27 @@ let $assertions := xdmp:eager(
           <sm:import-id>mdm-import-b96735af-f7c3-4f95-9ea1-f884bc395e0f</sm:import-id>
           <sm:user>admin</sm:user>
           <sm:dateTime>{$s2-dt}</sm:dateTime>
+          <sm:one-first>2017-04-26T16:40:02.1386Z</sm:one-first>
+          <sm:two-first>2018-04-26T16:40:02.1386Z</sm:two-first>
         </sm:source>
         <sm:source>
           <sm:name>SOURCE1</sm:name>
           <sm:import-id>mdm-import-8cf89514-fb1d-45f1-b95f-8b69f3126f04</sm:import-id>
           <sm:user>admin</sm:user>
           <sm:dateTime>{$s1-dt}</sm:dateTime>
+          <sm:one-first>2018-04-26T16:40:02.1386Z</sm:one-first>
+          <sm:one-first>2018-04-26T16:40:02.1386Z</sm:one-first>
+          <sm:two-first>2017-04-26T16:40:02.1386Z</sm:two-first>
         </sm:source>
       </sm:sources>
-      <custom xmlns:has="has">
+      <custom xmlns:has="has" xmlns:endswith="endswith">
         <this><has:a><deep><path>deep value 2</path></deep></has:a></this>
+        <this><has:a><deep><endswith:ns>endswith value 2</endswith:ns></deep></has:a></this>
         <unconfigured>unconfigured value 2b</unconfigured>
       </custom>
-      <custom xmlns:has="has">
+      <custom xmlns:has="has" xmlns:endswith="endswith">
         <this><has:a><deep><path>deep value 1</path></deep></has:a></this>
+        <this><has:a><deep><endswith:ns>endswith value 1</endswith:ns></deep></has:a></this>
         <unconfigured>unconfigured value 1b</unconfigured>
       </custom>
       <shallow>shallow value 2</shallow>
@@ -97,12 +104,14 @@ let $assertions := xdmp:eager(
                 <LocationCityName>SCRANTON</LocationCityName>
               </AddressType>
             </Address>
-            <id>6270654339</id>
             <id>6986792174</id>
+            <id>6270654339</id>
             <PersonBirthDate>19801001</PersonBirthDate>
             <CaseAmount>1287.9</CaseAmount>
-            <CustomThing>2</CustomThing>
             <CustomThing>1</CustomThing>
+            <CustomThing>2</CustomThing>
+            <OnlyOne>1</OnlyOne>
+            <OnlyOne>2</OnlyOne>
             <PersonSSNIdentification>
               <PersonSSNIdentificationType>
                 <IdentificationID>393225353</IdentificationID>

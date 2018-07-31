@@ -4,12 +4,13 @@
     <property namespace="" localname="IdentificationID" name="ssn"/>
     <property namespace="" localname="PersonName" name="name"/>
     <property namespace="" localname="Address" name="address"/>
+    <property namespace="" localname="OnlyOne" name="onlyone"/>
   </property-defs>
   <algorithms>
     <algorithm name="name" function="name"/>
     <!-- config for standard algorithm -->
     <std-algorithm xmlns:es="http://marklogic.com/entity-services" xmlns:sm="http://marklogic.com/smart-mastering">
-      <timestamp path="/es:envelope/es:headers/sm:sources/sm:source/sm:one-first" />
+      <timestamp path="/es:envelope/es:headers/sm:sources/sm:source/sm:two-first" />
     </std-algorithm>
   </algorithms>
   <merging>
@@ -29,5 +30,6 @@
         <source name="SOURCE2" weight="10"></source>
       </source-weights>
     </merge>
+    <merge property-name="onlyone" algorithm-ref="standard" max-values="1"/>
   </merging>
 </options>

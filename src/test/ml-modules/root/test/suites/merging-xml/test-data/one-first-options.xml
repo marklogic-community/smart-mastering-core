@@ -4,6 +4,7 @@
     <property namespace="" localname="IdentificationID" name="ssn"/>
     <property namespace="" localname="PersonName" name="name"/>
     <property namespace="" localname="Address" name="address"/>
+    <property namespace="" localname="OnlyOne" name="onlyone"/>
   </property-defs>
   <algorithms>
     <algorithm name="name" function="name"/>
@@ -29,5 +30,6 @@
         <source name="SOURCE2" weight="10"></source>
       </source-weights>
     </merge>
+    <merge property-name="onlyone" algorithm-ref="standard" max-values="1"/>
   </merging>
 </options>

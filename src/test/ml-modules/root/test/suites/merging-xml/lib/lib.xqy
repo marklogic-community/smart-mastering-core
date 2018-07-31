@@ -15,6 +15,9 @@ declare variable $TEST-DATA :=
 
 declare variable $OPTIONS-NAME := "test-options";
 
+declare variable $ONE-FIRST-OPTIONS := "one-first-options";
+declare variable $TWO-FIRST-OPTIONS := "two-first-options";
+
 declare variable $OPTIONS-NAME-CUST-XQY := "cust-xqy-test-options";
 declare variable $OPTIONS-NAME-CUST-SJS := "cust-sjs-test-options";
 declare variable $OPTIONS-NAME-PATH := "path-test-options";

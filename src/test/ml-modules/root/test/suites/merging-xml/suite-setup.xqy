@@ -15,6 +15,8 @@ merging:save-options($lib:OPTIONS-NAME, test:get-test-file("merge-options.xml"))
 merging:save-options($lib:OPTIONS-NAME-CUST-XQY, test:get-test-file("custom-xqy-merge-options.xml")),
 merging:save-options($lib:OPTIONS-NAME-CUST-SJS, test:get-test-file("custom-sjs-merge-options.xml")),
 merging:save-options($lib:OPTIONS-NAME-PATH, test:get-test-file("path-merge-options.xml")),
+merging:save-options($lib:ONE-FIRST-OPTIONS, test:get-test-file("one-first-options.xml")),
+merging:save-options($lib:TWO-FIRST-OPTIONS, test:get-test-file("two-first-options.xml")),
 
 matcher:save-options($lib:OPTIONS-NAME-CUST-ACTION-XQY-MATCH, test:get-test-file("custom-xqy-action-match-options.xml")),
 merging:save-options($lib:OPTIONS-NAME-CUST-ACTION-XQY-MERGE, test:get-test-file("custom-xqy-action-merge-options.xml")),
