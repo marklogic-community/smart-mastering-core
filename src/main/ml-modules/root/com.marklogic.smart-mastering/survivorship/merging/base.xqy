@@ -1,5 +1,31 @@
 xquery version "1.0-ml";
 
+(:~
+ : Implementation library for merging functions. If you're building an
+ : application, include com.marklogic.smart-mastering/merging.xqy, not this
+ : file.
+ :
+ : The merging process draws values from source documents, applies an algorithm
+ : to the values for each property, and creates a new merged document. The
+ : source of each value gets tracked in a sidecar document that can be used to
+ : provide auditing/history information. A merge document records the documents
+ : that were used to generate it.
+ :
+ : Algorithms used to merge values can be provided by this library or custom
+ : code written as part of an application. This library provides a "standard"
+ : algorithm that provides a few simple ways to choose values from source
+ : documents.
+ :
+ : Note that the process of getting values for the merged document will
+ : typically be a selection among the values available in the source documents,
+ : but nothing prevents an algorithm from combining or otherwise modifying
+ : source document values. (Value source tracking might be a little more
+ : complex.)
+ :
+ : Merge options can be sent to Smart Mastering Core as XML or JSON, but they
+ : are stored and worked with as XML. This library has functions to convert
+ : from JSON to XML.
+ :)
 module namespace merge-impl = "http://marklogic.com/smart-mastering/survivorship/merging";
 
 import module namespace auditing = "http://marklogic.com/smart-mastering/auditing"
@@ -29,15 +55,28 @@ declare namespace host = "http://marklogic.com/xdmp/status/host";
 
 declare option xdmp:mapping "false";
 
-declare variable $retain-rollback-info := fn:false();
-
+(:
+ : Directory in which merging options are stored.
+ :)
 declare variable $MERGING-OPTIONS-DIR := "/com.marklogic.smart-mastering/options/merging/";
 
+(:
+ : Directory in which merged documents are created.
+ :)
 declare variable $MERGED-DIR := "/com.marklogic.smart-mastering/merged/";
 
+(:
+ : Get a function reference to the default merging function. The function must
+ : be in the http://marklogic.com/smart-mastering/survivorship/merging
+ : namespace.
+ : @param $name  localname of the function to be applied
+ : @param $arity  number of parameters the function takes
+ : @return function reference if found
+ :)
 declare function merge-impl:default-function-lookup(
   $name as xs:string?,
-  $arity as xs:int)
+  $arity as xs:int
+) as function(*)?
 {
   fn:function-lookup(
     fn:QName(
@@ -51,7 +90,15 @@ declare function merge-impl:default-function-lookup(
   )
 };
 
-declare function merge-impl:build-merging-map($merging-xml)
+(:
+ : Based on the merging options, this is a map from the algorithm names to the
+ : corresponding function references.
+ : @param $merging-xml  full merging options
+ : @return map pointing from name strings to function references
+ :)
+declare function merge-impl:build-merging-map(
+  $merging-xml as element(merging:options)
+) as map:map
 {
   map:new((
     for $algorithm-xml in $merging-xml//*:algorithm
@@ -131,82 +178,23 @@ declare function merge-impl:save-merge-models-by-uri(
           $merge-options
         )
     let $final-properties := map:get($parsed-properties, "final-properties")
-    let $final-headers := map:get($parsed-properties, "final-headers")
-    let $header-ns-map := map:get($parsed-properties, $PROPKEY-HEADERS-NS-MAP)
-    let $docs := map:get($parsed-properties, "documents")
-    let $instances := map:get($parsed-properties, "instances")
-    let $top-level-properties := map:get($parsed-properties, "top-level-properties")
-    let $sources := map:get($parsed-properties, "sources")
-    let $wrapper-qnames := map:get($parsed-properties, "wrapper-qnames")
     let $merged-document :=
       merge-impl:build-merge-models-by-final-properties(
         $id,
-        $docs,
-        $wrapper-qnames,
+        map:get($parsed-properties, "documents"),
+        map:get($parsed-properties, "wrapper-qnames"),
         $final-properties,
-        $final-headers,
-        $header-ns-map,
-        $merge-options
+        map:get($parsed-properties, "final-headers"),
+        map:get($parsed-properties, $PROPKEY-HEADERS-NS-MAP)
       )
     let $_audit-trail :=
       auditing:audit-trace(
         $const:MERGE-ACTION,
         $uris,
         $merge-uri,
-        let $generated-entity-id := $auditing:sm-prefix ||$merge-uri
-        let $property-related-prov :=
-          for $prop in $final-properties,
-            $value in map:get($prop, "values")
-          (: Due to how JSON is constructed, we can't rely on the node having a node name.
-             Pull the node name from the name entry of the property map.
-          :)
-          let $type := fn:string(map:get($prop, "name"))
-          let $value-text := history:normalize-value-for-tracing($value)
-          let $hash := xdmp:sha512($value-text)
-          let $algorithm-info := map:get($prop, "algorithm")
-          let $algorithm-agent := "algorithm:"||$algorithm-info/name||";options:"||$algorithm-info/optionsReference
-          for $source in map:get($prop, "sources")
-          let $used-entity-id := $auditing:sm-prefix || $source/documentUri || $type || $hash
-          return (
-            element prov:entity {
-              attribute prov:id {$used-entity-id},
-              element prov:type {$type},
-              element prov:label {$source/name || ":" || $type},
-              element prov:location {fn:string($source/documentUri)},
-              element prov:value { $value-text }
-            },
-            element prov:wasDerivedFrom {
-              element prov:generatedEntity {
-                attribute prov:ref { $generated-entity-id }
-              },
-              element prov:usedEntity {
-                attribute prov:ref { $used-entity-id }
-              }
-            },
-            element prov:wasInfluencedBy {
-              element prov:influencee { attribute prov:ref { $used-entity-id }},
-              element prov:influencer { attribute prov:ref { $algorithm-agent }}
-            }
-          )
-        let $prop-prov-entities := $property-related-prov[. instance of element(prov:entity)]
-        let $other-prop-prov := $property-related-prov except $prop-prov-entities
-        return (
-          element prov:hadMember {
-            element prov:collection { attribute prov:ref { $generated-entity-id } },
-            $prop-prov-entities
-          },
-          $other-prop-prov,
-          for $agent-id in
-            fn:distinct-values(
-              $other-prop-prov[. instance of element(prov:wasInfluencedBy)]/
-                prov:influencer/
-                  @prov:ref ! fn:string(.)
-            )
-          return element prov:softwareAgent {
-            attribute prov:id {$agent-id},
-            element prov:label {fn:substring-before(fn:substring-after($agent-id,"algorithm:"), ";")},
-            element prov:location {fn:substring-after($agent-id,"options:")}
-          }
+        merge-impl:generate-audit-attachments(
+          $merge-uri,
+          $final-properties
         )
       )
     return (
@@ -236,6 +224,74 @@ declare function merge-impl:save-merge-models-by-uri(
     )
 };
 
+(:
+ : Generate attachments for the audit document.
+ : @param $merge-uri  the URI of the new merged document
+ : @param $final-properties  the merged properties, with their source info
+ : @return
+ :)
+declare function merge-impl:generate-audit-attachments(
+  $merge-uri as xs:string,
+  $final-properties
+) as item()*
+{
+  let $generated-entity-id := $auditing:sm-prefix ||$merge-uri
+  let $property-related-prov :=
+    for $prop in $final-properties,
+      $value in map:get($prop, "values")
+    (: Due to how JSON is constructed, we can't rely on the node having a node name.
+        Pull the node name from the name entry of the property map.
+    :)
+    let $type := fn:string(map:get($prop, "name"))
+    let $value-text := history:normalize-value-for-tracing($value)
+    let $hash := xdmp:sha512($value-text)
+    let $algorithm-info := map:get($prop, "algorithm")
+    let $algorithm-agent := "algorithm:"||$algorithm-info/name||";options:"||$algorithm-info/optionsReference
+    for $source in map:get($prop, "sources")
+    let $used-entity-id := $auditing:sm-prefix || $source/documentUri || $type || $hash
+    return (
+      element prov:entity {
+        attribute prov:id {$used-entity-id},
+        element prov:type {$type},
+        element prov:label {$source/name || ":" || $type},
+        element prov:location {fn:string($source/documentUri)},
+        element prov:value { $value-text }
+      },
+      element prov:wasDerivedFrom {
+        element prov:generatedEntity {
+          attribute prov:ref { $generated-entity-id }
+        },
+        element prov:usedEntity {
+          attribute prov:ref { $used-entity-id }
+        }
+      },
+      element prov:wasInfluencedBy {
+        element prov:influencee { attribute prov:ref { $used-entity-id }},
+        element prov:influencer { attribute prov:ref { $algorithm-agent }}
+      }
+    )
+  let $prop-prov-entities := $property-related-prov[. instance of element(prov:entity)]
+  let $other-prop-prov := $property-related-prov except $prop-prov-entities
+  return (
+    element prov:hadMember {
+      element prov:collection { attribute prov:ref { $generated-entity-id } },
+      $prop-prov-entities
+    },
+    $other-prop-prov,
+    for $agent-id in
+      fn:distinct-values(
+        $other-prop-prov[. instance of element(prov:wasInfluencedBy)]/
+          prov:influencer/
+            @prov:ref ! fn:string(.)
+      )
+    return element prov:softwareAgent {
+      attribute prov:id {$agent-id},
+      element prov:label {fn:substring-before(fn:substring-after($agent-id,"algorithm:"), ";")},
+      element prov:location {fn:substring-after($agent-id,"options:")}
+    }
+  )
+};
+
 (:~
  : Insert the merged document into the database.
  : @param $merge-uri  the URI for the merged document
@@ -257,6 +313,12 @@ declare function merge-impl:record-merge($merge-uri, $merged-document, $merged-d
   )
 };
 
+(:
+ : Unmerge a merged document, un-archive the source documents. Create a match
+ : block to make sure these documents don't get auto-merged again.
+ : @param $merged-doc-uri  The URI of the document to be unmerged
+ : @return ()
+ :)
 declare function merge-impl:rollback-merge(
   $merged-doc-uri as xs:string
 ) as empty-sequence()
@@ -264,6 +326,16 @@ declare function merge-impl:rollback-merge(
   merge-impl:rollback-merge($merged-doc-uri, fn:true())
 };
 
+(:
+ : Unmerge a merged document, un-archive the source documents. Create a match
+ : block to make sure these documents don't get auto-merged again.
+ : @param $merged-doc-uri  The URI of the document to be unmerged
+ : @param $retain-rollback-info  if true, then the merged document will be
+ :                               added to the archive collection; otherwise,
+ :                               the merged document and its audit records will
+ :                               be deleted
+ : @return ()
+ :)
 declare function merge-impl:rollback-merge(
   $merged-doc-uri as xs:string,
   $retain-rollback-info as xs:boolean
@@ -323,7 +395,6 @@ declare function merge-impl:build-merge-models-by-uri(
   let $final-headers := map:get($parsed-properties, "final-headers")
   let $headers-ns-map := map:get($parsed-properties, $PROPKEY-HEADERS-NS-MAP)
   let $docs := map:get($parsed-properties, "documents")
-  let $instances := map:get($parsed-properties, "instances")
   let $wrapper-qnames := map:get($parsed-properties, "wrapper-qnames")
   return
     merge-impl:build-merge-models-by-final-properties(
@@ -332,19 +403,26 @@ declare function merge-impl:build-merge-models-by-uri(
       $wrapper-qnames,
       $final-properties,
       $final-headers,
-      $headers-ns-map,
-      $merge-options
+      $headers-ns-map
     )
 };
 
+(:
+ : Construct XML or JSON merged properties.
+ : @param $id  unique ID for the merged document being built
+ : @param $docs  the source documents that provide the values
+ : @param $wrapper-qnames  TODO
+ : @param $final-properties  merged property values with source info
+ : @param $final-headers  merged header values with source info
+ : @param $headers-ns-map  namespace map for interpreting header paths
+ :)
 declare function merge-impl:build-merge-models-by-final-properties(
   $id as xs:string,
   $docs as node()*,
   $wrapper-qnames as xs:QName*,
   $final-properties as item()*,
   $final-headers as item()*,
-  $headers-ns-map as map:map,
-  $merge-options as item()?
+  $headers-ns-map as map:map
 )
 {
   if ($docs instance of document-node(element())+) then
@@ -354,31 +432,37 @@ declare function merge-impl:build-merge-models-by-final-properties(
       $wrapper-qnames,
       $final-properties,
       $final-headers,
-      $headers-ns-map,
-      $merge-options
+      $headers-ns-map
     )
   else
-    (: TODO: use final-headers in JSON :)
     merge-impl:build-merge-models-by-final-properties-to-json(
       $id,
       $docs,
       $wrapper-qnames,
       $final-properties,
-      $final-headers,
-      $merge-options
+      $final-headers
     )
 };
 
-
+(:
+ : Construct the new merged document, based on the merged values already
+ : identified.
+ : @param $id  unique identifier for the merged document
+ : @param $docs  raw source documents
+ : @param $wrapper-qnames  TODO
+ : @param $final-properties  merged property values with source info
+ : @param $final-headers  merged header values with source info
+ : @param $headers-ns-map  map of prefixes to namespaces for header paths
+ : @return merged document
+ :)
 declare function merge-impl:build-merge-models-by-final-properties-to-xml(
   $id as xs:string,
   $docs as node()*,
   $wrapper-qnames as xs:QName*,
   $final-properties as item()*,
   $final-headers as item()*,
-  $headers-ns-map as map:map,
-  $merge-options as item()?
-)
+  $headers-ns-map as map:map
+) as element(es:envelope)
 {
   let $uris := $docs ! xdmp:node-uri(.)
   return
@@ -397,7 +481,7 @@ declare function merge-impl:build-merge-models-by-final-properties-to-xml(
         merge-impl:build-instance-body-by-final-properties(
           $final-properties,
           $wrapper-qnames,
-          "xml"
+          $const:FORMAT-XML
         )
       }</es:instance>
     </es:envelope>
@@ -722,13 +806,22 @@ declare function merge-impl:map-to-json($m as map:map)
     )
 };
 
+(:
+ : Construct the new merged document, based on the merged values already
+ : identified.
+ : @param $id  unique identifier for the merged document
+ : @param $docs  raw source documents
+ : @param $wrapper-qnames  TODO
+ : @param $final-properties  merged property values with source info
+ : @param $final-headers  merged header values with source info
+ : @return merged document
+ :)
 declare function merge-impl:build-merge-models-by-final-properties-to-json(
   $id as xs:string,
   $docs as node()*,
   $wrapper-qnames as xs:QName*,
   $final-properties as item()*,
-  $final-headers as item()*,
-  $merge-options as item()?
+  $final-headers as item()*
 )
 {
   let $uris := $docs ! xdmp:node-uri(.)
@@ -746,24 +839,32 @@ declare function merge-impl:build-merge-models-by-final-properties-to-json(
         "instance": merge-impl:build-instance-body-by-final-properties(
           $final-properties,
           $wrapper-qnames,
-          "json"
+          $const:FORMAT-JSON
         )
       }
     }
 };
 
+(:
+ : Construct the Entity Services instance for the new merged document.
+ : @param $final-properties  merged property values with source info
+ : @param $wrapper-qnames  TODO
+ : @param $format  $const:FORMAT-JSON or $const:FORMAT-XML
+ : @return instance elements or properties
+ :)
 declare function merge-impl:build-instance-body-by-final-properties(
   $final-properties as map:map*,
   $wrapper-qnames as xs:QName*,
-  $type as xs:string
+  $format as xs:string
 )
 {
-  if ($type eq "json") then
+  if ($format eq $const:FORMAT-JSON) then
     xdmp:to-json(
       fn:fold-left(
         function($child-object, $parent-name) {
           map:entry(fn:string($parent-name), $child-object)
         },
+        (: consolidate $final-properties into a single map of names (keys) and values :)
         fn:fold-left(
           function($map-a, $map-b) {
             $map-a + $map-b
@@ -799,6 +900,12 @@ declare function merge-impl:build-instance-body-by-final-properties(
     )
 };
 
+(:
+ : Given a sequence of documents, extract the Entity Services instance from
+ : each of them.
+ : @param $docs  source documents
+ : @return  ES instance
+ :)
 declare function merge-impl:get-instances($docs)
 {
   for $doc in $docs
@@ -1287,7 +1394,7 @@ declare function merge-impl:get-options($options-name, $format as xs:string)
 declare function merge-impl:save-options(
   $name as xs:string,
   $options as node()
-)
+) as empty-sequence()
 {
   let $options :=
     if ($options instance of object-node()) then

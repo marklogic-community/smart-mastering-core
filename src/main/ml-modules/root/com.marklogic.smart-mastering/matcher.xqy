@@ -17,9 +17,9 @@ xquery version "1.0-ml";
  : - notifications: manage notifications
  :
  : Match options return match results as shown below.
- : XML:
-
+ : @see https://marklogic-community.github.io/smart-mastering-core/docs/match-results/
  :
+ : Match option configuration is documented here.
  : @see https://marklogic-community.github.io/smart-mastering-core/docs/matching-options/
  :)
 module namespace matcher = "http://marklogic.com/smart-mastering/matcher";

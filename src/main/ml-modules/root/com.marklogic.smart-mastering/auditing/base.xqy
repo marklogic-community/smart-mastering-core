@@ -39,7 +39,7 @@ declare function auditing:audit-trace(
   $previous-uris,
   $new-uri,
   $attachments
-)
+) as empty-sequence()
 {
   let $dateTime := fn:current-dateTime()
   let $username := xdmp:get-current-user()
