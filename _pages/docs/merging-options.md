@@ -38,6 +38,16 @@ Here's an example of merge configuration options.
   <algorithms>
     <algorithm name="name" function="name"/>
     <algorithm name="address" function="address"/>
+
+    <!-- config for standard algorithm -->
+    <!-- any needed namespaces get defined on the std-algorithm element -->
+    <std-algorithm xmlns:es="http://marklogic.com/entity-services" xmlns:sm="http://marklogic.com/smart-mastering">
+      <!-- provide the path to the timestamp element to use for sorting -->
+      <!-- when merging the values are sorted in recency order from newest
+           to oldest based on this timestamp. If the timestamp is not
+           provided then there is no recency sort -->
+      <timestamp path="/es:envelope/es:headers/sm:sources/sm:source/sm:dateTime" />
+    </std-algorithm>
   </algorithms>
   <merging>
     <merge property-name="ssn" algorithm-ref="user-defined">
@@ -136,6 +146,20 @@ attribute is the name this algorithm will be referred to elsewhere in the
 configuration. The `function` attribute is the localname of the function that
 will be called. This element may also have an `at` attribute, indicating where
 to find the source code for this function, and a `namespace` attribute.
+
+A `std-algorithm` element will allow you to configure options for the standard algorithm. Supported options are:
+
+#### Timestamp
+
+The timestamp config informs Smart Mastering which element to use for sorting. When merging, the values are sorted in recency order from newest to oldest based on this timestamp. If the timestamp is not provided then there is no recency sort.
+
+```
+  <std-algorithm xmlns:es="http://marklogic.com/entity-services" xmlns:sm="http://marklogic.com/smart-mastering">
+    <timestamp path="/es:envelope/es:headers/sm:sources/sm:source/sm:dateTime" />
+  </std-algorithm
+```
+
+Note that any namespaces used in the @path attribute must be defined on the <std-algorithm> element. The default namespace for evaluating the path is the empty namespace.
 
 ### Merging
 
