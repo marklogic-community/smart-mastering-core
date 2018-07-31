@@ -65,6 +65,7 @@ let $assertions := xdmp:eager(
           <sm:user>admin</sm:user>
           <sm:dateTime>{$s1-dt}</sm:dateTime>
           <sm:one-first>2018-04-26T16:40:02.1386Z</sm:one-first>
+          <sm:one-first>2018-04-26T16:40:02.1386Z</sm:one-first>
           <sm:two-first>2017-04-26T16:40:02.1386Z</sm:two-first>
         </sm:source>
       </sm:sources>
