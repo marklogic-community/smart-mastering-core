@@ -172,10 +172,7 @@ List the available merging options.
 
 - POST: Save or preview a merge document, combining two or more other documents.
   - parameters
-    - `rs:primary-uri` -- the URI of the document that was used to look for
-    matches
-    - `rs:secondary-uri` -- one or more URIs of documents that matched the
-    primary
+    - `rs:uri` -- (repeated parameter) the URIs of the documents to merge
     - `rs:options` -- the name of the merge options that will control how the
     document properties will be combined
     - `rs:preview` -- optional; if `true`, return the merged document, but do
