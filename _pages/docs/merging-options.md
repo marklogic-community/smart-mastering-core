@@ -159,7 +159,7 @@ The timestamp config informs Smart Mastering which element to use for sorting. W
   </std-algorithm
 ```
 
-Note that any namespaces used in the @path attribute must be defined on the <std-algorithm> element.
+Note that any namespaces used in the @path attribute must be defined on the <std-algorithm> element. The default namespace for evaluating the path is the empty namespace.
 
 ### Merging
 
