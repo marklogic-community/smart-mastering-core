@@ -13,7 +13,7 @@ declare function put(
   $context as map:map,
   $params  as map:map,
   $input   as document-node()*
-  ) as document-node()?
+) as document-node()?
 {
   post($context, $params, $input)
 };
@@ -24,9 +24,9 @@ function post(
   $context as map:map,
   $params  as map:map,
   $input   as document-node()*
-  ) as document-node()*
+) as document-node()*
 {
-  let $uris := (map:get($params, "primary-uri"),map:get($params, "secondary-uri"))
+  let $uris := map:get($params, "uri")
   let $options :=
     if (fn:exists($input/(*:options|object-node()))) then
       $input/(*:options|object-node())
@@ -46,7 +46,7 @@ function post(
 declare %rapi:transaction-mode("update") function delete(
   $context as map:map,
   $params  as map:map
-  ) as document-node()?
+) as document-node()?
 {
   merging:rollback-merge(
     map:get($params, "mergedUri"),
@@ -54,7 +54,7 @@ declare %rapi:transaction-mode("update") function delete(
   ),
   document {
     object-node {
-      "sucess": fn:true()
+      "success": fn:true()
     }
   }
 };

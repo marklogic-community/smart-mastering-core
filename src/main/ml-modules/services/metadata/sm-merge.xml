@@ -1,0 +1,13 @@
+<metadata>
+  <title>Smart Mastering: Merge</title>
+  <description>Merge documents</description>
+  <method name="POST">
+    <param name="uri" type="xs:string+" />
+    <param name="options" type="xs:string" />
+    <param name="preview" type="xs:boolean?" />
+  </method>
+  <method name="DELETE">
+    <param name="mergedUri" type="xs:string" />
+    <param name="retainAuditTrail" type="xs:boolean?"/>
+  </method>
+</metadata>
