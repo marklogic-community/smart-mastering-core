@@ -823,10 +823,19 @@ declare function merge-impl:get-sources(
     /(es:headers|object-node("headers"))
     /(sm:sources|array-node("sources"))
     /(sm:source|object-node())
-  let $last-updated-qname := $merge-options/merging:algorithms/merging:algorithm[@name="standard"]/merging:last-updated/fn:QName(@namespace, @localname)
+  let $ts-path := $merge-options/merging:algorithms/merging:std-algorithm/merging:timestamp/@path
+  let $ns-path := $merge-options/merging:algorithms/merging:std-algorithm
+  let $ns-map :=
+    if (fn:exists($ns-path)) then
+      map:new(
+        for $prefix in fn:in-scope-prefixes($ns-path)
+        return
+          map:entry($prefix, fn:namespace-uri-for-prefix($prefix, $ns-path))
+      )
+    else ()
   let $last-updated :=
-    if (fn:exists($last-updated-qname)) then
-      $source/*[fn:node-name(.) = $last-updated-qname][. castable as xs:dateTime] ! xs:dateTime(.)
+    if (fn:string-length($ts-path) > 0) then
+      xdmp:unpath($ts-path, $ns-map, $source)[. castable as xs:dateTime] ! xs:dateTime(.)
     else ()
   order by $last-updated descending
   return
@@ -928,6 +937,7 @@ declare function merge-impl:build-final-headers(
     map:new(
       let $parent := $merge-options/merging:property-defs
       for $prefix in fn:in-scope-prefixes($parent)
+      where fn:not($prefix = "")
       return map:entry($prefix, fn:namespace-uri-for-prefix($prefix, $parent))
     )
   return (
@@ -990,12 +1000,16 @@ declare function merge-impl:get-raw-values(
   let $wrapped := map:map()
   let $path := $property/@path/fn:string()
   let $path-tail := fn:replace($path, "(.*/)", "")
-  let $prop-qname := fn:resolve-QName($path-tail, $property)
+  let $prop-qname :=
+    if ( fn:contains($path-tail, ":") ) then
+      fn:resolve-QName($path-tail, $property)
+    else
+      fn:QName("", $path-tail)
   for $doc in $docs
   let $values := xdmp:unpath($path, $ns-map, $doc)
   let $curr-uri := xdmp:node-uri($doc)
   let $prop-sources := $sources[documentUri = $curr-uri]
-  return
+  let $res :=
     if (fn:exists($values)) then
       merge-impl:wrap-revision-info(
         $prop-qname,
@@ -1003,6 +1017,8 @@ declare function merge-impl:get-raw-values(
         $prop-sources
       )
     else ()
+  return
+    $res
 };
 
 (:

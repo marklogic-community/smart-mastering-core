@@ -7,9 +7,10 @@
   </property-defs>
   <algorithms>
     <algorithm name="name" function="name"/>
-    <algorithm name="standard" function="standard">
-      <last-updated namespace="" localname="dateTime"/>
-    </algorithm>
+    <!-- config for standard algorithm -->
+    <std-algorithm xmlns:es="http://marklogic.com/entity-services" xmlns:sm="http://marklogic.com/smart-mastering">
+      <timestamp path="/es:envelope/es:headers/sm:sources/sm:source/sm:one-first" />
+    </std-algorithm>
   </algorithms>
   <merging>
     <merge property-name="ssn" algorithm-ref="user-defined">
