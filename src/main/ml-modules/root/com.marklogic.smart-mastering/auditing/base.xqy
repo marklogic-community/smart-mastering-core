@@ -1,5 +1,10 @@
 xquery version "1.0-ml";
 
+(:
+ : This library provides functions to support auditing of document merging and
+ : unmerging. Auditing data is recorded both as PROV-XML and PROV-O triples.
+ :)
+
 module namespace auditing = "http://marklogic.com/smart-mastering/auditing";
 
 import module namespace diff = "http://marklogic.com/demo/xml-diff"
@@ -34,19 +39,23 @@ declare variable $rdfs-prefix := fn:namespace-uri-from-QName(xs:QName("rdfs:docu
 declare variable $RDF-TYPE-IRI := sem:iri($rdf-prefix || "type");
 declare variable $RDFS-LABEL-IRI := sem:iri($rdfs-prefix || "label");
 
+(:
+ : Generate and record PROV-XML regarding a merge or unmerge action.
+ :
+ : @param $action  $const:MERGE-ACTION or $auditing:ROLLBACK-ACTION
+ :)
 declare function auditing:audit-trace(
-  $action,
-  $previous-uris,
-  $new-uri,
-  $attachments
-)
+  $action as xs:string,
+  $previous-uris as xs:string*,
+  $new-uri as xs:string,
+  $attachments as item()*
+) as empty-sequence()
 {
   let $dateTime := fn:current-dateTime()
   let $username := xdmp:get-current-user()
   let $new-entity-id := $sm-prefix||$new-uri
   let $activity-id := ($sm-prefix||$action||"-"||$new-uri || "-" || xdmp:request())
   let $user-id := ($sm-prefix||"user-"||$username)
-  let $attribution-id := ($sm-prefix||"attribution-"||$username||"-"||sem:uuid-string())
   let $prov-xml :=
     element { xs:QName("prov:document") } {
       namespace foaf {$foaf-prefix},
@@ -170,7 +179,10 @@ declare function auditing:audit-trace(
     )
 };
 
-declare function auditing:auditing-receipts-for-doc-uri($doc-uri)
+(:
+ : Retrieve auditing records involving a particular URI.
+ :)
+declare function auditing:auditing-receipts-for-doc-uri($doc-uri as xs:string)
 {
   cts:search(fn:collection($const:AUDITING-COLL)/prov:document,
     cts:element-value-query(
@@ -181,7 +193,10 @@ declare function auditing:auditing-receipts-for-doc-uri($doc-uri)
   )
 };
 
-declare function auditing:auditing-receipts-for-doc-history($doc-uri)
+(:
+ :
+ :)
+declare function auditing:auditing-receipts-for-doc-history($doc-uri as xs:string)
 {
   auditing:auditing-receipts-for-doc-history(
     $doc-uri,
@@ -189,7 +204,7 @@ declare function auditing:auditing-receipts-for-doc-history($doc-uri)
   )
 };
 
-declare function auditing:auditing-receipts-for-doc-history($doc-uris, $returned-docs)
+declare function auditing:auditing-receipts-for-doc-history($doc-uris as xs:string*, $returned-docs)
 {
   if (fn:exists($doc-uris)) then
     cts:search(fn:collection($const:AUDITING-COLL)/prov:document,

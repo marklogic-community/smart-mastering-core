@@ -1,5 +1,14 @@
 xquery version "1.0-ml";
 
+(:
+ : This is an implementation library, not an interface to the Smart Mastering functionality.
+ :
+ : Match-and-merge combines the two primary functions of Smart Mastering in a
+ : single call. This means that both happen in the same transaction. When
+ : called this way, the actions configured on thresholds in the match options
+ : are taken automatically, rather than individually by the client.
+ :)
+
 module namespace proc-impl = "http://marklogic.com/smart-mastering/process-records/impl";
 
 import module namespace const = "http://marklogic.com/smart-mastering/constants"

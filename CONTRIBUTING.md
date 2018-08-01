@@ -25,6 +25,21 @@ first create a new issue and discuss it with one of our project maintainers.
 
 ## <a name="submit"></a> Submission Guidelines
 
+### Where To Start
+If you're new to working on the Smart Mastering Core project, start by 
+reviewing the module-level comments in the files that application developers
+should include to access the functionality, which are in 
+`src/main/ml-modules/root/com.marklogic.smart-mastering/`
+
+- `matcher.xqy` find matches for a document
+- `merging.xqy` merge documents
+- `process-records.xqy` do both matching and merging
+
+You'll also find function-level comments that explain the intent of the API
+functions. From there, follow the imports to the implementation libraries. They
+also have both module-level and function-level comments that will talk more 
+about how the functionality is implemented. 
+
 ### Submitting an Issue
 Before you submit your issue search the current issues to see whether your 
 question or request has been addressed. 

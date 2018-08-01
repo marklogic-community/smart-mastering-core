@@ -1,11 +1,38 @@
 xquery version "1.0-ml";
 
+(:~
+ : API to merge documents. Merging is driven by a merge configuration. The
+ : merging process works by pulling values from the identified source documents
+ : and combining or selecting among them based on the configuration. These
+ : values are used to build the new merged document.
+ :
+ : As part of the merge process, original source documents are archived. This
+ : is done by moving them to a different collection.
+ :
+ : A merged document can be unmerged (rollback-merge). The merged document can
+ : either be deleted or retained, based on a parameter to the function.
+ :
+ : Merge functions are expected to be run against either XML documents or JSON
+ : documents, not a mix.
+ :
+ : This module has the following groups of functions:
+ : - merging: merging and unmerging documents
+ : - options: manage merge options
+ :
+ : Merge option configuration is documented here.
+ : @see https://marklogic-community.github.io/smart-mastering-core/docs/merging-options/
+ :)
+
 module namespace merging = "http://marklogic.com/smart-mastering/merging";
 
 import module namespace impl = "http://marklogic.com/smart-mastering/survivorship/merging"
   at "/com.marklogic.smart-mastering/survivorship/merging/base.xqy";
 import module namespace const = "http://marklogic.com/smart-mastering/constants"
   at "/com.marklogic.smart-mastering/constants.xqy";
+
+(:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ : Functions related to merging and unmerging.
+ :~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~:)
 
 (:
  : Construct a merged document, but do not save it (preview).
@@ -65,6 +92,10 @@ declare function merging:rollback-merge(
   impl:rollback-merge($merged-doc-uri, $retain-rollback-info)
 };
 
+(:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ : Functions related to merge options
+ :~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~:)
+
 (:
  : Return a list of names under which merge options have been stored.
  :
@@ -111,12 +142,15 @@ declare function merging:get-options($options-name, $format as xs:string)
 };
 
 (:
- : Accept either XML or JSON.
+ : Save a set of merging options to the database.
+ : @param $name  the name under which the options are to be stored
+ : @param $options  the options, either XML or JSON.
+ : @return ()
  :)
 declare function merging:save-options(
   $name as xs:string,
   $options as node()
-)
+) as empty-sequence()
 {
   impl:save-options($name, $options)
 };

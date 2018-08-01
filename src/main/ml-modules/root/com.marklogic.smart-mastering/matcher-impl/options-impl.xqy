@@ -2,6 +2,10 @@ xquery version "1.0-ml";
 
 (:
  : This is an implementation library, not an interface to the Smart Mastering functionality.
+ :
+ : Functions in this library store, retrieve, and transform match options.
+ : Options are stored and used as XML, but clients may submit them as JSON or
+ : XML.
  :)
 
 module namespace opt-impl = "http://marklogic.com/smart-mastering/options-impl";
@@ -17,6 +21,9 @@ declare namespace matcher = "http://marklogic.com/smart-mastering/matcher";
 
 declare option xdmp:mapping "false";
 
+(:
+ : Directory where matching options are stored.
+ :)
 declare variable $ALGORITHM-OPTIONS-DIR := "/com.marklogic.smart-mastering/options/algorithms/";
 
 declare variable $options-json-config := opt-impl:_options-json-config();
@@ -38,6 +45,7 @@ declare function opt-impl:_options-json-config()
 };
 
 declare function opt-impl:get-option-names-as-xml()
+  as element(matcher:options)
 {
   let $options := cts:uris('', (), cts:collection-query($const:MATCH-OPTIONS-COLL))
   let $option-names := $options !
