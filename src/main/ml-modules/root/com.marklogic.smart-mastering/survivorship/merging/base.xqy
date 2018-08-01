@@ -990,7 +990,7 @@ declare function merge-impl:parse-final-properties-for-merge(
             /(sm:document-uri|documentUri))
       return
         history:property-history($doc-uri, ()) ! xdmp:to-json(.)/object-node():)
-  let $sources := get-sources($docs, $merge-options)
+  let $sources := merge-impl:get-sources($docs, $merge-options)
   let $final-properties := merge-impl:build-final-properties(
     $merge-options,
     $instances,
@@ -1236,8 +1236,18 @@ declare function merge-impl:build-final-properties(
     )
 };
 
-declare function merge-impl:wrap-revision-info($property-name as xs:QName, $properties as item()*, $sources as item()*)
-  as map:map*
+(:
+ : Create maps to connect a property's name, values, and sources.
+ : @param $property-name  XML element or JSON property name
+ : @param $properties  XML elements or JSON properties corresponding to ES instance properties
+ : @param $sources  information pulled from the source document headers
+ : @return sequence of maps
+ :)
+declare function merge-impl:wrap-revision-info(
+  $property-name as xs:QName,
+  $properties as item()*,
+  $sources as item()*
+) as map:map*
 {
   for $prop in $properties
   return
@@ -1248,10 +1258,15 @@ declare function merge-impl:wrap-revision-info($property-name as xs:QName, $prop
   ))
 };
 
+(:
+ : Compares the property values in the first document to property values in the
+ : remaining documents. Returns true if the count, types, and values are the
+ : same.
+ :)
 declare function merge-impl:properties-are-equal(
   $properties as item()*,
   $docs as item()*
-)
+) as xs:boolean
 {
   let $first-doc := fn:head($docs)
   let $first-doc-props := $properties[fn:root(.) is $first-doc]
@@ -1285,6 +1300,9 @@ declare function merge-impl:objects-equal($object1 as map:map, $object2 as map:m
   merge-impl:objects-equal-recursive($object1, $object2)
 };
 
+(:
+ : Compare JSON data for equality.
+ :)
 declare function merge-impl:objects-equal-recursive($object1, $object2)
 {
   typeswitch($object1)
@@ -1313,11 +1331,19 @@ declare function merge-impl:objects-equal-recursive($object1, $object2)
       $object1 = $object2
 };
 
+(:
+ : Apply a merge algorithm to a set of properties in order to determine the
+ : property values to be used in a merged document.
+ : @param $algorithm  function that will determine the merged values
+ : @param $property-name  QName of the property
+ : @param $properties  value and source data from the source documents
+ : @param $property-spec  configuration for how this property should be merged
+ :)
 declare function merge-impl:execute-algorithm(
-  $algorithm,
-  $property-name,
-  $properties,
-  $property-spec
+  $algorithm as xdmp:function,
+  $property-name as xs:QName,
+  $properties as map:map*,
+  $property-spec as element(merging:merge)
 )
 {
   if (fn:ends-with(xdmp:function-module($algorithm), "sjs")) then
@@ -1328,6 +1354,16 @@ declare function merge-impl:execute-algorithm(
   else
     xdmp:apply($algorithm, $property-name, $properties, $property-spec)
 };
+
+declare function merge-impl:archive-document($uri as xs:string)
+{
+  xdmp:document-remove-collections($uri, $const:CONTENT-COLL),
+  xdmp:document-add-collections($uri, $const:ARCHIVED-COLL)
+};
+
+(:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ : Functions related to merge options.
+ :~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~:)
 
 declare function merge-impl:get-options($format as xs:string)
 {
@@ -1342,44 +1378,6 @@ declare function merge-impl:get-options($format as xs:string)
     else
       array-node { $options ! merge-impl:options-to-json(.) }
 };
-
-(:
-
-Example merging options:
-
-<options xmlns="http://marklogic.com/smart-mastering/merging">
-  <match-options>basic</match-options>
-  <property-defs>
-    <property namespace="" localname="IdentificationID" name="ssn"/>
-    <property namespace="" localname="PersonName" name="name"/>
-    <property namespace="" localname="Address" name="address"/>
-  </property-defs>
-  <algorithms>
-    <algorithm name="name" function="name"/>
-    <algorithm name="address" function="address"/>
-  </algorithms>
-  <merging>
-    <merge property-name="ssn" algorithm-ref="user-defined">
-      <source-ref document-uri="docA" />
-    </merge>
-    <merge property-name="name"  max-values="1">
-      <double-metaphone>
-        <distance-threshold>50</distance-threshold>
-      </double-metaphone>
-      <synonyms-support>true</synonyms-support>
-      <thesaurus>/mdm/config/thesauri/first-name-synonyms.xml</thesaurus>
-      <length weight="8" />
-    </merge>
-    <merge property-name="address" algorithm-ref="address" max-values="1">
-      <postal-code prefer="zip+4" />
-      <length weight="8" />
-      <double-metaphone>
-        <distance-threshold>50</distance-threshold>
-      </double-metaphone>
-    </merge>
-  </merging>
-</options>
-:)
 
 declare function merge-impl:get-options($options-name, $format as xs:string)
 {
@@ -1408,12 +1406,6 @@ declare function merge-impl:save-options(
       (xdmp:permission($const:MDM-ADMIN, "update"), xdmp:permission($const:MDM-USER, "read")),
       ($const:OPTIONS-COLL, $const:MERGE-COLL)
     )
-};
-
-declare function merge-impl:archive-document($uri as xs:string)
-{
-  xdmp:document-remove-collections($uri, $const:CONTENT-COLL),
-  xdmp:document-add-collections($uri, $const:ARCHIVED-COLL)
 };
 
 declare variable $options-json-config := merge-impl:_options-json-config();

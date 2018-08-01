@@ -1,5 +1,11 @@
 xquery version "1.0-ml";
 
+(:
+ : This library holds functions related to property history. When documents get
+ : merged, Smart Mastering traces where the values for each merged property
+ : came from.
+ :)
+
 module namespace history = "http://marklogic.com/smart-mastering/auditing/history";
 
 import module namespace auditing = "http://marklogic.com/smart-mastering/auditing"

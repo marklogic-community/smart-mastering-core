@@ -1,5 +1,12 @@
 xquery version "1.0-ml";
 
+(:
+ : This is an implementation library, not an interface to the Smart Mastering functionality.
+ :
+ : Code in this library simply retruns information about known Entity Services
+ : entity descriptors.
+ :)
+
 module namespace es-impl = "http://marklogic.com/smart-mastering/entity-services-impl";
 
 declare function es-impl:get-entity-descriptors()
