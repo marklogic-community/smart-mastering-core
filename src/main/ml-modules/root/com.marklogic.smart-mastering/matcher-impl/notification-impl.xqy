@@ -45,6 +45,8 @@ declare function notify-impl:save-match-notification(
 {
   let $existing-notification :=
     notify-impl:get-existing-match-notification($threshold-label, $uris)
+  let $old-doc-uris as xs:string* := $existing-notification/sm:document-uris/sm:document-uri
+  let $doc-uris := notify-impl:find-notify-uris($uris, $existing-notification)
   let $new-notification :=
     element sm:notification {
       element sm:meta {
@@ -54,12 +56,13 @@ declare function notify-impl:save-match-notification(
       },
       element sm:threshold-label {$threshold-label},
       element sm:document-uris {
-        notify-impl:find-notify-uris($uris, $existing-notification)
+        $doc-uris
       }
     }
   return (
     $new-notification,
-    if (fn:exists($existing-notification)) then (
+    if (fn:exists($existing-notification) and (every $uri in $doc-uris satisfies $uri = $old-doc-uris) and fn:count($doc-uris) eq fn:count($old-doc-uris)) then ()
+    else if (fn:exists($existing-notification)) then (
       xdmp:node-replace(fn:head($existing-notification), $new-notification),
       for $extra-doc in fn:tail($existing-notification)
       return
@@ -132,7 +135,7 @@ declare function notify-impl:get-existing-match-notification(
   $uris as xs:string*
 ) as element(sm:notification)*
 {
-  for $notification in cts:search(fn:collection()/sm:notification,
+  cts:search(fn:collection()/sm:notification,
     cts:and-query((
       if (fn:exists($threshold-label)) then
         cts:element-value-query(
@@ -148,8 +151,6 @@ declare function notify-impl:get-existing-match-notification(
       else ()
     ))
   )
-  return
-    $notification
 };
 
 (:
