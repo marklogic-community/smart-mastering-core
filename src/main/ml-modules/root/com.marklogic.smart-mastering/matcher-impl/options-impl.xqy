@@ -32,8 +32,9 @@ declare function opt-impl:_options-json-config()
 {
   let $config := json:config("custom")
   return (
+    map:put($config, "camel-case", fn:true()),
     map:put($config, "array-element-names",
-      ("algorithm","threshold","scoring","property", "reduce", "add", "expand","results")),
+      ("algorithm","threshold","property", "reduce", "add", "expand","results")),
     map:put($config, "element-namespace", "http://marklogic.com/smart-mastering/matcher"),
     map:put($config, "element-namespace-prefix", "matcher"),
     map:put($config, "attribute-names",
