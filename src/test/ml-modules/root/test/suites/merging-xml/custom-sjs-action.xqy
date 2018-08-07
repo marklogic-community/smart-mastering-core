@@ -69,8 +69,6 @@ let $assertions := (
                 "localname": "Address",
                 "name": "address"
               }
-            },
-            "namespaces": object-node {
             }
           },
           "merging": array-node {
