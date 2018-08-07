@@ -51,7 +51,7 @@ retrieved as either XML or JSON.
     </std-algorithm>
   </algorithms>
   <merging>
-    <merge property-name="ssn" algorithm-ref="user-defined">
+    <merge property-name="ssn">
       <source-ref document-uri="docA" />
     </merge>
     <merge property-name="name"  max-values="1">
@@ -127,7 +127,6 @@ retrieved as either XML or JSON.
     "merging": [
       {
         "propertyName": "ssn",
-        "algorithmRef": "user-defined",
         "sourceRef": { "documentUri": "docA" }
       },
       {
