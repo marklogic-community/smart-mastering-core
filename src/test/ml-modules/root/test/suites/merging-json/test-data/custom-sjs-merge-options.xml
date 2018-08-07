@@ -10,7 +10,7 @@
     <algorithm name="customThing" function="customThing" namespace="" at="/custom-merge-sjs.sjs" />
   </algorithms>
   <merging>
-    <merge property-name="ssn" algorithm-ref="user-defined">
+    <merge property-name="ssn">
       <source-ref document-uri="docA" />
     </merge>
     <merge property-name="name"  max-values="1">
@@ -21,7 +21,7 @@
       <thesaurus>/mdm/config/thesauri/first-name-synonyms.xml</thesaurus>
       <length weight="8" />
     </merge>
-    <merge property-name="address" algorithm-ref="address" max-values="1">
+    <merge property-name="address" max-values="1">
       <postal-code prefer="zip+4" />
       <length weight="8" />
       <double-metaphone>

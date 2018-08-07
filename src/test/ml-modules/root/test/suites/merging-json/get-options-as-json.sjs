@@ -65,7 +65,6 @@ for (let alg of actual.options.algorithms.custom) {
 for (let merge of actual.options.merging) {
   if (merge.propertyName === 'ssn') {
     assertions.push(
-      test.assertEqual('user-defined', merge.algorithmRef),
       test.assertEqual('docA', merge.sourceRef.documentUri)
     )
   } else if (merge.propertyName === 'name') {

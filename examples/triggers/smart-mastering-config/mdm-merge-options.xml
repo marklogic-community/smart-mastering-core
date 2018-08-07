@@ -9,12 +9,8 @@
     <property namespace="" localname="IncidentCategoryCodeDate" name="incidentDate"/>
     <property namespace="" localname="PersonSex" name="sex"/>
   </property-defs>
-  <algorithms>
-    <algorithm name="name" function="name"/>
-    <algorithm name="address" function="address"/>
-  </algorithms>
   <merging>
-    <merge property-name="ssn" algorithm-ref="user-defined">
+    <merge property-name="ssn">
       <source-ref document-uri="docA" />
     </merge>
     <merge property-name="name"  max-values="1">

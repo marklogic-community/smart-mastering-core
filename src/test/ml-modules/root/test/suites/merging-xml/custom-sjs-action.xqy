@@ -74,7 +74,6 @@ let $assertions := (
           "merging": array-node {
             object-node {
               "propertyName": "ssn",
-              "algorithmRef": "user-defined",
               "sourceRef": object-node {
                 "documentUri": "docA"
               }
@@ -93,7 +92,6 @@ let $assertions := (
             },
             object-node {
               "propertyName": "address",
-              "algorithmRef": "address",
               "maxValues": "1",
               "postalCode": object-node {
                 "prefer": "zip+4"

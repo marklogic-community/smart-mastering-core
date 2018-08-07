@@ -10,11 +10,10 @@
     <m:property path="/envelope/headers/custom/this/has/a/deep/path" name="deep"/>
   </m:property-defs>
   <algorithms>
-    <algorithm name="name" function="name"/>
     <algorithm name="combine" function="combine" namespace="http://marklogic.com/smart-mastering/merging" at="/combine-json.xqy" />
   </algorithms>
   <merging>
-    <merge property-name="ssn" algorithm-ref="user-defined">
+    <merge property-name="ssn">
       <source-ref document-uri="docA" />
     </merge>
     <merge property-name="name"  max-values="1">
@@ -25,7 +24,7 @@
       <thesaurus>/mdm/config/thesauri/first-name-synonyms.xml</thesaurus>
       <length weight="8" />
     </merge>
-    <merge property-name="address" algorithm-ref="address" max-values="1">
+    <merge property-name="address" max-values="1">
       <source-weights>
         <source name="SOURCE2" weight="10"></source>
       </source-weights>

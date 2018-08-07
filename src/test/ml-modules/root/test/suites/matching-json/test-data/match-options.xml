@@ -10,7 +10,6 @@
   </property-defs>
   <algorithms>
     <algorithm name="std-reduce" function="standard-reduction"/>
-    <algorithm name="std-reduce-query" function="standard-reduction-query"/>
     <algorithm name="dbl-metaphone" function="double-metaphone"/>
   </algorithms>
   <scoring>
