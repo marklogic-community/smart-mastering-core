@@ -36,9 +36,6 @@ Here's an example of merge configuration options.
     <m:property path="/es:envelope/es:headers/custom/this/has:a/deep/path" name="deep"/>
   </m:property-defs>
   <algorithms>
-    <algorithm name="name" function="name"/>
-    <algorithm name="address" function="address"/>
-
     <!-- config for standard algorithm -->
     <!-- any needed namespaces get defined on the std-algorithm element -->
     <std-algorithm xmlns:es="http://marklogic.com/entity-services" xmlns:sm="http://marklogic.com/smart-mastering">
@@ -50,7 +47,7 @@ Here's an example of merge configuration options.
     </std-algorithm>
   </algorithms>
   <merging>
-    <merge property-name="ssn" algorithm-ref="user-defined">
+    <merge property-name="ssn">
       <source-ref document-uri="docA" />
     </merge>
     <merge property-name="name"  max-values="1">
