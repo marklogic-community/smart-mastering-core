@@ -93,9 +93,6 @@ let $assertions := (
             object-node {
               "propertyName": "address",
               "maxValues": "1",
-              "postalCode": object-node {
-                "prefer": "zip+4"
-              },
               "length": object-node {
                 "weight":"8"
               },

@@ -64,7 +64,6 @@ let $assertions := (
             <length weight="8" />
           </merge>
           <merge property-name="address" max-values="1">
-            <postal-code prefer="zip+4" />
             <length weight="8" />
             <double-metaphone>
               <distance-threshold>50</distance-threshold>
