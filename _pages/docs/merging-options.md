@@ -254,6 +254,10 @@ The timestamp config informs Smart Mastering which element to use for sorting. W
 
 ```json
   "stdAlgorithm": {
+    "namespaces": {
+      "es": "http://marklogic.com/entity-services",
+      "sm": "http://marklogic.com/smart-mastering"
+    },
     "timestamp": {
       "path": "/es:envelope/es:headers/sm:sources/sm:source/sm:dateTime"
     }
@@ -288,7 +292,7 @@ element that does not specify an `algorithm-ref` will use the standard
 algorithm.
 
 ```xml
-  <merge property-name="name" max-values="1">
+  <merge property-name="name" max-values="1" algorithm-ref="standard">
     <length weight="8" />
     <source-weights>
       <source name="good-source" weight="2"/>
@@ -299,8 +303,31 @@ algorithm.
 
 None of the elements inside the `merge` element are required.
 
+Written as JSON, the above example looks like this:
+
+```json
+  "merging": [
+    {
+      "propertyName": "name", 
+      "maxValues": "1", 
+      "algorithmRef": "standard",
+      "length": { "weight": "8" }, 
+      "sourceWeights": {
+        "source": { "name": "better-source", "weight": "4" }
+      }
+    }
+  ]
+```
+
+Notice that the `property-name`, `max-values`, and `algorithm-ref` attributes
+correspond to JSON properties. 
+
 #### Custom Merging
 
-To use a different algorithm, create a `merge` element with an `algorithm-ref`
+To use a different algorithm in XML, create a `merge` element with an `algorithm-ref`
 attribute that refers to one of the `algorithm` elements. The contents of the
 `merge` element will be passed into the merging function.
+
+For JSON, the object will use an `algorithmRef` property that refers to one of 
+the `algorithm` objects. The merge object will be passed to the merging 
+function.
