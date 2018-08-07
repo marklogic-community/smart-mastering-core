@@ -1448,21 +1448,25 @@ declare function merge-impl:options-to-json($options-xml as element(merging:opti
             map:new((
               map:entry(
                 "properties",
-                for $prop in $options-xml/merging:property-defs/merging:property
-                return
-                  if (fn:exists($prop/@path)) then
-                    object-node {
-                      "path": $prop/@path/fn:string(),
-                      "name": $prop/@name/fn:string()
-                    }
-                  else
-                    object-node {
-                      "namespace": $prop/@namespace/fn:string(),
-                      "localname": $prop/@localname/fn:string(),
-                      "name": $prop/@name/fn:string()
-                    }
+                array-node {
+                  for $prop in $options-xml/merging:property-defs/merging:property
+                  return
+                    if (fn:exists($prop/@path)) then
+                      object-node {
+                        "path": $prop/@path/fn:string(),
+                        "name": $prop/@name/fn:string()
+                      }
+                    else
+                      object-node {
+                        "namespace": $prop/@namespace/fn:string(),
+                        "localname": $prop/@localname/fn:string(),
+                        "name": $prop/@name/fn:string()
+                      }
+                }
               ),
-              merge-impl:build-namespace-map($options-xml/merging:property-defs)
+              if (fn:exists($options-xml/merging:property-defs/merging:property/@path)) then
+                map:entry("namespaces", merge-impl:build-namespace-map($options-xml/merging:property-defs))
+              else ()
             ))
           ),
           if (fn:exists($options-xml/merging:algorithms)) then
@@ -1470,41 +1474,42 @@ declare function merge-impl:options-to-json($options-xml as element(merging:opti
               "algorithms",
               map:new((
                 map:entry(
-                  "custom",
-                  for $alg in $options-xml/merging:algorithms/merging:algorithm
-                  return
-                    object-node {
-                      "name": $alg/@name/fn:string(),
-                      "function": $alg/@function/fn:string(),
-                      "at": let $at := $alg/@at/fn:string() return if (fn:exists($at)) then $at else ""
+                  "custom", array-node {
+                    for $alg in $options-xml/merging:algorithms/merging:algorithm
+                    return
+                      object-node {
+                        "name": $alg/@name/fn:string(),
+                        "function": $alg/@function/fn:string(),
+                        "at": let $at := $alg/@at/fn:string() return if (fn:exists($at)) then $at else ""
+                      }
+                  }),
+                if (fn:exists($options-xml/merging:algorithms/merging:std-algorithm)) then
+                  map:entry(
+                    "stdAlgorithm", object-node {
+                      "namespaces":
+                        merge-impl:build-namespace-map($options-xml/merging:algorithms/merging:std-algorithm),
+                      "timestamp": object-node {
+                        "path":
+                          let $path :=
+                            fn:head($options-xml/merging:algorithms/merging:std-algorithm/merging:timestamp/@path/fn:string())
+                          return
+                            if (fn:exists($path)) then $path
+                            else null-node {}
+                      }
                     }
-                ),
-                map:entry(
-                  "stdAlgorithm",
-                  map:new((
-                    merge-impl:build-namespace-map($options-xml/merging:algorithms/merging:std-algorithm),
-                    map:entry(
-                      "timestamp",
-                      map:entry(
-                        "path",
-                        let $path :=
-                          fn:head($options-xml/merging:algorithms/merging:std-algorithm/merging:timestamp/@path/fn:string())
-                        return
-                          if (fn:exists($path)) then $path
-                          else ()
-                      )
-                    )
-                  ))
-                )
+                  )
+                else ()
               ))
             )
           else (),
           if (fn:exists($options-xml/merging:merging/merging:merge)) then
             map:entry(
               "merging",
-              for $merge in $options-xml/merging:merging/merging:merge
-              return
-                merge-impl:propertyspec-to-json($merge)
+              array-node {
+                for $merge in $options-xml/merging:merging/merging:merge
+                return
+                  merge-impl:propertyspec-to-json($merge)
+              }
             )
           else ()
         ))
@@ -1520,19 +1525,15 @@ declare function merge-impl:options-to-json($options-xml as element(merging:opti
  :)
 declare function merge-impl:build-namespace-map($source as element()?)
 {
-  map:entry(
-    "namespaces",
-    map:new((
-      let $defs := $source
-      return
-        if (fn:exists($defs)) then
-          for $prefix in fn:in-scope-prefixes($defs)
-          (: xml prefix is predefined (see https://www.w3.org/XML/1998/namespace) :)
-          where fn:not($prefix = ("", "xml"))
-          return map:entry($prefix, fn:namespace-uri-for-prefix($prefix, $defs))
-        else ()
-    ))
-  )
+  let $obj := json:object()
+  let $populate :=
+    if (fn:exists($source)) then
+      for $prefix in fn:in-scope-prefixes($source)
+      (: xml prefix is predefined (see https://www.w3.org/XML/1998/namespace) :)
+      where fn:not($prefix = ("", "xml"))
+      return map:put($obj, $prefix, fn:namespace-uri-for-prefix($prefix, $source))
+    else ()
+  return $obj
 };
 
 (:

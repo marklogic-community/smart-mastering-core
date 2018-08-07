@@ -11,7 +11,6 @@
     <m:property path="/es:envelope/es:headers/custom/this/has:a/deep/path" name="deep"/>
   </m:property-defs>
   <algorithms>
-    <algorithm name="name" function="name"/>
     <algorithm name="customThing" function="customThing" namespace="http://marklogic.com/smart-mastering/merging" at="/custom-merge-xqy.xqy" />
     <std-algorithm xmlns:es="http://marklogic.com/entity-services" xmlns:sm="http://marklogic.com/smart-mastering">
       <!-- provide the path to the timestamp element to use for sorting -->
