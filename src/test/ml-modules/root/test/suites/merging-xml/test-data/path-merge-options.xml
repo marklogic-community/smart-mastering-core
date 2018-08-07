@@ -13,12 +13,10 @@
     <m:property path="/es:envelope/es:headers/custom/this/has:a/deep/endswith:ns" name="endswithns"/>
   </m:property-defs>
   <algorithms>
-    <algorithm name="name" function="name"/>
-    <algorithm name="address" function="address"/>
     <algorithm name="combine" function="combine" namespace="http://marklogic.com/smart-mastering/merging" at="/combine.xqy" />
   </algorithms>
   <merging>
-    <merge property-name="ssn" algorithm-ref="user-defined">
+    <merge property-name="ssn">
       <source-ref document-uri="docA" />
     </merge>
     <merge property-name="name"  max-values="1">
@@ -29,8 +27,7 @@
       <thesaurus>/mdm/config/thesauri/first-name-synonyms.xml</thesaurus>
       <length weight="8" />
     </merge>
-    <merge property-name="address" algorithm-ref="address" max-values="1">
-      <postal-code prefer="zip+4" />
+    <merge property-name="address" max-values="1">
       <length weight="8" />
       <double-metaphone>
         <distance-threshold>50</distance-threshold>

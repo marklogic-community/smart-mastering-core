@@ -52,7 +52,7 @@ let $assertions := (
           <property namespace="" localname="Address" name="address"/>
         </property-defs>
         <merging>
-          <merge property-name="ssn" algorithm-ref="user-defined">
+          <merge property-name="ssn">
             <source-ref document-uri="docA" />
           </merge>
           <merge property-name="name"  max-values="1">
@@ -63,8 +63,7 @@ let $assertions := (
             <thesaurus>/mdm/config/thesauri/first-name-synonyms.xml</thesaurus>
             <length weight="8" />
           </merge>
-          <merge property-name="address" algorithm-ref="address" max-values="1">
-            <postal-code prefer="zip+4" />
+          <merge property-name="address" max-values="1">
             <length weight="8" />
             <double-metaphone>
               <distance-threshold>50</distance-threshold>

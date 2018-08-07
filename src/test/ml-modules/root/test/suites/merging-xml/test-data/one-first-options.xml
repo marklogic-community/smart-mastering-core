@@ -7,14 +7,13 @@
     <property namespace="" localname="OnlyOne" name="onlyone"/>
   </property-defs>
   <algorithms>
-    <algorithm name="name" function="name"/>
     <!-- config for standard algorithm -->
     <std-algorithm xmlns:es="http://marklogic.com/entity-services" xmlns:sm="http://marklogic.com/smart-mastering">
       <timestamp path="/es:envelope/es:headers/sm:sources/sm:source/sm:one-first" />
     </std-algorithm>
   </algorithms>
   <merging>
-    <merge property-name="ssn" algorithm-ref="user-defined">
+    <merge property-name="ssn">
       <source-ref document-uri="docA" />
     </merge>
     <merge property-name="name"  max-values="1">

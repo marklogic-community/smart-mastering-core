@@ -10,9 +10,6 @@
   </property-defs>
   <algorithms>
     <algorithm name="std-reduce" function="standard-reduction"/>
-    <algorithm name="std-reduce-query" function="standard-reduction-query"/>
-    <algorithm name="dbl-metaphone" function="double-metaphone"/>
-    <algorithm name="thesaurus" function="thesaurus"/>
   </algorithms>
   <scoring>
     <add property-name="ssn" weight="50"/>
@@ -26,19 +23,6 @@
     <add property-name="city" weight="3"/>
     <add property-name="state" weight="1"/>
     <add property-name="zip" weight="3"/>
-    <!--
-    <expand property-name="first-name" algorithm-ref="dbl-metaphone" weight="6">
-      <dictionary>first-name-dictionary.xml</dictionary>
-      <distance-threshold>50</distance-threshold>
-    </expand>
-    -->
-<!--     <expand property-name="first-name" algorithm-ref="thesaurus" weight="6">
-      <thesaurus>/mdm/config/thesauri/first-name-synonyms.xml</thesaurus>
-      <distance-threshold>50</distance-threshold>
-    </expand> -->
-    <!-- <expand property-name="last-name" algorithm-ref="dbl-metaphone" weight="8">
-      <dictionary>last-name-dictionary.xml</dictionary>
-    </expand> -->
     <reduce algorithm-ref="std-reduce" weight="4">
       <all-match>
         <property>last-name</property>
