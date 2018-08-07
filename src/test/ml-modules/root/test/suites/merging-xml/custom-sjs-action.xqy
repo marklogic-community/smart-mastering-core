@@ -40,7 +40,7 @@ let $merged-doc :=
     $lib:INVOKE_OPTIONS
   )
 
-(: verifiy that the custom action was called :)
+(: verify that the custom action was called :)
 let $assertions := (
   $assertions,
   let $expected :=
@@ -53,7 +53,7 @@ let $assertions := (
         "options": object-node{
           "matchOptions": "custom-sjs-action-match-options",
           "propertyDefs": object-node {
-            "property": array-node {
+            "properties": array-node {
               object-node {
               "namespace": "",
               "localname": "IdentificationID",
@@ -69,10 +69,31 @@ let $assertions := (
                 "localname": "Address",
                 "name": "address"
               }
+            },
+            "namespaces": object-node {
             }
           },
-          "merging": object-node {
-            "merge": object-node {
+          "merging": array-node {
+            object-node {
+              "propertyName": "ssn",
+              "algorithmRef": "user-defined",
+              "sourceRef": object-node {
+                "documentUri": "docA"
+              }
+            },
+            object-node {
+              "propertyName": "name",
+              "maxValues": "1",
+              "doubleMetaphone": object-node {
+                "distanceThreshold": "50"
+              },
+              "synonymsSupport": "true",
+              "thesaurus": "/mdm/config/thesauri/first-name-synonyms.xml",
+              "length": object-node {
+                "weight": "8"
+              }
+            },
+            object-node {
               "propertyName": "address",
               "algorithmRef": "address",
               "maxValues": "1",

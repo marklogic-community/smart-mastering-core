@@ -134,7 +134,7 @@ declare function merging:get-options($format as xs:string)
  :
  : @param $options-name  the name under which the options were saved
  : @param $format  either $const:FORMAT-XML or $const:FORMAT-JSON
- : @return A <merging:options element or a JSON object
+ : @return A <merging:options> element or a JSON object
  :)
 declare function merging:get-options($options-name, $format as xs:string)
 {
