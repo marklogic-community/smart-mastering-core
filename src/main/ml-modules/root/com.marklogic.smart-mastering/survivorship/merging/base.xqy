@@ -1040,23 +1040,6 @@ declare function merge-impl:build-final-headers(
       xdmp:base64-encode(xdmp:describe($merge-options, (), ()))
     else
       null-node{}
-(:
-  let $ts-path := $merge-options/merging:algorithms/merging:std-algorithm/merging:timestamp/@path
-  let $ns-path := $merge-options/merging:algorithms/merging:std-algorithm
-  let $ns-map :=
-    if (fn:exists($ns-path)) then
-      map:new(
-        for $prefix in fn:in-scope-prefixes($ns-path)
-        return
-          map:entry($prefix, fn:namespace-uri-for-prefix($prefix, $ns-path))
-      )
-    else ()
-  let $last-updated :=
-    if (fn:string-length($ts-path) > 0) then
-      fn:head(xdmp:unpath($ts-path, $ns-map, $source)[. castable as xs:dateTime] ! xs:dateTime(.))
-    else ()
-:)
-
   let $ns-map :=
     map:new(
       let $parent := $merge-options/merging:property-defs
