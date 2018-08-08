@@ -15,9 +15,10 @@ properties to merge and how to combine them.
 
 # Configuring Options
 
-Here's an example of merge configuration options.
+Here's an example of merge configuration options. Options may be uploaded and 
+retrieved as either XML or JSON. 
 
-```
+```xml
 <options xmlns="http://marklogic.com/smart-mastering/merging">
   <match-options>mlw-match</match-options>
   <m:property-defs
@@ -81,6 +82,97 @@ Here's an example of merge configuration options.
     </merge>
   </merging>
 </options>
+```
+
+```json
+{
+  "options": {
+    "matchOptions": "mlw-match",
+    "propertyDefs": {
+      "properties": [
+        { "namespace": "", "localname": "IdentificationID", "name": "ssn" },
+        { "namespace": "", "localname": "PersonName", "name": "name" },
+        { "namespace": "", "localname": "Address", "name": "address" },
+        { "namespace": "", "localname": "PersonBirthDate", "name": "dob" },
+        { "namespace": "", "localname": "CaseStartDate", "name": "caseStartDate" },
+        { "namespace": "", "localname": "IncidentCategoryCodeDate", "name": "incidentDate" },
+        { "namespace": "", "localname": "PersonSex", "name": "sex" },
+        { "path": "/es:envelope/es:headers/shallow", "name": "shallow" },
+        { "path": "/es:envelope/es:headers/custom/this/has:a/deep/path", "name": "deep" }
+      ],
+      "namespaces": {
+        "m": "http://marklogic.com/smart-mastering/merging",
+        "es": "http://marklogic.com/entity-services",
+        "has": "has"
+      }
+    },
+    "algorithms": {
+      "stdAlgorithm": {
+        "timestamp": {
+          "path": "/es:envelope/es:headers/sm:sources/sm:source/sm:dateTime"
+        },
+        "namespaces": {
+          "es": "http://marklogic.com/entity-services",
+          "sm": "http://marklogic.com/smart-mastering"
+        }
+      },
+      "custom": [
+        { "name": "name", "function": "name", "at": "" },
+        { "name": "address", "function": "address", "at": "" }
+      ]
+    },
+    "merging": [
+      {
+        "propertyName": "ssn",
+        "sourceRef": { "documentUri": "docA" }
+      },
+      {
+        "propertyName": "name",
+        "maxValues": "1",
+        "doubleMetaphone": { "distanceThreshold": "50" },
+        "synonymsSupport": "true",
+        "thesaurus": "/mdm/config/thesauri/first-name-synonyms.xml",
+        "length": { "weight": "8" }
+      },
+      {
+        "propertyName": "address",
+        "algorithmRef": "standard",
+        "maxValues": "1",
+        "sourceWeights": {
+          "source": { "name": "CRM", "weight": "10" }
+        }
+      },
+      {
+        "propertyName": "dob",
+        "algorithmRef": "standard",
+        "maxValues": "1",
+        "sourceWeights": {
+          "source": { "name": "Oracle", "weight": "10" }
+        }
+      },
+      {
+        "propertyName": "caseStartDate",
+        "algorithmRef": "standard",
+        "maxValues": "1",
+        "sourceWeights": {
+          "source": { "name": "CRM", "weight": "10" }
+        }
+      },
+      {
+        "propertyName": "incidentDate",
+        "algorithmRef": "standard",
+        "maxValues": "1",
+        "length": { "weight": "10" }
+      },
+      {
+        "propertyName": "sex",
+        "algorithmRef": "standard",
+        "maxValues": "1",
+        "length": { "weight": "10" }
+      }
+    ]
+  }
+}
 ```
 
 ### Match Options
@@ -150,10 +242,22 @@ A `std-algorithm` element will allow you to configure options for the standard a
 
 The timestamp config informs Smart Mastering which element to use for sorting. When merging, the values are sorted in recency order from newest to oldest based on this timestamp. If the timestamp is not provided then there is no recency sort.
 
-```
+```xml
   <std-algorithm xmlns:es="http://marklogic.com/entity-services" xmlns:sm="http://marklogic.com/smart-mastering">
     <timestamp path="/es:envelope/es:headers/sm:sources/sm:source/sm:dateTime" />
   </std-algorithm
+```
+
+```json
+  "stdAlgorithm": {
+    "namespaces": {
+      "es": "http://marklogic.com/entity-services",
+      "sm": "http://marklogic.com/smart-mastering"
+    },
+    "timestamp": {
+      "path": "/es:envelope/es:headers/sm:sources/sm:source/sm:dateTime"
+    }
+  }
 ```
 
 Note that any namespaces used in the @path attribute must be defined on the <std-algorithm> element. The default namespace for evaluating the path is the empty namespace.
@@ -183,8 +287,8 @@ values. Any property that does not have a `merge` element or that has a `merge`
 element that does not specify an `algorithm-ref` will use the standard
 algorithm.
 
-```
-  <merge property-name="name" max-values="1">
+```xml
+  <merge property-name="name" max-values="1" algorithm-ref="standard">
     <length weight="8" />
     <source-weights>
       <source name="good-source" weight="2"/>
@@ -195,8 +299,31 @@ algorithm.
 
 None of the elements inside the `merge` element are required.
 
+Written as JSON, the above example looks like this:
+
+```json
+  "merging": [
+    {
+      "propertyName": "name", 
+      "maxValues": "1", 
+      "algorithmRef": "standard",
+      "length": { "weight": "8" }, 
+      "sourceWeights": {
+        "source": { "name": "better-source", "weight": "4" }
+      }
+    }
+  ]
+```
+
+Notice that the `property-name`, `max-values`, and `algorithm-ref` attributes
+correspond to JSON properties. 
+
 #### Custom Merging
 
-To use a different algorithm, create a `merge` element with an `algorithm-ref`
+To use a different algorithm in XML, create a `merge` element with an `algorithm-ref`
 attribute that refers to one of the `algorithm` elements. The contents of the
 `merge` element will be passed into the merging function.
+
+For JSON, the object will use an `algorithmRef` property that refers to one of 
+the `algorithm` objects. The merge object will be passed to the merging 
+function.

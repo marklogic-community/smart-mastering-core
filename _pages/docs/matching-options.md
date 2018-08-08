@@ -17,9 +17,9 @@ on the weights you specify.
 
 ## Configuring Options
 
-Here's an example of match configuration options.
+Here's an example of XML match configuration options.
 
-```
+```xml
 <options xmlns="http://marklogic.com/smart-mastering/matcher">
   <property-defs>
     <property namespace="" localname="IdentificationID" name="ssn"/>
@@ -32,8 +32,8 @@ Here's an example of match configuration options.
   </property-defs>
   <algorithms>
     <algorithm name="std-reduce" function="standard-reduction"/>
-    <algorithm name="std-reduce-query" function="standard-reduction-query"/>
     <algorithm name="dbl-metaphone" function="double-metaphone"/>
+    <algorithm name="thesaurus" function="thesaurus"/>
   </algorithms>
   <scoring>
     <add property-name="ssn" weight="50"/>
@@ -72,6 +72,83 @@ Here's an example of match configuration options.
     <max-scan>200</max-scan>
   </tuning>
 </options>
+```
+
+And here are the same options in JSON format:
+
+```json
+{
+  "options": {
+    "propertyDefs": {
+      "property": [
+        { "namespace": "", "localname": "IdentificationID", "name": "ssn" },
+        { "namespace": "", "localname": "PersonGivenName", "name": "first-name" },
+        { "namespace": "", "localname": "PersonSurName", "name": "last-name" },
+        { "namespace": "", "localname": "AddressPrivateMailboxText", "name": "addr1" },
+        { "namespace": "", "localname": "LocationCity", "name": "city" },
+        { "namespace": "", "localname": "LocationState", "name": "state" },
+        { "namespace": "", "localname": "LocationPostalCode", "name": "zip" }
+      ]
+    },
+    "algorithms": {
+      "algorithm": [
+        { "name": "std-reduce", "function": "standard-reduction" },
+        { "name": "dbl-metaphone", "function": "double-metaphone" },
+        { "name": "thesaurus", "function": "thesaurus" }
+      ]
+    },
+    "scoring": {
+      "add": [
+        { "propertyName": "ssn", "weight": "50" },
+        { "propertyName": "last-name", "weight": "8" },
+        { "propertyName": "first-name", "weight": "6" },
+        { "propertyName": "addr1", "weight": "5" },
+        { "propertyName": "city", "weight": "3" },
+        { "propertyName": "state", "weight": "1" },
+        { "propertyName": "zip", "weight": "3" }
+      ],
+      "expand": [
+        {
+          "propertyName": "first-name",
+          "algorithmRef": "thesaurus",
+          "weight": "6",
+          "thesaurus": "/mdm/config/thesauri/first-name-synonyms.xml",
+          "distanceThreshold": "50"
+        },
+        {
+          "propertyName": "last-name",
+          "algorithmRef": "dbl-metaphone",
+          "weight": "8",
+          "dictionary": "name-dictionary.xml"
+        }
+      ],
+      "reduce": [
+        {
+          "algorithmRef": "std-reduce",
+          "weight": "4",
+          "allMatch": { "property": ["last-name", "addr1"] }
+        }
+      ]
+    },
+    "actions": {
+      "action": {
+        "name": "my-custom-action",
+        "function": "custom-action",
+        "namespace": "http://marklogic.com/smart-mastering/action",
+        "at": "/custom-action.xqy"
+      }
+    },
+    "thresholds": {
+      "threshold": [
+        { "above": "30", "label": "Possible Match" },
+        { "above": "50", "label": "Likely Match", "action": "notify" },
+        { "above": "68", "label": "Definitive Match", "action": "merge" },
+        { "above": "75", "label": "Custom Match", "action": "my-custom-action" }
+      ]
+    },
+    "tuning": { "maxScan": "200" }
+  }
+}
 ```
 
 ### Property Definitions
@@ -138,6 +215,17 @@ You can provide your own custom action handler functions. Custom actions are cal
 </actions>
 ```
 
+```json
+"actions": {
+  "action": {
+    "name": "my-custom-action", 
+    "function": "custom-action", 
+    "namespace": "http://marklogic.com/smart-mastering/action", 
+    "at": "/custom-action.xqy"
+  }
+}
+```
+
 Each custom action can define four properties:
 - **name** - the name of the custom action
 - **function** - the name of the custom function to invoke
@@ -177,7 +265,7 @@ High scores are relative to the configuration, rather than measured on an
 absolute scale. The maximum possible score is the sum of the weights of all of
 the weight attributes.
 
-```
+```xml
 <scoring>
   <add property-name="ssn" weight="50"/>
   <add property-name="last-name" weight="8"/>
@@ -201,6 +289,44 @@ the weight attributes.
     </all-match>
   </reduce>
 </scoring>
+```
+
+```json
+    "scoring": [
+      {
+        "add": [
+          { "property-name": "ssn", "weight": "50" },
+          { "property-name": "last-name", "weight": "8" },
+          { "property-name": "first-name", "weight": "12" },
+          { "property-name": "addr1", "weight": "5" },
+          { "property-name": "city", "weight": "3" },
+          { "property-name": "state", "weight": "1" },
+          { "property-name": "zip", "weight": "3" }
+        ],
+        "expand": [
+          {
+            "property-name": "first-name",
+            "algorithm-ref": "thesaurus",
+            "weight": "6",
+            "thesaurus": "/mdm/config/thesauri/first-name-synonyms.xml",
+            "distance-threshold": "50"
+          },
+          {
+            "property-name": "last-name",
+            "algorithm-ref": "dbl-metaphone",
+            "weight": "8",
+            "dictionary": "name-dictionary.xml"
+          }
+        ],
+        "reduce": [
+          {
+            "algorithm-ref": "std-reduce",
+            "weight": "4",
+            "all-match": { "property": ["last-name", "addr1"] }
+          }
+        ]
+      }
+    ]
 ```
 
 In the example configuration above, the maximum possible score is
