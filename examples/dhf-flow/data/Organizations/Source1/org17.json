@@ -1,0 +1,30 @@
+{
+  "organization": {
+    "orgName": "Rodeomad",
+    "type": "Nonprofit",
+    "form": "S Corp",
+    "mission": "Cupidatat commodo adipisicing cupidatat laboris. Pariatur Lorem aute ea magna mollit cillum deserunt sit. Sint eiusmod laboris fugiat cillum Lorem elit consectetur amet.",
+    "offices": [
+      {
+        "officeName": "Excepteur",
+        "phone": "+1 (960) 424-3928",
+        "address": "394 Brighton Court, Colton, Georgia, 4104"
+      },
+      {
+        "officeName": "Dolore",
+        "phone": "+1 (889) 555-2665",
+        "address": "238 Bush Street, Fannett, North Dakota, 5101"
+      },
+      {
+        "officeName": "Id",
+        "phone": "+1 (944) 451-3553",
+        "address": "497 Pierrepont Street, Reno, Massachusetts, 9146"
+      },
+      {
+        "officeName": "Sint",
+        "phone": "+1 (970) 447-2466",
+        "address": "924 Lake Street, Richford, Colorado, 2853"
+      }
+    ]
+  }
+}

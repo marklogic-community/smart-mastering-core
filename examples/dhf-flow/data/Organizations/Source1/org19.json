@@ -1,0 +1,20 @@
+{
+  "organization": {
+    "orgName": "Cedward",
+    "type": "Nonprofit",
+    "form": "C Corp",
+    "mission": "Dolor nostrud dolor sint dolore tempor commodo ut ut. Aute laboris nostrud sint cupidatat. Commodo labore irure elit voluptate consequat nostrud incididunt ut quis officia non incididunt sit. Non non irure sit ut. Eu amet qui non excepteur irure enim id. Incididunt ad cillum ad laboris id eu sint exercitation id veniam commodo.",
+    "offices": [
+      {
+        "officeName": "Labore",
+        "phone": "+1 (846) 493-2807",
+        "address": "646 Bank Street, Wanamie, Ohio, 580"
+      },
+      {
+        "officeName": "Labore",
+        "phone": "+1 (894) 461-2889",
+        "address": "602 Fulton Street, Reinerton, Mississippi, 7379"
+      }
+    ]
+  }
+}

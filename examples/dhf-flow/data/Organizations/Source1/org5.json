@@ -1,0 +1,35 @@
+{
+  "organization": {
+    "orgName": "Marvane",
+    "type": "Not For Profit",
+    "form": "C Corp",
+    "mission": "Veniam laboris sit consectetur fugiat aute nisi aute eu reprehenderit culpa. In in quis sunt dolore laboris laborum reprehenderit cillum pariatur aliquip velit. Eu quis aute dolore eu id cupidatat. Qui consequat Lorem eu labore culpa ex. Ad eu sunt eiusmod aliqua ad laborum.",
+    "offices": [
+      {
+        "officeName": "Sint",
+        "phone": "+1 (881) 493-3902",
+        "address": "706 Lake Avenue, Klagetoh, Pennsylvania, 1672"
+      },
+      {
+        "officeName": "Consectetur",
+        "phone": "+1 (807) 400-3069",
+        "address": "562 Legion Street, Trucksville, Arkansas, 8829"
+      },
+      {
+        "officeName": "Irure",
+        "phone": "+1 (903) 407-3019",
+        "address": "521 Meeker Avenue, Toftrees, Wisconsin, 752"
+      },
+      {
+        "officeName": "Exercitation",
+        "phone": "+1 (803) 500-3320",
+        "address": "120 Jamison Lane, Bowie, New Jersey, 6261"
+      },
+      {
+        "officeName": "Officia",
+        "phone": "+1 (998) 537-2287",
+        "address": "445 Freeman Street, Lorraine, Utah, 5804"
+      }
+    ]
+  }
+}

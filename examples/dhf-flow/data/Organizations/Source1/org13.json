@@ -1,0 +1,35 @@
+{
+  "organization": {
+    "orgName": "Qot",
+    "type": "Nonprofit",
+    "form": "Sole Proprietor",
+    "mission": "Cillum reprehenderit irure incididunt amet. Ea esse magna magna in excepteur aute minim cupidatat minim voluptate pariatur. Amet ea minim Lorem laboris ut sunt eiusmod Lorem reprehenderit aute amet sint esse nulla. Dolor cupidatat reprehenderit ea nulla sit. Nulla ipsum consequat eiusmod nostrud quis est amet velit ullamco est. Culpa id reprehenderit proident irure dolore pariatur elit tempor ex cillum ex duis laborum. Deserunt ipsum laboris dolor cupidatat consectetur.",
+    "offices": [
+      {
+        "officeName": "Exercitation",
+        "phone": "+1 (816) 482-2604",
+        "address": "912 Church Lane, Fostoria, Kentucky, 6184"
+      },
+      {
+        "officeName": "Magna",
+        "phone": "+1 (898) 417-3961",
+        "address": "650 Hoyt Street, Coral, Maine, 7795"
+      },
+      {
+        "officeName": "Do",
+        "phone": "+1 (939) 443-2940",
+        "address": "712 Danforth Street, Mapletown, Texas, 2788"
+      },
+      {
+        "officeName": "Est",
+        "phone": "+1 (937) 543-2598",
+        "address": "610 Blake Court, Bergoo, Washington, 3601"
+      },
+      {
+        "officeName": "In",
+        "phone": "+1 (891) 496-3020",
+        "address": "986 Varick Avenue, Maybell, Connecticut, 3968"
+      }
+    ]
+  }
+}
