@@ -23,6 +23,7 @@ development process.
 - Java 8 or higher
 - [Gradle](https://gradle.org/) is optional - this project has the Gradle wrapper included, and the instructions below
 reference it so that you don't need to install Gradle
+- Schemas Database attached to your content DB. This is required for PROV-O to work.
 
 ## Using
 
