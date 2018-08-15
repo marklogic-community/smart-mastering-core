@@ -117,11 +117,20 @@ Click the `Run Tests` button.
 
 ### Publishing
 
+- update gradle.properties with the new version number
+- update the gradle.properties for the examples with the new version number
 - add these properties to your `gradle-local.properties`
   - bintray_user
   - bintray_key
 - change the `version` property in `gradle.properties` to the new version number
 - `./gradlew bintrayUpload`
+- log in to bintray and push the publish button
+- smoke test the examples to make sure they work with the latest published version
+- merge the develop branch into master
+- merge the docs-next branch into docs
+- tag the release vx.xx
+- push the tags
+- add the changelog to the release page on github
 
 You must be part of the marklogic-community organization on bintray in order to publish.
 
