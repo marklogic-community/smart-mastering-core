@@ -46,7 +46,17 @@ function extractInstanceOrganization(source) {
     source = source.envelope.instance;
   }
   let orgName = !fn.empty(source.org.companyName) ? xs.string(fn.head(source.org.companyName)) : null;
-  let structure = !fn.empty(source.org.taxStructure) ? xs.string(fn.head(source.org.taxStructure)) : null;
+  let structure = !fn.empty(source.org.taxStructure) ? xs.string(fn.head(source.org.taxStructure)).valueOf() : null;
+  // harmonize values:
+  if (structure === 'subchapter-c corporation') {
+    structure = 'C Corp';
+  } else if (structure === 'subchapter-s corporation') {
+    structure = 'S Corp';
+  } else if (structure === 'limited liability company') {
+    structure = 'LLC';
+  } else if (structure === 'sole proprietor') {
+    structure = 'Sole Proprietor';
+  }
   let purpose = !fn.empty(source.org.intent) ? xs.string(fn.head(source.org.intent)) : null;
 
   // return the instance object
