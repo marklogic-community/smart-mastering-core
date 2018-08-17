@@ -20,7 +20,7 @@
   <search:search-option>unfiltered</search:search-option>
   <!--Modify document extraction to change results returned-->
   <search:extract-document-data selected="include">
-    <search:extract-path>//*:instance/(MDM|Address|Person|PersonName|PersonSSNIdentification)</search:extract-path>
+    <search:extract-path>//*:instance/(MDM|Address|Organization|Person|PersonName|PersonSSNIdentification)</search:extract-path>
   </search:extract-document-data>
   <!--Change or remove this additional-query to broaden search beyond entity instance documents-->
   <!--To return facets, change this option to 'true' and edit constraints-->
