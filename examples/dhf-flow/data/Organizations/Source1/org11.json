@@ -1,0 +1,35 @@
+{
+  "organization": {
+    "orgName": "Digigen",
+    "type": "Public Sector",
+    "form": "C Corp",
+    "mission": "Aliquip tempor officia nostrud adipisicing id esse fugiat. Lorem occaecat do est sit nisi id in ut laboris adipisicing. Voluptate consectetur ut pariatur amet cupidatat reprehenderit ut eu nulla dolore enim ad nostrud.",
+    "offices": [
+      {
+        "officeName": "Lorem",
+        "phone": "+1 (990) 507-3485",
+        "address": "445 Bijou Avenue, Madaket, District Of Columbia, 2461"
+      },
+      {
+        "officeName": "Ea",
+        "phone": "+1 (831) 511-3595",
+        "address": "731 Liberty Avenue, Brazos, Maryland, 2823"
+      },
+      {
+        "officeName": "Dolor",
+        "phone": "+1 (805) 420-3600",
+        "address": "764 Montrose Avenue, Cascades, North Carolina, 324"
+      },
+      {
+        "officeName": "Labore",
+        "phone": "+1 (990) 576-3498",
+        "address": "262 Bayard Street, Wikieup, Palau, 3945"
+      },
+      {
+        "officeName": "Nisi",
+        "phone": "+1 (882) 567-3292",
+        "address": "273 Carroll Street, Frank, Michigan, 1725"
+      }
+    ]
+  }
+}

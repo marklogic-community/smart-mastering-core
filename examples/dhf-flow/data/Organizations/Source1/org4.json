@@ -1,0 +1,30 @@
+{
+  "organization": {
+    "orgName": "Geekus",
+    "type": "Not For Profit",
+    "form": "C Corp",
+    "mission": "Nisi sunt quis magna pariatur nulla eu in id adipisicing sint laboris ad. Aliquip enim voluptate tempor elit aliqua Lorem pariatur proident ullamco voluptate officia. Anim nulla voluptate reprehenderit nisi esse quis sit amet. Fugiat et enim veniam aliqua minim culpa laboris est sunt et consectetur ullamco Lorem exercitation. Excepteur magna anim qui pariatur ullamco.",
+    "offices": [
+      {
+        "officeName": "Nostrud",
+        "phone": "+1 (982) 550-3951",
+        "address": "638 Amersfort Place, Marenisco, Mississippi, 3699"
+      },
+      {
+        "officeName": "Consequat",
+        "phone": "+1 (863) 506-2898",
+        "address": "386 Applegate Court, Elfrida, Indiana, 4293"
+      },
+      {
+        "officeName": "Laborum",
+        "phone": "+1 (914) 564-3614",
+        "address": "210 Bushwick Avenue, Nicut, Nebraska, 1064"
+      },
+      {
+        "officeName": "Occaecat",
+        "phone": "+1 (930) 599-2172",
+        "address": "544 Logan Street, Ada, Minnesota, 5857"
+      }
+    ]
+  }
+}

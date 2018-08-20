@@ -1,0 +1,20 @@
+{
+  "organization": {
+    "orgName": "Comfirm",
+    "type": "Nonprofit",
+    "form": "LLC",
+    "mission": "Enim deserunt officia eu deserunt consequat in nulla qui esse. Exercitation cillum sunt dolore ullamco. Reprehenderit et tempor et velit.",
+    "offices": [
+      {
+        "officeName": "Excepteur",
+        "phone": "+1 (954) 427-3322",
+        "address": "215 Lott Place, Camas, Illinois, 6296"
+      },
+      {
+        "officeName": "Do",
+        "phone": "+1 (978) 401-3732",
+        "address": "645 Canton Court, Lewis, Marshall Islands, 6261"
+      }
+    ]
+  }
+}

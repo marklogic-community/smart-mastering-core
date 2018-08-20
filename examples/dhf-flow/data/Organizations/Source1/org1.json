@@ -1,0 +1,30 @@
+{
+  "organization": {
+    "orgName": "Besto",
+    "type": "For Profit",
+    "form": "C Corp",
+    "mission": "Excepteur deserunt proident consectetur fugiat. Proident nostrud pariatur elit ipsum exercitation reprehenderit dolor aliqua. Aliquip id anim incididunt consectetur id tempor ad nulla eiusmod anim esse magna.",
+    "offices": [
+      {
+        "officeName": "Adipisicing",
+        "phone": "+1 (893) 576-2744",
+        "address": "897 Bryant Street, Gilmore, Delaware, 5147"
+      },
+      {
+        "officeName": "Excepteur",
+        "phone": "+1 (829) 478-3966",
+        "address": "257 Taylor Street, Chaparrito, Oregon, 6645"
+      },
+      {
+        "officeName": "Consectetur",
+        "phone": "+1 (973) 443-3885",
+        "address": "799 Woodruff Avenue, Carlos, Georgia, 8306"
+      },
+      {
+        "officeName": "Velit",
+        "phone": "+1 (938) 491-3184",
+        "address": "882 Howard Alley, Martell, North Dakota, 554"
+      }
+    ]
+  }
+}

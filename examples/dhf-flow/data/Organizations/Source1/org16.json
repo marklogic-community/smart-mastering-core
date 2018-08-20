@@ -1,0 +1,25 @@
+{
+  "organization": {
+    "orgName": "Exerta",
+    "type": "Public Sector",
+    "form": "S Corp",
+    "mission": "Nulla exercitation fugiat enim do est pariatur minim labore voluptate amet tempor. Aute labore officia sunt anim amet officia in occaecat. Cillum veniam amet labore eiusmod. Pariatur cillum ipsum nostrud non laboris non ullamco nisi Lorem cillum labore magna voluptate.",
+    "offices": [
+      {
+        "officeName": "Voluptate",
+        "phone": "+1 (916) 569-2903",
+        "address": "731 Rockaway Parkway, Elwood, Montana, 2934"
+      },
+      {
+        "officeName": "Laboris",
+        "phone": "+1 (842) 478-3969",
+        "address": "272 Highland Place, Wadsworth, Delaware, 9369"
+      },
+      {
+        "officeName": "Mollit",
+        "phone": "+1 (932) 410-3461",
+        "address": "979 Bedell Lane, Naomi, Oregon, 5434"
+      }
+    ]
+  }
+}

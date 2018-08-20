@@ -1,0 +1,30 @@
+{
+  "organization": {
+    "orgName": "Portico",
+    "type": "For Profit",
+    "form": "LLC",
+    "mission": "Minim aliqua reprehenderit culpa ut eu tempor elit dolor incididunt cupidatat exercitation qui. Culpa reprehenderit dolor ipsum Lorem excepteur aliquip. Aute excepteur est quis do irure ea.",
+    "offices": [
+      {
+        "officeName": "Lorem",
+        "phone": "+1 (810) 589-3701",
+        "address": "509 Forrest Street, Jackpot, Massachusetts, 965"
+      },
+      {
+        "officeName": "Quis",
+        "phone": "+1 (859) 477-2081",
+        "address": "460 Dahill Road, Kirk, Colorado, 3903"
+      },
+      {
+        "officeName": "Nisi",
+        "phone": "+1 (893) 462-3723",
+        "address": "517 Utica Avenue, Hasty, Virgin Islands, 4130"
+      },
+      {
+        "officeName": "Sint",
+        "phone": "+1 (971) 461-3484",
+        "address": "601 Linden Street, Denio, Idaho, 9120"
+      }
+    ]
+  }
+}
