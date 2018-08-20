@@ -261,3 +261,20 @@ declare function merging:group-properties-by-type($nodes as node()*)
   return $group-by-node-type
 };
 
+(: The standard triples merge function.
+ : It gets all the triples from all of the matched docs
+ :)
+declare function merging:standard-triples(
+  $merge-options as element(m:options),
+  $docs,
+  $sources,
+  $property-spec as element()?)
+{
+  let $uris := $docs ! xdmp:node-uri(.)
+  return
+    sem:sparql(
+      'construct { ?s ?p ?o } where { ?s ?p ?o }',
+      (), "map",
+      sem:store((), cts:document-query($uris))
+    )
+};

@@ -20,6 +20,8 @@ declare variable $TWO-FIRST-OPTIONS := "two-first-options";
 
 declare variable $OPTIONS-NAME-CUST-XQY := "cust-xqy-test-options";
 declare variable $OPTIONS-NAME-CUST-SJS := "cust-sjs-test-options";
+declare variable $OPTIONS-NAME-CUST-TRIPS-XQY := "cust-trips-xqy-test-options";
+declare variable $OPTIONS-NAME-CUST-TRIPS-SJS := "cust-trips-sjs-test-options";
 declare variable $OPTIONS-NAME-PATH := "path-test-options";
 
 declare variable $OPTIONS-NAME-CUST-ACTION-XQY-MATCH := "custom-xqy-action-match-options";
