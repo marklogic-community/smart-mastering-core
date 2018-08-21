@@ -83,6 +83,12 @@
           }
         }
       }
-    ]
+    ],
+    "tripleMerge": {
+      "function": "custom-trips",
+      "namespace": "http://marklogic.com/smart-mastering/merging",
+      "at": "/custom-triple-merge-xqy.xqy",
+      "someParam": "3"
+    }
   }
 }

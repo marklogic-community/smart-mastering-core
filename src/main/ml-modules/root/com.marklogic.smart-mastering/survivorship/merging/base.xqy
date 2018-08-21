@@ -185,6 +185,7 @@ declare function merge-impl:save-merge-models-by-uri(
         map:get($parsed-properties, "wrapper-qnames"),
         $final-properties,
         map:get($parsed-properties, "final-headers"),
+        map:get($parsed-properties, "final-triples"),
         map:get($parsed-properties, $PROPKEY-HEADERS-NS-MAP)
       )
     let $_audit-trail :=
@@ -393,6 +394,7 @@ declare function merge-impl:build-merge-models-by-uri(
       )
   let $final-properties := map:get($parsed-properties, "final-properties")
   let $final-headers := map:get($parsed-properties, "final-headers")
+  let $final-triples := map:get($parsed-properties, "final-triples")
   let $headers-ns-map := map:get($parsed-properties, $PROPKEY-HEADERS-NS-MAP)
   let $docs := map:get($parsed-properties, "documents")
   let $wrapper-qnames := map:get($parsed-properties, "wrapper-qnames")
@@ -403,6 +405,7 @@ declare function merge-impl:build-merge-models-by-uri(
       $wrapper-qnames,
       $final-properties,
       $final-headers,
+      $final-triples,
       $headers-ns-map
     )
 };
@@ -422,6 +425,7 @@ declare function merge-impl:build-merge-models-by-final-properties(
   $wrapper-qnames as xs:QName*,
   $final-properties as item()*,
   $final-headers as item()*,
+  $final-triples as item()*,
   $headers-ns-map as map:map
 )
 {
@@ -432,6 +436,7 @@ declare function merge-impl:build-merge-models-by-final-properties(
       $wrapper-qnames,
       $final-properties,
       $final-headers,
+      $final-triples,
       $headers-ns-map
     )
   else
@@ -440,7 +445,8 @@ declare function merge-impl:build-merge-models-by-final-properties(
       $docs,
       $wrapper-qnames,
       $final-properties,
-      $final-headers
+      $final-headers,
+      $final-triples
     )
 };
 
@@ -461,6 +467,7 @@ declare function merge-impl:build-merge-models-by-final-properties-to-xml(
   $wrapper-qnames as xs:QName*,
   $final-properties as item()*,
   $final-headers as item()*,
+  $final-triples as item()*,
   $headers-ns-map as map:map
 ) as element(es:envelope)
 {
@@ -471,11 +478,7 @@ declare function merge-impl:build-merge-models-by-final-properties-to-xml(
         merge-impl:build-headers($id, $docs, $uris, $final-headers, $headers-ns-map, $const:FORMAT-XML)
       }
       <es:triples>{
-        sem:sparql(
-          'construct { ?s ?p ?o } where { ?s ?p ?o }',
-          (), "map",
-          sem:store((), cts:document-query($uris))
-        )
+        $final-triples
       }</es:triples>
       <es:instance>{
         merge-impl:build-instance-body-by-final-properties(
@@ -821,7 +824,8 @@ declare function merge-impl:build-merge-models-by-final-properties-to-json(
   $docs as node()*,
   $wrapper-qnames as xs:QName*,
   $final-properties as item()*,
-  $final-headers as item()*
+  $final-headers as item()*,
+  $final-triples as item()*
 )
 {
   let $uris := $docs ! xdmp:node-uri(.)
@@ -830,11 +834,7 @@ declare function merge-impl:build-merge-models-by-final-properties-to-json(
       "envelope": object-node {
         "headers": merge-impl:build-headers($id, $docs, $uris, $final-headers, (), $const:FORMAT-JSON),
         "triples": array-node {
-          sem:sparql(
-            'construct { ?s ?p ?o } where { ?s ?p ?o }',
-            (), "map",
-            sem:store((), cts:document-query($uris))
-          )
+          $final-triples
         },
         "instance": merge-impl:build-instance-body-by-final-properties(
           $final-properties,
@@ -1001,6 +1001,10 @@ declare function merge-impl:parse-final-properties-for-merge(
     $docs,
     $sources
   )
+  let $final-triples := merge-impl:build-final-triples(
+    $merge-options,
+    $docs,
+    $sources)
   return
     map:new((
       map:entry("instances", $instances),
@@ -1009,7 +1013,8 @@ declare function merge-impl:parse-final-properties-for-merge(
       map:entry("wrapper-qnames",$wrapper-qnames),
       map:entry("final-properties", $final-properties),
       map:entry($PROPKEY-HEADERS-NS-MAP, fn:head($final-headers)),
-      map:entry("final-headers", fn:tail($final-headers))
+      map:entry("final-headers", fn:tail($final-headers)),
+      map:entry("final-triples", $final-triples)
     ))
 };
 
@@ -1085,6 +1090,52 @@ declare function merge-impl:build-final-headers(
         ))
       else ()
   )
+};
+
+(:~
+ : Build a sequence of triples
+ :
+ : NOTE that unlike how other algorithms are configured,
+ : the <triple-merge> element refers directly to the
+ : @at, @namespace, @function params. This is because there will only
+ : be 1 triple merge function.
+ :
+ : @param $merge-options  an element or object containing the merge options
+ : @param $docs  the source documents the header values will be drawn from
+ : @param $sources  information about the source of the header data
+ : @return sequence of sem:triples
+ :)
+declare function merge-impl:build-final-triples(
+  $merge-options as element(merging:options),
+  $docs,
+  $sources
+) as sem:triple*
+{
+  let $triple-merge := fn:head($merge-options/merging:triple-merge)
+  let $algorithm :=
+    fun-ext:function-lookup(
+      fn:string(fn:head(($triple-merge/@function, "standard-triples"))),
+      fn:string($triple-merge/@namespace),
+      fn:string($triple-merge/@at),
+      merge-impl:default-function-lookup(?, 4)
+    )
+  return
+    if (fn:ends-with(xdmp:function-module($algorithm), "sjs")) then
+      let $triple-merge := merge-impl:propertyspec-to-json($triple-merge)
+      return
+        xdmp:apply(
+          $algorithm,
+          $merge-options,
+          $docs,
+          $sources,
+          $triple-merge)
+    else
+      xdmp:apply(
+        $algorithm,
+        $merge-options,
+        $docs,
+        $sources,
+        $triple-merge)
 };
 
 (:~
@@ -1511,6 +1562,17 @@ declare function merge-impl:options-to-json($options-xml as element(merging:opti
                   merge-impl:propertyspec-to-json($merge)
               }
             )
+          else (),
+          if (fn:exists($options-xml/merging:triple-merge)) then
+            map:entry(
+              "tripleMerge",
+              let $config := json:config("custom")
+                => map:with("camel-case", fn:true())
+                => map:with("whitespace", "ignore")
+                => map:with("ignore-element-names", xs:QName("merging:merge"))
+              return
+                json:transform-to-json($options-xml/merging:triple-merge, $config)/*
+            )
           else ()
         ))
       )
@@ -1598,7 +1660,25 @@ declare function merge-impl:options-from-json($options-json as object-node())
           element merge {
             json:transform-from-json($merge, $config)
           }
-      }
+      },
+      let $triple-merge := $options-json/*:options/*:tripleMerge
+      return
+      if (fn:exists($triple-merge)) then
+        element triple-merge {
+          attribute xmlns { "http://marklogic.com/smart-mastering/merging" },
+          attribute namespace { $triple-merge/*:namespace },
+          attribute function { $triple-merge/*:function },
+          attribute at { $triple-merge/*:at },
+
+          let $config := json:config("custom")
+            => map:with("camel-case", fn:true())
+            => map:with("whitespace", "ignore")
+            => map:with("ignore-element-names", ("namespace","function","at"))
+          for $merge in $triple-merge
+          return
+            json:transform-from-json($merge, $config)
+        }
+      else ()
     }
   </options>
 };
@@ -1663,12 +1743,12 @@ declare function merge-impl:option-names-to-json($options-xml)
   )
 };
 
-declare function merge-impl:propertyspec-to-json($property-spec as element(merging:merge)) as object-node()
+declare function merge-impl:propertyspec-to-json($property-spec as element()) as object-node()
 {
   let $config := json:config("custom")
     => map:with("camel-case", fn:true())
     => map:with("whitespace", "ignore")
     => map:with("ignore-element-names", xs:QName("merging:merge"))
   return
-    json:transform-to-json($property-spec, $config)/*:merge
+    json:transform-to-json($property-spec, $config)/*
 };
