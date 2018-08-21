@@ -4,7 +4,7 @@ module namespace custom-merging = "http://marklogic.com/smart-mastering/merging"
 
 declare namespace m = "http://marklogic.com/smart-mastering/merging";
 
-declare function custom-merging:customTrips(
+declare function custom-merging:custom-trips(
   $merge-options as element(m:options),
   $docs,
   $sources,

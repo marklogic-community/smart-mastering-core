@@ -23,10 +23,10 @@
         <distance-threshold>50</distance-threshold>
       </double-metaphone>
     </merge>
-    <triple-merge
-      function="customTrips"
-      at="/custom-triple-merge-sjs.sjs">
-      <some-param>3</some-param>
-    </triple-merge>
   </merging>
+  <triple-merge
+    function="customTrips"
+    at="/custom-triple-merge-sjs.sjs">
+    <some-param>3</some-param>
+  </triple-merge>
 </options>

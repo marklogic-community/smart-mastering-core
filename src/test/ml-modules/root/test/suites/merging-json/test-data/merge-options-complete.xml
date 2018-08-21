@@ -38,4 +38,10 @@
       </source-weights>
     </merge>
   </merging>
+  <triple-merge
+    function="custom-trips"
+    namespace="http://marklogic.com/smart-mastering/merging"
+    at="/custom-triple-merge-xqy.xqy">
+    <some-param>3</some-param>
+  </triple-merge>
 </options>

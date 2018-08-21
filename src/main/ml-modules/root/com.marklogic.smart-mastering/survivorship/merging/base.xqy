@@ -1094,6 +1094,12 @@ declare function merge-impl:build-final-headers(
 
 (:~
  : Build a sequence of triples
+ :
+ : NOTE that unlike how other algorithms are configured,
+ : the <triple-merge> element refers directly to the
+ : @at, @namespace, @function params. This is because there will only
+ : be 1 triple merge function.
+ :
  : @param $merge-options  an element or object containing the merge options
  : @param $docs  the source documents the header values will be drawn from
  : @param $sources  information about the source of the header data
@@ -1105,7 +1111,7 @@ declare function merge-impl:build-final-triples(
   $sources
 ) as sem:triple*
 {
-  let $triple-merge := $merge-options/merging:merging/merging:triple-merge
+  let $triple-merge := fn:head($merge-options/merging:triple-merge)
   let $algorithm :=
     fun-ext:function-lookup(
       fn:string(fn:head(($triple-merge/@function, "standard-triples"))),
@@ -1556,6 +1562,17 @@ declare function merge-impl:options-to-json($options-xml as element(merging:opti
                   merge-impl:propertyspec-to-json($merge)
               }
             )
+          else (),
+          if (fn:exists($options-xml/merging:triple-merge)) then
+            map:entry(
+              "tripleMerge",
+              let $config := json:config("custom")
+                => map:with("camel-case", fn:true())
+                => map:with("whitespace", "ignore")
+                => map:with("ignore-element-names", xs:QName("merging:merge"))
+              return
+                json:transform-to-json($options-xml/merging:triple-merge, $config)/*
+            )
           else ()
         ))
       )
@@ -1643,7 +1660,25 @@ declare function merge-impl:options-from-json($options-json as object-node())
           element merge {
             json:transform-from-json($merge, $config)
           }
-      }
+      },
+      let $triple-merge := $options-json/*:options/*:tripleMerge
+      return
+      if (fn:exists($triple-merge)) then
+        element triple-merge {
+          attribute xmlns { "http://marklogic.com/smart-mastering/merging" },
+          attribute namespace { $triple-merge/*:namespace },
+          attribute function { $triple-merge/*:function },
+          attribute at { $triple-merge/*:at },
+
+          let $config := json:config("custom")
+            => map:with("camel-case", fn:true())
+            => map:with("whitespace", "ignore")
+            => map:with("ignore-element-names", ("namespace","function","at"))
+          for $merge in $triple-merge
+          return
+            json:transform-from-json($merge, $config)
+        }
+      else ()
     }
   </options>
 };
