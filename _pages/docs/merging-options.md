@@ -90,7 +90,7 @@ retrieved as either XML or JSON.
     that may need to be reusable.
    -->
   <triple-merge
-    function="customTrips"
+    function="custom-trips"
     namespace="http://marklogic.com/smart-mastering/merging"
     at="/custom-triple-merge.xqy">
 
@@ -357,16 +357,47 @@ function.
 
 To use a custom function for merging triples, create a `triple-merge` element with attributes to refer to the function: `at`, `namespace`, `function`.
 
-For JSON, the object will use a `tripleMerge` property that refers to the function.
-
 ```xml
   <triple-merge
-    function="customTrips"
+    function="custom-trips"
     namespace="http://marklogic.com/smart-mastering/merging"
     at="/custom-triple-merge.xqy">
     <some-param>3</some-param>
   </triple-merge>
 ```
+
+**Custom Xquery code**
+
+```xquery
+xquery version "1.0-ml";
+
+(: you can define any namespace you like :)
+module namespace custom-merging = "http://marklogic.com/smart-mastering/merging";
+
+declare namespace m = "http://marklogic.com/smart-mastering/merging";
+
+(: A custom triples merging function
+ : 
+ : @param $merge-options specification of how options are to be merged
+ : @param $docs  the source documents that provide the values
+ : @param $sources  information about the source of the header data
+ : @param $property-spec  configuration for how this property should be merged
+ : @return zero or more sem:triples
+ :)
+declare function custom-merging:custom-trips(
+  $merge-options as element(m:options),
+  $docs,
+  $sources,
+  $property-spec as element()?
+) {
+  let $some-param := $property-spec/*:some-param ! xs:int(.)
+  return
+    sem:triple(sem:iri("some-param"), sem:iri("is"), $some-param)
+};
+
+```
+
+For JSON, the object will use a `tripleMerge` property that refers to the function.
 
 ```json
   "tripleMerge": {
@@ -376,3 +407,25 @@ For JSON, the object will use a `tripleMerge` property that refers to the functi
     "some-param": 3
   }
 ```
+
+**Custom Javascript code**
+
+```javascript
+'use strict'
+
+/* A custom triples merging function
+ *
+ * @param mergeOptions specification of how options are to be merged
+ * @param docs  the source documents that provide the values
+ * @param sources  information about the source of the header data
+ * @param propertySpec  configuration for how this property should be merged
+ * @return zero or more sem.triples
+ */
+function customTrips(mergeOptions, docs, sources, propertySpec) {
+  const someParam = parseInt(propertySpec.someParam, 10);
+  return sem.triple(sem.iri("some-param"), sem.iri("is"), someParam);
+}
+
+exports.customTrips = customTrips;
+```
+
