@@ -81,6 +81,25 @@ retrieved as either XML or JSON.
       <length weight="10"/>
     </merge>
   </merging>
+  
+  <!-- 
+    Define a custom xqy triple merge function
+    Note that this approach differs from how you define
+    property merge algorithms. This is due to the fact that
+    there is only 1 triple merge function vs many algorithms
+    that may need to be reusable.
+   -->
+  <triple-merge
+    function="customTrips"
+    namespace="http://marklogic.com/smart-mastering/merging"
+    at="/custom-triple-merge.xqy">
+
+    <!--
+      you can provide additional elements that are available to
+      your function. Use these to pass in extra parameters to your function.
+    -->
+    <some-param>3</some-param>
+  </triple-merge>
 </options>
 ```
 
@@ -170,7 +189,13 @@ retrieved as either XML or JSON.
         "maxValues": "1",
         "length": { "weight": "10" }
       }
-    ]
+    ],
+    "tripleMerge": {
+      "function": "customTrips",
+      "namespace": "http://marklogic.com/smart-mastering/merging",
+      "at": "/custom-triple-merge.xqy",
+      "some-param": 3
+    }
   }
 }
 ```
@@ -327,3 +352,27 @@ attribute that refers to one of the `algorithm` elements. The contents of the
 For JSON, the object will use an `algorithmRef` property that refers to one of 
 the `algorithm` objects. The merge object will be passed to the merging 
 function.
+
+#### Triple Merging
+
+To use a custom function for merging triples, create a `triple-merge` element with attributes to refer to the function: `at`, `namespace`, `function`.
+
+For JSON, the object will use a `tripleMerge` property that refers to the function.
+
+```xml
+  <triple-merge
+    function="customTrips"
+    namespace="http://marklogic.com/smart-mastering/merging"
+    at="/custom-triple-merge.xqy">
+    <some-param>3</some-param>
+  </triple-merge>
+```
+
+```json
+  "tripleMerge": {
+    "function": "customTrips",
+    "namespace": "http://marklogic.com/smart-mastering/merging",
+    "at": "/custom-triple-merge.xqy",
+    "some-param": 3
+  }
+```
