@@ -6,7 +6,8 @@ permalink: /docs/custom-actions/
 
 # Custom Match Actions
 
-Smart Mastering provides two out-of-the-box matching action, merge and notify. Merging runs the merge process and notify creates a notification about the matching documents.
+Smart Mastering provides two out-of-the-box matching actions, merge and notify. The merge process combines two or more
+documents and archives the originals; the notify action creates a notification document listing the matching documents.
 
 If you want to create a custom action, to do something other than merging or notifying, you can do so by implementing your own action in a function. 
 
