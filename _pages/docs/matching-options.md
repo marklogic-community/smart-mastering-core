@@ -167,7 +167,8 @@ up matching with your custom code, add an `algorithm` element with attributes
 to this algorithm later in the configuration. The other three attributes are
 used to find the code.
 
-For an example, see [zip.xqy][zip.xqy].
+For more details, see [Custom Match Algorithsm](/docs/custom-match-algorithms/). 
+For an example, see [zip.xqy][zip.xqy]. 
 
 ### Scoring
 
