@@ -14,4 +14,5 @@ main:
     ]
   }
   - { url: '/faqs/', text: 'FAQs' }
+  - { url: '/troubleshooting/', text: 'Troubleshooting' }
   - { absurl: 'https://github.com/marklogic-community/smart-mastering-core', text: 'Smart Mastering on GitHub' }
