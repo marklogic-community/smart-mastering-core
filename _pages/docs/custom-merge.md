@@ -1,37 +1,18 @@
 ---
 layout: inner
-title: Custom Match Algorithms
-permalink: /docs/custom-match-algorithms/
+title: Custom Merge Algorithms
+permalink: /docs/custom-merge-algorithms/
 ---
 
-# Custom Match Algorithms
+# Custom Merge Algorithms
 
-Smart Mastering provides out-of-the-box matching capabilities, but you may want
-to customize how that matching happens. The default behavior is simple: for a
-particular property, if two documents have exactly the same values for that 
-property, then the property is a match. Each property is configured with a 
-weight that contributes to a match score between two documents. 
+Smart Mastering provides out-of-the-box merging capabilities, but you may want
+to customize how that merging happens. The default behavior is to grab all the values from matching documents, sort them on weight, then return the first @max-values values. If @max-values is not set, then the first 99 values are returned.
 
 If you want to take more control over what it means for two property values to 
-match, you can do so by implementing your own algorithm in a function. 
+merge, you can do so by implementing your own algorithm in a function. 
 
-## Harmonization and Smart Mastering
-
-Note that Smart Mastering is intended to be run after harmonization, so 
-normally at the least the document structures will be the same; generally, the 
-values should have been standardized as well. 
-
-As an example, suppose your document has a "state" property, corresponding to 
-the US state in which a person lives. You might have some sources that use the
-state's name ("Pennsylvania"), others that use the 2-letter code ("PA"), and 
-still others that use the state's official, full name ("Commonwealth of
-Pennsylvania"). Your harmonization process will normally make sure that not 
-only are the state values from all sources put into the same property name 
-"state-code", but that the values are standardized using one format ("PA"). In
-this case, it would not be necessary to use a custom algorithm to compare 
-properties. 
-
-## Customizing Matching
+## Customizing Merging
 
 Sometimes data sources simply have different levels of information. Zip codes
 are a good example. In the United States, an address includes a zip code, which

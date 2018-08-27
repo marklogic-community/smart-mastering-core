@@ -167,7 +167,7 @@ up matching with your custom code, add an `algorithm` element with attributes
 to this algorithm later in the configuration. The other three attributes are
 used to find the code.
 
-For more details, see [Custom Match Algorithsm](/docs/custom-match-algorithms/). 
+For more details, see [Custom Match Algorithsm](../custom-match-algorithms/). 
 For an example, see [zip.xqy][zip.xqy]. 
 
 ### Scoring
@@ -240,6 +240,8 @@ $uri - the uri of the document being matched
 $matches - either an array (sjs) or sequence (xqy) of matches
 $merge-options - the merge options as xml (for xqy) or json (for sjs)
 ```
+
+For more information on custom actions, see [Custom Actions](../custom-actions)
 
 
 ### Thresholds

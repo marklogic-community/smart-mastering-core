@@ -327,3 +327,5 @@ attribute that refers to one of the `algorithm` elements. The contents of the
 For JSON, the object will use an `algorithmRef` property that refers to one of 
 the `algorithm` objects. The merge object will be passed to the merging 
 function.
+
+See the [Custom Merge Algorithms](../custom-merge-algorithms/) section for more information.
