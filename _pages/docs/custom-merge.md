@@ -6,68 +6,58 @@ permalink: /docs/custom-merge-algorithms/
 
 # Custom Merge Algorithms
 
-Smart Mastering provides out-of-the-box merging capabilities, but you may want
-to customize how that merging happens. The default behavior is to grab all the values from matching documents, sort them on weight, then return the first @max-values values. If @max-values is not set, then the first 99 values are returned.
+Smart Mastering provides out-of-the-box merging capabilities, but you may want to customize how that merging happens. 
+The default behavior is to grab all the values from matching documents, sort them on weight, then return the first 
+`@max-values` values (see [Matching Options](/docs/matching-options/)). If `@max-values` is not set, then the first 99 values are returned.
 
-If you want to take more control over what it means for two property values to 
-merge, you can do so by implementing your own algorithm in a function. 
+If you want to take more control over what it means for two property values to merge, you can do so by implementing 
+your own algorithm in a function. Create a function with the signature below. Return a subset of the properties passed
+into the function. 
 
 ## Customizing Merging
 
-Sometimes data sources simply have different levels of information. Zip codes
-are a good example. In the United States, an address includes a zip code, which
-may have either five ("19106") or nine ("19106-2320") digits. A nine-digit zip 
-code identifies a more precise location and is entirely contained within the 
-area of the five-digit zip code that it starts with. [zip.xqy][zip.xqy] 
-implements an algorithm that gives points if the 5-digit portion of a 9-digit
-zip code matches a 5-digit zip code.
+### Custom Merging with JavaScript
 
-Matching looks for candidate matches for a particular document. It does this by
-building a query based on configured properties and the values of those 
-properties in the document. 
-
-### JavaScript
-
-To implement your own algorithm in Javascript, create a function with this 
-signature: 
+Here is the JavaScript function signature for a custom merge algorithm:
 
 ```javascript
-function zipMatch(
-  expandValues,
-  expandXML,
-  optionsXML
+function customMerge(
+  propertyName,
+  properties,
+  propertySpec
 )
 ```
-The `expandValues` parameter contains the value or values from the document. 
-The `expandXML` parameter is the portion of `expand` element of the match 
-options that corresponds to the target property. The `optionsXML` is the 
-complete match options. 
 
-Your function must return zero or more queries. You can return zero if your 
-function decides that this property should not be a factor in matching (for 
-instance, if the original document does not have a value for this property).
+The `propertyName` is simply the name of the JSON property that holds the instance property being merged. The 
+`properties` parameter is a sequence of JavaScript objects that provide information about property values from the 
+source documents, along with lineage information. Each object has three keys: `sources`, `values`, and `name`. The 
+value for `sources` is itself an object, with keys `name` (an identifier) extracted from the source; `dateTime` (an 
+`xs:dateTime`) extracted from the source, if available; and `documentUri` (identifying this particular source 
+document). The `values` key connects to the property value or values from this particular source document. The `name` 
+key is the name of the property value. 
 
-### XQuery
+The `propertySpec` parameter is the JSON obejct from the merging properties that corresponds to the property for which 
+the algorithm is being used. 
 
-To implement your own algorithm in XQuery, create a function with this 
-signature: 
+### Custom Merging with XQuery
+
+Here is the XQuery function signature for a custom merge algorithm:
 
 ```xquery
-declare function algorithms:zip-match(
-  $expand-values as xs:string*,
-  $expand-xml as element(matcher:expand),
-  $options-xml as element(matcher:options)
-) as cts:query*
+declare function custom-merging:customThing(
+  $property-name as xs:QName,
+  $properties as map:map*,
+  $property-spec as element(merging:merge)?
+)
 ```
 
-The `$expand-values` parameter contains the value or values from the document. 
-The `$expand-xml` parameter is the portion of `expand` element of the match 
-options that corresponds to the target property. The `$options-xml` is the 
-complete match options. 
+The `$property-name` is simply a QName identifying the property. The `$properties` parameter is a sequence of map:maps 
+that provide information about property values from the source documents, along with lineage information. Each map has
+three keys: `sources`, `values`, and `name`. The value for `sources` is itself a map, with keys `name` (an identifier)
+extracted from the source; `dateTime` (an `xs:dateTime`) extracted from the source, if available; and `documentUri` 
+(identifying this particular source document). The `values` key connects to the property value or values from this 
+particular source document. The `name` key is the name of the property value. 
 
-Your function must return zero or more queries. You can return zero if your 
-function decides that this property should not be a factor in matching (for 
-instance, if the original document does not have a value for this property).
+The `$property-spec` parameter is the `merging:merge` element from the merging properties that corresponds to the 
+property for which the algorithm is being used. 
 
-
-[zip.xqy]: https://github.com/marklogic-community/smart-mastering-core/blob/master/src/main/ml-modules/root/com.marklogic.smart-mastering/algorithms/zip.xqy
