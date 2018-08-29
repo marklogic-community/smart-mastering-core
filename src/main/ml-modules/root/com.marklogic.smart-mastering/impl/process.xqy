@@ -132,7 +132,7 @@ declare function proc-impl:process-match-and-merge-with-options(
         xdmp:invoke-function(
           function() {
             if (fn:ends-with(xdmp:function-module($action-func), "sjs")) then
-              let $filtered-matches := json:to-array($filtered-matches)
+              let $filtered-matches := proc-impl:matches-to-json($filtered-matches)
               let $options := merge-impl:options-to-json($options)
               return
                 xdmp:apply($action-func, $uri, $filtered-matches, $options)
@@ -144,4 +144,21 @@ declare function proc-impl:process-match-and-merge-with-options(
       else ()
 
   )
+};
+
+(:
+ : Convert the result elements into JSON objects.
+ : TODO -- does not yet convert result/match elements to JSON. This is okay for now as there is no way to turn on the
+ : $include-matches parameter from process-match-and-merge.
+ :)
+declare function proc-impl:matches-to-json($filtered-matches as element(result)*)
+{
+  array-node {
+    for $match in $filtered-matches
+    return object-node {
+      "uri": $match/@uri/fn:string(),
+      "score": $match/@score/fn:data(),
+      "threshold": $match/@threshold/fn:string()
+    }
+  }
 };
