@@ -103,6 +103,11 @@ values from the input documents; it may choose to aggregate those values.
 To see examples of custom algorithms, see the unit tests in the [`merging` test
 suite][merging-suite].
 
+### Auditing
+
+By default, Auditing events are automatically stored for merging and unmerging. These auditing events are stored as as [prov-o] triples and [prov-xml] xml documents.
+
+**NOTE**: In order for auditing to work you must have a schemas database assigned to your content database.
 
 [how-to-use]: ../how-to-use/
 [match-config]: ../docs/matching-options/
@@ -111,3 +116,5 @@ suite][merging-suite].
 [constants]: https://github.com/marklogic-community/smart-mastering-core/blob/master/src/main/ml-modules/root/com.marklogic.smart-mastering/constants.xqy
 [merging-suite]: https://github.com/marklogic-community/smart-mastering-core/tree/master/src/test/ml-modules/root/test/suites/merging-xml
 [mlu]: https://mlu.marklogic.com/ondemand/931812fc
+[prov-o]: https://www.w3.org/TR/prov-o/
+[prov-xml]: https://www.w3.org/TR/prov-xml/
