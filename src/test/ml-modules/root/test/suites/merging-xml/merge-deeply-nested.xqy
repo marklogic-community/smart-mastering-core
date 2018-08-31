@@ -11,8 +11,7 @@ import module namespace test = "http://marklogic.com/roxy/test-helper" at "/test
 import module namespace lib = "http://marklogic.com/smart-mastering/test" at "lib/lib.xqy";
 
 declare namespace es = "http://marklogic.com/entity-services";
-declare namespace sm = "http://marklogic.com/smart-mastering";
-declare namespace has = "has";
+declare namespace nested = "nested";
 
 (: Force update mode :)
 declare option xdmp:update "true";
@@ -31,8 +30,8 @@ let $merged-doc :=
   )
 
 return (
-  test:assert-equal("some string", $merged-doc/es:instance/TopProperty/LowerProperty1/EvenLowerProperty/LowestProperty1/fn:string()),
-  test:assert-equal("some string", $merged-doc/es:instance/TopProperty/LowerProperty1/EvenLowerProperty/LowestProperty2/fn:string()),
-  test:assert-equal("some string", $merged-doc/es:instance/TopProperty/LowerProperty1/EvenLowerProperty/LowestProperty3/fn:string()),
+  test:assert-equal("another string", $merged-doc/es:instance/TopProperty/nested:LowerProperty1/EvenLowerProperty/LowestProperty1/fn:string()),
+  test:assert-equal("some string", $merged-doc/es:instance/TopProperty/nested:LowerProperty1/EvenLowerProperty/LowestProperty2/fn:string()),
+  test:assert-equal("some string", $merged-doc/es:instance/TopProperty/nested:LowerProperty1/EvenLowerProperty/LowestProperty3/fn:string()),
   test:assert-equal(123, $merged-doc/es:instance/TopProperty/EntityReference/PropValue/fn:data())
 )

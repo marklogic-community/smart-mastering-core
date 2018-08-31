@@ -1,11 +1,11 @@
 <options xmlns="http://marklogic.com/smart-mastering/merging">
   <match-options>basic</match-options>
-  <property-defs xmlns:es="http://marklogic.com/entity-services">
-    <property namespace="" localname="LowerProperty1" name="main"/>
+  <property-defs
+    xmlns:es="http://marklogic.com/entity-services"
+    xmlns:nested="nested">
+    <property namespace="nested" localname="LowerProperty1" name="main"/>
     <property namespace="" localname="EntityReference" name="entity"/>
-    <!--
-    <property path="/es:envelope/es:instance/TopProperty/LowerProperty1/EvenLowerProperty/LowestProperty1" name="low"/>
-    -->
+    <property path="/es:envelope/es:instance/TopProperty/nested:LowerProperty1/EvenLowerProperty/LowestProperty1" name="low"/>
   </property-defs>
   <algorithms>
     <!-- config for standard algorithm -->
@@ -24,12 +24,10 @@
         <source name="sample1" weight="10"/>
       </source-weights>
     </merge>
-    <!--
     <merge property-name="low"  max-values="1">
       <source-weights>
         <source name="sample2" weight="10"/>
       </source-weights>
     </merge>
-    -->
   </merging>
 </options>

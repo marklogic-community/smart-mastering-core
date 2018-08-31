@@ -17,13 +17,13 @@
       <es:version>1.0</es:version>
     </es:info>
     <TopProperty>
-      <LowerProperty1>
+      <nested:LowerProperty1 xmlns:nested="nested">
         <EvenLowerProperty>
           <LowestProperty1>some string</LowestProperty1>
           <LowestProperty2>some string</LowestProperty2>
           <LowestProperty3>some string</LowestProperty3>
         </EvenLowerProperty>
-      </LowerProperty1>
+      </nested:LowerProperty1>
       <EntityReference>
         <PropValue>123</PropValue>
       </EntityReference>
