@@ -1180,6 +1180,59 @@ declare function merge-impl:get-raw-values(
 };
 
 (:
+ : Get instance property values by following the configured path.
+ : @param $instances  all instance values from the source documents
+ : @param $path-prop  full path to property
+ : @return sequence of elements or JSON properties
+ :)
+declare function merge-impl:get-instance-props-by-path(
+  $instances,
+  $path-prop as element(merging:property)
+)
+{
+  (: Remove /es:envelope/es:instance/, because we'll evaluate against the instance property :)
+  let $inst-path := fn:replace($path-prop/@path, "/\w*:?envelope/\w*:?instance/TopProperty", "")
+  let $ns-map :=
+    map:new((
+      for $pre in fn:in-scope-prefixes($path-prop)
+      return map:entry($pre, fn:namespace-uri-for-prefix($pre, $path-prop)),
+      map:entry("", "") (: Make sure blank namespace isn't inherited :)
+    ))
+  for $instance in $instances
+  return xdmp:unpath($path-prop/@path, $ns-map, $instance)
+};
+
+(:
+ : Get the merging:merge element that corresponds to a path.
+ :)
+declare function merge-impl:get-path-merge-spec(
+  $options as element(merging:options),
+  $path as xs:string
+) as element(merging:merge)*
+{
+  let $property-name := $options/merging:property-defs/merging:property[@path = $path]/@name
+  return
+    $options/merging:merging/merging:merge[@property-name = $property-name]
+};
+
+(:
+ : Get the merging:merge element that corresponds to a QName.
+ :)
+declare function merge-impl:get-merge-spec(
+  $options as element(merging:options),
+  $prop as xs:QName*
+) as element(merging:merge)*
+{
+  let $property-namespace := fn:namespace-uri-from-QName($prop)
+  let $property-local-name := fn:local-name-from-QName($prop)
+  let $property-name :=
+    $options/merging:property-defs
+      /merging:property[@namespace = $property-namespace and @localname = $property-local-name]/@name
+  return
+    $options/merging:merging/merging:merge[@property-name = $property-name]
+};
+
+(:
  : Returns a sequence of map:maps, one for each top-level property. Each map has the following keys:
  : - "algorithm" -- object-node with the name and optionsReference of the algorithm used for this property
  : - "sources" -- one or more object-nodes indicating which of the original docs the surviving value(s) came from
@@ -1194,6 +1247,7 @@ declare function merge-impl:build-final-properties(
 {
   let $top-level-properties := fn:distinct-values($instances/* ! fn:node-name(.))
   let $property-defs := $merge-options/merging:property-defs[fn:exists(merging:property/@localname)]
+  let $path-property-defs := $merge-options/merging:property-defs/merging:property[fn:matches(@path, "/.*:envelope/.*:instance")]
   let $algorithms-map := merge-impl:build-merging-map($merge-options)
   let $merge-options-uri := $merge-options ! xdmp:node-uri(.)
   let $merge-options-ref :=
@@ -1204,87 +1258,156 @@ declare function merge-impl:build-final-properties(
     else
       null-node{}
   let $first-doc := fn:head($docs)
-  for $prop in $top-level-properties
-  let $property-namespace := fn:namespace-uri-from-QName($prop)
-  let $property-local-name := fn:local-name-from-QName($prop)
-  let $property-name :=
-    $property-defs
-    /merging:property[@namespace = $property-namespace and @localname = $property-local-name]
-      /@name
-  let $property-spec :=
-    $merge-options
-    /merging:merging
-      /merging:merge[@property-name = $property-name]
-  let $algorithm-name := fn:string($property-spec/@algorithm-ref)
-  let $algorithm := map:get($algorithms-map, $algorithm-name)
-  let $algorithm-info :=
-    object-node {
-      "name": fn:head(($algorithm-name[fn:exists($algorithm)], "standard")),
-      "optionsReference": $merge-options-ref
-    }
-  let $instance-props :=
-    for $instance-prop in $instances/*[fn:node-name(.) = $prop]
-    (: require the property to have a value :)
-    where fn:normalize-space(fn:string-join(($instance-prop|$instance-prop//node()) ! fn:string())) ne ""
-    return ($instance-prop/self::array-node()/*, $instance-prop except $instance-prop/self::array-node())
-  return
-    fn:fold-left(
-      function($a as item()*, $b as item()) as item()* {
-        if (
-          fn:exists($a) and
-            fn:deep-equal(map:get(fn:head(fn:reverse($a)),"values"), map:get($b,"values"))
-        ) then
-          fn:head(fn:reverse($a)) + $b
-        else
-          ($a, $b + map:entry("algorithm", $algorithm-info))
-      },
-      (),
-      if (merge-impl:properties-are-equal($instance-props, $docs)) then
-        merge-impl:wrap-revision-info($prop, $instance-props[fn:root(.) is $first-doc], $sources)
-      else
-        let $wrapped-properties :=
-          for $doc at $pos in $docs
-          let $props-for-instance :=
-            for $prop-val in $instance-props[fn:root(.) is $doc]
-            return
-              (: Propertly extract values from arrays :)
-              if ($prop-val instance of array-node()) then
-                let $children := $prop-val/node()
-                return
-                  if (fn:exists($children/*[fn:node-name(.) eq $prop])) then
-                    $children/*[fn:node-name(.) eq $prop]
-                  else
-                    $children
-              else
-                $prop-val
-          for $prop-value in $props-for-instance
-          (:let $normalized-value := history:normalize-value-for-tracing($prop-value)
-            let $source-details := $prop-history-info//object-node(fn:string($prop))/object-node($normalized-value)/sourceDetails
-            :)
-          let $lineage-uris :=
-            (:if (fn:exists($source-details)) then
-                $source-details/sourceLocation
-              else:)
-            xdmp:node-uri($doc)
-          let $prop-sources := $sources[documentUri = $lineage-uris]
-          where fn:exists($props-for-instance)
-          return
-            merge-impl:wrap-revision-info($prop, $prop-value, $prop-sources)
-        return
-          if (fn:exists($algorithm)) then
-            merge-impl:execute-algorithm(
-              $algorithm,
-              $prop,
-              $wrapped-properties,
-              $property-spec
-            )
+  return (
+    for $path-prop in $path-property-defs
+    let $merge-spec := merge-impl:get-path-merge-spec($merge-options, $path-prop/@path)
+    let $algorithm-name := fn:string($merge-spec/@algorithm-ref)
+    let $algorithm := map:get($algorithms-map, $algorithm-name)
+    let $algorithm-info :=
+      object-node {
+        "name": fn:head(($algorithm-name[fn:exists($algorithm)], "standard")),
+        "optionsReference": $merge-options-ref
+      }
+    let $instance-props := merge-impl:get-instance-props-by-path($instances, $path-prop)
+    let $prop-qname := fn:node-name(fn:head($instance-props))
+    return
+      fn:fold-left(
+        function($a as item()*, $b as item()) as item()* {
+          if (
+            fn:exists($a) and
+              fn:deep-equal(map:get(fn:head(fn:reverse($a)),"values"), map:get($b,"values"))
+          ) then
+            fn:head(fn:reverse($a)) + $b
           else
-            merge-impl:standard(
-              $prop,
-              $wrapped-properties,
-              $property-spec
-            )
-    )
+            ($a, $b + map:entry("algorithm", $algorithm-info))
+        },
+        (),
+        if (merge-impl:properties-are-equal($instance-props, $docs)) then
+          merge-impl:wrap-revision-info($prop-qname, $instance-props[fn:root(.) is $first-doc], $sources)
+        else
+          let $wrapped-properties :=
+            for $doc at $pos in $docs
+            let $props-for-instance :=
+              for $prop-val in $instance-props[fn:root(.) is $doc]
+              return
+                (: Propertly extract values from arrays :)
+                (: TODO: consider array case
+                if ($prop-val instance of array-node()) then
+                  let $children := $prop-val/node()
+                  return
+                    if (fn:exists($children/*[fn:node-name(.) eq $prop])) then
+                      $children/*[fn:node-name(.) eq $prop]
+                    else
+                      $children
+                else
+                :)
+                  $prop-val
+            for $prop-value in $props-for-instance
+            (:let $normalized-value := history:normalize-value-for-tracing($prop-value)
+              let $source-details := $prop-history-info//object-node(fn:string($prop))/object-node($normalized-value)/sourceDetails
+              :)
+            let $lineage-uris :=
+              (:if (fn:exists($source-details)) then
+                  $source-details/sourceLocation
+                else:)
+              xdmp:node-uri($doc)
+            let $prop-sources := $sources[documentUri = $lineage-uris]
+            where fn:exists($props-for-instance)
+            return
+              merge-impl:wrap-revision-info($prop-qname, $prop-value, $prop-sources)
+          let $merged-values :=
+            if (fn:exists($algorithm)) then
+              merge-impl:execute-algorithm(
+                $algorithm,
+                $prop-qname,
+                $wrapped-properties,
+                $merge-spec
+              )
+            else
+              merge-impl:standard(
+                $prop-qname,
+                $wrapped-properties,
+                $merge-spec
+              )
+          return $merged-values
+      )
+    ,
+
+
+
+    for $prop in $top-level-properties
+    let $merge-spec := merge-impl:get-merge-spec($merge-options, $prop)
+    let $algorithm-name := fn:string($merge-spec/@algorithm-ref)
+    let $algorithm := map:get($algorithms-map, $algorithm-name)
+    let $algorithm-info :=
+      object-node {
+        "name": fn:head(($algorithm-name[fn:exists($algorithm)], "standard")),
+        "optionsReference": $merge-options-ref
+      }
+    let $instance-props :=
+      for $instance-prop in $instances/*[fn:node-name(.) = $prop]
+      (: require the property to have a value :)
+      where fn:normalize-space(fn:string-join(($instance-prop|$instance-prop//node()) ! fn:string())) ne ""
+      return ($instance-prop/self::array-node()/*, $instance-prop except $instance-prop/self::array-node())
+    return
+      fn:fold-left(
+        function($a as item()*, $b as item()) as item()* {
+          if (
+            fn:exists($a) and
+              fn:deep-equal(map:get(fn:head(fn:reverse($a)),"values"), map:get($b,"values"))
+          ) then
+            fn:head(fn:reverse($a)) + $b
+          else
+            ($a, $b + map:entry("algorithm", $algorithm-info))
+        },
+        (),
+        if (merge-impl:properties-are-equal($instance-props, $docs)) then
+          merge-impl:wrap-revision-info($prop, $instance-props[fn:root(.) is $first-doc], $sources)
+        else
+          let $wrapped-properties :=
+            for $doc at $pos in $docs
+            let $props-for-instance :=
+              for $prop-val in $instance-props[fn:root(.) is $doc]
+              return
+                (: Propertly extract values from arrays :)
+                if ($prop-val instance of array-node()) then
+                  let $children := $prop-val/node()
+                  return
+                    if (fn:exists($children/*[fn:node-name(.) eq $prop])) then
+                      $children/*[fn:node-name(.) eq $prop]
+                    else
+                      $children
+                else
+                  $prop-val
+            for $prop-value in $props-for-instance
+            (:let $normalized-value := history:normalize-value-for-tracing($prop-value)
+              let $source-details := $prop-history-info//object-node(fn:string($prop))/object-node($normalized-value)/sourceDetails
+              :)
+            let $lineage-uris :=
+              (:if (fn:exists($source-details)) then
+                  $source-details/sourceLocation
+                else:)
+              xdmp:node-uri($doc)
+            let $prop-sources := $sources[documentUri = $lineage-uris]
+            where fn:exists($props-for-instance)
+            return
+              merge-impl:wrap-revision-info($prop, $prop-value, $prop-sources)
+          return
+            if (fn:exists($algorithm)) then
+              merge-impl:execute-algorithm(
+                $algorithm,
+                $prop,
+                $wrapped-properties,
+                $merge-spec
+              )
+            else
+              merge-impl:standard(
+                $prop,
+                $wrapped-properties,
+                $merge-spec
+              )
+      )
+  )
 };
 
 (:
