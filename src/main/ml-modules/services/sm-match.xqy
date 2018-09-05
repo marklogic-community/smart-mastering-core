@@ -55,10 +55,15 @@ function post(
       $options//*:max-scan ! xs:integer(.),
       20
     ))
-  let $include-matches := 
-    if (map:get($params, "includeMatches") castable as xs:boolean) then
-      map:get($params, "includeMatches") cast as xs:boolean
-    else fn:false()
+  let $include-matches as xs:boolean := 
+    let $include := fn:head((map:get($params, "includeMatches"), fn:false()))
+    return
+      if ($include castable as xs:boolean) then
+        $include cast as xs:boolean
+      else 
+        fn:error((),"RESTAPI-SRVEXERR", 
+          (400, "Bad Request", 
+           "Your request included an invalid value for the includeMatches parameter.  A boolean value (true or false) is required."))
   let $results :=
     matcher:find-document-matches-by-options(
       $document,
