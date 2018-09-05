@@ -55,7 +55,10 @@ function post(
       $options//*:max-scan ! xs:integer(.),
       20
     ))
-  let $include-matches := fn:head((map:get($params, "includeMatches"), fn:false()))
+  let $include-matches := 
+    if (map:get($params, "includeMatches") castable as xs:boolean) then
+      map:get($params, "includeMatches") cast as xs:boolean
+    else fn:false()
   let $results :=
     matcher:find-document-matches-by-options(
       $document,
