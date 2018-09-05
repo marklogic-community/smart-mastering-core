@@ -905,27 +905,46 @@ declare function merge-impl:build-instance-body-by-final-properties(
     let $path-properties := $final-properties[map:contains(., "path")]
     for $prop in $prop-elements
     (: A property may contain path-specified properties. Overlay the path property values on the top-level properties :)
-    let $updated-prop :=
-      fn:head((
-        for $path-prop in $path-properties
-        let $path := map:get($path-prop, "path")
-        (: $path is a rooted path, but we need to apply the path under the level of the top property. Strip off the
-         : top part of the path. :)
-        let $lower-path := fn:replace($path, "/\w*:?envelope/\w*:?instance/[^/]+", "")
-        let $target := xdmp:unpath($lower-path, map:get($path-prop, "nsMap"), $prop)
-        where fn:exists($target)
-        return
-          mem:execute(
-            mem:replace(
-              map:map(),
-              $target,
-              map:get($path-prop, "values")
-            )
-          ),
+    let $updates := merge-impl:find-updates($updates, $path-properties, $prop)
+    let $_ := xdmp:log("build-instance-body. updates=" || xdmp:quote($updates))
+    return
+      if (fn:exists(map:keys($updates))) then
+        mem:execute($updates)
+      else
         $prop
-      ))
-    return $updated-prop
   )
+};
+
+(:
+ : Recurse through $path-properties to build up a map of mem:replace operations.
+ : @param $updates  a map for tracking updates to be made
+ : @param $path-properties  a sequence of maps that hold property values and sources
+ : @param $prop  a merged non-path property
+ : @return a map:map of mem:replace operations. Type not specified to allow for tail call optimization.
+ :)
+declare function merge-impl:find-updates($updates as map:map, $path-properties as map:map*, $prop)
+{
+  if (fn:exists($path-properties)) then
+    let $path-prop := fn:head($path-properties)
+    let $path := map:get($path-prop, "path")
+    (: $path is a rooted path, but we need to apply the path under the level of the top property. Strip off the
+      : top part of the path. :)
+    let $lower-path := fn:replace($path, "/\w*:?envelope/\w*:?instance/[^/]+", "")
+    let $target := xdmp:unpath($lower-path, map:get($path-prop, "nsMap"), $prop)
+    return
+      if (fn:exists($target)) then
+        (: This property contains this path; replace :)
+        mem:replace(
+          merge-impl:find-updates($updates, fn:tail($path-properties), $prop),
+          $target,
+          map:get($path-prop, "values")
+        )
+      else
+        (: This property doesn't contain this path; check the other paths :)
+        merge-impl:find-updates($updates, fn:tail($path-properties), $prop)
+  else
+    $updates
+
 };
 
 (:

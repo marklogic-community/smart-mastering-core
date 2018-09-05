@@ -32,6 +32,6 @@ let $merged-doc :=
 return (
   test:assert-equal("another string", $merged-doc/es:instance/TopProperty/nested:LowerProperty1/EvenLowerProperty/LowestProperty1/fn:string()),
   test:assert-equal("some string", $merged-doc/es:instance/TopProperty/nested:LowerProperty1/EvenLowerProperty/LowestProperty2/fn:string()),
-  test:assert-equal("some string", $merged-doc/es:instance/TopProperty/nested:LowerProperty1/EvenLowerProperty/LowestProperty3/fn:string()),
+  test:assert-equal("another string", $merged-doc/es:instance/TopProperty/nested:LowerProperty1/EvenLowerProperty/LowestProperty3/fn:string()),
   test:assert-equal(123, $merged-doc/es:instance/TopProperty/EntityReference/PropValue/fn:data())
 )
