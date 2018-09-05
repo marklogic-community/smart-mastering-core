@@ -39,9 +39,9 @@ let $source3 :=
   }
 
 let $wrapped-properties := (
-  merging-impl:wrap-revision-info(xs:QName("name"), <name>Name1</name>, $source1),
-  merging-impl:wrap-revision-info(xs:QName("name"), <name>Name2</name>, $source2),
-  merging-impl:wrap-revision-info(xs:QName("name"), <name>Name3</name>, $source3)
+  merging-impl:wrap-revision-info(xs:QName("name"), <name>Name1</name>, $source1, (), ()),
+  merging-impl:wrap-revision-info(xs:QName("name"), <name>Name2</name>, $source2, (), ()),
+  merging-impl:wrap-revision-info(xs:QName("name"), <name>Name3</name>, $source3, (), ())
 )
 let $actual :=
   std:standard(xs:QName("name"), $wrapped-properties, $property-spec)

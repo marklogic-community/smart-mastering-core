@@ -46,6 +46,8 @@ import module namespace sem = "http://marklogic.com/semantics"
   at "/MarkLogic/semantics.xqy";
 import module namespace tel = "http://marklogic.com/smart-mastering/telemetry"
   at "/com.marklogic.smart-mastering/telemetry.xqy";
+import module namespace mem = "http://maxdewpoint.blogspot.com/memory-operations/functional"
+  at "/mlpm_modules/XQuery-XML-Memory-Operations/memory-operations-functional.xqy";
 
 declare namespace merging = "http://marklogic.com/smart-mastering/merging";
 declare namespace sm = "http://marklogic.com/smart-mastering";
@@ -879,25 +881,51 @@ declare function merge-impl:build-instance-body-by-final-properties(
         $wrapper-qnames
       )
     )/object-node()
-  else
-    fn:fold-left(
-      function($children, $parent-name) {
-        element {$parent-name} {
-          $children
-        }
-      },
-      for $prop in $final-properties
-      let $prop-values := $prop => map:get("values")
-      return
-        if ($prop-values instance of element()+) then
-          $prop-values
-        else
-          element {($prop => map:get("name"))} {
-            $prop-values
+  else (
+    let $prop-elements :=
+      fn:fold-left(
+        function($children, $parent-name) {
+          element {$parent-name} {
+            $children
           }
-      ,
-      $wrapper-qnames
-    )
+        },
+        for $prop in $final-properties[fn:not(map:contains(., "path"))]
+        let $prop-values := $prop => map:get("values")
+        return
+          if ($prop-values instance of element()+) then
+            $prop-values
+          else
+            element {($prop => map:get("name"))} {
+              $prop-values
+            }
+        ,
+        $wrapper-qnames
+      )
+    let $updates := map:map()
+    let $path-properties := $final-properties[map:contains(., "path")]
+    for $prop in $prop-elements
+    (: A property may contain path-specified properties. Overlay the path property values on the top-level properties :)
+    let $updated-prop :=
+      fn:head((
+        for $path-prop in $path-properties
+        let $path := map:get($path-prop, "path")
+        (: $path is a rooted path, but we need to apply the path under the level of the top property. Strip off the
+         : top part of the path. :)
+        let $lower-path := fn:replace($path, "/\w*:?envelope/\w*:?instance/[^/]+", "")
+        let $target := xdmp:unpath($lower-path, map:get($path-prop, "nsMap"), $prop)
+        where fn:exists($target)
+        return
+          mem:execute(
+            mem:replace(
+              map:map(),
+              $target,
+              map:get($path-prop, "values")
+            )
+          ),
+        $prop
+      ))
+    return $updated-prop
+  )
 };
 
 (:
@@ -1172,7 +1200,8 @@ declare function merge-impl:get-raw-values(
       merge-impl:wrap-revision-info(
         $prop-qname,
         $values,
-        $prop-sources
+        $prop-sources,
+        (), ()
       )
     else ()
   return
@@ -1183,21 +1212,17 @@ declare function merge-impl:get-raw-values(
  : Get instance property values by following the configured path.
  : @param $instances  all instance values from the source documents
  : @param $path-prop  full path to property
+ : @param $ns-map  map of namespaces for interpreting the path
  : @return sequence of elements or JSON properties
  :)
 declare function merge-impl:get-instance-props-by-path(
   $instances,
-  $path-prop as element(merging:property)
+  $path-prop as element(merging:property),
+  $ns-map as map:map
 )
 {
   (: Remove /es:envelope/es:instance/, because we'll evaluate against the instance property :)
   let $inst-path := fn:replace($path-prop/@path, "/\w*:?envelope/\w*:?instance/TopProperty", "")
-  let $ns-map :=
-    map:new((
-      for $pre in fn:in-scope-prefixes($path-prop)
-      return map:entry($pre, fn:namespace-uri-for-prefix($pre, $path-prop)),
-      map:entry("", "") (: Make sure blank namespace isn't inherited :)
-    ))
   for $instance in $instances
   return xdmp:unpath($path-prop/@path, $ns-map, $instance)
 };
@@ -1237,6 +1262,8 @@ declare function merge-impl:get-merge-spec(
  : - "algorithm" -- object-node with the name and optionsReference of the algorithm used for this property
  : - "sources" -- one or more object-nodes indicating which of the original docs the surviving value(s) came from
  : - "values" -- the surviving property values
+ : - "path" -- if the property was specified by a path, the XPath expression
+ : - "nsMap" -- if the property was specified by a path, a map of (prefix -> namespace)
  :)
 declare function merge-impl:build-final-properties(
   $merge-options,
@@ -1259,6 +1286,12 @@ declare function merge-impl:build-final-properties(
       null-node{}
   let $first-doc := fn:head($docs)
   return (
+    let $ns-map :=
+      map:new((
+        for $pre in fn:in-scope-prefixes($property-defs)
+        return map:entry($pre, fn:namespace-uri-for-prefix($pre, $property-defs)),
+        map:entry("", "") (: Make sure blank namespace isn't inherited :)
+      ))
     for $path-prop in $path-property-defs
     let $merge-spec := merge-impl:get-path-merge-spec($merge-options, $path-prop/@path)
     let $algorithm-name := fn:string($merge-spec/@algorithm-ref)
@@ -1268,7 +1301,7 @@ declare function merge-impl:build-final-properties(
         "name": fn:head(($algorithm-name[fn:exists($algorithm)], "standard")),
         "optionsReference": $merge-options-ref
       }
-    let $instance-props := merge-impl:get-instance-props-by-path($instances, $path-prop)
+    let $instance-props := merge-impl:get-instance-props-by-path($instances, $path-prop, $ns-map)
     let $prop-qname := fn:node-name(fn:head($instance-props))
     return
       fn:fold-left(
@@ -1283,7 +1316,7 @@ declare function merge-impl:build-final-properties(
         },
         (),
         if (merge-impl:properties-are-equal($instance-props, $docs)) then
-          merge-impl:wrap-revision-info($prop-qname, $instance-props[fn:root(.) is $first-doc], $sources)
+          merge-impl:wrap-revision-info($prop-qname, $instance-props[fn:root(.) is $first-doc], $sources, $path-prop/@path, $ns-map)
         else
           let $wrapped-properties :=
             for $doc at $pos in $docs
@@ -1314,7 +1347,7 @@ declare function merge-impl:build-final-properties(
             let $prop-sources := $sources[documentUri = $lineage-uris]
             where fn:exists($props-for-instance)
             return
-              merge-impl:wrap-revision-info($prop-qname, $prop-value, $prop-sources)
+              merge-impl:wrap-revision-info($prop-qname, $prop-value, $prop-sources, $path-prop/@path, $ns-map)
           let $merged-values :=
             if (fn:exists($algorithm)) then
               merge-impl:execute-algorithm(
@@ -1362,7 +1395,7 @@ declare function merge-impl:build-final-properties(
         },
         (),
         if (merge-impl:properties-are-equal($instance-props, $docs)) then
-          merge-impl:wrap-revision-info($prop, $instance-props[fn:root(.) is $first-doc], $sources)
+          merge-impl:wrap-revision-info($prop, $instance-props[fn:root(.) is $first-doc], $sources, (), ())
         else
           let $wrapped-properties :=
             for $doc at $pos in $docs
@@ -1391,7 +1424,7 @@ declare function merge-impl:build-final-properties(
             let $prop-sources := $sources[documentUri = $lineage-uris]
             where fn:exists($props-for-instance)
             return
-              merge-impl:wrap-revision-info($prop, $prop-value, $prop-sources)
+              merge-impl:wrap-revision-info($prop, $prop-value, $prop-sources, (), ())
           return
             if (fn:exists($algorithm)) then
               merge-impl:execute-algorithm(
@@ -1415,21 +1448,30 @@ declare function merge-impl:build-final-properties(
  : @param $property-name  XML element or JSON property name
  : @param $properties  XML elements or JSON properties corresponding to ES instance properties
  : @param $sources  information pulled from the source document headers
+ : @param $path  an XPath to a property
+ : @param $ns-map  namespace map for the $path
  : @return sequence of maps
  :)
 declare function merge-impl:wrap-revision-info(
   $property-name as xs:QName,
   $properties as item()*,
-  $sources as item()*
+  $sources as item()*,
+  $path as xs:string?,
+  $ns-map as map:map?
 ) as map:map*
 {
   for $prop in $properties
   return
-  map:new((
-    map:entry("name", $property-name),
-    map:entry("sources", $sources),
-    map:entry("values", $prop)
-  ))
+    map:new((
+      map:entry("name", $property-name),
+      map:entry("sources", $sources),
+      map:entry("values", $prop),
+      if (fn:exists($path)) then (
+        map:entry("path", $path),
+        map:entry("nsMap", $ns-map)
+      )
+      else ()
+    ))
 };
 
 (:
