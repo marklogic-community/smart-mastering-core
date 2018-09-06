@@ -31,7 +31,7 @@ declare function merging:standard(
     (
       let $length-weight :=
         fn:head((
-          $property-spec/m:length/@weight ! fn:number(.),
+          $property-spec/*:length/@weight ! fn:number(.),
           0
         ))
       for $property in merging:standard-condense-properties(
@@ -46,9 +46,11 @@ declare function merging:standard(
       let $source-score := fn:sum((
           for $source in $sources
           return
-            $property-spec
-              /m:source-weights
-              /m:source[@name = $source/name]/@weight
+            (: See MDM-529 for why the below is needed :)
+            fn:head((
+              $property-spec/*:source-weights/*:source[@name = $source/name]/@weight,
+              $property-spec/*:source-weights/*:source[*:name = $source/name]/*:weight
+            ))
         ))
       let $weight := $length-score + $source-score
       stable order by $weight descending, $source-dateTime descending
