@@ -16,9 +16,10 @@ let $actual :=
     fn:true(),
     cts:collection-query($lib:ORG-COLL)
 )
-let $_ := xdmp:log("boost-query. actual=" || xdmp:quote($actual))
+let $org-name-query := $actual/boost-query/cts:or-query/cts:json-property-value-query[./cts:property = "orgName"]
 return (
   test:assert-equal(1, $actual/@total/fn:data()),
   test:assert-equal(1, fn:count($actual/result)),
-  test:assert-equal(30, $actual/result/@score/fn:data())
+  test:assert-equal(30, $actual/result/@score/fn:data()),
+  test:assert-equal(1, fn:count(fn:distinct-values($org-name-query/cts:value/fn:string())))
 )
