@@ -1,7 +1,8 @@
 xquery version "1.0-ml";
 
 (:
- : Purpose of test: see MDM-491. Boost query was being generated incorrectly.
+ : Purpose of test: see MDM-491. Boost query was being generated incorrectly, resulting in extra points being awarded
+ : to a match (score of 50 instead of 30).
  :)
 
 import module namespace lib = "http://marklogic.com/smart-mastering/test" at "lib/lib.xqy";
