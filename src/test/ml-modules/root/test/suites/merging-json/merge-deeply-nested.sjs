@@ -9,8 +9,6 @@ let uris = [];
 for (uri in lib['NESTED-DATA']) { uris.push(uri); }
 let uriStr = uris.join('##');
 
-xdmp.log('merge-deeply-nested. uriStr=' + uriStr);
-
 // Merge the nested docs
 let mergedDoc =
   fn.head(xdmp.xqueryEval(
