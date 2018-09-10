@@ -861,7 +861,6 @@ declare function merge-impl:build-instance-body-by-final-properties(
   $format as xs:string
 )
 {
-  xdmp:log("build-instance-body. final-properties=" || xdmp:quote($final-properties)),
   if ($format eq $const:FORMAT-JSON) then (
     xdmp:to-json(
       (: TODO - consider using XSLT. I'd be able to specify a path rather than tracking through recursive descent :)
@@ -939,11 +938,25 @@ declare function merge-impl:build-instance-body-by-final-properties(
   )
 };
 
+declare function merge-impl:strip-top-path($path) as xs:string
+{
+  fn:replace($path, "/\w*:?envelope/\w*:?instance/[^/]+", "")
+};
+
+(:
+ : Given an XPath, rewrite it to apply to the XML serialization of JSON.
+ : Example: "/LowerProperty1/EvenLowerProperty/LowestProperty1" becomes
+ : "json:entry[@key='LowerProperty1']/json:value/json:object/json:entry[@key='EvenLowerProperty']/json:value/json:object/json:entry[@key='LowestProperty1']/json:value"
+ :)
 declare function merge-impl:convert-path-to-json($path as xs:string)
   as xs:string
 {
-  (: TODO :)
-  "json:entry[@key='EvenLowerProperty']/json:value/json:object/json:entry[@key='LowestProperty1']/json:value"
+  fn:string-join(
+    for $segment in fn:tokenize($path, "/")
+    where $segment ne ""
+    return ("json:entry[@key='" || $segment || "']/json:value"),
+    "/json:object/"
+  )
 };
 
 (:
@@ -953,10 +966,11 @@ declare function merge-impl:convert-path-to-json($path as xs:string)
 declare function merge-impl:generate-path-templates($path-properties)
 {
   for $path-prop in $path-properties
+  let $lower-path := merge-impl:strip-top-path(map:get($path-prop, 'path'))
   return
     <xsl:template>
-      { attribute match { merge-impl:convert-path-to-json(map:get($path-prop, 'path')) }}
-      <xsl:copy>another string</xsl:copy>
+      { attribute match { merge-impl:convert-path-to-json($lower-path) }}
+      <xsl:copy>{map:get($path-prop, 'values')}</xsl:copy>
     </xsl:template>
 };
 
@@ -974,7 +988,7 @@ declare function merge-impl:find-updates($updates as map:map, $path-properties a
     let $path := map:get($path-prop, "path")
     (: $path is a rooted path, but we need to apply the path under the level of the top property. Strip off the
       : top part of the path. :)
-    let $lower-path := fn:replace($path, "/\w*:?envelope/\w*:?instance/[^/]+", "")
+    let $lower-path := merge-impl:strip-top-path($path)
     let $target := xdmp:unpath($lower-path, map:get($path-prop, "nsMap"), $prop)
     return
       if (fn:exists($target)) then
@@ -1286,7 +1300,7 @@ declare function merge-impl:get-instance-props-by-path(
 )
 {
   (: Remove /es:envelope/es:instance/{top property name}, because we'll evaluate against the instance property :)
-  let $inst-path := fn:replace($path-prop/@path, "/\w*:?envelope/\w*:?instance/[^/]+", "")
+  let $inst-path := merge-impl:strip-top-path($path-prop/@path)
   for $instance in $instances
   return xdmp:unpath($path-prop/@path, $ns-map, $instance)
 };
