@@ -54,6 +54,7 @@ declare namespace sm = "http://marklogic.com/smart-mastering";
 declare namespace es = "http://marklogic.com/entity-services";
 declare namespace prov = "http://www.w3.org/ns/prov#";
 declare namespace host = "http://marklogic.com/xdmp/status/host";
+declare namespace xsl = "http://www.w3.org/1999/XSL/Transform";
 
 declare option xdmp:mapping "false";
 
@@ -860,9 +861,11 @@ declare function merge-impl:build-instance-body-by-final-properties(
   $format as xs:string
 )
 {
-  if ($format eq $const:FORMAT-JSON) then
+  xdmp:log("build-instance-body. final-properties=" || xdmp:quote($final-properties)),
+  if ($format eq $const:FORMAT-JSON) then (
     xdmp:to-json(
-      fn:fold-left(
+      (: TODO - consider using XSLT. I'd be able to specify a path rather than tracking through recursive descent :)
+      let $merged-props := fn:fold-left(
         function($child-object, $parent-name) {
           map:entry(fn:string($parent-name), $child-object)
         },
@@ -872,7 +875,7 @@ declare function merge-impl:build-instance-body-by-final-properties(
             $map-a + $map-b
           },
           map:map(),
-          for $prop in $final-properties
+          for $prop in $final-properties[fn:not(map:contains(., "path"))]
           let $prop-name := fn:string($prop => map:get("name"))
           let $prop-values := $prop => map:get("values")
           return
@@ -880,7 +883,29 @@ declare function merge-impl:build-instance-body-by-final-properties(
         ),
         $wrapper-qnames
       )
+      (: Convert from maps to json:object notation, needed for XSLT :)
+      let $xml-json := <root>{xdmp:from-json(xdmp:to-json($merged-props))}</root>
+      let $path-properties := $final-properties[map:contains(., "path")]
+      let $path-templates := merge-impl:generate-path-templates($path-properties)
+      let $full-template :=
+        <xsl:stylesheet
+          xmlns:xs="http://www.w3.org/2001/XMLSchema" version="2.0"
+          xmlns:json="http://marklogic.com/xdmp/json">
+
+          { $path-templates }
+
+          <xsl:template match="node()|@*">
+            <xsl:copy>
+              <xsl:apply-templates select="node()|@*"/>
+            </xsl:copy>
+          </xsl:template>
+
+        </xsl:stylesheet>
+      let $fully-merged := xdmp:xslt-eval($full-template, $xml-json)
+      return json:object($fully-merged/root/node())
+
     )/object-node()
+  )
   else (
     let $prop-elements :=
       fn:fold-left(
@@ -906,13 +931,33 @@ declare function merge-impl:build-instance-body-by-final-properties(
     for $prop in $prop-elements
     (: A property may contain path-specified properties. Overlay the path property values on the top-level properties :)
     let $updates := merge-impl:find-updates($updates, $path-properties, $prop)
-    let $_ := xdmp:log("build-instance-body. updates=" || xdmp:quote($updates))
     return
       if (fn:exists(map:keys($updates))) then
         mem:execute($updates)
       else
         $prop
   )
+};
+
+declare function merge-impl:convert-path-to-json($path as xs:string)
+  as xs:string
+{
+  (: TODO :)
+  "json:entry[@key='EvenLowerProperty']/json:value/json:object/json:entry[@key='LowestProperty1']/json:value"
+};
+
+(:
+ : For each of the $path-properties, generate an XSL template
+ : TODO
+ :)
+declare function merge-impl:generate-path-templates($path-properties)
+{
+  for $path-prop in $path-properties
+  return
+    <xsl:template>
+      { attribute match { merge-impl:convert-path-to-json(map:get($path-prop, 'path')) }}
+      <xsl:copy>another string</xsl:copy>
+    </xsl:template>
 };
 
 (:
@@ -1082,7 +1127,7 @@ declare function merge-impl:build-final-headers(
   $sources
 ) as map:map*
 {
-  let $property-defs := $merge-options/merging:property-defs/merging:property[fn:exists(@path)]
+  let $property-defs := $merge-options/merging:property-defs/merging:property[fn:matches(@path, "^/[\w]*:?envelope/[\w]*:?headers")]
   let $algorithms-map := merge-impl:build-merging-map($merge-options)
   let $merge-options-uri := $merge-options ! xdmp:node-uri(.)
   let $merge-options-ref :=
@@ -1240,8 +1285,8 @@ declare function merge-impl:get-instance-props-by-path(
   $ns-map as map:map
 )
 {
-  (: Remove /es:envelope/es:instance/, because we'll evaluate against the instance property :)
-  let $inst-path := fn:replace($path-prop/@path, "/\w*:?envelope/\w*:?instance/TopProperty", "")
+  (: Remove /es:envelope/es:instance/{top property name}, because we'll evaluate against the instance property :)
+  let $inst-path := fn:replace($path-prop/@path, "/\w*:?envelope/\w*:?instance/[^/]+", "")
   for $instance in $instances
   return xdmp:unpath($path-prop/@path, $ns-map, $instance)
 };
@@ -1293,7 +1338,7 @@ declare function merge-impl:build-final-properties(
 {
   let $top-level-properties := fn:distinct-values($instances/* ! fn:node-name(.))
   let $property-defs := $merge-options/merging:property-defs[fn:exists(merging:property/@localname)]
-  let $path-property-defs := $merge-options/merging:property-defs/merging:property[fn:matches(@path, "/.*:envelope/.*:instance")]
+  let $path-property-defs := $merge-options/merging:property-defs/merging:property[fn:matches(@path, "^/[\w\-]*:?envelope/[\w\-]*:?instance")]
   let $algorithms-map := merge-impl:build-merging-map($merge-options)
   let $merge-options-uri := $merge-options ! xdmp:node-uri(.)
   let $merge-options-ref :=
@@ -1305,6 +1350,7 @@ declare function merge-impl:build-final-properties(
       null-node{}
   let $first-doc := fn:head($docs)
   return (
+    (: TODO: refactor. These two cases repeat a lot of code. :)
     let $ns-map :=
       map:new((
         for $pre in fn:in-scope-prefixes($property-defs)

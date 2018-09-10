@@ -17,4 +17,14 @@ return
     $doc,
     xdmp:default-permissions(),
     $const:CONTENT-COLL
+  ),
+
+for $uri in map:keys($lib:NESTED-DATA)
+let $doc := test:get-test-file(map:get($lib:NESTED-DATA, $uri))
+return
+  xdmp:document-insert(
+    $uri,
+    $doc,
+    xdmp:default-permissions(),
+    $const:CONTENT-COLL
   )
