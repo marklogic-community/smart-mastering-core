@@ -940,7 +940,7 @@ declare function merge-impl:build-instance-body-by-final-properties(
 
 declare function merge-impl:strip-top-path($path) as xs:string
 {
-  fn:replace($path, "/\w*:?envelope/\w*:?instance/[^/]+", "")
+  fn:replace($path, "/\w*:?envelope/\w*:?instance/[^/]+/", "")
 };
 
 (:
@@ -970,7 +970,16 @@ declare function merge-impl:generate-path-templates($path-properties)
   return
     <xsl:template>
       { attribute match { merge-impl:convert-path-to-json($lower-path) }}
-      <xsl:copy>{map:get($path-prop, 'values')}</xsl:copy>
+      <xsl:copy>
+        {
+          let $values := map:get($path-prop, 'values')
+          return
+            if ($values instance of array-node()) then
+              xdmp:from-json($values)
+            else
+              $values
+        }
+      </xsl:copy>
     </xsl:template>
 };
 
@@ -1291,7 +1300,7 @@ declare function merge-impl:get-raw-values(
  : @param $instances  all instance values from the source documents
  : @param $path-prop  full path to property
  : @param $ns-map  map of namespaces for interpreting the path
- : @return sequence of elements or JSON properties
+ : @return sequence: a QName, followed by values (elements or JSON properties)
  :)
 declare function merge-impl:get-instance-props-by-path(
   $instances,
@@ -1301,8 +1310,18 @@ declare function merge-impl:get-instance-props-by-path(
 {
   (: Remove /es:envelope/es:instance/{top property name}, because we'll evaluate against the instance property :)
   let $inst-path := merge-impl:strip-top-path($path-prop/@path)
-  for $instance in $instances
-  return xdmp:unpath($path-prop/@path, $ns-map, $instance)
+  let $parts := fn:tokenize($inst-path, "/")
+  (: We'll grab the node above our target so that we determine whether it's an array :)
+  let $middle-path := fn:string-join($parts[fn:position() != fn:last()], "/")
+  let $target-name-str := $parts[fn:last()]
+  let $target-name := fn:QName(map:get($ns-map, fn:replace($target-name-str, ":.*", "")), $target-name-str)
+  return (
+    $target-name,
+    for $instance in $instances
+    return
+      (: The value will be an XML element, a string (if target is a JSON property), or a JSON array :)
+      xdmp:unpath($middle-path, $ns-map, $instance)/node()[fn:node-name(.) = $target-name]
+  )
 };
 
 (:
@@ -1381,7 +1400,8 @@ declare function merge-impl:build-final-properties(
         "optionsReference": $merge-options-ref
       }
     let $instance-props := merge-impl:get-instance-props-by-path($instances, $path-prop, $ns-map)
-    let $prop-qname := fn:node-name(fn:head($instance-props))
+    let $prop-qname := fn:head($instance-props)
+    let $instance-props := fn:tail($instance-props)
     return
       fn:fold-left(
         function($a as item()*, $b as item()) as item()* {
@@ -1582,10 +1602,16 @@ declare function merge-impl:properties-are-equal(
             satisfies
               let $same-type := xdmp:type($prop1) eq xdmp:type($prop2)
               let $is-object := $prop1 instance of object-node()
-              let $objects-are-equal := $same-type and $is-object and merge-impl:objects-equal($prop1, $prop2)
-              let $values-are-equal := $same-type and fn:not($is-object) and $prop1 = $prop2
+              let $is-array := $prop1 instance of array-node()
               return
-                $objects-are-equal or $values-are-equal
+                if (fn:not($same-type)) then
+                  fn:false()
+                else if ($is-object) then
+                  merge-impl:objects-equal($prop1, $prop2)
+                else if ($is-array) then
+                  fn:deep-equal(<r>{xdmp:from-json($prop1)}</r>, <r>{xdmp:from-json($prop2)}</r>)
+                else
+                  $prop1 = $prop2
     )
 };
 
