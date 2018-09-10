@@ -38,6 +38,8 @@ let mergedDoc =
 [].concat(
   test.assertEqual("another string", mergedDoc.envelope.instance.TopProperty.LowerProperty1.EvenLowerProperty.LowestProperty1.toString()),
   test.assertEqual("some string", mergedDoc.envelope.instance.TopProperty.LowerProperty1.EvenLowerProperty.LowestProperty2.toString()),
-  // test.assertEqual("another string", mergedDoc.envelope.instance.TopProperty.LowerProperty1.EvenLowerProperty.LowestProperty3.toString()),
+  test.assertEqual(2, mergedDoc.envelope.instance.TopProperty.LowerProperty1.EvenLowerProperty.LowestProperty3.length),
+  test.assertEqual('another string 1', mergedDoc.envelope.instance.TopProperty.LowerProperty1.EvenLowerProperty.LowestProperty3[0].toString()),
+  test.assertEqual('another string 2', mergedDoc.envelope.instance.TopProperty.LowerProperty1.EvenLowerProperty.LowestProperty3[1].toString()),
   test.assertEqual(123, mergedDoc.envelope.instance.TopProperty.EntityReference.PropValue.valueOf())
 )
