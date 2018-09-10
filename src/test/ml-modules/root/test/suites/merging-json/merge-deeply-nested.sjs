@@ -5,8 +5,7 @@ const con = require("/com.marklogic.smart-mastering/constants.xqy");
 const test = require("/test/test-helper.xqy");
 const lib = require("lib/lib.xqy");
 
-let uris = [];
-for (uri in lib['NESTED-DATA']) { uris.push(uri); }
+let uris = ["/nested/doc1.json", "/nested/doc2.json"];
 let uriStr = uris.join('##');
 
 // Merge the nested docs
@@ -29,7 +28,7 @@ let mergedDoc =
     `,
     {
       "uri-str": uriStr,
-      "options-name": lib['NESTED-OPTIONS']
+      "options-name": "nested-options"
     },
     {
       "isolation": "different-transaction"
