@@ -1,0 +1,35 @@
+{
+  "envelope": {
+    "headers": {
+      "id": "6ec353d8-5010-44e8-9628-f25fce29e2f5",
+      "sources": {
+        "source": {
+          "name": "/Organizations/Source2/orgA.json",
+          "user": "mdm-rest-admin",
+          "dateTime": "2018-09-10T16:09:36.184582-04:00"
+        }
+      }
+    },
+    "triples": [],
+    "instance": {
+      "Organization": {
+        "orgName": "Besto",
+        "structure": "C Corp",
+        "purpose": "For Profit"
+      },
+      "info": {
+        "title": "Organization",
+        "version": "0.0.1"
+      }
+    },
+    "attachments": {
+      "org": {
+        "companyName": "Besto",
+        "intent": "For Profit",
+        "taxStructure": "subchapter-c corporation",
+        "missionStatement": "In minim sunt ipsum reprehenderit do. Culpa incididunt enim est elit. Consequat culpa ipsum reprehenderit eu. Adipisicing amet dolor sit nisi anim pariatur. Aliqua labore dolor aliqua anim eu ipsum fugiat cillum id velit aliqua.",
+        "primaryPhone": "+1 (922) 599-3216"
+      }
+    }
+  }
+}

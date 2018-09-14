@@ -1,0 +1,26 @@
+<options xmlns="http://marklogic.com/smart-mastering/matcher">
+  <property-defs>
+    <property namespace="" localname="orgName" name="name"/>
+    <property namespace="" localname="structure" name="structure"/>
+    <property namespace="" localname="purpose" name="purpose"/>
+  </property-defs>
+  <algorithms>
+    <algorithm name="dbl-metaphone" function="double-metaphone"/>
+  </algorithms>
+  <scoring>
+    <add property-name="name" weight="20"/>
+    <add property-name="structure" weight="5"/>
+    <add property-name="purpose" weight="5"/>
+    <expand property-name="name" algorithm-ref="dbl-metaphone" weight="5">
+      <distance-threshold>50</distance-threshold>
+    </expand>
+  </scoring>
+  <thresholds>
+    <threshold above="15" label="Likely Match" action="notify"/>
+    <threshold above="30" label="Definitive Match" action="merge"/>
+  </thresholds>
+  <tuning>
+    <max-scan>200</max-scan>  <!-- never look at more than 200 -->
+    <initial-scan>20</initial-scan>
+  </tuning>
+</options>
