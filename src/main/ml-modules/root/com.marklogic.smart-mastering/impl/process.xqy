@@ -187,21 +187,15 @@ declare function proc-impl:process-match-and-merge-with-options(
     let $action-func := map:get($action-map, $custom-action-match/@action)
     return
       if (fn:exists($action-func)) then
-        (: TODO -- make this not be a child transaction :)
-        xdmp:invoke-function(
-          function() {
-            if (fn:ends-with(xdmp:function-module($action-func), "sjs")) then
-              xdmp:apply(
-                $action-func,
-                $uri,
-                proc-impl:matches-to-json($custom-action-match),
-                merge-impl:options-to-json($options)
-              )
-            else
-              xdmp:apply($action-func, $uri, $custom-action-match, $options)
-          },
-          map:new((map:entry("isolation", "different-transaction"), map:entry("update", "true")))
-        )
+        if (fn:ends-with(xdmp:function-module($action-func), "sjs")) then
+          xdmp:apply(
+            $action-func,
+            $uri,
+            proc-impl:matches-to-json($custom-action-match),
+            merge-impl:options-to-json($options)
+          )
+        else
+          xdmp:apply($action-func, $uri, $custom-action-match, $options)
       else
         fn:error(xs:QName("SM-CONFIGURATION"), "Threshold action is not configured or not found", $custom-action-match)
   )
