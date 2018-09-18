@@ -36,10 +36,9 @@ This assumes that you're using ml-gradle in your project.
 _Note: be advised that this project is in its very early stages. The APIs
 presented here may change significantly before stabilizing._
 
-### Example
+### Examples
 
-To see an example of smart-mastering-core in use, see the [smart-mastering-demo 
-project][sm-demo].
+To view smart-mastering-core in use, see the [Smart Mastering project examples](examples).
 
 ### Need help?
 
