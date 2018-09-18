@@ -15,9 +15,9 @@ declare option xdmp:mapping "false";
  : @param $uri  URI of the target document
  : @return merged docs, if any, otherwise any notification documents
  :)
-declare function process:process-match-and-merge($uri as xs:string)
+declare function process:process-match-and-merge($uris as xs:string*)
 {
-  proc-impl:process-match-and-merge($uri)
+  proc-impl:process-match-and-merge($uris)
 };
 
 (:
@@ -29,9 +29,9 @@ declare function process:process-match-and-merge($uri as xs:string)
  : @param $option-name  the name of a set of merge options, which include a reference to a set of match options
  : @return merged docs, if any, otherwise any notification documents
  :)
-declare function process:process-match-and-merge($uri as xs:string, $option-name as xs:string)
+declare function process:process-match-and-merge($uris as xs:string*, $option-name as xs:string)
 {
-  proc-impl:process-match-and-merge($uri, $option-name, cts:true-query())
+  proc-impl:process-match-and-merge($uris, $option-name, cts:true-query())
 };
 
 (:
@@ -45,9 +45,9 @@ declare function process:process-match-and-merge($uri as xs:string, $option-name
  : @return merged docs, if any, otherwise any notification documents
  :)
 declare function process:process-match-and-merge(
-  $uri as xs:string,
+  $uris as xs:string*,
   $option-name as xs:string,
   $filter-query as cts:query)
 {
-  proc-impl:process-match-and-merge($uri, $option-name, $filter-query)
+  proc-impl:process-match-and-merge($uris, $option-name, $filter-query)
 };

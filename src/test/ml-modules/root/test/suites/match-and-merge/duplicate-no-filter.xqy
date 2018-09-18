@@ -1,5 +1,7 @@
 xquery version "1.0-ml";
 
+import module namespace constants = "http://marklogic.com/smart-mastering/constants"
+  at "/com.marklogic.smart-mastering/constants.xqy";
 import module namespace process = "http://marklogic.com/smart-mastering/process-records"
   at "/com.marklogic.smart-mastering/process-records.xqy";
 import module namespace lib = "http://marklogic.com/smart-mastering/test" at "lib/lib.xqy";
@@ -14,27 +16,22 @@ declare option xdmp:update "true";
 declare option xdmp:mapping "false";
 
 (:
- : We're batching calls to process-match-and-merge. The first call merges $lib:URI2 and $lib:URI3. In the second call,
- : the match process will find $lib:URI2 as a match for $lib:URI3, but it should see that those two docs have already
- : been merged and do nothing.
+ : We're batching calls to process-match-and-merge. URI2 and URI3 should get merged. We should then get notifications
+ : about the merged document + URI1 and the merged document + URI4.
  :)
 
-(: test with filtering query :)
+(: test w/o filtering query :)
 let $actual :=
   xdmp:invoke-function(
     function() {
-      let $q := cts:not-query(cts:document-query($lib:URI4))
-      return
-        process:process-match-and-merge(($lib:URI2, $lib:URI3), $lib:MERGE-OPTIONS-NAME, $q)
+      process:process-match-and-merge(($lib:URI2, $lib:URI3), $lib:MERGE-OPTIONS-NAME)
     },
     $lib:INVOKE_OPTIONS
   )
 
-
 return (
-  test:assert-equal(2, fn:count($actual)),
-  test:assert-exists(($actual[1])),
+  test:assert-equal(3, fn:count($actual)),
   test:assert-equal(xs:QName("es:envelope"), fn:node-name($actual[1])),
   test:assert-equal(xs:QName("sm:notification"), fn:node-name($actual[2])),
-  test:assert-same-values(($lib:URI2, $lib:URI3), $actual[1]/es:headers/sm:merges/sm:document-uri/fn:string())
+  test:assert-equal(xs:QName("sm:notification"), fn:node-name($actual[3]))
 )
