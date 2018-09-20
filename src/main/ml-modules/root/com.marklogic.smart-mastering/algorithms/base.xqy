@@ -69,10 +69,10 @@ declare function algorithms:build-algorithms-map($algorithms-xml as element(matc
 declare function algorithms:setup-algorithms($options as element(matcher:options))
 {
   let $setup-map := algorithms:setup-map-from-xml($options/*:algorithms)
-  for $item in $options//*[@algorithm-ref|*:algorithm-ref]
+  for $item in $options//*[@algorithm-ref]
   return
     fun-ext:execute-function(
-      map:get($setup-map, fn:string($item/(@algorithm-ref|*:algorithm-ref))),
+      map:get($setup-map, fn:string($item/@algorithm-ref)),
       map:new((
         map:entry("arg1", $item),
         map:entry("arg2", $options)
