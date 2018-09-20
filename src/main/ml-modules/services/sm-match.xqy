@@ -7,6 +7,8 @@ import module namespace matcher = "http://marklogic.com/smart-mastering/matcher"
 
 declare namespace rapi = "http://marklogic.com/rest-api";
 
+declare option xdmp:mapping "false";
+
 declare function get(
   $context as map:map,
   $params  as map:map
@@ -43,7 +45,7 @@ function post(
     if (map:contains($params, "options")) then
       matcher:get-options-as-xml(map:get($params, "options"))
     else
-      $input-root/(*:options|.[object-node("options")])
+      $input-root/(element(matcher:options)|self::object-node()[object-node("options")])
   let $start :=
     fn:head((
       map:get($params,"start") ! xs:integer(.),

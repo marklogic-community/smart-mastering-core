@@ -99,7 +99,7 @@ declare function matcher:find-document-matches-by-options-name(
  :)
 declare function matcher:find-document-matches-by-options(
   $document,
-  $options as element(matcher:options),
+  $options as item(), (: as (element(matcher:options)|object-node()) :)
   $include-matches as xs:boolean,
   $filter-query as cts:query
 )
@@ -132,7 +132,7 @@ declare function matcher:find-document-matches-by-options(
  :)
 declare function matcher:find-document-matches-by-options(
   $document,
-  $options as element(matcher:options),
+  $options as item(), (: as (element(matcher:options)|object-node()) :)
   $start as xs:int,
   $page-length as xs:int,
   $include-matches as xs:boolean,
@@ -168,7 +168,7 @@ declare function matcher:find-document-matches-by-options(
  :)
 declare function matcher:find-document-matches-by-options(
   $document,
-  $options as element(matcher:options),
+  $options as item(), (: as (element(matcher:options)|object-node()) :)
   $start as xs:integer,
   $page-length as xs:integer,
   $minimum-threshold as xs:double,
