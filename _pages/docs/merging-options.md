@@ -35,6 +35,7 @@ retrieved as either XML or JSON.
     <m:property namespace="" localname="PersonSex" name="sex"/>
     <m:property path="/es:envelope/es:headers/shallow" name="shallow"/>
     <m:property path="/es:envelope/es:headers/custom/this/has:a/deep/path" name="deep"/>
+    <m:property path="/es:envelope/es:instance/Another/Deep/path" name="nested"/>
   </m:property-defs>
   <algorithms>
     <!-- config for standard algorithm -->
@@ -49,7 +50,9 @@ retrieved as either XML or JSON.
   </algorithms>
   <merging>
     <merge property-name="ssn">
-      <source-ref document-uri="docA" />
+      <source-weights>
+        <source name="CRM" weight="10"></source>
+      </source-weights>
     </merge>
     <merge property-name="name"  max-values="1">
       <double-metaphone>
@@ -117,7 +120,8 @@ retrieved as either XML or JSON.
         { "namespace": "", "localname": "IncidentCategoryCodeDate", "name": "incidentDate" },
         { "namespace": "", "localname": "PersonSex", "name": "sex" },
         { "path": "/es:envelope/es:headers/shallow", "name": "shallow" },
-        { "path": "/es:envelope/es:headers/custom/this/has:a/deep/path", "name": "deep" }
+        { "path": "/es:envelope/es:headers/custom/this/has:a/deep/path", "name": "deep" },
+        { "path": "/es:envelope/es:instance/Another/Deep/path", "name": "nested" }
       ],
       "namespaces": {
         "m": "http://marklogic.com/smart-mastering/merging",
@@ -143,7 +147,9 @@ retrieved as either XML or JSON.
     "merging": [
       {
         "propertyName": "ssn",
-        "sourceRef": { "documentUri": "docA" }
+        "sourceWeights": {
+          "source": { "name": "CRM", "weight": "10" }
+        }
       },
       {
         "propertyName": "name",
@@ -226,6 +232,7 @@ nickname used to refer to this property in the rest of the configuration. The
 
 In addition to properties defined for an entity, properties may also be specified by path. Paths leading into the 
 headers or instance sections of documents are currently supported; that is:
+
 - /es:envelope/es:headers (XML)
 - /envelope/headers (JSON)
 - /es:envelope/es:instance (XML)
