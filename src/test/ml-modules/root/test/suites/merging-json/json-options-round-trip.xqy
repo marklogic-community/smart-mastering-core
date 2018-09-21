@@ -34,6 +34,6 @@ declare variable $options := test:get-test-file("merge-options.json")/node();
 let $actual := merging:get-options("json-options", $const:FORMAT-JSON)
 return test:assert-equal-json($options, $actual),
 
-let $expected := test:get-test-file("merge-options.json")
+let $expected := test:get-test-file("merge-options.json")/node()
 let $actual := merging:get-options($lib:OPTIONS-NAME-COMPLETE, $const:FORMAT-JSON)
 return test:assert-equal-json($expected, $actual)
