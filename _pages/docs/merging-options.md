@@ -230,9 +230,9 @@ nickname used to refer to this property in the rest of the configuration. The
 
 #### Path Properties
 
-In addition to properties defined for an entity, properties may also be specified by path. The presence of a path 
-attribute indicates that the property is not part of the entity instance definition. Paths leading into the headers or
-instance sections of documents are currently, supported; that is:
+In addition to properties defined for an entity, properties may also be specified by path. Paths leading into the 
+headers or instance sections of documents are currently supported; that is:
+
 - /es:envelope/es:headers (XML)
 - /envelope/headers (JSON)
 - /es:envelope/es:instance (XML)
