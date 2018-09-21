@@ -224,12 +224,14 @@ nickname used to refer to this property in the rest of the configuration. The
 
 #### Path Properties
 
-In addition to properties defined for an entity, properties may also be 
-specified by path. The presence of a path attribute indicates that the property
-is not part of the entity instance definition. Currently, only paths starting
-with /es:envelope/es:headers (for XML) or /envelope/headers (for JSON) are 
-supported. Control of the merging process using algorithms works the same for
-path properties as it does for instance properties. 
+In addition to properties defined for an entity, properties may also be specified by path. Paths leading into the 
+headers or instance sections of documents are currently supported; that is:
+- /es:envelope/es:headers (XML)
+- /envelope/headers (JSON)
+- /es:envelope/es:instance (XML)
+- /envelope/instance (JSON)
+
+Control of the merging process using algorithms works the same for path properties as it does for instance properties. 
 
 Note that namespace prefixes used in the property path attributes must be 
 defined on the `property-defs` element. The default namespace and any prefixed
