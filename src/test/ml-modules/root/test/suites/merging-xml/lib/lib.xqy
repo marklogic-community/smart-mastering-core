@@ -13,10 +13,18 @@ declare variable $TEST-DATA :=
     map:entry("/source/2/doc2.xml", "doc2.xml")
   ));
 
+declare variable $NESTED-DATA :=
+  map:new((
+    map:entry("/nested/doc1.xml", "nested1.xml"),
+    map:entry("/nested/doc2.xml", "nested2.xml")
+  ));
+
 declare variable $OPTIONS-NAME := "test-options";
 
 declare variable $ONE-FIRST-OPTIONS := "one-first-options";
 declare variable $TWO-FIRST-OPTIONS := "two-first-options";
+
+declare variable $NESTED-OPTIONS := "nested-options";
 
 declare variable $OPTIONS-NAME-CUST-XQY := "cust-xqy-test-options";
 declare variable $OPTIONS-NAME-CUST-SJS := "cust-sjs-test-options";
