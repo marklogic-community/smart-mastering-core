@@ -1962,7 +1962,7 @@ declare function merge-impl:_options-json-config()
     map:put($config, "element-namespace-prefix", "merging"),
     map:put($config, "attribute-names",
       ("name","localname", "namespace", "function",
-        "at", "property-name", "weight", "above", "label","algorithm-ref")
+        "at", "property-name", "propertyName", "weight", "above", "label","algorithm-ref", "algorithmRef")
     ),
     map:put($config, "camel-case", fn:true()),
     map:put($config, "whitepsace", "ignore"),

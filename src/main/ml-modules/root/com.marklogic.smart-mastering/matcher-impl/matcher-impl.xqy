@@ -57,7 +57,7 @@ declare option xdmp:mapping "false";
  :)
 declare function match-impl:find-document-matches-by-options(
   $document,
-  $options,
+  $options as item(),
   $start as xs:integer,
   $page-length as xs:integer,
   $minimum-threshold as xs:double,

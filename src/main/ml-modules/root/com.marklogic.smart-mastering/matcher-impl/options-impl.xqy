@@ -39,7 +39,7 @@ declare function opt-impl:_options-json-config()
     map:put($config, "element-namespace-prefix", "matcher"),
     map:put($config, "attribute-names",
       ("name","localname", "namespace", "function",
-      "at", "property-name", "weight", "above", "label","algorithm-ref")
+      "at", "property-name", "propertyName", "weight", "above", "label","algorithm-ref","algorithmRef")
     ),
     $config
   )
