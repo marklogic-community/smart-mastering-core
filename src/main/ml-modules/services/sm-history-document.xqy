@@ -10,5 +10,14 @@ declare function get(
   $params  as map:map
   ) as document-node()*
 {
-  history:document-history(map:get($params,"uri"))
+  let $uri := map:get($params, "uri")
+  return
+    if (fn:exists($uri)) then
+      document {
+        history:document-history($uri)
+      }
+    else
+      fn:error((),"RESTAPI-SRVEXERR",
+        (400, "Bad Request",
+        "uri parameter is required"))
 };

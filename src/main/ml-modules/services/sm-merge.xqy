@@ -26,21 +26,32 @@ function post(
   $input   as document-node()*
 ) as document-node()*
 {
-  let $uris := map:get($params, "uri")
-  let $options :=
-    if (fn:exists($input/(*:options|object-node()))) then
-      $input/(*:options|object-node())
-    else
-      merging:get-options(map:get($params, "options"), $const:FORMAT-XML)
-  let $merge-fun :=
-    if (map:get($params, "preview") = "true") then
-      merging:build-merge-models-by-uri#2
-    else
-      merging:save-merge-models-by-uri#2
-  return
-    document {
-      $merge-fun($uris, $options)
-    }
+  if (map:contains($params, "uri")) then
+    let $uris := map:get($params, "uri")
+    let $options :=
+      if (fn:exists($input/(*:options|object-node()))) then
+        $input/(*:options|object-node())
+      else
+        merging:get-options(map:get($params, "options"), $const:FORMAT-XML)
+    let $_options-check :=
+      if (fn:empty($options)) then
+        fn:error((),"RESTAPI-SRVEXERR",
+          (400, "Bad Request",
+           "A valid option parameter or option config in the POST body is required."))
+      else ()
+    let $merge-fun :=
+      if (map:get($params, "preview") = "true") then
+        merging:build-merge-models-by-uri#2
+      else
+        merging:save-merge-models-by-uri#2
+    return
+      document {
+        $merge-fun($uris, $options)
+      }
+  else
+    fn:error((),"RESTAPI-SRVEXERR",
+      (400, "Bad Request",
+      "uri parameter is required"))
 };
 
 declare %rapi:transaction-mode("update") function delete(
@@ -48,13 +59,18 @@ declare %rapi:transaction-mode("update") function delete(
   $params  as map:map
 ) as document-node()?
 {
-  merging:rollback-merge(
-    map:get($params, "mergedUri"),
-    fn:not(map:get($params, "retainAuditTrail") = "false")
-  ),
-  document {
-    object-node {
-      "success": fn:true()
+  if (map:contains($params, "mergedUri")) then (
+    merging:rollback-merge(
+      map:get($params, "mergedUri"),
+      fn:not(map:get($params, "retainAuditTrail") = "false")
+    ),
+    document {
+      object-node {
+        "success": fn:true()
+      }
     }
-  }
+  ) else
+    fn:error((),"RESTAPI-SRVEXERR",
+      (400, "Bad Request",
+      "mergedUri parameter is required"))
 };

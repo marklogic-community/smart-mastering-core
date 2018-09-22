@@ -10,7 +10,14 @@ declare function get(
   $params  as map:map
   ) as document-node()*
 {
-  let $results := history:property-history(map:get($params,"uri"),  map:get($params,"property"))
+  let $uri := map:get($params, "uri")
   return
-    xdmp:to-json($results)
+    if (fn:exists($uri)) then
+      let $results := history:property-history(map:get($params,"uri"),  map:get($params,"property"))
+      return
+        xdmp:to-json($results)
+    else
+      fn:error((),"RESTAPI-SRVEXERR",
+        (400, "Bad Request",
+        "uri parameter is required"))
 };
