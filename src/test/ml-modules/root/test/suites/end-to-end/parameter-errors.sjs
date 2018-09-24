@@ -36,3 +36,25 @@ resourceExtensions.resources.resource.forEach((resource) => {
     });
   }
 });
+
+// Test additional corner cases.
+// sm-match without uri or document in POST body
+let httpResponse = fn.head(fn.tail(xdmp.httpPost(
+    test.easyUrl(`v1/resources/sm-match`),
+    httpOptions
+  ))).toObject();
+let re = new RegExp("valid uri .* or document .* required","g");
+test.assertEqual(
+  `POST sm-match requires uri or doc in body: true`,
+  `POST sm-match requires uri or doc in body: ${re.test(httpResponse.errorResponse.message)}`
+);
+// sm-match with document in POST body
+httpResponse = fn.head(fn.tail(xdmp.httpPost(
+    test.easyUrl(`v1/resources/sm-match`),
+    httpOptions,
+    new NodeBuilder().addNode({ "document": { "test": "blah" }}).toNode()
+  ))).toObject();
+test.assertEqual(
+  `POST sm-match requires uri or doc in body: false`,
+  `POST sm-match requires uri or doc in body: ${re.test(httpResponse.errorResponse.message)}`
+);

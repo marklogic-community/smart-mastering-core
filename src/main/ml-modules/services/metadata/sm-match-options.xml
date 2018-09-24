@@ -145,7 +145,7 @@
         <dl>
           <dt>Parameters</dt>
           <dd>
-            <ul>rs:options (xs:string)</ul>
+            <ul>rs:name (xs:string)</ul>
           </dd>
           <dt>Example Request Body (application/json)</dt>
           <dd>

@@ -290,8 +290,14 @@
       </dd>
     </dl>
   </description>
+  <method name="GET">
+    <param name="uri" type="xs:string" />
+    <param name="options" type="xs:string?" />
+    <param name="start" type="xs:integer?" />
+    <param name="pageLength" type="xs:integer?" />
+  </method>
   <method name="POST">
-    <param name="uri" type="xs:string+" />
+    <param name="uri" type="xs:string?" />
     <param name="options" type="xs:string?" />
     <param name="start" type="xs:integer?" />
     <param name="pageLength" type="xs:integer?" />

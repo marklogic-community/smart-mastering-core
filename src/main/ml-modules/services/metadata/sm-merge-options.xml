@@ -8,7 +8,7 @@
         <dl>
           <dt>Parameters</dt>
           <dd>
-            <ul><li>rs:options (xs:string)</li></ul>
+            <ul><li>rs:name (xs:string)</li></ul>
           </dd>
           <dt>Example Response (application/json)</dt>
           <dd>
@@ -31,23 +31,17 @@
                 },
                 "algorithms": {
                   "algorithm": {
-                    "name": "address",
-                    "function": "address"
+                    "name": "standard",
+                    "function": "standard"
                   }
                 },
                 "merging": {
                   "merge": {
                     "property-name": "address",
-                    "algorithm-ref": "address",
+                    "algorithm-ref": "standard",
                     "max-values": "1",
-                    "postal-code": {
-                      "prefer": "zip+4"
-                    },
                     "length": {
                       "weight": "8"
-                    },
-                    "double-metaphone": {
-                      "distance-threshold": "50"
                     }
                   }
                 }
@@ -62,7 +56,7 @@
         <dl>
           <dt>Parameters</dt>
           <dd>
-            <ul>rs:options (xs:string)</ul>
+            <ul>rs:name (xs:string)</ul>
           </dd>
           <dt>Example Request Body (application/json)</dt>
           <dd>
