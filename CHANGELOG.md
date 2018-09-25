@@ -1,6 +1,35 @@
 # Change Log
 
-## [v1.0.0](https://github.com/marklogic-community/smart-mastering-core/tree/v1.0.0) (2018-08-13)
+## [v1.1.0](https://github.com/marklogic-community/smart-mastering-core/tree/v1.1.0) (2018-09-25)
+[Full Changelog](https://github.com/marklogic-community/smart-mastering-core/compare/v1.0.0...v1.1.0)
+
+**Closed issues:**
+
+- MDMImport input flow output collections are in upper case [\#140](https://github.com/marklogic-community/smart-mastering-core/issues/140)
+- deployMatchOptions FAILED [\#96](https://github.com/marklogic-community/smart-mastering-core/issues/96)
+
+**Merged pull requests:**
+
+- MDM-528 Enhance unit test to verfiy includeMatches option works [\#159](https://github.com/marklogic-community/smart-mastering-core/pull/159) ([ryanjdew](https://github.com/ryanjdew))
+- MDM-527: record path in nested property history [\#158](https://github.com/marklogic-community/smart-mastering-core/pull/158) ([dmcassel](https://github.com/dmcassel))
+- MDM-535 Check parameters and report errors [\#157](https://github.com/marklogic-community/smart-mastering-core/pull/157) ([ryanjdew](https://github.com/ryanjdew))
+- update based on Sprint Review comment [\#156](https://github.com/marklogic-community/smart-mastering-core/pull/156) ([dmcassel](https://github.com/dmcassel))
+- Update testing [\#155](https://github.com/marklogic-community/smart-mastering-core/pull/155) ([dmcassel](https://github.com/dmcassel))
+- Mdm 526: Fix 500 error when sending match options in POST body [\#154](https://github.com/marklogic-community/smart-mastering-core/pull/154) ([ryanjdew](https://github.com/ryanjdew))
+- Update examples in README.md [\#151](https://github.com/marklogic-community/smart-mastering-core/pull/151) ([ryanjdew](https://github.com/ryanjdew))
+- Mdm 504 [\#150](https://github.com/marklogic-community/smart-mastering-core/pull/150) ([dmcassel](https://github.com/dmcassel))
+- updated for instance path properties [\#149](https://github.com/marklogic-community/smart-mastering-core/pull/149) ([dmcassel](https://github.com/dmcassel))
+- Mdm 349: control merging of nested properties [\#148](https://github.com/marklogic-community/smart-mastering-core/pull/148) ([dmcassel](https://github.com/dmcassel))
+- \#146 Fix sm-match endpoint to cast rs:includeMatches param properly [\#147](https://github.com/marklogic-community/smart-mastering-core/pull/147) ([aajacobs](https://github.com/aajacobs))
+- MDM-492: documenting custom function signatures [\#142](https://github.com/marklogic-community/smart-mastering-core/pull/142) ([dmcassel](https://github.com/dmcassel))
+- Mdm 492: send JSON to custom actions instead of XML [\#141](https://github.com/marklogic-community/smart-mastering-core/pull/141) ([dmcassel](https://github.com/dmcassel))
+- adding xqdocs to test functions [\#139](https://github.com/marklogic-community/smart-mastering-core/pull/139) ([paxtonhare](https://github.com/paxtonhare))
+- updating docs.next with triple merge config info [\#138](https://github.com/marklogic-community/smart-mastering-core/pull/138) ([paxtonhare](https://github.com/paxtonhare))
+- adding custom triple merge support [\#137](https://github.com/marklogic-community/smart-mastering-core/pull/137) ([paxtonhare](https://github.com/paxtonhare))
+- Mdm 267: adding organizations to dhf-flow example [\#136](https://github.com/marklogic-community/smart-mastering-core/pull/136) ([dmcassel](https://github.com/dmcassel))
+- updating readme to mention PROV-O schemas requirement. [\#135](https://github.com/marklogic-community/smart-mastering-core/pull/135) ([paxtonhare](https://github.com/paxtonhare))
+
+## [v1.0.0](https://github.com/marklogic-community/smart-mastering-core/tree/v1.0.0) (2018-08-14)
 [Full Changelog](https://github.com/marklogic-community/smart-mastering-core/compare/1.0.0-beta.2...v1.0.0)
 
 **Implemented enhancements:**
