@@ -35,6 +35,7 @@ retrieved as either XML or JSON.
     <m:property namespace="" localname="PersonSex" name="sex"/>
     <m:property path="/es:envelope/es:headers/shallow" name="shallow"/>
     <m:property path="/es:envelope/es:headers/custom/this/has:a/deep/path" name="deep"/>
+    <m:property path="/es:envelope/es:instance/Another/Deep/path" name="nested"/>
   </m:property-defs>
   <algorithms>
     <!-- config for standard algorithm -->
@@ -49,7 +50,9 @@ retrieved as either XML or JSON.
   </algorithms>
   <merging>
     <merge property-name="ssn">
-      <source-ref document-uri="docA" />
+      <source-weights>
+        <source name="CRM" weight="10"></source>
+      </source-weights>
     </merge>
     <merge property-name="name"  max-values="1">
       <double-metaphone>
@@ -81,6 +84,25 @@ retrieved as either XML or JSON.
       <length weight="10"/>
     </merge>
   </merging>
+  
+  <!-- 
+    Define a custom xqy triple merge function
+    Note that this approach differs from how you define
+    property merge algorithms. This is due to the fact that
+    there is only 1 triple merge function vs many algorithms
+    that may need to be reusable.
+   -->
+  <triple-merge
+    function="custom-trips"
+    namespace="http://marklogic.com/smart-mastering/merging"
+    at="/custom-triple-merge.xqy">
+
+    <!--
+      you can provide additional elements that are available to
+      your function. Use these to pass in extra parameters to your function.
+    -->
+    <some-param>3</some-param>
+  </triple-merge>
 </options>
 ```
 
@@ -98,7 +120,8 @@ retrieved as either XML or JSON.
         { "namespace": "", "localname": "IncidentCategoryCodeDate", "name": "incidentDate" },
         { "namespace": "", "localname": "PersonSex", "name": "sex" },
         { "path": "/es:envelope/es:headers/shallow", "name": "shallow" },
-        { "path": "/es:envelope/es:headers/custom/this/has:a/deep/path", "name": "deep" }
+        { "path": "/es:envelope/es:headers/custom/this/has:a/deep/path", "name": "deep" },
+        { "path": "/es:envelope/es:instance/Another/Deep/path", "name": "nested" }
       ],
       "namespaces": {
         "m": "http://marklogic.com/smart-mastering/merging",
@@ -124,7 +147,9 @@ retrieved as either XML or JSON.
     "merging": [
       {
         "propertyName": "ssn",
-        "sourceRef": { "documentUri": "docA" }
+        "sourceWeights": {
+          "source": { "name": "CRM", "weight": "10" }
+        }
       },
       {
         "propertyName": "name",
@@ -170,7 +195,13 @@ retrieved as either XML or JSON.
         "maxValues": "1",
         "length": { "weight": "10" }
       }
-    ]
+    ],
+    "tripleMerge": {
+      "function": "customTrips",
+      "namespace": "http://marklogic.com/smart-mastering/merging",
+      "at": "/custom-triple-merge.xqy",
+      "some-param": 3
+    }
   }
 }
 ```
@@ -199,12 +230,15 @@ nickname used to refer to this property in the rest of the configuration. The
 
 #### Path Properties
 
-In addition to properties defined for an entity, properties may also be 
-specified by path. The presence of a path attribute indicates that the property
-is not part of the entity instance definition. Currently, only paths starting
-with /es:envelope/es:headers (for XML) or /envelope/headers (for JSON) are 
-supported. Control of the merging process using algorithms works the same for
-path properties as it does for instance properties. 
+In addition to properties defined for an entity, properties may also be specified by path. Paths leading into the 
+headers or instance sections of documents are currently supported; that is:
+
+- /es:envelope/es:headers (XML)
+- /envelope/headers (JSON)
+- /es:envelope/es:instance (XML)
+- /envelope/instance (JSON)
+
+Control of the merging process using algorithms works the same for path properties as it does for instance properties. 
 
 Note that namespace prefixes used in the property path attributes must be 
 defined on the `property-defs` element. The default namespace and any prefixed
@@ -327,3 +361,81 @@ attribute that refers to one of the `algorithm` elements. The contents of the
 For JSON, the object will use an `algorithmRef` property that refers to one of 
 the `algorithm` objects. The merge object will be passed to the merging 
 function.
+
+See the [Custom Merge Algorithms](../custom-merge-algorithms/) section for more information.
+
+#### Triple Merging
+
+To use a custom function for merging triples, create a `triple-merge` element with attributes to refer to the function: `at`, `namespace`, `function`.
+
+```xml
+  <triple-merge
+    function="custom-trips"
+    namespace="http://marklogic.com/smart-mastering/merging"
+    at="/custom-triple-merge.xqy">
+    <some-param>3</some-param>
+  </triple-merge>
+```
+
+**Custom Xquery code**
+
+```xquery
+xquery version "1.0-ml";
+
+(: you can define any namespace you like :)
+module namespace custom-merging = "http://marklogic.com/smart-mastering/merging";
+
+declare namespace m = "http://marklogic.com/smart-mastering/merging";
+
+(: A custom triples merging function
+ : 
+ : @param $merge-options specification of how options are to be merged
+ : @param $docs  the source documents that provide the values
+ : @param $sources  information about the source of the header data
+ : @param $property-spec  configuration for how this property should be merged
+ : @return zero or more sem:triples
+ :)
+declare function custom-merging:custom-trips(
+  $merge-options as element(m:options),
+  $docs,
+  $sources,
+  $property-spec as element()?
+) {
+  let $some-param := $property-spec/*:some-param ! xs:int(.)
+  return
+    sem:triple(sem:iri("some-param"), sem:iri("is"), $some-param)
+};
+
+```
+
+For JSON, the object will use a `tripleMerge` property that refers to the function.
+
+```json
+  "tripleMerge": {
+    "function": "customTrips",
+    "namespace": "http://marklogic.com/smart-mastering/merging",
+    "at": "/custom-triple-merge.xqy",
+    "some-param": 3
+  }
+```
+
+**Custom Javascript code**
+
+```javascript
+'use strict'
+
+/* A custom triples merging function
+ *
+ * @param mergeOptions specification of how options are to be merged
+ * @param docs  the source documents that provide the values
+ * @param sources  information about the source of the header data
+ * @param propertySpec  configuration for how this property should be merged
+ * @return zero or more sem.triples
+ */
+function customTrips(mergeOptions, docs, sources, propertySpec) {
+  const someParam = parseInt(propertySpec.someParam, 10);
+  return sem.triple(sem.iri("some-param"), sem.iri("is"), someParam);
+}
+
+exports.customTrips = customTrips;
+```

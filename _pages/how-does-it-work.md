@@ -105,7 +105,7 @@ suite][merging-suite].
 
 ### Auditing
 
-Auditing event are stored for merging and unmerging. These auditing events are stored as as [prov-o] triples and [prov-xml] xml documents.
+By default, Auditing events are automatically stored for merging and unmerging. These auditing events are stored as as [prov-o] triples and [prov-xml] xml documents.
 
 **NOTE**: In order for auditing to work you must have a schemas database assigned to your content database.
 
