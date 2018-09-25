@@ -228,6 +228,20 @@ declare function merge-impl:save-merge-models-by-uri(
     )
 };
 
+declare function merge-impl:construct-type($name as xs:QName, $path as xs:string?, $ns-map as map:map?)
+{
+  if (fn:exists($path)) then
+    fn:string-join(
+      xdmp:with-namespaces(
+        $ns-map,
+        fn:tokenize($path, "/")[. != ""] ! xdmp:key-from-QName(xs:QName(.))
+      ),
+      "/"
+    )
+  else
+    fn:string($name)
+};
+
 (:
  : Generate attachments for the audit document.
  : @param $merge-uri  the URI of the new merged document
@@ -246,7 +260,7 @@ declare function merge-impl:generate-audit-attachments(
     (: Due to how JSON is constructed, we can't rely on the node having a node name.
         Pull the node name from the name entry of the property map.
     :)
-    let $type := fn:string(map:get($prop, "name"))
+    let $type := merge-impl:construct-type(map:get($prop, "name"), map:get($prop, "path"), map:get($prop, "nsMap"))
     let $value-text := history:normalize-value-for-tracing($value)
     let $hash := xdmp:sha512($value-text)
     let $algorithm-info := map:get($prop, "algorithm")
