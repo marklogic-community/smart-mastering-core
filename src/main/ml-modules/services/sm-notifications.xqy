@@ -117,17 +117,17 @@ declare function delete(
   $params  as map:map
 ) as document-node()?
 {
-  for $uri in map:get($params, "uri")
-  return
-    if (fn:exists($uri)) then
+  if (map:contains($params, "uri")) then
+    for $uri in map:get($params, "uri")
+    return
       if (fn:doc-available($uri)) then
         matcher:delete-notification($uri)
       else
         fn:error((),"RESTAPI-SRVEXERR",
           (404, "Not Found",
           "No notification available at URI " || $uri))
-    else
-      fn:error((),"RESTAPI-SRVEXERR",
-        (400, "Bad Request",
-        "uri parameter is required"))
+  else
+    fn:error((),"RESTAPI-SRVEXERR",
+      (400, "Bad Request",
+      "uri parameter is required"))
 };

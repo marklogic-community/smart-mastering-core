@@ -1,0 +1,30 @@
+{
+  "organization": {
+    "orgName": "Housedown",
+    "type": "Not For Profit",
+    "form": "LLC",
+    "mission": "Fugiat ad est officia sit incididunt officia enim est tempor irure. Do pariatur Lorem sit nisi magna dolor nostrud consectetur ea consequat quis. Ipsum aliquip minim duis ut irure sint aute laborum nulla. Quis fugiat nisi id anim aliquip officia nostrud id laborum excepteur.",
+    "offices": [
+      {
+        "officeName": "Ut",
+        "phone": "+1 (839) 486-3518",
+        "address": "761 Osborn Street, Clarktown, South Dakota, 2921"
+      },
+      {
+        "officeName": "Nisi",
+        "phone": "+1 (967) 469-2976",
+        "address": "613 Interborough Parkway, Kimmell, Virginia, 6098"
+      },
+      {
+        "officeName": "Est",
+        "phone": "+1 (808) 426-2384",
+        "address": "672 Brighton Avenue, Murillo, New Hampshire, 9426"
+      },
+      {
+        "officeName": "Labore",
+        "phone": "+1 (956) 443-2596",
+        "address": "678 Benson Avenue, Strykersville, Wyoming, 5236"
+      }
+    ]
+  }
+}

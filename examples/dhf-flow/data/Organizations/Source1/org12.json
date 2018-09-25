@@ -1,0 +1,35 @@
+{
+  "organization": {
+    "orgName": "Zentury",
+    "type": "Public Sector",
+    "form": "S Corp",
+    "mission": "Ut incididunt sint aliqua proident sint nulla ea excepteur cupidatat minim occaecat. Sit nisi exercitation qui fugiat excepteur non veniam sunt duis proident id. Minim nulla enim aliquip nulla. Anim magna nisi enim pariatur qui. Id exercitation incididunt nostrud anim sit. Proident et proident nisi amet adipisicing cillum nostrud anim veniam qui.",
+    "offices": [
+      {
+        "officeName": "Anim",
+        "phone": "+1 (864) 533-3519",
+        "address": "524 Kay Court, Fidelis, Oklahoma, 6365"
+      },
+      {
+        "officeName": "Reprehenderit",
+        "phone": "+1 (843) 441-3554",
+        "address": "116 Newport Street, Gilgo, Kansas, 7903"
+      },
+      {
+        "officeName": "Id",
+        "phone": "+1 (900) 480-2661",
+        "address": "774 Richmond Street, Deseret, California, 7774"
+      },
+      {
+        "officeName": "In",
+        "phone": "+1 (948) 512-3343",
+        "address": "489 Beach Place, Mulberry, Federated States Of Micronesia, 3210"
+      },
+      {
+        "officeName": "Occaecat",
+        "phone": "+1 (813) 507-3563",
+        "address": "464 Neptune Court, Sunnyside, South Carolina, 8106"
+      }
+    ]
+  }
+}

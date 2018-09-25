@@ -43,7 +43,7 @@ declare function plugin:write(
     fn:not($doc-collections = $const:MERGED-COLL)
   return
     (: run smart mastering against the incoming document uri :)
-    let $_ := process:process-match-and-merge($id)
+    let $_ := process:process-match-and-merge($id, "mdm-merge-options", cts:collection-query("MDM"))
 
     (: writer wants us to return the empty sequence :)
     return ()

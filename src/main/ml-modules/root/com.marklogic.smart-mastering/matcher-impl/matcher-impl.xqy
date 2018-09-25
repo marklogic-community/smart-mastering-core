@@ -57,7 +57,7 @@ declare option xdmp:mapping "false";
  :)
 declare function match-impl:find-document-matches-by-options(
   $document,
-  $options,
+  $options as item(),
   $start as xs:integer,
   $page-length as xs:integer,
   $minimum-threshold as xs:double,
@@ -76,10 +76,10 @@ declare function match-impl:find-document-matches-by-options(
       $options
   let $scoring := $options/matcher:scoring
   let $algorithms := algorithms:build-algorithms-map($options/matcher:algorithms)
-  let $query := match-impl:build-query($document, $scoring, $algorithms, $options)
-  let $serialized-query := element boost-query {$query}
+  let $boost-query := match-impl:build-boost-query($document, $scoring, $algorithms, $options)
+  let $serialized-boost-query := element boost-query {$boost-query}
   let $minimum-threshold-combinations :=
-    match-impl:minimum-threshold-combinations($serialized-query, $minimum-threshold)
+    match-impl:minimum-threshold-combinations($serialized-boost-query, $minimum-threshold)
   let $match-query :=
     cts:and-query((
       cts:collection-query($const:CONTENT-COLL),
@@ -100,7 +100,7 @@ declare function match-impl:find-document-matches-by-options(
     }
   let $reduced-boost := cts:query(
     element cts:or-query {
-      $serialized-query/cts:or-query/element(*, cts:query)
+      $serialized-boost-query/cts:or-query/element(*, cts:query)
     }
   )
   let $_lock-on-search :=
@@ -212,7 +212,7 @@ declare function match-impl:drop-redundant($uri, $matches as element(result)*)
  : @param $options  full match options; included here to pass into algorithm functions
  : @return a cts:or-query that will be used as a boost query
  :)
-declare function match-impl:build-query($document, $scoring, $algorithms, $options)
+declare function match-impl:build-boost-query($document, $scoring, $algorithms, $options)
 {
   let $property-defs := $options/matcher:property-defs
   return
@@ -223,7 +223,7 @@ declare function match-impl:build-query($document, $scoring, $algorithms, $optio
       where fn:exists($property-def)
       return
         let $qname := fn:QName($property-def/@namespace, $property-def/@localname)
-        let $values := $document//*[fn:node-name(.) eq $qname] ! fn:normalize-space(.)[.]
+        let $values := fn:distinct-values($document//*[fn:node-name(.) eq $qname] ! fn:normalize-space(.)[.])
         let $is-json := fn:exists(($document/object-node(), $document/array-node()))
         where fn:exists($values)
         return

@@ -1,0 +1,23 @@
+<options xmlns="http://marklogic.com/smart-mastering/merging">
+  <match-options>org-match-options</match-options>
+  <property-defs>
+    <property namespace="" localname="orgName" name="name"/>
+    <property namespace="" localname="structure" name="structure"/>
+    <property namespace="" localname="purpose" name="purpose"/>
+  </property-defs>
+  <merging>
+    <merge property-name="name">
+      <length weight="10"/>
+    </merge>
+    <merge property-name="structure"  max-values="1">
+      <source-weights>
+        <source name="Source1" weight="10"></source>
+      </source-weights>
+    </merge>
+    <merge property-name="purpose"  max-values="1">
+      <source-weights>
+        <source name="Source1" weight="10"></source>
+      </source-weights>
+    </merge>
+  </merging>
+</options>

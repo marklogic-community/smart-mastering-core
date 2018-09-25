@@ -1,16 +1,16 @@
 <options xmlns="http://marklogic.com/smart-mastering/merging">
   <match-options>basic</match-options>
-  <m:property-defs
+  <property-defs
     xmlns:es="http://marklogic.com/entity-services"
-    xmlns:m="http://marklogic.com/smart-mastering/merging"
-    xmlns:has="has"
-    xmlns="">
-    <m:property namespace="" localname="IdentificationID" name="ssn"/>
-    <m:property namespace="" localname="PersonName" name="name"/>
-    <m:property namespace="" localname="Address" name="address"/>
-    <m:property path="/es:envelope/es:headers/custom/this/has:a/deep/path" name="deep"/>
-  </m:property-defs>
+    xmlns:sm="http://marklogic.com/smart-mastering"
+    xmlns:has="has">
+    <property namespace="" localname="IdentificationID" name="ssn"/>
+    <property namespace="" localname="PersonName" name="name"/>
+    <property namespace="" localname="Address" name="address"/>
+    <property path="/es:envelope/es:headers/custom/this/has:a/deep/path" name="deep"/>
+  </property-defs>
   <algorithms>
+    <algorithm name="name" function="name" namespace="" at="" />
     <algorithm name="customThing" function="customThing" namespace="http://marklogic.com/smart-mastering/merging" at="/custom-merge-xqy.xqy" />
     <std-algorithm xmlns:es="http://marklogic.com/entity-services" xmlns:sm="http://marklogic.com/smart-mastering">
       <!-- provide the path to the timestamp element to use for sorting -->
@@ -21,7 +21,7 @@
     </std-algorithm>
   </algorithms>
   <merging>
-    <merge property-name="ssn">
+    <merge property-name="ssn" algorithm-ref="user-defined">
       <source-ref document-uri="docA" />
     </merge>
     <merge property-name="name"  max-values="1">

@@ -13,7 +13,20 @@ declare variable $TEST-DATA :=
     map:entry("/source/2/doc2.json", "doc2.json")
   ));
 
+declare variable $NESTED-DATA :=
+  map:new((
+    map:entry("/nested/doc1.json", "nested1.json"),
+    map:entry("/nested/doc2.json", "nested2.json")
+  ));
+
 declare variable $OPTIONS-NAME := "test-options";
+declare variable $OPTIONS-NAME-COMPLETE := "test-options-stock";
 declare variable $OPTIONS-NAME-CUST-XQY := "cust-xqy-test-options";
 declare variable $OPTIONS-NAME-CUST-SJS := "cust-sjs-test-options";
 declare variable $OPTIONS-NAME-PATH := "path-test-options";
+declare variable $NESTED-OPTIONS := "nested-options";
+
+declare function lib:take-strings($uris as xs:string*)
+{
+  $uris
+};

@@ -1,0 +1,20 @@
+{
+  "organization": {
+    "orgName": "Equitox",
+    "type": "Not For Profit",
+    "form": "Sole Proprietor",
+    "mission": "Aliquip incididunt labore sit est minim qui sint sit sit non exercitation nulla. Qui amet mollit occaecat sunt eiusmod ad. Magna consequat aliquip exercitation quis fugiat ut ex culpa fugiat. Culpa cupidatat pariatur sint ex. Enim proident elit et non ad aliquip consectetur nulla. Et reprehenderit dolore id esse minim exercitation ullamco sunt sint. Eiusmod nulla commodo et ea ea veniam id.",
+    "offices": [
+      {
+        "officeName": "Ad",
+        "phone": "+1 (970) 504-2938",
+        "address": "316 Duryea Court, Sedley, Vermont, 3179"
+      },
+      {
+        "officeName": "Proident",
+        "phone": "+1 (983) 414-2400",
+        "address": "647 Columbia Street, Orin, Ohio, 946"
+      }
+    ]
+  }
+}

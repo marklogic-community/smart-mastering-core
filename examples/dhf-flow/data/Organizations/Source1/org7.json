@@ -1,0 +1,20 @@
+{
+  "organization": {
+    "orgName": "Koogle",
+    "type": "For Profit",
+    "form": "LLC",
+    "mission": "Enim aliquip aute tempor ipsum irure cillum non. Officia irure labore commodo mollit. Aliqua eiusmod deserunt laboris sit aliquip eiusmod deserunt Lorem do.",
+    "offices": [
+      {
+        "officeName": "Enim",
+        "phone": "+1 (838) 475-2200",
+        "address": "886 Rock Street, Bawcomville, Tennessee, 9069"
+      },
+      {
+        "officeName": "Eu",
+        "phone": "+1 (800) 436-3909",
+        "address": "292 Dank Court, Temperanceville, Hawaii, 4371"
+      }
+    ]
+  }
+}

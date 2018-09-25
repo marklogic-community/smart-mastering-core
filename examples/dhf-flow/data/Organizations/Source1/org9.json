@@ -1,0 +1,30 @@
+{
+  "organization": {
+    "orgName": "Myopium",
+    "type": "For Profit",
+    "form": "S Corp",
+    "mission": "Elit sit mollit officia eiusmod tempor dolore cupidatat amet Lorem aliquip culpa est fugiat. Quis magna excepteur amet officia exercitation et adipisicing eu. Velit consequat tempor nostrud dolor Lorem qui eu commodo ea. Labore qui quis anim labore sit cillum adipisicing in ipsum eiusmod aliqua quis consectetur. Deserunt laboris irure commodo commodo mollit ea eiusmod. Amet tempor reprehenderit non et anim elit ullamco excepteur cupidatat laborum adipisicing.",
+    "offices": [
+      {
+        "officeName": "Consectetur",
+        "phone": "+1 (957) 477-2568",
+        "address": "860 Moultrie Street, Lumberton, Puerto Rico, 5848"
+      },
+      {
+        "officeName": "Pariatur",
+        "phone": "+1 (880) 432-3381",
+        "address": "435 Victor Road, Bluffview, American Samoa, 7513"
+      },
+      {
+        "officeName": "Qui",
+        "phone": "+1 (889) 474-3858",
+        "address": "429 Veranda Place, Esmont, Rhode Island, 7650"
+      },
+      {
+        "officeName": "Sunt",
+        "phone": "+1 (865) 488-2547",
+        "address": "787 Hunterfly Place, Wacissa, Nevada, 933"
+      }
+    ]
+  }
+}

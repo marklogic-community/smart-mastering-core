@@ -1,0 +1,35 @@
+{
+  "organization": {
+    "orgName": "Glasstep",
+    "type": "Nonprofit",
+    "form": "C Corp",
+    "mission": "Labore irure excepteur eu sunt laborum ullamco do. Culpa in ut anim ullamco sit duis adipisicing id reprehenderit mollit sit et reprehenderit. In excepteur velit labore esse do voluptate ex aute irure tempor cupidatat deserunt. Consectetur et proident in nulla do ut.",
+    "offices": [
+      {
+        "officeName": "Esse",
+        "phone": "+1 (983) 430-2538",
+        "address": "460 Degraw Street, Greenfields, Arizona, 4162"
+      },
+      {
+        "officeName": "Exercitation",
+        "phone": "+1 (933) 545-3988",
+        "address": "744 Bevy Court, Bend, Louisiana, 2180"
+      },
+      {
+        "officeName": "Ut",
+        "phone": "+1 (857) 524-2975",
+        "address": "720 Kane Place, Jamestown, Florida, 9644"
+      },
+      {
+        "officeName": "Est",
+        "phone": "+1 (928) 566-3382",
+        "address": "420 Jardine Place, Whitewater, Alabama, 9230"
+      },
+      {
+        "officeName": "Qui",
+        "phone": "+1 (882) 452-2610",
+        "address": "540 Caton Place, Templeton, West Virginia, 1913"
+      }
+    ]
+  }
+}

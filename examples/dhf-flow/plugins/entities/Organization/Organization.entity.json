@@ -1,0 +1,21 @@
+{
+  "info" : {
+    "title" : "Organization",
+    "version" : "0.0.1",
+    "baseUri" : "http://marklogic.com/",
+    "description" : "An Organization Entity"
+  },
+  "definitions" : {
+    "Organization" : {
+      "description" : "The Organization entity root.",
+      "required" : [ "orgName" ],
+      "rangeIndex" : [ ],
+      "wordLexicon" : [ ],
+      "properties" : {
+        "orgName": { "datatype": "string" },
+        "structure": { "datatype": "string" },
+        "purpose": { "datatype": "string" }
+    }
+    }
+  }
+}

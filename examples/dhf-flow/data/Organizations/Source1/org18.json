@@ -1,0 +1,25 @@
+{
+  "organization": {
+    "orgName": "Cosmetex",
+    "type": "Public Sector",
+    "form": "Sole Proprietor",
+    "mission": "Proident reprehenderit adipisicing id fugiat velit quis minim in. Occaecat aliquip non anim commodo ullamco incididunt ad velit. Enim culpa minim officia sunt Lorem qui eu proident duis quis. Dolor eiusmod esse pariatur ipsum exercitation laborum proident dolor incididunt. Commodo ad do sint adipisicing exercitation laborum laborum tempor culpa.",
+    "offices": [
+      {
+        "officeName": "Ea",
+        "phone": "+1 (848) 564-3399",
+        "address": "668 Prescott Place, Crucible, Virgin Islands, 1481"
+      },
+      {
+        "officeName": "Irure",
+        "phone": "+1 (847) 471-3175",
+        "address": "143 Lyme Avenue, Canby, Idaho, 3380"
+      },
+      {
+        "officeName": "Ad",
+        "phone": "+1 (988) 515-2152",
+        "address": "183 Glenwood Road, Waterford, Vermont, 5938"
+      }
+    ]
+  }
+}

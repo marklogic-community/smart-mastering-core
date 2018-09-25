@@ -21,6 +21,7 @@ xquery version "1.0-ml";
 
 import module namespace const = "http://marklogic.com/smart-mastering/constants"
   at "/com.marklogic.smart-mastering/constants.xqy";
+import module namespace lib = "http://marklogic.com/smart-mastering/test" at "lib/lib.xqy";
 import module namespace merging = "http://marklogic.com/smart-mastering/merging"
   at "/com.marklogic.smart-mastering/merging.xqy";
 import module namespace test = "http://marklogic.com/roxy/test-helper" at "/test/test-helper.xqy";
@@ -31,4 +32,8 @@ declare variable $options := test:get-test-file("merge-options.json")/node();
  : JSON.
  :)
 let $actual := merging:get-options("json-options", $const:FORMAT-JSON)
-return test:assert-equal-json($options, $actual)
+return test:assert-equal-json($options, $actual),
+
+let $expected := test:get-test-file("merge-options.json")/node()
+let $actual := merging:get-options($lib:OPTIONS-NAME-COMPLETE, $const:FORMAT-JSON)
+return test:assert-equal-json($expected, $actual)

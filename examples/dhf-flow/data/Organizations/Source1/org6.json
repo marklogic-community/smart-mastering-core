@@ -1,0 +1,30 @@
+{
+  "organization": {
+    "orgName": "Geekology",
+    "type": "For Profit",
+    "form": "C Corp",
+    "mission": "Excepteur sint ea duis dolor. Eu ea adipisicing adipisicing magna dolore sit est culpa incididunt ullamco. Minim minim velit non labore id pariatur. Sit ullamco magna laborum culpa ullamco labore enim cillum aliqua nulla do ullamco ut consectetur. Ex in proident excepteur cillum. Voluptate dolor anim occaecat reprehenderit sint. Commodo occaecat pariatur adipisicing do incididunt nisi nulla officia elit.",
+    "offices": [
+      {
+        "officeName": "Incididunt",
+        "phone": "+1 (808) 406-3313",
+        "address": "304 India Street, Wolcott, New Mexico, 4271"
+      },
+      {
+        "officeName": "Eu",
+        "phone": "+1 (820) 406-2976",
+        "address": "541 Vine Street, Cochranville, Alaska, 1219"
+      },
+      {
+        "officeName": "Laboris",
+        "phone": "+1 (809) 492-3834",
+        "address": "719 Strong Place, Umapine, Iowa, 3976"
+      },
+      {
+        "officeName": "Exercitation",
+        "phone": "+1 (810) 565-2934",
+        "address": "670 Hampton Place, Idledale, Northern Mariana Islands, 4755"
+      }
+    ]
+  }
+}

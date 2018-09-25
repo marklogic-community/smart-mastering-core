@@ -2,13 +2,13 @@ buildscript {
   repositories {
     jcenter()
 
-    // Needed for ml-unit-test-client dependency until it's available via jcenter()
+    // Needed for marklogic-unit-test-client dependency until it's available via jcenter()
     maven {
-      url {"https://dl.bintray.com/rjrudin/maven/"}
+      url {"https://dl.bintray.com/marklogic-community/Maven"}
     }
   }
   dependencies {
-    classpath "com.marklogic:ml-unit-test-client:0.11.1"
+    classpath "com.marklogic:marklogic-unit-test-client:0.12.0"
     classpath "com.marklogic:ml-gradle:${mlGradleVersion}"
   }
 }
@@ -17,24 +17,25 @@ plugins {
   id "java"
   id "maven-publish"
   id "com.jfrog.bintray" version "1.7.3"
-  id "com.marklogic.ml-gradle" version "3.7.1"
   id 'net.saliman.properties' version '1.4.6'
+  id "com.marklogic.ml-gradle" version "3.7.1"
 }
 
 repositories {
+  mavenLocal()
   jcenter()
 
-  // Needed for ml-unit-test and ml-unit-test-client dependencies until they're available via jcenter()
+  // Needed for marklogic-unit-test and marklogic-unit-test-client dependencies until they're available via jcenter()
   maven {
-    url {"https://dl.bintray.com/rjrudin/maven/"}
+    url {"https://dl.bintray.com/marklogic-community/Maven"}
   }
 }
 
 dependencies {
-  mlRestApi "com.marklogic:ml-unit-test-modules:0.11.1"
+  mlRestApi "com.marklogic:marklogic-unit-test-modules:0.12.0"
 
-  // For running ml-unit-test tests via JUnit
-  testCompile "com.marklogic:ml-unit-test-client:0.11.1"
+  // For running marklogic-unit-test tests via JUnit
+  testCompile "com.marklogic:marklogic-unit-test-client:0.12.0"
   testCompile "junit:junit:4+"
 }
 
@@ -97,3 +98,48 @@ publishing {
   }
 }
 
+task createHttpCredentials(type: com.marklogic.gradle.task.MarkLogicTask) {
+  def client = getAppConfig().newAppServicesDatabaseClient("Security")
+  String xquery = """
+xquery version "1.0-ml";
+
+import module namespace sec = "http://marklogic.com/xdmp/security"
+      at "/MarkLogic/security.xqy";
+
+declare option xdmp:mapping "false";
+
+try {
+  sec:remove-credential("marklogic-unit-test-credentials")
+} catch (\$e) {()};
+
+xquery version "1.0-ml";
+
+import module namespace sec = "http://marklogic.com/xdmp/security"
+      at "/MarkLogic/security.xqy";
+
+declare option xdmp:mapping "false";
+
+sec:create-credential(
+   "marklogic-unit-test-credentials",
+   "Credentials for ML Rest Helper Calls",
+   "${mlUsername}",
+   "${mlPassword}",
+   (),
+   (),
+   fn:false(),
+   sec:uri-credential-target("http://localhost:${mlTestRestPort}/.*","digest"),
+   xdmp:default-permissions()
+)
+""";
+  try {
+    String result
+    result = client.newServerEval().xquery(xquery).evalAs(String.class);
+    if (result != null) {
+      println result
+    }
+  } finally {
+    client.release()
+  }
+}
+
+mlPostDeploy.dependsOn createHttpCredentials

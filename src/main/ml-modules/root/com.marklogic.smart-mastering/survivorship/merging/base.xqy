@@ -46,12 +46,15 @@ import module namespace sem = "http://marklogic.com/semantics"
   at "/MarkLogic/semantics.xqy";
 import module namespace tel = "http://marklogic.com/smart-mastering/telemetry"
   at "/com.marklogic.smart-mastering/telemetry.xqy";
+import module namespace mem = "http://maxdewpoint.blogspot.com/memory-operations/functional"
+  at "/mlpm_modules/XQuery-XML-Memory-Operations/memory-operations-functional.xqy";
 
 declare namespace merging = "http://marklogic.com/smart-mastering/merging";
 declare namespace sm = "http://marklogic.com/smart-mastering";
 declare namespace es = "http://marklogic.com/entity-services";
 declare namespace prov = "http://www.w3.org/ns/prov#";
 declare namespace host = "http://marklogic.com/xdmp/status/host";
+declare namespace xsl = "http://www.w3.org/1999/XSL/Transform";
 
 declare option xdmp:mapping "false";
 
@@ -185,6 +188,7 @@ declare function merge-impl:save-merge-models-by-uri(
         map:get($parsed-properties, "wrapper-qnames"),
         $final-properties,
         map:get($parsed-properties, "final-headers"),
+        map:get($parsed-properties, "final-triples"),
         map:get($parsed-properties, $PROPKEY-HEADERS-NS-MAP)
       )
     let $_audit-trail :=
@@ -224,6 +228,20 @@ declare function merge-impl:save-merge-models-by-uri(
     )
 };
 
+declare function merge-impl:construct-type($name as xs:QName, $path as xs:string?, $ns-map as map:map?)
+{
+  if (fn:exists($path)) then
+    fn:string-join(
+      xdmp:with-namespaces(
+        $ns-map,
+        fn:tokenize($path, "/")[. != ""] ! xdmp:key-from-QName(xs:QName(.))
+      ),
+      "/"
+    )
+  else
+    fn:string($name)
+};
+
 (:
  : Generate attachments for the audit document.
  : @param $merge-uri  the URI of the new merged document
@@ -242,7 +260,7 @@ declare function merge-impl:generate-audit-attachments(
     (: Due to how JSON is constructed, we can't rely on the node having a node name.
         Pull the node name from the name entry of the property map.
     :)
-    let $type := fn:string(map:get($prop, "name"))
+    let $type := merge-impl:construct-type(map:get($prop, "name"), map:get($prop, "path"), map:get($prop, "nsMap"))
     let $value-text := history:normalize-value-for-tracing($value)
     let $hash := xdmp:sha512($value-text)
     let $algorithm-info := map:get($prop, "algorithm")
@@ -393,6 +411,7 @@ declare function merge-impl:build-merge-models-by-uri(
       )
   let $final-properties := map:get($parsed-properties, "final-properties")
   let $final-headers := map:get($parsed-properties, "final-headers")
+  let $final-triples := map:get($parsed-properties, "final-triples")
   let $headers-ns-map := map:get($parsed-properties, $PROPKEY-HEADERS-NS-MAP)
   let $docs := map:get($parsed-properties, "documents")
   let $wrapper-qnames := map:get($parsed-properties, "wrapper-qnames")
@@ -403,6 +422,7 @@ declare function merge-impl:build-merge-models-by-uri(
       $wrapper-qnames,
       $final-properties,
       $final-headers,
+      $final-triples,
       $headers-ns-map
     )
 };
@@ -422,6 +442,7 @@ declare function merge-impl:build-merge-models-by-final-properties(
   $wrapper-qnames as xs:QName*,
   $final-properties as item()*,
   $final-headers as item()*,
+  $final-triples as item()*,
   $headers-ns-map as map:map
 )
 {
@@ -432,6 +453,7 @@ declare function merge-impl:build-merge-models-by-final-properties(
       $wrapper-qnames,
       $final-properties,
       $final-headers,
+      $final-triples,
       $headers-ns-map
     )
   else
@@ -440,7 +462,8 @@ declare function merge-impl:build-merge-models-by-final-properties(
       $docs,
       $wrapper-qnames,
       $final-properties,
-      $final-headers
+      $final-headers,
+      $final-triples
     )
 };
 
@@ -461,6 +484,7 @@ declare function merge-impl:build-merge-models-by-final-properties-to-xml(
   $wrapper-qnames as xs:QName*,
   $final-properties as item()*,
   $final-headers as item()*,
+  $final-triples as item()*,
   $headers-ns-map as map:map
 ) as element(es:envelope)
 {
@@ -471,11 +495,7 @@ declare function merge-impl:build-merge-models-by-final-properties-to-xml(
         merge-impl:build-headers($id, $docs, $uris, $final-headers, $headers-ns-map, $const:FORMAT-XML)
       }
       <es:triples>{
-        sem:sparql(
-          'construct { ?s ?p ?o } where { ?s ?p ?o }',
-          (), "map",
-          sem:store((), cts:document-query($uris))
-        )
+        $final-triples
       }</es:triples>
       <es:instance>{
         merge-impl:build-instance-body-by-final-properties(
@@ -821,7 +841,8 @@ declare function merge-impl:build-merge-models-by-final-properties-to-json(
   $docs as node()*,
   $wrapper-qnames as xs:QName*,
   $final-properties as item()*,
-  $final-headers as item()*
+  $final-headers as item()*,
+  $final-triples as item()*
 )
 {
   let $uris := $docs ! xdmp:node-uri(.)
@@ -830,11 +851,7 @@ declare function merge-impl:build-merge-models-by-final-properties-to-json(
       "envelope": object-node {
         "headers": merge-impl:build-headers($id, $docs, $uris, $final-headers, (), $const:FORMAT-JSON),
         "triples": array-node {
-          sem:sparql(
-            'construct { ?s ?p ?o } where { ?s ?p ?o }',
-            (), "map",
-            sem:store((), cts:document-query($uris))
-          )
+          $final-triples
         },
         "instance": merge-impl:build-instance-body-by-final-properties(
           $final-properties,
@@ -858,9 +875,10 @@ declare function merge-impl:build-instance-body-by-final-properties(
   $format as xs:string
 )
 {
-  if ($format eq $const:FORMAT-JSON) then
+  if ($format eq $const:FORMAT-JSON) then (
     xdmp:to-json(
-      fn:fold-left(
+      (: TODO - consider using XSLT. I'd be able to specify a path rather than tracking through recursive descent :)
+      let $merged-props := fn:fold-left(
         function($child-object, $parent-name) {
           map:entry(fn:string($parent-name), $child-object)
         },
@@ -870,7 +888,7 @@ declare function merge-impl:build-instance-body-by-final-properties(
             $map-a + $map-b
           },
           map:map(),
-          for $prop in $final-properties
+          for $prop in $final-properties[fn:not(map:contains(., "path"))]
           let $prop-name := fn:string($prop => map:get("name"))
           let $prop-values := $prop => map:get("values")
           return
@@ -878,26 +896,137 @@ declare function merge-impl:build-instance-body-by-final-properties(
         ),
         $wrapper-qnames
       )
+      (: Convert from maps to json:object notation, needed for XSLT :)
+      let $xml-json := <root>{xdmp:from-json(xdmp:to-json($merged-props))}</root>
+      let $path-properties := $final-properties[map:contains(., "path")]
+      let $path-templates := merge-impl:generate-path-templates($path-properties)
+      let $full-template :=
+        <xsl:stylesheet
+          xmlns:xs="http://www.w3.org/2001/XMLSchema" version="2.0"
+          xmlns:json="http://marklogic.com/xdmp/json">
+
+          { $path-templates }
+
+          <xsl:template match="node()|@*">
+            <xsl:copy>
+              <xsl:apply-templates select="node()|@*"/>
+            </xsl:copy>
+          </xsl:template>
+
+        </xsl:stylesheet>
+      let $fully-merged := xdmp:xslt-eval($full-template, $xml-json)
+      return json:object($fully-merged/root/node())
+
     )/object-node()
-  else
-    fn:fold-left(
-      function($children, $parent-name) {
-        element {$parent-name} {
-          $children
-        }
-      },
-      for $prop in $final-properties
-      let $prop-values := $prop => map:get("values")
-      return
-        if ($prop-values instance of element()+) then
-          $prop-values
-        else
-          element {($prop => map:get("name"))} {
-            $prop-values
+  )
+  else (
+    let $prop-elements :=
+      fn:fold-left(
+        function($children, $parent-name) {
+          element {$parent-name} {
+            $children
           }
-      ,
-      $wrapper-qnames
-    )
+        },
+        for $prop in $final-properties[fn:not(map:contains(., "path"))]
+        let $prop-values := $prop => map:get("values")
+        return
+          if ($prop-values instance of element()+) then
+            $prop-values
+          else
+            element {($prop => map:get("name"))} {
+              $prop-values
+            }
+        ,
+        $wrapper-qnames
+      )
+    let $updates := map:map()
+    let $path-properties := $final-properties[map:contains(., "path")]
+    for $prop in $prop-elements
+    (: A property may contain path-specified properties. Overlay the path property values on the top-level properties :)
+    let $updates := merge-impl:find-updates($updates, $path-properties, $prop)
+    return
+      if (fn:exists(map:keys($updates))) then
+        mem:execute($updates)
+      else
+        $prop
+  )
+};
+
+declare function merge-impl:strip-top-path($path) as xs:string
+{
+  fn:replace($path, "/\w*:?envelope/\w*:?instance/[^/]+/", "")
+};
+
+(:
+ : Given an XPath, rewrite it to apply to the XML serialization of JSON.
+ : Example: "/LowerProperty1/EvenLowerProperty/LowestProperty1" becomes
+ : "json:entry[@key='LowerProperty1']/json:value/json:object/json:entry[@key='EvenLowerProperty']/json:value/json:object/json:entry[@key='LowestProperty1']/json:value"
+ :)
+declare function merge-impl:convert-path-to-json($path as xs:string)
+  as xs:string
+{
+  fn:string-join(
+    for $segment in fn:tokenize($path, "/")
+    where $segment ne ""
+    return ("json:entry[@key='" || $segment || "']/json:value"),
+    "/json:object/"
+  )
+};
+
+(:
+ : For each of the $path-properties, generate an XSL template
+ : TODO
+ :)
+declare function merge-impl:generate-path-templates($path-properties)
+{
+  for $path-prop in $path-properties
+  let $lower-path := merge-impl:strip-top-path(map:get($path-prop, 'path'))
+  return
+    <xsl:template>
+      { attribute match { merge-impl:convert-path-to-json($lower-path) }}
+      <xsl:copy>
+        {
+          let $values := map:get($path-prop, 'values')
+          return
+            if ($values instance of array-node()) then
+              xdmp:from-json($values)
+            else
+              $values
+        }
+      </xsl:copy>
+    </xsl:template>
+};
+
+(:
+ : Recurse through $path-properties to build up a map of mem:replace operations.
+ : @param $updates  a map for tracking updates to be made
+ : @param $path-properties  a sequence of maps that hold property values and sources
+ : @param $prop  a merged non-path property
+ : @return a map:map of mem:replace operations. Type not specified to allow for tail call optimization.
+ :)
+declare function merge-impl:find-updates($updates as map:map, $path-properties as map:map*, $prop)
+{
+  if (fn:exists($path-properties)) then
+    let $path-prop := fn:head($path-properties)
+    let $path := map:get($path-prop, "path")
+    (: $path is a rooted path, but we need to apply the path under the level of the top property. Strip off the
+      : top part of the path. :)
+    let $lower-path := merge-impl:strip-top-path($path)
+    let $target := xdmp:unpath($lower-path, map:get($path-prop, "nsMap"), $prop)
+    return
+      if (fn:exists($target)) then
+        (: This property contains this path; replace :)
+        mem:replace(
+          merge-impl:find-updates($updates, fn:tail($path-properties), $prop),
+          $target,
+          map:get($path-prop, "values")
+        )
+      else
+        (: This property doesn't contain this path; check the other paths :)
+        merge-impl:find-updates($updates, fn:tail($path-properties), $prop)
+  else
+    $updates
+
 };
 
 (:
@@ -1001,6 +1130,10 @@ declare function merge-impl:parse-final-properties-for-merge(
     $docs,
     $sources
   )
+  let $final-triples := merge-impl:build-final-triples(
+    $merge-options,
+    $docs,
+    $sources)
   return
     map:new((
       map:entry("instances", $instances),
@@ -1009,7 +1142,8 @@ declare function merge-impl:parse-final-properties-for-merge(
       map:entry("wrapper-qnames",$wrapper-qnames),
       map:entry("final-properties", $final-properties),
       map:entry($PROPKEY-HEADERS-NS-MAP, fn:head($final-headers)),
-      map:entry("final-headers", fn:tail($final-headers))
+      map:entry("final-headers", fn:tail($final-headers)),
+      map:entry("final-triples", $final-triples)
     ))
 };
 
@@ -1030,7 +1164,7 @@ declare function merge-impl:build-final-headers(
   $sources
 ) as map:map*
 {
-  let $property-defs := $merge-options/merging:property-defs/merging:property[fn:exists(@path)]
+  let $property-defs := $merge-options/merging:property-defs/merging:property[fn:matches(@path, "^/[\w]*:?envelope/[\w]*:?headers")]
   let $algorithms-map := merge-impl:build-merging-map($merge-options)
   let $merge-options-uri := $merge-options ! xdmp:node-uri(.)
   let $merge-options-ref :=
@@ -1088,6 +1222,52 @@ declare function merge-impl:build-final-headers(
 };
 
 (:~
+ : Build a sequence of triples
+ :
+ : NOTE that unlike how other algorithms are configured,
+ : the <triple-merge> element refers directly to the
+ : @at, @namespace, @function params. This is because there will only
+ : be 1 triple merge function.
+ :
+ : @param $merge-options  an element or object containing the merge options
+ : @param $docs  the source documents the header values will be drawn from
+ : @param $sources  information about the source of the header data
+ : @return sequence of sem:triples
+ :)
+declare function merge-impl:build-final-triples(
+  $merge-options as element(merging:options),
+  $docs,
+  $sources
+) as sem:triple*
+{
+  let $triple-merge := fn:head($merge-options/merging:triple-merge)
+  let $algorithm :=
+    fun-ext:function-lookup(
+      fn:string(fn:head(($triple-merge/@function, "standard-triples"))),
+      fn:string($triple-merge/@namespace),
+      fn:string($triple-merge/@at),
+      merge-impl:default-function-lookup(?, 4)
+    )
+  return
+    if (fn:ends-with(xdmp:function-module($algorithm), "sjs")) then
+      let $triple-merge := merge-impl:propertyspec-to-json($triple-merge)
+      return
+        xdmp:apply(
+          $algorithm,
+          $merge-options,
+          $docs,
+          $sources,
+          $triple-merge)
+    else
+      xdmp:apply(
+        $algorithm,
+        $merge-options,
+        $docs,
+        $sources,
+        $triple-merge)
+};
+
+(:~
  : Identify and merge any headers whose paths are given in the merge options.
  : @param $docs  the source documents
  : @param $property  the property specification, which includes the path to
@@ -1121,7 +1301,8 @@ declare function merge-impl:get-raw-values(
       merge-impl:wrap-revision-info(
         $prop-qname,
         $values,
-        $prop-sources
+        $prop-sources,
+        (), ()
       )
     else ()
   return
@@ -1129,10 +1310,71 @@ declare function merge-impl:get-raw-values(
 };
 
 (:
+ : Get instance property values by following the configured path.
+ : @param $instances  all instance values from the source documents
+ : @param $path-prop  full path to property
+ : @param $ns-map  map of namespaces for interpreting the path
+ : @return sequence: a QName, followed by values (elements or JSON properties)
+ :)
+declare function merge-impl:get-instance-props-by-path(
+  $instances,
+  $path-prop as element(merging:property),
+  $ns-map as map:map
+)
+{
+  (: Remove /es:envelope/es:instance/{top property name}, because we'll evaluate against the instance property :)
+  let $inst-path := merge-impl:strip-top-path($path-prop/@path)
+  let $parts := fn:tokenize($inst-path, "/")
+  (: We'll grab the node above our target so that we determine whether it's an array :)
+  let $middle-path := fn:string-join($parts[fn:position() != fn:last()], "/")
+  let $target-name-str := $parts[fn:last()]
+  let $target-name := fn:QName(map:get($ns-map, fn:replace($target-name-str, ":.*", "")), $target-name-str)
+  return (
+    $target-name,
+    for $instance in $instances
+    return
+      (: The value will be an XML element, a string (if target is a JSON property), or a JSON array :)
+      xdmp:unpath($middle-path, $ns-map, $instance)/node()[fn:node-name(.) = $target-name]
+  )
+};
+
+(:
+ : Get the merging:merge element that corresponds to a path.
+ :)
+declare function merge-impl:get-path-merge-spec(
+  $options as element(merging:options),
+  $path as xs:string
+) as element(merging:merge)*
+{
+  let $property-name := $options/merging:property-defs/merging:property[@path = $path]/@name
+  return
+    $options/merging:merging/merging:merge[@property-name = $property-name]
+};
+
+(:
+ : Get the merging:merge element that corresponds to a QName.
+ :)
+declare function merge-impl:get-merge-spec(
+  $options as element(merging:options),
+  $prop as xs:QName*
+) as element(merging:merge)*
+{
+  let $property-namespace := fn:namespace-uri-from-QName($prop)
+  let $property-local-name := fn:local-name-from-QName($prop)
+  let $property-name :=
+    $options/merging:property-defs
+      /merging:property[@namespace = $property-namespace and @localname = $property-local-name]/@name
+  return
+    $options/merging:merging/merging:merge[@property-name = $property-name]
+};
+
+(:
  : Returns a sequence of map:maps, one for each top-level property. Each map has the following keys:
  : - "algorithm" -- object-node with the name and optionsReference of the algorithm used for this property
  : - "sources" -- one or more object-nodes indicating which of the original docs the surviving value(s) came from
  : - "values" -- the surviving property values
+ : - "path" -- if the property was specified by a path, the XPath expression
+ : - "nsMap" -- if the property was specified by a path, a map of (prefix -> namespace)
  :)
 declare function merge-impl:build-final-properties(
   $merge-options,
@@ -1143,6 +1385,7 @@ declare function merge-impl:build-final-properties(
 {
   let $top-level-properties := fn:distinct-values($instances/* ! fn:node-name(.))
   let $property-defs := $merge-options/merging:property-defs[fn:exists(merging:property/@localname)]
+  let $path-property-defs := $merge-options/merging:property-defs/merging:property[fn:matches(@path, "^/[\w\-]*:?envelope/[\w\-]*:?instance")]
   let $algorithms-map := merge-impl:build-merging-map($merge-options)
   let $merge-options-uri := $merge-options ! xdmp:node-uri(.)
   let $merge-options-ref :=
@@ -1153,87 +1396,164 @@ declare function merge-impl:build-final-properties(
     else
       null-node{}
   let $first-doc := fn:head($docs)
-  for $prop in $top-level-properties
-  let $property-namespace := fn:namespace-uri-from-QName($prop)
-  let $property-local-name := fn:local-name-from-QName($prop)
-  let $property-name :=
-    $property-defs
-    /merging:property[@namespace = $property-namespace and @localname = $property-local-name]
-      /@name
-  let $property-spec :=
-    $merge-options
-    /merging:merging
-      /merging:merge[@property-name = $property-name]
-  let $algorithm-name := fn:string($property-spec/@algorithm-ref)
-  let $algorithm := map:get($algorithms-map, $algorithm-name)
-  let $algorithm-info :=
-    object-node {
-      "name": fn:head(($algorithm-name[fn:exists($algorithm)], "standard")),
-      "optionsReference": $merge-options-ref
-    }
-  let $instance-props :=
-    for $instance-prop in $instances/*[fn:node-name(.) = $prop]
-    (: require the property to have a value :)
-    where fn:normalize-space(fn:string-join(($instance-prop|$instance-prop//node()) ! fn:string())) ne ""
-    return ($instance-prop/self::array-node()/*, $instance-prop except $instance-prop/self::array-node())
-  return
-    fn:fold-left(
-      function($a as item()*, $b as item()) as item()* {
-        if (
-          fn:exists($a) and
-            fn:deep-equal(map:get(fn:head(fn:reverse($a)),"values"), map:get($b,"values"))
-        ) then
-          fn:head(fn:reverse($a)) + $b
-        else
-          ($a, $b + map:entry("algorithm", $algorithm-info))
-      },
-      (),
-      if (merge-impl:properties-are-equal($instance-props, $docs)) then
-        merge-impl:wrap-revision-info($prop, $instance-props[fn:root(.) is $first-doc], $sources)
-      else
-        let $wrapped-properties :=
-          for $doc at $pos in $docs
-          let $props-for-instance :=
-            for $prop-val in $instance-props[fn:root(.) is $doc]
-            return
-              (: Propertly extract values from arrays :)
-              if ($prop-val instance of array-node()) then
-                let $children := $prop-val/node()
-                return
-                  if (fn:exists($children/*[fn:node-name(.) eq $prop])) then
-                    $children/*[fn:node-name(.) eq $prop]
-                  else
-                    $children
-              else
-                $prop-val
-          for $prop-value in $props-for-instance
-          (:let $normalized-value := history:normalize-value-for-tracing($prop-value)
-            let $source-details := $prop-history-info//object-node(fn:string($prop))/object-node($normalized-value)/sourceDetails
-            :)
-          let $lineage-uris :=
-            (:if (fn:exists($source-details)) then
-                $source-details/sourceLocation
-              else:)
-            xdmp:node-uri($doc)
-          let $prop-sources := $sources[documentUri = $lineage-uris]
-          where fn:exists($props-for-instance)
-          return
-            merge-impl:wrap-revision-info($prop, $prop-value, $prop-sources)
-        return
-          if (fn:exists($algorithm)) then
-            merge-impl:execute-algorithm(
-              $algorithm,
-              $prop,
-              $wrapped-properties,
-              $property-spec
-            )
+  return (
+    (: TODO: refactor. These two cases repeat a lot of code. :)
+    let $ns-map :=
+      map:new((
+        for $pre in fn:in-scope-prefixes($property-defs)
+        return map:entry($pre, fn:namespace-uri-for-prefix($pre, $property-defs)),
+        map:entry("", "") (: Make sure blank namespace isn't inherited :)
+      ))
+    for $path-prop in $path-property-defs
+    let $merge-spec := merge-impl:get-path-merge-spec($merge-options, $path-prop/@path)
+    let $algorithm-name := fn:string($merge-spec/@algorithm-ref)
+    let $algorithm := map:get($algorithms-map, $algorithm-name)
+    let $algorithm-info :=
+      object-node {
+        "name": fn:head(($algorithm-name[fn:exists($algorithm)], "standard")),
+        "optionsReference": $merge-options-ref
+      }
+    let $instance-props := merge-impl:get-instance-props-by-path($instances, $path-prop, $ns-map)
+    let $prop-qname := fn:head($instance-props)
+    let $instance-props := fn:tail($instance-props)
+    return
+      fn:fold-left(
+        function($a as item()*, $b as item()) as item()* {
+          if (
+            fn:exists($a) and
+              fn:deep-equal(map:get(fn:head(fn:reverse($a)),"values"), map:get($b,"values"))
+          ) then
+            fn:head(fn:reverse($a)) + $b
           else
-            merge-impl:standard(
-              $prop,
-              $wrapped-properties,
-              $property-spec
-            )
-    )
+            ($a, $b + map:entry("algorithm", $algorithm-info))
+        },
+        (),
+        if (merge-impl:properties-are-equal($instance-props, $docs)) then
+          merge-impl:wrap-revision-info($prop-qname, $instance-props[fn:root(.) is $first-doc], $sources, $path-prop/@path, $ns-map)
+        else
+          let $wrapped-properties :=
+            for $doc at $pos in $docs
+            let $props-for-instance :=
+              for $prop-val in $instance-props[fn:root(.) is $doc]
+              return
+                (: Propertly extract values from arrays :)
+                (: TODO: consider array case
+                if ($prop-val instance of array-node()) then
+                  let $children := $prop-val/node()
+                  return
+                    if (fn:exists($children/*[fn:node-name(.) eq $prop])) then
+                      $children/*[fn:node-name(.) eq $prop]
+                    else
+                      $children
+                else
+                :)
+                  $prop-val
+            for $prop-value in $props-for-instance
+            (:let $normalized-value := history:normalize-value-for-tracing($prop-value)
+              let $source-details := $prop-history-info//object-node(fn:string($prop))/object-node($normalized-value)/sourceDetails
+              :)
+            let $lineage-uris :=
+              (:if (fn:exists($source-details)) then
+                  $source-details/sourceLocation
+                else:)
+              xdmp:node-uri($doc)
+            let $prop-sources := $sources[documentUri = $lineage-uris]
+            where fn:exists($props-for-instance)
+            return
+              merge-impl:wrap-revision-info($prop-qname, $prop-value, $prop-sources, $path-prop/@path, $ns-map)
+          let $merged-values :=
+            if (fn:exists($algorithm)) then
+              merge-impl:execute-algorithm(
+                $algorithm,
+                $prop-qname,
+                $wrapped-properties,
+                $merge-spec
+              )
+            else
+              merge-impl:standard(
+                $prop-qname,
+                $wrapped-properties,
+                $merge-spec
+              )
+          return $merged-values
+      )
+    ,
+
+
+
+    for $prop in $top-level-properties
+    let $merge-spec := merge-impl:get-merge-spec($merge-options, $prop)
+    let $algorithm-name := fn:string($merge-spec/@algorithm-ref)
+    let $algorithm := map:get($algorithms-map, $algorithm-name)
+    let $algorithm-info :=
+      object-node {
+        "name": fn:head(($algorithm-name[fn:exists($algorithm)], "standard")),
+        "optionsReference": $merge-options-ref
+      }
+    let $instance-props :=
+      for $instance-prop in $instances/*[fn:node-name(.) = $prop]
+      (: require the property to have a value :)
+      where fn:normalize-space(fn:string-join(($instance-prop|$instance-prop//node()) ! fn:string())) ne ""
+      return ($instance-prop/self::array-node()/*, $instance-prop except $instance-prop/self::array-node())
+    return
+      fn:fold-left(
+        function($a as item()*, $b as item()) as item()* {
+          if (
+            fn:exists($a) and
+              fn:deep-equal(map:get(fn:head(fn:reverse($a)),"values"), map:get($b,"values"))
+          ) then
+            fn:head(fn:reverse($a)) + $b
+          else
+            ($a, $b + map:entry("algorithm", $algorithm-info))
+        },
+        (),
+        if (merge-impl:properties-are-equal($instance-props, $docs)) then
+          merge-impl:wrap-revision-info($prop, $instance-props[fn:root(.) is $first-doc], $sources, (), ())
+        else
+          let $wrapped-properties :=
+            for $doc at $pos in $docs
+            let $props-for-instance :=
+              for $prop-val in $instance-props[fn:root(.) is $doc]
+              return
+                (: Propertly extract values from arrays :)
+                if ($prop-val instance of array-node()) then
+                  let $children := $prop-val/node()
+                  return
+                    if (fn:exists($children/*[fn:node-name(.) eq $prop])) then
+                      $children/*[fn:node-name(.) eq $prop]
+                    else
+                      $children
+                else
+                  $prop-val
+            for $prop-value in $props-for-instance
+            (:let $normalized-value := history:normalize-value-for-tracing($prop-value)
+              let $source-details := $prop-history-info//object-node(fn:string($prop))/object-node($normalized-value)/sourceDetails
+              :)
+            let $lineage-uris :=
+              (:if (fn:exists($source-details)) then
+                  $source-details/sourceLocation
+                else:)
+              xdmp:node-uri($doc)
+            let $prop-sources := $sources[documentUri = $lineage-uris]
+            where fn:exists($props-for-instance)
+            return
+              merge-impl:wrap-revision-info($prop, $prop-value, $prop-sources, (), ())
+          return
+            if (fn:exists($algorithm)) then
+              merge-impl:execute-algorithm(
+                $algorithm,
+                $prop,
+                $wrapped-properties,
+                $merge-spec
+              )
+            else
+              merge-impl:standard(
+                $prop,
+                $wrapped-properties,
+                $merge-spec
+              )
+      )
+  )
 };
 
 (:
@@ -1241,21 +1561,30 @@ declare function merge-impl:build-final-properties(
  : @param $property-name  XML element or JSON property name
  : @param $properties  XML elements or JSON properties corresponding to ES instance properties
  : @param $sources  information pulled from the source document headers
+ : @param $path  an XPath to a property
+ : @param $ns-map  namespace map for the $path
  : @return sequence of maps
  :)
 declare function merge-impl:wrap-revision-info(
   $property-name as xs:QName,
   $properties as item()*,
-  $sources as item()*
+  $sources as item()*,
+  $path as xs:string?,
+  $ns-map as map:map?
 ) as map:map*
 {
   for $prop in $properties
   return
-  map:new((
-    map:entry("name", $property-name),
-    map:entry("sources", $sources),
-    map:entry("values", $prop)
-  ))
+    map:new((
+      map:entry("name", $property-name),
+      map:entry("sources", $sources),
+      map:entry("values", $prop),
+      if (fn:exists($path)) then (
+        map:entry("path", $path),
+        map:entry("nsMap", $ns-map)
+      )
+      else ()
+    ))
 };
 
 (:
@@ -1287,10 +1616,16 @@ declare function merge-impl:properties-are-equal(
             satisfies
               let $same-type := xdmp:type($prop1) eq xdmp:type($prop2)
               let $is-object := $prop1 instance of object-node()
-              let $objects-are-equal := $same-type and $is-object and merge-impl:objects-equal($prop1, $prop2)
-              let $values-are-equal := $same-type and fn:not($is-object) and $prop1 = $prop2
+              let $is-array := $prop1 instance of array-node()
               return
-                $objects-are-equal or $values-are-equal
+                if (fn:not($same-type)) then
+                  fn:false()
+                else if ($is-object) then
+                  merge-impl:objects-equal($prop1, $prop2)
+                else if ($is-array) then
+                  fn:deep-equal(<r>{xdmp:from-json($prop1)}</r>, <r>{xdmp:from-json($prop2)}</r>)
+                else
+                  $prop1 = $prop2
     )
 };
 
@@ -1511,6 +1846,17 @@ declare function merge-impl:options-to-json($options-xml as element(merging:opti
                   merge-impl:propertyspec-to-json($merge)
               }
             )
+          else (),
+          if (fn:exists($options-xml/merging:triple-merge)) then
+            map:entry(
+              "tripleMerge",
+              let $config := json:config("custom")
+                => map:with("camel-case", fn:true())
+                => map:with("whitespace", "ignore")
+                => map:with("ignore-element-names", xs:QName("merging:merge"))
+              return
+                json:transform-to-json($options-xml/merging:triple-merge, $config)/*
+            )
           else ()
         ))
       )
@@ -1598,7 +1944,25 @@ declare function merge-impl:options-from-json($options-json as object-node())
           element merge {
             json:transform-from-json($merge, $config)
           }
-      }
+      },
+      let $triple-merge := $options-json/*:options/*:tripleMerge
+      return
+      if (fn:exists($triple-merge)) then
+        element triple-merge {
+          attribute xmlns { "http://marklogic.com/smart-mastering/merging" },
+          attribute namespace { $triple-merge/*:namespace },
+          attribute function { $triple-merge/*:function },
+          attribute at { $triple-merge/*:at },
+
+          let $config := json:config("custom")
+            => map:with("camel-case", fn:true())
+            => map:with("whitespace", "ignore")
+            => map:with("ignore-element-names", ("namespace","function","at"))
+          for $merge in $triple-merge
+          return
+            json:transform-from-json($merge, $config)
+        }
+      else ()
     }
   </options>
 };
@@ -1612,7 +1976,7 @@ declare function merge-impl:_options-json-config()
     map:put($config, "element-namespace-prefix", "merging"),
     map:put($config, "attribute-names",
       ("name","localname", "namespace", "function",
-        "at", "property-name", "weight", "above", "label","algorithm-ref")
+        "at", "property-name", "propertyName", "weight", "above", "label","algorithm-ref", "algorithmRef")
     ),
     map:put($config, "camel-case", fn:true()),
     map:put($config, "whitepsace", "ignore"),
@@ -1663,12 +2027,12 @@ declare function merge-impl:option-names-to-json($options-xml)
   )
 };
 
-declare function merge-impl:propertyspec-to-json($property-spec as element(merging:merge)) as object-node()
+declare function merge-impl:propertyspec-to-json($property-spec as element()) as object-node()
 {
   let $config := json:config("custom")
     => map:with("camel-case", fn:true())
     => map:with("whitespace", "ignore")
     => map:with("ignore-element-names", xs:QName("merging:merge"))
   return
-    json:transform-to-json($property-spec, $config)/*:merge
+    json:transform-to-json($property-spec, $config)/*
 };

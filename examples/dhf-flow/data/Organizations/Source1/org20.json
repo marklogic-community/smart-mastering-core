@@ -1,0 +1,35 @@
+{
+  "organization": {
+    "orgName": "Coash",
+    "type": "Public Sector",
+    "form": "Sole Proprietor",
+    "mission": "Cupidatat velit eiusmod duis dolor consectetur consequat nostrud velit et veniam amet ad ex. Esse Lorem eiusmod consectetur quis duis aliquip consequat. Reprehenderit qui eu mollit labore incididunt eiusmod elit eiusmod proident ad. Consequat Lorem esse ad commodo nisi et amet laboris sint est. Enim veniam ad ipsum sint labore ex reprehenderit.",
+    "offices": [
+      {
+        "officeName": "Reprehenderit",
+        "phone": "+1 (822) 441-2094",
+        "address": "419 Brevoort Place, Kansas, Indiana, 511"
+      },
+      {
+        "officeName": "Exercitation",
+        "phone": "+1 (827) 558-2761",
+        "address": "683 Adler Place, Shaft, Nebraska, 9662"
+      },
+      {
+        "officeName": "Non",
+        "phone": "+1 (924) 525-3300",
+        "address": "249 Monaco Place, Chicopee, Minnesota, 513"
+      },
+      {
+        "officeName": "Sunt",
+        "phone": "+1 (825) 456-2358",
+        "address": "115 Williams Place, Vicksburg, Pennsylvania, 8909"
+      },
+      {
+        "officeName": "Qui",
+        "phone": "+1 (950) 433-3482",
+        "address": "860 Quentin Street, Galesville, Arkansas, 9477"
+      }
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "organization": {
+    "orgName": "Turnabout",
+    "type": "For Profit",
+    "form": "C Corp",
+    "mission": "Sunt pariatur nostrud eu elit. Labore nulla veniam sunt labore sint consequat laboris consectetur amet. Ipsum est officia ullamco eu voluptate adipisicing ad amet aute id irure amet deserunt. Consectetur eu anim amet nostrud elit ex enim cillum labore.",
+    "offices": [
+      {
+        "officeName": "Ea",
+        "phone": "+1 (816) 470-2443",
+        "address": "306 Whitwell Place, Guilford, Missouri, 9906"
+      },
+      {
+        "officeName": "Labore",
+        "phone": "+1 (849) 533-2631",
+        "address": "806 Dorset Street, Vale, Guam, 5316"
+      }
+    ]
+  }
+}

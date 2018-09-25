@@ -23,6 +23,7 @@ development process.
 - Java 8 or higher
 - [Gradle](https://gradle.org/) is optional - this project has the Gradle wrapper included, and the instructions below
 reference it so that you don't need to install Gradle
+- Schemas Database attached to your content DB. This is required for PROV-O to work.
 
 ## Using
 
@@ -35,10 +36,9 @@ This assumes that you're using ml-gradle in your project.
 _Note: be advised that this project is in its very early stages. The APIs
 presented here may change significantly before stabilizing._
 
-### Example
+### Examples
 
-To see an example of smart-mastering-core in use, see the [smart-mastering-demo 
-project][sm-demo].
+To view smart-mastering-core in use, see the [Smart Mastering project examples](examples).
 
 ### Need help?
 
@@ -115,13 +115,26 @@ Click the `Run Tests` button.
 #### Command-line
 - `./gradlew mlUnitTest`
 
-### Publishing
+### Release
 
+#### Publishing
+
+- update gradle.properties with the new version number
+- update the gradle.properties for the examples with the new version number
+- update the UPGRADE.md file's version reference to the new version number. Add other upgrade notes as needed. 
+- generate the CHANGELOG: `github_changelog_generator --token $my-github-token --future-release v1.0.0`
 - add these properties to your `gradle-local.properties`
   - bintray_user
   - bintray_key
 - change the `version` property in `gradle.properties` to the new version number
 - `./gradlew bintrayUpload`
+- log in to bintray and push the publish button
+- smoke test the examples to make sure they work with the latest published version
+- merge the develop branch into master
+- merge the docs-next branch into docs
+- tag the release vx.xx
+- push the tags
+- add the changelog to the release page on github
 
 You must be part of the marklogic-community organization on bintray in order to publish.
 
