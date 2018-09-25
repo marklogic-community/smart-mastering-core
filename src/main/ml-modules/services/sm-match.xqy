@@ -41,11 +41,23 @@ function post(
       $input/(*:document|object-node("document"))
     else
       fn:doc($uri)
+  let $_document-check :=
+    if (fn:empty($document)) then
+      fn:error((),"RESTAPI-SRVEXERR",
+        (400, "Bad Request",
+         "A valid uri parameter or document in the POST body is required."))
+    else ()
   let $options :=
     if (map:contains($params, "options")) then
       matcher:get-options-as-xml(map:get($params, "options"))
     else
       $input-root/(element(matcher:options)|self::object-node()[object-node("options")])
+  let $_options-check :=
+    if (fn:empty($options)) then
+      fn:error((),"RESTAPI-SRVEXERR",
+        (400, "Bad Request",
+         "A valid option parameter or option config in the POST body is required."))
+    else ()
   let $start :=
     fn:head((
       map:get($params,"start") ! xs:integer(.),
@@ -57,14 +69,14 @@ function post(
       $options//*:max-scan ! xs:integer(.),
       20
     ))
-  let $include-matches as xs:boolean := 
+  let $include-matches as xs:boolean :=
     let $include := fn:head((map:get($params, "includeMatches"), fn:false()))
     return
       if ($include castable as xs:boolean) then
         $include cast as xs:boolean
-      else 
-        fn:error((),"RESTAPI-SRVEXERR", 
-          (400, "Bad Request", 
+      else
+        fn:error((),"RESTAPI-SRVEXERR",
+          (400, "Bad Request",
            "Your request included an invalid value for the includeMatches parameter.  A boolean value (true or false) is required."))
   let $results :=
     matcher:find-document-matches-by-options(

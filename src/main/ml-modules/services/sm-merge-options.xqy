@@ -15,9 +15,14 @@ declare function get(
 )
   as document-node()*
 {
-  document {
-    merging:get-options(map:get($params, "name"), $const:FORMAT-JSON)
-  }
+  if (map:contains($params, "name")) then
+    document {
+      merging:get-options(map:get($params, "name"), $const:FORMAT-JSON)
+    }
+  else
+    fn:error((),"RESTAPI-SRVEXERR",
+        (400, "Bad Request",
+        "name parameter is required"))
 };
 
 declare function put(
@@ -39,7 +44,12 @@ function post(
 )
   as document-node()*
 {
-  merging:save-options(map:get($params, "name"), $input/(merging:options|object-node()))
+  if (map:contains($params, "name")) then
+    merging:save-options(map:get($params, "name"), $input/(merging:options|object-node()))
+  else
+    fn:error((),"RESTAPI-SRVEXERR",
+        (400, "Bad Request",
+        "name parameter is required"))
 };
 
 declare function delete(

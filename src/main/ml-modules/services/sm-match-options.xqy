@@ -12,9 +12,14 @@ declare function get(
   $params  as map:map
   ) as document-node()*
 {
-  document {
-    matcher:get-options-as-json(map:get($params, "name"))
-  }
+  if (map:contains($params, "name")) then
+    document {
+      matcher:get-options-as-json(map:get($params, "name"))
+    }
+  else
+    fn:error((),"RESTAPI-SRVEXERR",
+        (400, "Bad Request",
+        "name parameter is required"))
 };
 
 declare function put(
@@ -34,7 +39,12 @@ function post(
   $input   as document-node()*
   ) as document-node()*
 {
-  matcher:save-options(map:get($params, "name"), $input/(matcher:options|object-node()))
+  if (map:contains($params, "name")) then
+    matcher:save-options(map:get($params, "name"), $input/(matcher:options|object-node()))
+  else
+    fn:error((),"RESTAPI-SRVEXERR",
+        (400, "Bad Request",
+        "name parameter is required"))
 };
 
 declare function delete(
