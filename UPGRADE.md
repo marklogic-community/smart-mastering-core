@@ -2,7 +2,7 @@
 
 This document describes steps needed when upgrading Smart Mastering Core from one version to another. 
 
-## v1.0.0 to vNext
+## v1.0.0 to v1.1.0
 
 ### Custom JavaScript actions matches parameter
 
