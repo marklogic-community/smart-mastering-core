@@ -123,6 +123,8 @@ Click the `Run Tests` button.
 - update the gradle.properties for the examples with the new version number
 - update the UPGRADE.md file's version reference to the new version number. Add other upgrade notes as needed. 
 - generate the CHANGELOG: `github_changelog_generator --token $my-github-token --future-release v1.0.0`
+  - if you don't have a "/tmp/" directory (Windows), add  `--cache-file ~\tmp\github-changelog-http-cache --cache-log ~\tmp\github-changelog-logger.log`
+- commit the CHANGELOG
 - add these properties to your `gradle-local.properties`
   - bintray_user
   - bintray_key
