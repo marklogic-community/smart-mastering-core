@@ -4,6 +4,8 @@ import module namespace const = "http://marklogic.com/smart-mastering/constants"
   at "/com.marklogic.smart-mastering/constants.xqy";
 import module namespace merging = "http://marklogic.com/smart-mastering/merging"
   at "/com.marklogic.smart-mastering/merging.xqy";
+import module namespace history = "http://marklogic.com/smart-mastering/auditing/history"
+  at "/com.marklogic.smart-mastering/auditing/history.xqy";
 
 import module namespace test = "http://marklogic.com/roxy/test-helper" at "/test/test-helper.xqy";
 import module namespace lib = "http://marklogic.com/smart-mastering/test" at "lib/lib.xqy";
@@ -27,9 +29,24 @@ let $merged-doc :=
     $lib:INVOKE_OPTIONS
   )
 
-return (
+let $assertions := (
   test:assert-equal("another string", $merged-doc/es:instance/TopProperty/nested:LowerProperty1/EvenLowerProperty/LowestProperty1/fn:string()),
   test:assert-equal("some string", $merged-doc/es:instance/TopProperty/nested:LowerProperty1/EvenLowerProperty/LowestProperty2/fn:string()),
   test:assert-equal("another string", $merged-doc/es:instance/TopProperty/nested:LowerProperty1/EvenLowerProperty/LowestProperty3/fn:string()),
   test:assert-equal(123, $merged-doc/es:instance/TopProperty/EntityReference/PropValue/fn:data())
 )
+
+let $merged-uri := cts:uris((), "limit=1", cts:collection-query($const:MERGED-COLL))
+let $prop-history := history:property-history($merged-uri)
+
+let $clark-path := "{http://marklogic.com/entity-services}envelope/{http://marklogic.com/entity-services}instance/TopProperty/{nested}LowerProperty1/EvenLowerProperty/LowestProperty1"
+
+let $assertions := (
+  $assertions,
+  test:assert-exists(map:get($prop-history, $clark-path)),
+  test:assert-equal(
+    "/nested/doc2.xml",
+    map:get($prop-history, $clark-path) => map:get("another string") => map:get("details") => map:get("sourceLocation"))
+)
+
+return $assertions
