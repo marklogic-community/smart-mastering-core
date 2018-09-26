@@ -23,7 +23,8 @@ main:
           { url: '/docs/custom-merge-algorithms/', text: 'Custom Merging Algorithms' }
         ]
       },
-      { url: '/docs/security/', text: 'Security' }
+      { url: '/docs/security/', text: 'Security' },
+      { url: '/docs/error-codes/', text: 'Error Codes' }
     ]
   }
   - { url: '/faqs/', text: 'FAQs' }
