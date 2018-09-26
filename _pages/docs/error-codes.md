@@ -86,7 +86,7 @@ DELETE 404 - Not Found
 ## Module Errors
 ### Merging Module
 SM-INVALID-FORMAT
- : Attempted to call merge-impl:get-option-names with invalid format
+ : Attempted to call merge-impl:get-option-names with invalid format. Valid formats are $FORMAT-XML and $FORMAT-JSON, both found in constants.xqy.
 
 ### Processing Module
 SM-NO-MERGING-OPTIONS
