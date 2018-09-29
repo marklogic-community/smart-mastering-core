@@ -14,8 +14,8 @@ let actual = matcher.resultsToJson(actualXML);
 
 [
   // the top-level properties are text nodes, although the values are numeric
-  test.assertEqual("5", actual.results.total.toString()),
+  test.assertEqual("2", actual.results.total.toString()),
   test.assertEqual("6", actual.results['page-length'].toString()),
   test.assertEqual("1", actual.results.start.toString()),
-  test.assertEqual(5, actual.results.result.length)
+  test.assertEqual(2, actual.results.result.length)
 ]

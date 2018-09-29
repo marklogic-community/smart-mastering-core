@@ -12,7 +12,10 @@
           "user": "admin",
           "dateTime": "2018-04-26T16:40:02.1386Z"
         }
-      ]
+      ],
+      "meta": {
+        "PersonSurName": "JONES"
+      }
     },
     "triples": [],
     "instance": {

@@ -11,10 +11,10 @@ let postWithOptionsResponse = test.httpPost(`v1/resources/sm-match?rs:uri=${xdmp
 let actual = fn.head(fn.tail(postWithOptionsResponse)).toObject();
 [].concat(
   test.assertEqual("200", fn.string(fn.head(postWithOptionsResponse).xpath('//*:code'))),
-  test.assertEqual("5", actual.results.total.toString()),
+  test.assertEqual("2", actual.results.total.toString()),
   test.assertEqual("6", actual.results['page-length'].toString()),
   test.assertEqual("1", actual.results.start.toString()),
-  test.assertEqual(5, actual.results.result.length)
+  test.assertEqual(2, actual.results.result.length)
 )
 // Test includesMatches option
 actual.results.result.forEach((result) => {
