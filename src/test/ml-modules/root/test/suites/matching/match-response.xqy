@@ -108,9 +108,9 @@ return (
   return (
     test:assert-true($actual instance of element(results)),
     test:assert-equal(6, $actual/@page-length/xs:int(.)),
-    test:assert-equal(5, fn:count($actual/result)),
+    test:assert-equal(2, fn:count($actual/result)),
     test:assert-equal(1, $actual/@start/xs:int(.)),
-    test:assert-equal(5, $actual/@total/xs:int(.)),
+    test:assert-equal(2, $actual/@total/xs:int(.)),
     test:assert-not-exists($actual/result/@total),
     for $r at $i in $actual/result
     order by $r/@index/xs:int(.) ascending
@@ -119,13 +119,13 @@ return (
   ),
 
   (: test page length < # of results :)
-  let $actual := matcher:find-document-matches-by-options($doc, $options, 1, 2, fn:true(), cts:true-query())
+  let $actual := matcher:find-document-matches-by-options($doc, $options, 1, 1, fn:true(), cts:true-query())
   return (
     test:assert-true($actual instance of element(results)),
-    test:assert-equal(2, $actual/@page-length/xs:int(.)),
-    test:assert-equal(2, fn:count($actual/result)),
+    test:assert-equal(1, $actual/@page-length/xs:int(.)),
+    test:assert-equal(1, fn:count($actual/result)),
     test:assert-equal(1, $actual/@start/xs:int(.)),
-    test:assert-equal(5, $actual/@total/xs:int(.)),
+    test:assert-equal(2, $actual/@total/xs:int(.)),
     test:assert-not-exists($actual/result/@total),
     for $r at $i in $actual/result
     order by $r/@index/xs:int(.) ascending
@@ -134,18 +134,18 @@ return (
   ),
 
   (: test last page :)
-  let $actual := matcher:find-document-matches-by-options($doc, $options, 5, 2, fn:true(), cts:true-query())
+  let $actual := matcher:find-document-matches-by-options($doc, $options, 2, 2, fn:true(), cts:true-query())
   return (
     test:assert-true($actual instance of element(results)),
     test:assert-equal(2, $actual/@page-length/xs:int(.)),
     test:assert-equal(1, fn:count($actual/result)),
-    test:assert-equal(5, $actual/@start/xs:int(.)),
-    test:assert-equal(5, $actual/@total/xs:int(.)),
+    test:assert-equal(2, $actual/@start/xs:int(.)),
+    test:assert-equal(2, $actual/@total/xs:int(.)),
     test:assert-not-exists($actual/result/@total),
     for $r at $i in $actual/result
     order by $r/@index/xs:int(.) ascending
     return
-      test:assert-equal($i + 4, $r/@index/xs:int(.))
+      test:assert-equal($i + 1, $r/@index/xs:int(.))
   ),
 
   (: test no results :)

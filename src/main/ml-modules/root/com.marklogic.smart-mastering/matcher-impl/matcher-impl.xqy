@@ -75,8 +75,9 @@ declare function match-impl:find-document-matches-by-options(
     else
       $options
   let $scoring := $options/matcher:scoring
+  let $is-json := fn:exists($document/(object-node()|array-node()))
   let $algorithms := algorithms:build-algorithms-map($options/matcher:algorithms)
-  let $boost-query := match-impl:build-boost-query($document, $scoring, $algorithms, $options)
+  let $boost-query := match-impl:build-boost-query($document, $scoring, $algorithms, $options, $is-json)
   let $serialized-boost-query := element boost-query {$boost-query}
   let $minimum-threshold-combinations :=
     match-impl:minimum-threshold-combinations($serialized-boost-query, $minimum-threshold)
@@ -120,13 +121,14 @@ declare function match-impl:find-document-matches-by-options(
         $scoring,
         $algorithms,
         $options,
-        $include-matches
+        $include-matches,
+        $is-json
       )
     )
   return (
     $_lock-on-search,
     element results {
-      attribute total { xdmp:estimate(cts:search(fn:collection(), $match-query, "unfiltered")) },
+      attribute total { xdmp:estimate(cts:search(fn:collection(), match-impl:instance-query-wrapper($match-query, $is-json), "unfiltered")) },
       attribute page-length { $page-length },
       attribute start { $start },
       element boost-query {$reduced-boost},
@@ -212,7 +214,13 @@ declare function match-impl:drop-redundant($uri, $matches as element(result)*)
  : @param $options  full match options; included here to pass into algorithm functions
  : @return a cts:or-query that will be used as a boost query
  :)
-declare function match-impl:build-boost-query($document, $scoring, $algorithms, $options)
+declare function match-impl:build-boost-query(
+  $document as node()?,
+  $scoring as element(matcher:scoring),
+  $algorithms as map:map,
+  $options as element(matcher:options),
+  $is-json as xs:boolean
+)
 {
   let $property-defs := $options/matcher:property-defs
   return
@@ -283,14 +291,28 @@ declare function match-impl:search(
   $scoring as element(matcher:scoring),
   $algorithms as map:map,
   $options as element(matcher:options),
-  $include-matches as xs:boolean
+  $include-matches as xs:boolean,
+  $is-json as xs:boolean
 ) {
   let $range := $start to ($start + $page-length - 1)
   let $query :=
-    cts:and-query((
-      cts:query(match-impl:strip-query-weights(document { $filter-query }/element())),
-      cts:boost-query($match-query, $boosting-query)
-    ))
+    match-impl:instance-query-wrapper(
+      cts:and-query((
+        cts:query(match-impl:strip-query-weights(document { $filter-query }/element())),
+        cts:boost-query($match-query, $boosting-query)
+      )),
+      $is-json
+    )
+  let $cts-walk-query :=
+    if ($include-matches) then
+      match-impl:instance-query-wrapper(
+        cts:or-query((
+          $match-query,
+          $boosting-query
+        )),
+        $is-json
+      )
+    else ()
   let $thresholds := $options/matcher:thresholds
   for $result at $pos in cts:search(
     fn:collection(),
@@ -309,10 +331,7 @@ declare function match-impl:search(
              node instead :)
           cts:walk(
             $result,
-            cts:or-query((
-              $match-query,
-              $boosting-query
-            )),
+            $cts-walk-query,
             $cts:node/<match>{xdmp:path(., fn:true())}</match>
           )
         }
@@ -499,4 +518,18 @@ declare function match-impl:results-to-json($results-xml)
       json:transform-to-json-object($results-xml, $results-json-config)
     )/node()
   else ()
+};
+
+declare function match-impl:instance-query-wrapper(
+  $query as cts:query,
+  $is-json as xs:boolean
+) {
+  if ($is-json) then
+    if (fn:exists($const:JSON-INSTANCE)) then
+      cts:json-property-scope-query($const:JSON-INSTANCE, $query)
+    else ()
+  else
+    if (fn:exists($const:XML-INSTANCE)) then
+      cts:element-query($const:XML-INSTANCE, $query)
+    else ()
 };
