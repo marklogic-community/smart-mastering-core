@@ -15,3 +15,6 @@ How to configure the Smart Mastering [matching options](./matching-options.md).
 
 ### Merging
 How to configure the Smart Mastering [merging options](./merging-options.md).
+
+### Error Codes
+Standard [error codes](./error-codes.md).
