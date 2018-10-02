@@ -437,6 +437,7 @@ declare function match-impl:strip-query-weights($queries)
         }
       case element() return
         element { fn:node-name($query) } {
+          $query/namespace::*,
           $query/@*,
           match-impl:strip-query-weights($query/node())
         }
