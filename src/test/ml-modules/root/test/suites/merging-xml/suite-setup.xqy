@@ -17,6 +17,8 @@ merging:save-options($lib:OPTIONS-NAME-CUST-SJS, test:get-test-file("custom-sjs-
 merging:save-options($lib:OPTIONS-NAME-CUST-TRIPS-XQY, test:get-test-file("custom-xqy-triples-options.xml")),
 merging:save-options($lib:OPTIONS-NAME-CUST-TRIPS-SJS, test:get-test-file("custom-sjs-triples-options.xml")),
 merging:save-options($lib:OPTIONS-NAME-PATH, test:get-test-file("path-merge-options.xml")),
+merging:save-options($lib:OPTIONS-NAME-WITH-DEFAULT-1, test:get-test-file("merge-options-with-default-1.xml")),
+merging:save-options($lib:OPTIONS-NAME-WITH-DEFAULT-2, test:get-test-file("merge-options-with-default-2.xml")),
 merging:save-options($lib:ONE-FIRST-OPTIONS, test:get-test-file("one-first-options.xml")),
 merging:save-options($lib:TWO-FIRST-OPTIONS, test:get-test-file("two-first-options.xml")),
 merging:save-options($lib:NESTED-OPTIONS, test:get-test-file("nested-merge-options.xml")),

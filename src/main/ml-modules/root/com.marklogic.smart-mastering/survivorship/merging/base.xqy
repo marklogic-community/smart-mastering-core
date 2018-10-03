@@ -1348,7 +1348,10 @@ declare function merge-impl:get-path-merge-spec(
 {
   let $property-name := $options/merging:property-defs/merging:property[@path = $path]/@name
   return
-    $options/merging:merging/merging:merge[@property-name = $property-name]
+    merge-impl:expand-merge-spec(
+      $options,
+      $options/merging:merging/merging:merge[@property-name = $property-name]
+    )
 };
 
 (:
@@ -1365,7 +1368,36 @@ declare function merge-impl:get-merge-spec(
     $options/merging:property-defs
       /merging:property[@namespace = $property-namespace and @localname = $property-local-name]/@name
   return
-    $options/merging:merging/merging:merge[@property-name = $property-name]
+    merge-impl:expand-merge-spec(
+      $options,
+      $options/merging:merging/merging:merge[@property-name = $property-name]
+    )
+};
+
+declare function merge-impl:expand-merge-spec(
+  $options as element(merging:options),
+  $merge-details as element(merging:merge)?
+) as element(merging:merge)?
+{
+
+  let $merge-details :=
+    if (fn:exists($merge-details)) then
+      $merge-details
+    else
+      $options/merging:merging/merging:merge[@default][@default cast as xs:boolean]
+  let $strategy-name := $merge-details/@strategy
+  return
+    if (fn:exists($strategy-name)) then
+      let $strategy := $options/merging:merging/merging:merge-strategy[@name eq $strategy-name]
+      return
+        element merging:merge {
+          for $node-name in fn:distinct-values(($strategy/@*, $merge-details/@*) ! fn:node-name())
+          return fn:head(($merge-details/@*[fn:node-name() eq $node-name],$strategy/@*[fn:node-name() eq $node-name])),
+          for $node-name in fn:distinct-values(($strategy/*, $merge-details/*) ! fn:node-name())
+          return fn:head(($merge-details/*[fn:node-name() eq $node-name],$strategy/*[fn:node-name() eq $node-name]))
+        }
+    else
+      $merge-details
 };
 
 (:
@@ -1837,6 +1869,16 @@ declare function merge-impl:options-to-json($options-xml as element(merging:opti
               ))
             )
           else (),
+          if (fn:exists($options-xml/merging:merging/merging:merge-strategy)) then
+            map:entry(
+              "mergeStrategies",
+              array-node {
+                for $merge in $options-xml/merging:merging/merging:merge-strategy
+                return
+                  merge-impl:propertyspec-to-json($merge)
+              }
+            )
+          else (),
           if (fn:exists($options-xml/merging:merging/merging:merge)) then
             map:entry(
               "merging",
@@ -1938,12 +1980,19 @@ declare function merge-impl:options-from-json($options-json as object-node())
         let $config := json:config("custom")
           => map:with("camel-case", fn:true())
           => map:with("whitespace", "ignore")
-          => map:with("attribute-names", ("propertyName", "algorithmRef", "maxValues"))
-        for $merge in $options-json/*:options/*:merging
-        return
-          element merge {
-            json:transform-from-json($merge, $config)
-          }
+          => map:with("attribute-names", ("name", "weight", "strategy", "propertyName", "algorithmRef", "maxValues"))
+        return (
+          for $merge in $options-json/*:options/*:merging
+          return
+            element merge {
+              json:transform-from-json($merge, $config)
+            },
+          for $merge-strategy in $options-json/*:options/*:mergeStrategies
+          return
+            element merge-strategy {
+              json:transform-from-json($merge-strategy, $config)
+            }
+        )
       },
       let $triple-merge := $options-json/*:options/*:tripleMerge
       return
@@ -1971,12 +2020,12 @@ declare function merge-impl:_options-json-config()
 {
   let $config := json:config("custom")
   return (
-    map:put($config, "array-element-names", ("algorithm","threshold","scoring","property", "reduce", "add", "expand", "merging")),
+    map:put($config, "array-element-names", ("algorithm","threshold","scoring","property", "reduce", "add", "expand", "merging", "merge-strategy", "mergeStrategy")),
     map:put($config, "element-namespace", "http://marklogic.com/smart-mastering/merging"),
     map:put($config, "element-namespace-prefix", "merging"),
     map:put($config, "attribute-names",
       ("name","localname", "namespace", "function",
-        "at", "property-name", "propertyName", "weight", "above", "label","algorithm-ref", "algorithmRef")
+        "at", "property-name", "propertyName", "weight", "above", "label","algorithm-ref", "algorithmRef", "strategy", "default")
     ),
     map:put($config, "camel-case", fn:true()),
     map:put($config, "whitepsace", "ignore"),
