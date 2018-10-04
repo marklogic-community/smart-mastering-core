@@ -1374,6 +1374,14 @@ declare function merge-impl:get-merge-spec(
     )
 };
 
+(:
+ : Take in a merge spec and if doesn't exist search for a default merge from the options.
+ : Also, look for any referenced merge strategies and pull in the properties from the strategy.
+ :
+ : @param $options element(merging:options) the entire merge options
+ : @param $merge-details element(merging:merge) the element describing how a merge should occur
+ : @return $merge-details element(merging:merge) with details filled in from referenced strategy
+ :)
 declare function merge-impl:expand-merge-spec(
   $options as element(merging:options),
   $merge-details as element(merging:merge)?
