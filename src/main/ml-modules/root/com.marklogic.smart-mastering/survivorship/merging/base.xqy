@@ -1866,7 +1866,7 @@ declare function merge-impl:options-to-json($options-xml as element(merging:opti
                       "timestamp": object-node {
                         "path":
                           let $path :=
-                            fn:head($options-xml/merging:algorithms/merging:std-algorithm/merging:timestamp/@path/fn:string())
+                            fn:head($options-xml/merging:algorithms/merging:std-algorithm/merging:timestamp/@path/fn:string()[. ne ''])
                           return
                             if (fn:exists($path)) then $path
                             else null-node {}
