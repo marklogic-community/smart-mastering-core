@@ -56,11 +56,6 @@ retrieved as either XML or JSON.
         <source name="CRM" weight="10"></source>
       </source-weights>
     </merge-strategy>
-    <merge-strategy name="oracle-source-weight" algorithm-ref="standard">
-      <source-weights>
-        <source name="Oracle" weight="10"></source>
-      </source-weights>
-    </merge-strategy>
     <merge-strategy name="length-weight" algorithm-ref="standard" max-values="1">
       <length weight="10"/>
     </merge-strategy>
@@ -75,7 +70,11 @@ retrieved as either XML or JSON.
       <length weight="8" />
     </merge>
     <merge property-name="address" strategy="crm-source-weight" max-values="1"></merge>
-    <merge property-name="dob" strategy="oracle-source-weight" max-values="1"></merge>
+    <merge property-name="dob" max-values="1" algorithm-ref="standard">
+      <source-weights>
+        <source name="Oracle" weight="10"></source>
+      </source-weights>
+    </merge>
     <merge property-name="caseStartDate" strategy="crm-source-weight" max-values="1"></merge>
     <merge property-name="incidentDate" strategy="length-weight"></merge>
     <merge property-name="sex" strategy="length-weight"></merge>
@@ -198,18 +197,6 @@ retrieved as either XML or JSON.
       }
     },
     {
-      "name": "oracle-source-weight",
-      "algorithmRef": "standard",
-      "sourceWeights":
-      {
-        "source":
-        {
-          "name": "Oracle",
-          "weight": "10"
-        }
-      }
-    },
-    {
       "name": "length-weight",
       "algorithmRef": "standard",
       "maxValues": "1",
@@ -244,7 +231,15 @@ retrieved as either XML or JSON.
     },
     {
       "propertyName": "dob",
-      "strategy": "oracle-source-weight",
+      "algorithmRef": "standard",
+      "sourceWeights":
+      {
+        "source":
+        {
+          "name": "Oracle",
+          "weight": "10"
+        }
+      },
       "maxValues": "1"
     },
     {
@@ -372,13 +367,19 @@ be combined in the merged document.
 
 ### `merge` Element
 
-The `merge` element can have three attributes: `property-name`, `algorithm-ref`,
-and `max-values`. The `property-name` attribute must match the `name` attribute
-of one of the `property` elements defined under `property-defs`. The
+The `merge` element can have five attributes: `default`, `property-name`, `algorithm-ref`, `max-values`, and `strategy`. 
+The `default` attribute accepts a boolean value that determines if the `merge` element should define the default behavior for merging. The `property-name` attribute must match the `name` attribute
+of one of the `property` elements defined under `property-defs`. Use of the `default` attribute and `property-name` attribute are mutually exclusive. The
 `algorithm-ref` attribute must match the `name` attribute of one of the
 `algorithm` elements. The `max-values` attribute is an integer indicating how
 many values for this property should be copied from source documents to the
-merged document.
+merged document. The `strategy` attribute can reference the `name` attribute of a `merge-strategy` element. See the next session for details.
+
+### `merge-strategy` Element
+
+The `merge-strategy` element has only one required attribute of `name`. `merge-strategy` can additionally have any of the attributes or child elements that the `merge` element supports, with the exception of the `property-name` attribute. 
+
+The `merge-strategy` element provides a way to reduce verbosity of the options file by adding the ability to reference repeated patterns.
 
 #### Standard Merging
 
