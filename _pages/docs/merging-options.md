@@ -49,11 +49,23 @@ retrieved as either XML or JSON.
     </std-algorithm>
   </algorithms>
   <merging>
-    <merge property-name="ssn">
+    <!-- Define merging strategies that can be referenced by
+      merge specifications below. This can cut down on configuration for repeated patterns   -->
+    <merge-strategy name="crm-source-weight" algorithm-ref="standard">
       <source-weights>
         <source name="CRM" weight="10"></source>
       </source-weights>
-    </merge>
+    </merge-strategy>
+    <merge-strategy name="oracle-source-weight" algorithm-ref="standard">
+      <source-weights>
+        <source name="Oracle" weight="10"></source>
+      </source-weights>
+    </merge-strategy>
+    <merge-strategy name="length-weight" algorithm-ref="standard" max-values="1">
+      <length weight="10"/>
+    </merge-strategy>
+    <merge property-name="ssn" strategy="crm-source-weight"></merge>
+    <!-- A strategy reference is not required. -->
     <merge property-name="name"  max-values="1">
       <double-metaphone>
         <distance-threshold>50</distance-threshold>
@@ -62,27 +74,15 @@ retrieved as either XML or JSON.
       <thesaurus>/mdm/config/thesauri/first-name-synonyms.xml</thesaurus>
       <length weight="8" />
     </merge>
-    <merge property-name="address" algorithm-ref="standard" max-values="1">
-      <source-weights>
-        <source name="CRM" weight="10"></source>
-      </source-weights>
-    </merge>
-    <merge property-name="dob" algorithm-ref="standard" max-values="1">
-      <source-weights>
-        <source name="Oracle" weight="10"></source>
-      </source-weights>
-    </merge>
-    <merge property-name="caseStartDate" algorithm-ref="standard" max-values="1">
-      <source-weights>
-        <source name="CRM" weight="10"></source>
-      </source-weights>
-    </merge>
-    <merge property-name="incidentDate" algorithm-ref="standard" max-values="1">
-      <length weight="10"/>
-    </merge>
-    <merge property-name="sex" algorithm-ref="standard" max-values="1">
-      <length weight="10"/>
-    </merge>
+    <merge property-name="address" strategy="crm-source-weight" max-values="1"></merge>
+    <merge property-name="dob" strategy="oracle-source-weight" max-values="1"></merge>
+    <merge property-name="caseStartDate" strategy="crm-source-weight" max-values="1"></merge>
+    <merge property-name="incidentDate" strategy="length-weight"></merge>
+    <merge property-name="sex" strategy="length-weight"></merge>
+    <!-- Define a default merge specification to apply to
+    properties that haven't been assigned a merge
+    specification. -->
+    <merge default="true" strategy="crm-source-weight"></merge>
   </merging>
   
   <!-- 
@@ -108,99 +108,168 @@ retrieved as either XML or JSON.
 
 ```json
 {
-  "options": {
+  "options":
+  {
     "matchOptions": "mlw-match",
-    "propertyDefs": {
+    "propertyDefs":
+    {
       "properties": [
-        { "namespace": "", "localname": "IdentificationID", "name": "ssn" },
-        { "namespace": "", "localname": "PersonName", "name": "name" },
-        { "namespace": "", "localname": "Address", "name": "address" },
-        { "namespace": "", "localname": "PersonBirthDate", "name": "dob" },
-        { "namespace": "", "localname": "CaseStartDate", "name": "caseStartDate" },
-        { "namespace": "", "localname": "IncidentCategoryCodeDate", "name": "incidentDate" },
-        { "namespace": "", "localname": "PersonSex", "name": "sex" },
-        { "path": "/es:envelope/es:headers/shallow", "name": "shallow" },
-        { "path": "/es:envelope/es:headers/custom/this/has:a/deep/path", "name": "deep" },
-        { "path": "/es:envelope/es:instance/Another/Deep/path", "name": "nested" }
-      ],
-      "namespaces": {
+      {
+        "namespace": "",
+        "localname": "IdentificationID",
+        "name": "ssn"
+      },
+      {
+        "namespace": "",
+        "localname": "PersonName",
+        "name": "name"
+      },
+      {
+        "namespace": "",
+        "localname": "Address",
+        "name": "address"
+      },
+      {
+        "namespace": "",
+        "localname": "PersonBirthDate",
+        "name": "dob"
+      },
+      {
+        "namespace": "",
+        "localname": "CaseStartDate",
+        "name": "caseStartDate"
+      },
+      {
+        "namespace": "",
+        "localname": "IncidentCategoryCodeDate",
+        "name": "incidentDate"
+      },
+      {
+        "namespace": "",
+        "localname": "PersonSex",
+        "name": "sex"
+      },
+      {
+        "path": "/es:envelope/es:headers/shallow",
+        "name": "shallow"
+      },
+      {
+        "path": "/es:envelope/es:headers/custom/this/has:a/deep/path",
+        "name": "deep"
+      },
+      {
+        "path": "/es:envelope/es:instance/Another/Deep/path",
+        "name": "nested"
+      }],
+      "namespaces":
+      {
+        "has": "has",
         "m": "http://marklogic.com/smart-mastering/merging",
-        "es": "http://marklogic.com/entity-services",
-        "has": "has"
+        "es": "http://marklogic.com/entity-services"
       }
     },
-    "algorithms": {
-      "stdAlgorithm": {
-        "timestamp": {
-          "path": "/es:envelope/es:headers/sm:sources/sm:source/sm:dateTime"
+    "algorithms":
+    {
+      "stdAlgorithm":
+      {
+        "namespaces":
+        {
+          "sm": "http://marklogic.com/smart-mastering",
+          "es": "http://marklogic.com/entity-services"
         },
-        "namespaces": {
-          "es": "http://marklogic.com/entity-services",
-          "sm": "http://marklogic.com/smart-mastering"
+        "timestamp":
+        {
+          "path": "/es:envelope/es:headers/sm:sources/sm:source/sm:dateTime"
         }
       },
-      "custom": [
-        { "name": "name", "function": "name", "at": "" },
-        { "name": "address", "function": "address", "at": "" }
-      ]
+      "custom": []
     },
-    "merging": [
+    "mergeStrategies": [
+    {
+      "name": "crm-source-weight",
+      "algorithmRef": "standard",
+      "sourceWeights":
       {
-        "propertyName": "ssn",
-        "sourceWeights": {
-          "source": { "name": "CRM", "weight": "10" }
+        "source":
+        {
+          "name": "CRM",
+          "weight": "10"
         }
-      },
-      {
-        "propertyName": "name",
-        "maxValues": "1",
-        "doubleMetaphone": { "distanceThreshold": "50" },
-        "synonymsSupport": "true",
-        "thesaurus": "/mdm/config/thesauri/first-name-synonyms.xml",
-        "length": { "weight": "8" }
-      },
-      {
-        "propertyName": "address",
-        "algorithmRef": "standard",
-        "maxValues": "1",
-        "sourceWeights": {
-          "source": { "name": "CRM", "weight": "10" }
-        }
-      },
-      {
-        "propertyName": "dob",
-        "algorithmRef": "standard",
-        "maxValues": "1",
-        "sourceWeights": {
-          "source": { "name": "Oracle", "weight": "10" }
-        }
-      },
-      {
-        "propertyName": "caseStartDate",
-        "algorithmRef": "standard",
-        "maxValues": "1",
-        "sourceWeights": {
-          "source": { "name": "CRM", "weight": "10" }
-        }
-      },
-      {
-        "propertyName": "incidentDate",
-        "algorithmRef": "standard",
-        "maxValues": "1",
-        "length": { "weight": "10" }
-      },
-      {
-        "propertyName": "sex",
-        "algorithmRef": "standard",
-        "maxValues": "1",
-        "length": { "weight": "10" }
       }
-    ],
-    "tripleMerge": {
-      "function": "customTrips",
+    },
+    {
+      "name": "oracle-source-weight",
+      "algorithmRef": "standard",
+      "sourceWeights":
+      {
+        "source":
+        {
+          "name": "Oracle",
+          "weight": "10"
+        }
+      }
+    },
+    {
+      "name": "length-weight",
+      "algorithmRef": "standard",
+      "maxValues": "1",
+      "length":
+      {
+        "weight": "10"
+      }
+    }],
+    "merging": [
+    {
+      "propertyName": "ssn",
+      "strategy": "crm-source-weight"
+    },
+    {
+      "propertyName": "name",
+      "maxValues": "1",
+      "doubleMetaphone":
+      {
+        "distanceThreshold": "50"
+      },
+      "synonymsSupport": "true",
+      "thesaurus": "/mdm/config/thesauri/first-name-synonyms.xml",
+      "length":
+      {
+        "weight": "8"
+      }
+    },
+    {
+      "propertyName": "address",
+      "strategy": "crm-source-weight",
+      "maxValues": "1"
+    },
+    {
+      "propertyName": "dob",
+      "strategy": "oracle-source-weight",
+      "maxValues": "1"
+    },
+    {
+      "propertyName": "caseStartDate",
+      "strategy": "crm-source-weight",
+      "maxValues": "1"
+    },
+    {
+      "propertyName": "incidentDate",
+      "strategy": "length-weight"
+    },
+    {
+      "propertyName": "sex",
+      "strategy": "length-weight"
+    },
+    {
+      "default": "true",
+      "strategy": "crm-source-weight"
+    }],
+    "tripleMerge":
+    {
+      "function": "custom-trips",
       "namespace": "http://marklogic.com/smart-mastering/merging",
       "at": "/custom-triple-merge.xqy",
-      "some-param": 3
+      "someParam": "3"
     }
   }
 }
