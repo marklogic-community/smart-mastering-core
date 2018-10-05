@@ -1,0 +1,27 @@
+<options xmlns="http://marklogic.com/smart-mastering/merging">
+  <match-options>mlw-match</match-options>
+  <property-defs>
+    <property namespace="" localname="ids" name="ids"/>
+    <property namespace="" localname="first_name" name="first_name"/>
+    <property namespace="" localname="last_name" name="last_name"/>
+    <property namespace="" localname="email" name="email"/>
+    <property namespace="" localname="gender" name="gender"/>
+    <property namespace="" localname="lastModified" name="lastModified"/>
+  </property-defs>
+  <algorithms>
+    <std-algorithm xmlns:es="http://marklogic.com/entity-services" xmlns:sm="http://marklogic.com/smart-mastering">
+      <!-- provide the path to the timestamp element to use for sorting -->
+      <!-- when merging the values are sorted in recency order from newest
+           to oldest based on this timestamp. If the timestamp is not
+           provided then there is no recency sort -->
+      <timestamp path="/envelope/instance/Person/lastModified" />
+    </std-algorithm>
+  </algorithms>
+  <merging>
+    <merge property-name="ids" max-values="1" />
+    <merge property-name="first_name" max-values="1" />
+    <merge property-name="last_name" max-values="1" />
+    <merge property-name="email" max-values="1" />
+    <merge property-name="gender" max-values="1" />
+  </merging>
+</options>

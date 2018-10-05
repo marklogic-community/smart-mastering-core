@@ -1065,6 +1065,7 @@ declare function merge-impl:get-sources(
     if (fn:exists($ns-path)) then
       map:new(
         for $prefix in fn:in-scope-prefixes($ns-path)
+        where fn:not($prefix = "")
         return
           map:entry($prefix, fn:namespace-uri-for-prefix($prefix, $ns-path))
       )
