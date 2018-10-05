@@ -1029,6 +1029,16 @@ declare function merge-impl:find-updates($updates as map:map, $path-properties a
 
 };
 
+declare function merge-impl:build-prefix-map($source)
+{
+  map:new(
+    for $prefix in fn:in-scope-prefixes($source)
+    where fn:not($prefix = "")
+    return
+      map:entry($prefix, fn:namespace-uri-for-prefix($prefix, $source))
+  )
+};
+
 (:
  : Given a sequence of documents, extract the Entity Services instance from
  : each of them.
@@ -1063,12 +1073,7 @@ declare function merge-impl:get-sources(
   let $ns-path := $merge-options/merging:algorithms/merging:std-algorithm
   let $ns-map :=
     if (fn:exists($ns-path)) then
-      map:new(
-        for $prefix in fn:in-scope-prefixes($ns-path)
-        where fn:not($prefix = "")
-        return
-          map:entry($prefix, fn:namespace-uri-for-prefix($prefix, $ns-path))
-      )
+      merge-impl:build-prefix-map($ns-path)
     else ()
   let $last-updated :=
     if (fn:string-length($ts-path) > 0) then
@@ -1175,13 +1180,7 @@ declare function merge-impl:build-final-headers(
       xdmp:base64-encode(xdmp:describe($merge-options, (), ()))
     else
       null-node{}
-  let $ns-map :=
-    map:new(
-      let $parent := $merge-options/merging:property-defs
-      for $prefix in fn:in-scope-prefixes($parent)
-      where fn:not($prefix = "")
-      return map:entry($prefix, fn:namespace-uri-for-prefix($prefix, $parent))
-    )
+  let $ns-map := merge-impl:build-prefix-map($merge-options/merging:property-defs)
   return (
     $ns-map,
     for $property in $property-defs
@@ -1399,12 +1398,7 @@ declare function merge-impl:build-final-properties(
   let $first-doc := fn:head($docs)
   return (
     (: TODO: refactor. These two cases repeat a lot of code. :)
-    let $ns-map :=
-      map:new((
-        for $pre in fn:in-scope-prefixes($property-defs)
-        return map:entry($pre, fn:namespace-uri-for-prefix($pre, $property-defs)),
-        map:entry("", "") (: Make sure blank namespace isn't inherited :)
-      ))
+    let $ns-map := merge-impl:build-prefix-map($property-defs)
     for $path-prop in $path-property-defs
     let $merge-spec := merge-impl:get-path-merge-spec($merge-options, $path-prop/@path)
     let $algorithm-name := fn:string($merge-spec/@algorithm-ref)
