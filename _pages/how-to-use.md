@@ -21,7 +21,7 @@ From this point, you have a couple of choices about how to run mastering.
 ### Mastering with Data Hub Framework
 
 If you're using the MarkLogic Data Hub Framework, you can run mastering as a
-flow. See the [smart-mastering-demo for an example][sm-demo-flow]. The key part
+flow. See the [smart-mastering-core example][sm-demo-flow]. The key part
 is in the [writer][sm-demo-flow-writer], which calls
 [`process:process-match-and-merge()`][match-and-merge].
 
@@ -60,8 +60,8 @@ this collection.
 
 
 [minproject]: https://github.com/marklogic-community/smart-mastering-core/tree/master/examples/minimal-project
-[sm-demo-flow]: https://github.com/marklogic-community/smart-mastering-demo/tree/develop/examples/smart-mastering/plugins/entities/MDM/harmonize/SmartMaster
-[sm-demo-flow-writer]: https://github.com/marklogic-community/smart-mastering-demo/blob/develop/examples/smart-mastering/plugins/entities/MDM/harmonize/SmartMaster/writer/writer.xqy
+[sm-demo-flow]: https://github.com/marklogic-community/smart-mastering-core/tree/master/examples/dhf-flow/plugins/entities/MDM/harmonize/SmartMaster
+[sm-demo-flow-writer]: https://github.com/marklogic-community/smart-mastering-core/blob/master/examples/dhf-flow/plugins/entities/MDM/harmonize/SmartMaster/writer.xqy
 [match-and-merge]: https://github.com/marklogic-community/smart-mastering-core/blob/master/src/main/ml-modules/root/com.marklogic.smart-mastering/process-records.xqy
 [trigger]: https://github.com/marklogic-community/smart-mastering-core/blob/master/src/main/ml-modules/root/com.marklogic.smart-mastering/match-and-merge-trigger.xqy
 [trigger-doc]: http://docs.marklogic.com/guide/app-dev/triggers#chapter
