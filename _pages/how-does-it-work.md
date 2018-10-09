@@ -109,6 +109,59 @@ By default, Auditing events are automatically stored for merging and unmerging. 
 
 **NOTE**: In order for auditing to work you must have a schemas database assigned to your content database.
 
+## Data Model
+
+The Smart Mastering library expects data to use the Entity Services envelope structure. This means that the root of a 
+document will have `envelope` as the local name, with `http://marklogic.com/entity-services` as the namespace for XML.
+
+Underneath the `envelope` root, Entity Services envelopes have four children (each in the 
+`http://marklogic.com/entity-services` namespace when using XML):
+- `headers`: metadata about the document
+- `triples`: semantic information that is materialized in the document
+- `instance`: harmonized properties
+- `attachments`: source data in its original form
+
+The standard merge algorithm's recency and source-preference sorting capabilities both rely on identifying the sources. 
+Smart Mastering expects to find the sources under `/es:envelope/es:headers/sm:sources/sm:source` for XML or 
+`/envelope/headers/sources/source` for JSON data. For example in XML
+
+```xml
+<envelope xmlns="http://marklogic.com/entity-services" 
+    xmlns:sm="http://marklogic.com/smart-mastering">
+  <headers>
+    <sm:id>bbc806e4-ff00-4585-9d46-877edbc3248e</sm:id>
+    <sm:sources>
+      <sm:source>
+        <sm:name>SOURCE1</sm:name>
+      </sm:source>
+    </sm:sources>
+    <!-- es:triples, es:instance, and es:attachments not shown -->
+  </headers>
+```
+
+and in JSON:
+
+```json
+{
+  "envelope": {
+    "headers": {
+      "sources": [
+        {
+          "name": "MMIS"
+        }
+      ]
+    },
+    // triples, instance, and attachments properties not shown
+  }
+}
+```
+
+For more information about sorting by timestamps, see the [Timestamps](../docs/merging-options/#timestamp) section of 
+the Merging Options page.
+
+For more information about the Envelope pattern, see [What is an Envelope Document][envelope] in the Entity Services 
+Developer's Guide. 
+
 [how-to-use]: ../how-to-use/
 [match-config]: ../docs/matching-options/
 [zip.xqy]: https://github.com/marklogic-community/smart-mastering-core/blob/master/src/main/ml-modules/root/com.marklogic.smart-mastering/algorithms/zip.xqy
@@ -118,3 +171,4 @@ By default, Auditing events are automatically stored for merging and unmerging. 
 [mlu]: https://mlu.marklogic.com/ondemand/931812fc
 [prov-o]: https://www.w3.org/TR/prov-o/
 [prov-xml]: https://www.w3.org/TR/prov-xml/
+[envelope]: https://docs.marklogic.com/guide/entity-services/instances#id_67461

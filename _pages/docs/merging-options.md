@@ -334,6 +334,9 @@ configuration. The `function` attribute is the localname of the function that
 will be called. This element may also have an `at` attribute, indicating where
 to find the source code for this function, and a `namespace` attribute.
 
+Smart Mastering comes with a "standard" algorithm. For information about writing and configuring custom merge 
+algorithms, please see the [Custom Merge Algorithms page](/docs/custom-merge-algorithms/). 
+
 A `std-algorithm` element will allow you to configure options for the standard algorithm. Supported options are:
 
 #### Timestamp
@@ -341,7 +344,9 @@ A `std-algorithm` element will allow you to configure options for the standard a
 The timestamp config informs Smart Mastering which element to use for sorting. When merging, the values are sorted in recency order from newest to oldest based on this timestamp. If the timestamp is not provided then there is no recency sort.
 
 ```xml
-  <std-algorithm xmlns:es="http://marklogic.com/entity-services" xmlns:sm="http://marklogic.com/smart-mastering">
+  <std-algorithm 
+      xmlns:es="http://marklogic.com/entity-services" 
+      xmlns:sm="http://marklogic.com/smart-mastering">
     <timestamp path="/es:envelope/es:headers/sm:sources/sm:source/sm:dateTime" />
   </std-algorithm
 ```
@@ -358,7 +363,38 @@ The timestamp config informs Smart Mastering which element to use for sorting. W
   }
 ```
 
-Note that any namespaces used in the @path attribute must be defined on the <std-algorithm> element. The default namespace for evaluating the path is the empty namespace.
+Note that any namespaces used in the `@path` attribute must be defined on the <std-algorithm> element. The default namespace for evaluating the path is the empty namespace.
+
+The timestamp path may point anywhere in the source documents. For instance, in the document below, the `lastModified` 
+JSON property is part of the instance, rather than in the headers. This property refers to the last time this document was modified. 
+
+```json
+{
+  "envelope": {
+    "headers": {
+      "sources": [
+        {
+          "name": "MMIS"
+        }
+      ]
+    },
+    "instance": {
+      "Person": {
+        "ids": "53762077-bf06-4933-be9f-4bf3fb3ad0b0",
+        "first_name": "Hugo",
+        "last_name": "Boldry",
+        "email": "hboldry0@ezinearticles.com",
+        "gender": "Male",
+        "lastModified": "2018-05-25T14:24:36Z"
+      }
+    }
+  }
+}
+```
+
+The standard algorithm can use this JSON property by setting the path to
+
+> /envelope/instance/Person/lastModified
 
 ### Merging
 
