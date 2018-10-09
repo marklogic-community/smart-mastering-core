@@ -56,3 +56,38 @@ The `$matches` will be a sequence of `result` elements that look like this:
 ```xml
 <result uri="/source/3/doc3.json" index="1" score="79" threshold="Definitive Match" action="my-action"/>
 ```
+
+## Configuring Options to Use Custom Action Functions
+
+To use your custom action functions, add them to the `actions` section of your match options. The 
+`action` used for the `threshold` definitions refers to the name you assign in the `actions` section. 
+
+The `action` needs `name`, `at`, `function`, and for XQuery functions, `ns` in order to find your custom code. The `at` 
+property is the absolute path the library module in the modules database that holds your function. `ns` is the 
+namespace in an XQuery library module. `function` is the actual name of the function (not including the namespace or 
+prefix for XQuery code). Note that while the attributes repeat the same name in the examples below, this is not 
+required.
+
+### XML Options
+
+```xml
+  <actions>
+    <action 
+      name="send-alert" 
+      at="/smart-mastering/action/send-alert.xqy"
+      namespace="http://marklogic.com/smart-mastering/action/send-alert" 
+      function="send-alert" />
+  </actions>
+```
+
+### JSON Options
+
+```javascript
+    "actions": {
+      "action": {
+        "name": "sendAlert",
+        "at": "/smart-mastering/action/send-alert.sjs",
+        "function": "sendAlert"
+      }
+    },
+```

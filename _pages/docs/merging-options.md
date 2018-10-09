@@ -61,7 +61,7 @@ retrieved as either XML or JSON.
     </merge-strategy>
     <merge property-name="ssn" strategy="crm-source-weight"></merge>
     <!-- A strategy reference is not required. -->
-    <merge property-name="name"  max-values="1">
+    <merge property-name="name" max-values="1">
       <double-metaphone>
         <distance-threshold>50</distance-threshold>
       </double-metaphone>

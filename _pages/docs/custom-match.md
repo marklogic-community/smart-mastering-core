@@ -88,5 +88,41 @@ Your function must return zero or more queries. You can return zero if your
 function decides that this property should not be a factor in matching (for 
 instance, if the original document does not have a value for this property).
 
+## Configuring Options to Use Custom Match Functions
+
+To use your custom match functions, add them to the `algorithms` section of your match options. The 
+`algorithm-ref`/`algorithmRef` used for the `expand` definitions refers to the name you assign in the `algorithms` 
+section. 
+
+The `algorithm` needs `name`, `at`, `function`, and for XQuery functions, `ns` in order to find your custom code. The 
+`at` property is the absolute path the library module in the modules database that holds your function. `ns` is the 
+namespace in an XQuery library module. `function` is the actual name of the function (not including the namespace or 
+prefix for XQuery code).
+
+### XML Options
+
+```xml
+  <algorithms>
+    <algorithm 
+      name="favorite-color" 
+      at="/smart-mastering/match/favorite-color.xqy" 
+      ns="http://example.com/big-hub/smart-mastering/match/favorite-color"
+      function="favorite-color"/>
+  </algorithms>
+```
+
+### JSON Options
+
+```javascript
+    "algorithms": {
+      "algorithm": [
+        { 
+          "name": "favoriteColor", 
+          "at": "/smart-mastering/match/favoriteColor.sjs"
+          "function": "favoriteColor" 
+        }
+      ]
+    },
+```
 
 [zip.xqy]: https://github.com/marklogic-community/smart-mastering-core/blob/master/src/main/ml-modules/root/com.marklogic.smart-mastering/algorithms/zip.xqy

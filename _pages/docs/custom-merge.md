@@ -61,3 +61,39 @@ particular source document. The `name` key is the name of the property value.
 The `$property-spec` parameter is the `merging:merge` element from the merging properties that corresponds to the 
 property for which the algorithm is being used. 
 
+## Configuring Options to Use Custom Merge Functions
+
+To use your custom merge functions, add them to the `algorithms` section of your merge options. The 
+`algorithm-ref`/`algorithmRef` used for the `merge` and `merge-strategy` definitions refers to the name you assign in the `algorithms` 
+section. 
+
+The `algorithm` needs `name`, `at`, `function`, and for XQuery functions, `ns` in order to find your custom code. The 
+`at` property is the absolute path the library module in the modules database that holds your function. `ns` is the 
+namespace in an XQuery library module. `function` is the actual name of the function (not including the namespace or 
+prefix for XQuery code).
+
+### XML Options
+
+```xml
+  <algorithms>
+    <algorithm 
+      name="favorite-color" 
+      at="/smart-mastering/merge/favorite-color.xqy" 
+      ns="http://example.com/big-hub/smart-mastering/merge/favorite-color"
+      function="favorite-color"/>
+  </algorithms>
+```
+
+### JSON Options
+
+```javascript
+    "algorithms": {
+      "custom": [
+        { 
+          "name": "favoriteColor", 
+          "at": "/smart-mastering/merge/favoriteColor.sjs"
+          "function": "favoriteColor" 
+        }
+      ]
+    },
+```
