@@ -6,13 +6,32 @@ declare namespace m = "http://marklogic.com/smart-mastering/merging";
 (:
  : This is the default method of combining the set of values for a property across entities that are being merged.
  : Sample $property-spec:
- :     <merge property-name="name" max-values="1" xmlns="http://marklogic.com/smart-mastering/merging">
- :       <length weight="8" />
+ :   <merging xmlns="http://marklogic.com/smart-mastering/merging">
+ :     <merge property-name="some-property" max-values="1">
  :       <source-weights>
  :         <source name="good-source" weight="2"/>
  :         <source name="better-source" weight="4"/>
  :       </source-weights>
  :     </merge>
+ :     <merge property-name="another-property" max-values="1">
+ :       <length weight="8" />
+ :     </merge>
+ :   </merging>
+ :
+ :   "merging": [
+ :     {
+ :       "propertyName": "some-property",
+ :       "sourceWeights": [
+ :         { "source": { "name": "good-source", "weight": "2" } },
+ :         { "source": { "name": "better-source", "weight": "4" } }
+ :       ]
+ :     },
+ :     {
+ :       "propertyName": "another-property",
+ :       "maxValues": "1",
+ :       "length": { "weight": "8" }
+ :     }
+ :   ]
  :
  : @param $property-name  The name of the property being merged
  : @param $all-properties  A sequence of maps, each with "name" (the name of the property), "sources" (the URIs of the

@@ -1064,17 +1064,17 @@ declare function merge-impl:get-sources(
   $merge-options as element(merging:options))
   as object-node()*
 {
-  for $source in
-    $docs/(es:envelope|object-node("envelope"))
-    /(es:headers|object-node("headers"))
-    /(sm:sources|array-node("sources"))
-    /(sm:source|object-node())
   let $ts-path := $merge-options/merging:algorithms/merging:std-algorithm/merging:timestamp/@path
   let $ns-path := $merge-options/merging:algorithms/merging:std-algorithm
   let $ns-map :=
     if (fn:exists($ns-path)) then
       merge-impl:build-prefix-map($ns-path)
     else ()
+  for $source in
+    $docs/(es:envelope|object-node("envelope"))
+    /(es:headers|object-node("headers"))
+    /(sm:sources|array-node("sources"))
+    /(sm:source|object-node())
   let $last-updated :=
     if (fn:string-length($ts-path) > 0) then
       fn:head(xdmp:unpath($ts-path, $ns-map, $source)[. castable as xs:dateTime] ! xs:dateTime(.))
