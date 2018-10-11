@@ -183,7 +183,7 @@ let $assertions := (
 )
 
 let $merged-id := $merged-doc/*:envelope/*:headers/*:id
-let $merged-uri := $merging-impl:MERGED-DIR || $merged-id || ".xml"
+let $merged-uri := $merging-impl:MERGED-DIR || $merged-id || ".json"
 
 (: At this point, there should be no blocks :)
 let $assertions := ( $assertions, xdmp:eager(
