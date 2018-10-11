@@ -141,6 +141,11 @@ declare function merge-impl:all-merged($uris as xs:string*) as xs:boolean
     )
 };
 
+declare function merge-impl:build-merge-uri($id as xs:string, $source-uris as xs:string+)
+{
+  $MERGED-DIR || $id || (if (fn:ends-with(fn:head($source-uris), ".json")) then ".json" else ".xml")
+};
+
 (:~
  : Merge the documents as specified by the merge options and update the
  : involved files in the database.
@@ -164,7 +169,7 @@ declare function merge-impl:save-merge-models-by-uri(
       else
         $merge-options
     let $id := sem:uuid-string()
-    let $merge-uri := $MERGED-DIR||$id||".xml"
+    let $merge-uri := merge-impl:build-merge-uri($id, $uris)
     let $merged-uris := $uris[xdmp:document-get-collections(.) = $const:MERGED-COLL]
     let $uris :=
       for $uri in $uris
