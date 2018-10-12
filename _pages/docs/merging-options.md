@@ -49,12 +49,19 @@ retrieved as either XML or JSON.
     </std-algorithm>
   </algorithms>
   <merging>
-    <merge property-name="ssn">
+    <!-- Define merging strategies that can be referenced by
+      merge specifications below. This can cut down on configuration for repeated patterns   -->
+    <merge-strategy name="crm-source-weight" algorithm-ref="standard">
       <source-weights>
         <source name="CRM" weight="10"></source>
       </source-weights>
-    </merge>
-    <merge property-name="name"  max-values="1">
+    </merge-strategy>
+    <merge-strategy name="length-weight" algorithm-ref="standard" max-values="1">
+      <length weight="10"/>
+    </merge-strategy>
+    <merge property-name="ssn" strategy="crm-source-weight"></merge>
+    <!-- A strategy reference is not required. -->
+    <merge property-name="name" max-values="1">
       <double-metaphone>
         <distance-threshold>50</distance-threshold>
       </double-metaphone>
@@ -62,27 +69,19 @@ retrieved as either XML or JSON.
       <thesaurus>/mdm/config/thesauri/first-name-synonyms.xml</thesaurus>
       <length weight="8" />
     </merge>
-    <merge property-name="address" algorithm-ref="standard" max-values="1">
-      <source-weights>
-        <source name="CRM" weight="10"></source>
-      </source-weights>
-    </merge>
-    <merge property-name="dob" algorithm-ref="standard" max-values="1">
+    <merge property-name="address" strategy="crm-source-weight" max-values="1"></merge>
+    <merge property-name="dob" max-values="1" algorithm-ref="standard">
       <source-weights>
         <source name="Oracle" weight="10"></source>
       </source-weights>
     </merge>
-    <merge property-name="caseStartDate" algorithm-ref="standard" max-values="1">
-      <source-weights>
-        <source name="CRM" weight="10"></source>
-      </source-weights>
-    </merge>
-    <merge property-name="incidentDate" algorithm-ref="standard" max-values="1">
-      <length weight="10"/>
-    </merge>
-    <merge property-name="sex" algorithm-ref="standard" max-values="1">
-      <length weight="10"/>
-    </merge>
+    <merge property-name="caseStartDate" strategy="crm-source-weight" max-values="1"></merge>
+    <merge property-name="incidentDate" strategy="length-weight"></merge>
+    <merge property-name="sex" strategy="length-weight"></merge>
+    <!-- Define a default merge specification to apply to
+    properties that haven't been assigned a merge
+    specification. -->
+    <merge default="true" strategy="crm-source-weight"></merge>
   </merging>
   
   <!-- 
@@ -108,99 +107,164 @@ retrieved as either XML or JSON.
 
 ```json
 {
-  "options": {
+  "options":
+  {
     "matchOptions": "mlw-match",
-    "propertyDefs": {
+    "propertyDefs":
+    {
       "properties": [
-        { "namespace": "", "localname": "IdentificationID", "name": "ssn" },
-        { "namespace": "", "localname": "PersonName", "name": "name" },
-        { "namespace": "", "localname": "Address", "name": "address" },
-        { "namespace": "", "localname": "PersonBirthDate", "name": "dob" },
-        { "namespace": "", "localname": "CaseStartDate", "name": "caseStartDate" },
-        { "namespace": "", "localname": "IncidentCategoryCodeDate", "name": "incidentDate" },
-        { "namespace": "", "localname": "PersonSex", "name": "sex" },
-        { "path": "/es:envelope/es:headers/shallow", "name": "shallow" },
-        { "path": "/es:envelope/es:headers/custom/this/has:a/deep/path", "name": "deep" },
-        { "path": "/es:envelope/es:instance/Another/Deep/path", "name": "nested" }
-      ],
-      "namespaces": {
+      {
+        "namespace": "",
+        "localname": "IdentificationID",
+        "name": "ssn"
+      },
+      {
+        "namespace": "",
+        "localname": "PersonName",
+        "name": "name"
+      },
+      {
+        "namespace": "",
+        "localname": "Address",
+        "name": "address"
+      },
+      {
+        "namespace": "",
+        "localname": "PersonBirthDate",
+        "name": "dob"
+      },
+      {
+        "namespace": "",
+        "localname": "CaseStartDate",
+        "name": "caseStartDate"
+      },
+      {
+        "namespace": "",
+        "localname": "IncidentCategoryCodeDate",
+        "name": "incidentDate"
+      },
+      {
+        "namespace": "",
+        "localname": "PersonSex",
+        "name": "sex"
+      },
+      {
+        "path": "/es:envelope/es:headers/shallow",
+        "name": "shallow"
+      },
+      {
+        "path": "/es:envelope/es:headers/custom/this/has:a/deep/path",
+        "name": "deep"
+      },
+      {
+        "path": "/es:envelope/es:instance/Another/Deep/path",
+        "name": "nested"
+      }],
+      "namespaces":
+      {
+        "has": "has",
         "m": "http://marklogic.com/smart-mastering/merging",
-        "es": "http://marklogic.com/entity-services",
-        "has": "has"
+        "es": "http://marklogic.com/entity-services"
       }
     },
-    "algorithms": {
-      "stdAlgorithm": {
-        "timestamp": {
-          "path": "/es:envelope/es:headers/sm:sources/sm:source/sm:dateTime"
+    "algorithms":
+    {
+      "stdAlgorithm":
+      {
+        "namespaces":
+        {
+          "sm": "http://marklogic.com/smart-mastering",
+          "es": "http://marklogic.com/entity-services"
         },
-        "namespaces": {
-          "es": "http://marklogic.com/entity-services",
-          "sm": "http://marklogic.com/smart-mastering"
+        "timestamp":
+        {
+          "path": "/es:envelope/es:headers/sm:sources/sm:source/sm:dateTime"
         }
       },
-      "custom": [
-        { "name": "name", "function": "name", "at": "" },
-        { "name": "address", "function": "address", "at": "" }
-      ]
+      "custom": []
     },
-    "merging": [
+    "mergeStrategies": [
+    {
+      "name": "crm-source-weight",
+      "algorithmRef": "standard",
+      "sourceWeights":
       {
-        "propertyName": "ssn",
-        "sourceWeights": {
-          "source": { "name": "CRM", "weight": "10" }
+        "source":
+        {
+          "name": "CRM",
+          "weight": "10"
         }
-      },
-      {
-        "propertyName": "name",
-        "maxValues": "1",
-        "doubleMetaphone": { "distanceThreshold": "50" },
-        "synonymsSupport": "true",
-        "thesaurus": "/mdm/config/thesauri/first-name-synonyms.xml",
-        "length": { "weight": "8" }
-      },
-      {
-        "propertyName": "address",
-        "algorithmRef": "standard",
-        "maxValues": "1",
-        "sourceWeights": {
-          "source": { "name": "CRM", "weight": "10" }
-        }
-      },
-      {
-        "propertyName": "dob",
-        "algorithmRef": "standard",
-        "maxValues": "1",
-        "sourceWeights": {
-          "source": { "name": "Oracle", "weight": "10" }
-        }
-      },
-      {
-        "propertyName": "caseStartDate",
-        "algorithmRef": "standard",
-        "maxValues": "1",
-        "sourceWeights": {
-          "source": { "name": "CRM", "weight": "10" }
-        }
-      },
-      {
-        "propertyName": "incidentDate",
-        "algorithmRef": "standard",
-        "maxValues": "1",
-        "length": { "weight": "10" }
-      },
-      {
-        "propertyName": "sex",
-        "algorithmRef": "standard",
-        "maxValues": "1",
-        "length": { "weight": "10" }
       }
-    ],
-    "tripleMerge": {
-      "function": "customTrips",
+    },
+    {
+      "name": "length-weight",
+      "algorithmRef": "standard",
+      "maxValues": "1",
+      "length":
+      {
+        "weight": "10"
+      }
+    }],
+    "merging": [
+    {
+      "propertyName": "ssn",
+      "strategy": "crm-source-weight"
+    },
+    {
+      "propertyName": "name",
+      "maxValues": "1",
+      "doubleMetaphone":
+      {
+        "distanceThreshold": "50"
+      },
+      "synonymsSupport": "true",
+      "thesaurus": "/mdm/config/thesauri/first-name-synonyms.xml",
+      "length":
+      {
+        "weight": "8"
+      }
+    },
+    {
+      "propertyName": "address",
+      "strategy": "crm-source-weight",
+      "maxValues": "1"
+    },
+    {
+      "propertyName": "dob",
+      "algorithmRef": "standard",
+      "sourceWeights":
+      {
+        "source":
+        {
+          "name": "Oracle",
+          "weight": "10"
+        }
+      },
+      "maxValues": "1"
+    },
+    {
+      "propertyName": "caseStartDate",
+      "strategy": "crm-source-weight",
+      "maxValues": "1"
+    },
+    {
+      "propertyName": "incidentDate",
+      "strategy": "length-weight"
+    },
+    {
+      "propertyName": "sex",
+      "strategy": "length-weight"
+    },
+    {
+      "default": "true",
+      "strategy": "crm-source-weight"
+    }],
+    "tripleMerge":
+    {
+      "function": "custom-trips",
       "namespace": "http://marklogic.com/smart-mastering/merging",
       "at": "/custom-triple-merge.xqy",
-      "some-param": 3
+      "someParam": "3"
     }
   }
 }
@@ -270,6 +334,9 @@ configuration. The `function` attribute is the localname of the function that
 will be called. This element may also have an `at` attribute, indicating where
 to find the source code for this function, and a `namespace` attribute.
 
+Smart Mastering comes with a "standard" algorithm. For information about writing and configuring custom merge 
+algorithms, please see the [Custom Merge Algorithms page](/docs/custom-merge-algorithms/). 
+
 A `std-algorithm` element will allow you to configure options for the standard algorithm. Supported options are:
 
 #### Timestamp
@@ -277,7 +344,9 @@ A `std-algorithm` element will allow you to configure options for the standard a
 The timestamp config informs Smart Mastering which element to use for sorting. When merging, the values are sorted in recency order from newest to oldest based on this timestamp. If the timestamp is not provided then there is no recency sort.
 
 ```xml
-  <std-algorithm xmlns:es="http://marklogic.com/entity-services" xmlns:sm="http://marklogic.com/smart-mastering">
+  <std-algorithm 
+      xmlns:es="http://marklogic.com/entity-services" 
+      xmlns:sm="http://marklogic.com/smart-mastering">
     <timestamp path="/es:envelope/es:headers/sm:sources/sm:source/sm:dateTime" />
   </std-algorithm
 ```
@@ -294,7 +363,38 @@ The timestamp config informs Smart Mastering which element to use for sorting. W
   }
 ```
 
-Note that any namespaces used in the @path attribute must be defined on the <std-algorithm> element. The default namespace for evaluating the path is the empty namespace.
+Note that any namespaces used in the `@path` attribute must be defined on the <std-algorithm> element. The default namespace for evaluating the path is the empty namespace.
+
+The timestamp path may point anywhere in the source documents. For instance, in the document below, the `lastModified` 
+JSON property is part of the instance, rather than in the headers. This property refers to the last time this document was modified. 
+
+```json
+{
+  "envelope": {
+    "headers": {
+      "sources": [
+        {
+          "name": "MMIS"
+        }
+      ]
+    },
+    "instance": {
+      "Person": {
+        "ids": "53762077-bf06-4933-be9f-4bf3fb3ad0b0",
+        "first_name": "Hugo",
+        "last_name": "Boldry",
+        "email": "hboldry0@ezinearticles.com",
+        "gender": "Male",
+        "lastModified": "2018-05-25T14:24:36Z"
+      }
+    }
+  }
+}
+```
+
+The standard algorithm can use this JSON property by setting the path to
+
+> /envelope/instance/Person/lastModified
 
 ### Merging
 
@@ -303,13 +403,19 @@ be combined in the merged document.
 
 ### `merge` Element
 
-The `merge` element can have three attributes: `property-name`, `algorithm-ref`,
-and `max-values`. The `property-name` attribute must match the `name` attribute
-of one of the `property` elements defined under `property-defs`. The
+The `merge` element can have five attributes: `default`, `property-name`, `algorithm-ref`, `max-values`, and `strategy`. 
+The `default` attribute accepts a boolean value that determines if the `merge` element should define the default behavior for merging. The `property-name` attribute must match the `name` attribute
+of one of the `property` elements defined under `property-defs`. Use of the `default` attribute and `property-name` attribute are mutually exclusive. The
 `algorithm-ref` attribute must match the `name` attribute of one of the
 `algorithm` elements. The `max-values` attribute is an integer indicating how
 many values for this property should be copied from source documents to the
-merged document.
+merged document. The `strategy` attribute can reference the `name` attribute of a `merge-strategy` element. See the next session for details.
+
+### `merge-strategy` Element
+
+The `merge-strategy` element has only one required attribute of `name`. `merge-strategy` can additionally have any of the attributes or child elements that the `merge` element supports, with the exception of the `property-name` attribute. 
+
+The `merge-strategy` element provides a way to reduce verbosity of the options file by adding the ability to reference repeated patterns.
 
 #### Standard Merging
 

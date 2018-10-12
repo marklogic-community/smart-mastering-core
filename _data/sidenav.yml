@@ -23,6 +23,7 @@ main:
           { url: '/docs/custom-merge-algorithms/', text: 'Custom Merging Algorithms' }
         ]
       },
+      { url: '/docs/managing-code/', text: 'Managing Custom Code' },
       { url: '/docs/security/', text: 'Security' },
       { url: '/docs/error-codes/', text: 'Error Codes' }
     ]
