@@ -11,9 +11,14 @@ import module namespace merging = "http://marklogic.com/smart-mastering/merging"
 import module namespace test = "http://marklogic.com/roxy/test-helper" at "/test/test-helper.xqy";
 
 declare variable $options := test:get-test-file("merge-options.json");
+declare variable $strategy-options := test:get-test-file("merge-options-with-strategies.json");
 
 (: Save JSON options, which will get them written as XML :)
-merging:save-options("json-options", $options)
+merging:save-options("json-options", $options),
+
+
+(: Save JSON options, which will get them written as XML :)
+merging:save-options("json-options-with-strategy", $strategy-options)
 
 ;
 
@@ -27,6 +32,7 @@ import module namespace merging = "http://marklogic.com/smart-mastering/merging"
 import module namespace test = "http://marklogic.com/roxy/test-helper" at "/test/test-helper.xqy";
 
 declare variable $options := test:get-test-file("merge-options.json")/node();
+declare variable $strategy-options := test:get-test-file("merge-options-with-strategies.json")/node();
 
 (: Retrieve options, requesting JSON format, so they will be converted back to
  : JSON.
@@ -36,4 +42,11 @@ return test:assert-equal-json($options, $actual),
 
 let $expected := test:get-test-file("merge-options.json")/node()
 let $actual := merging:get-options($lib:OPTIONS-NAME-COMPLETE, $const:FORMAT-JSON)
-return test:assert-equal-json($expected, $actual)
+return test:assert-equal-json($expected, $actual),
+
+(: For some reason, the below test needed to convert the JSON to string to determine
+ : that they are equal. See https://github.com/marklogic-community/marklogic-unit-test/issues/44
+ :)
+let $expected := test:get-test-file("merge-options-with-strategies.json")/node()
+let $actual := merging:get-options($lib:OPTIONS-NAME-STRATEGIES, $const:FORMAT-JSON)
+return test:assert-equal(xdmp:to-json-string($expected), xdmp:to-json-string($actual))

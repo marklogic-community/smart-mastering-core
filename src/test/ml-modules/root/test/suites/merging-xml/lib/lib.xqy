@@ -31,6 +31,8 @@ declare variable $OPTIONS-NAME-CUST-SJS := "cust-sjs-test-options";
 declare variable $OPTIONS-NAME-CUST-TRIPS-XQY := "cust-trips-xqy-test-options";
 declare variable $OPTIONS-NAME-CUST-TRIPS-SJS := "cust-trips-sjs-test-options";
 declare variable $OPTIONS-NAME-PATH := "path-test-options";
+declare variable $OPTIONS-NAME-WITH-DEFAULT-1 := "default-test-options-1";
+declare variable $OPTIONS-NAME-WITH-DEFAULT-2 := "default-test-options-2";
 
 declare variable $OPTIONS-NAME-CUST-ACTION-XQY-MATCH := "custom-xqy-action-match-options";
 declare variable $OPTIONS-NAME-CUST-ACTION-XQY-MERGE := "custom-xqy-action-merge-options";

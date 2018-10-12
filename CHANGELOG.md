@@ -1,5 +1,38 @@
 # Change Log
 
+## [v1.1.1](https://github.com/marklogic-community/smart-mastering-core/tree/v1.1.1) (2018-10-12)
+[Full Changelog](https://github.com/marklogic-community/smart-mastering-core/compare/v1.1.0...v1.1.1)
+
+**Implemented enhancements:**
+
+- Have meaningful error responses on incomplete REST endpoint calls [\#144](https://github.com/marklogic-community/smart-mastering-core/issues/144)
+
+**Fixed bugs:**
+
+- Smart Mastering documentation has link to smart-mastering-demo [\#177](https://github.com/marklogic-community/smart-mastering-core/issues/177)
+- Getting sources timestamps from JSON documents always returns null instead of the timestamp [\#176](https://github.com/marklogic-community/smart-mastering-core/issues/176)
+- Matching fails due to a missing namespace in the match query [\#166](https://github.com/marklogic-community/smart-mastering-core/issues/166)
+- Error with rs:includeMatches param in sm-match endpoint [\#146](https://github.com/marklogic-community/smart-mastering-core/issues/146)
+- Get 500 error when sending match options in POST body [\#145](https://github.com/marklogic-community/smart-mastering-core/issues/145)
+
+**Merged pull requests:**
+
+- Updating docs for v1.1.1 release [\#197](https://github.com/marklogic-community/smart-mastering-core/pull/197) ([dmcassel](https://github.com/dmcassel))
+- \#188 merged URI extension should depend on the format of source files [\#196](https://github.com/marklogic-community/smart-mastering-core/pull/196) ([dmcassel](https://github.com/dmcassel))
+- Mdm 438: documenting algorithm configurations [\#195](https://github.com/marklogic-community/smart-mastering-core/pull/195) ([dmcassel](https://github.com/dmcassel))
+- adding a new test suite for double-metaphone [\#189](https://github.com/marklogic-community/smart-mastering-core/pull/189) ([dmcassel](https://github.com/dmcassel))
+- Mdm 541: documentation about custom algorithms [\#185](https://github.com/marklogic-community/smart-mastering-core/pull/185) ([dmcassel](https://github.com/dmcassel))
+- Adding information about custom functions [\#182](https://github.com/marklogic-community/smart-mastering-core/pull/182) ([dmcassel](https://github.com/dmcassel))
+- Changing smart-mastering-demo links to point to examples [\#181](https://github.com/marklogic-community/smart-mastering-core/pull/181) ([dmcassel](https://github.com/dmcassel))
+- Mdm 551: fix error in get-sources affecting JSON data [\#180](https://github.com/marklogic-community/smart-mastering-core/pull/180) ([dmcassel](https://github.com/dmcassel))
+- MDM-552 GH \#177 Fix outdated link in documentation [\#179](https://github.com/marklogic-community/smart-mastering-core/pull/179) ([ryanjdew](https://github.com/ryanjdew))
+- MDM-544 Update docs to show an example of merge strategies [\#178](https://github.com/marklogic-community/smart-mastering-core/pull/178) ([ryanjdew](https://github.com/ryanjdew))
+- MDM-544 Added ability to set a default merge and define merge strategies [\#173](https://github.com/marklogic-community/smart-mastering-core/pull/173) ([ryanjdew](https://github.com/ryanjdew))
+- MDM-542 Preserve element namespaces in match queries [\#169](https://github.com/marklogic-community/smart-mastering-core/pull/169) ([ryanjdew](https://github.com/ryanjdew))
+- Adding error code documentation [\#167](https://github.com/marklogic-community/smart-mastering-core/pull/167) ([dmcassel](https://github.com/dmcassel))
+- MDM-490 Restrict matches to within instance [\#165](https://github.com/marklogic-community/smart-mastering-core/pull/165) ([ryanjdew](https://github.com/ryanjdew))
+- MDM-486 Add Smart Mastering Error codes to docs [\#164](https://github.com/marklogic-community/smart-mastering-core/pull/164) ([ryanjdew](https://github.com/ryanjdew))
+
 ## [v1.1.0](https://github.com/marklogic-community/smart-mastering-core/tree/v1.1.0) (2018-09-25)
 [Full Changelog](https://github.com/marklogic-community/smart-mastering-core/compare/v1.0.0...v1.1.0)
 
@@ -10,6 +43,10 @@
 
 **Merged pull requests:**
 
+- releasing v1.1.0 [\#163](https://github.com/marklogic-community/smart-mastering-core/pull/163) ([dmcassel](https://github.com/dmcassel))
+- Release [\#162](https://github.com/marklogic-community/smart-mastering-core/pull/162) ([dmcassel](https://github.com/dmcassel))
+- Merging for v1.1.0 [\#161](https://github.com/marklogic-community/smart-mastering-core/pull/161) ([dmcassel](https://github.com/dmcassel))
+- Updating docs for v1.1.0 [\#160](https://github.com/marklogic-community/smart-mastering-core/pull/160) ([dmcassel](https://github.com/dmcassel))
 - MDM-528 Enhance unit test to verfiy includeMatches option works [\#159](https://github.com/marklogic-community/smart-mastering-core/pull/159) ([ryanjdew](https://github.com/ryanjdew))
 - MDM-527: record path in nested property history [\#158](https://github.com/marklogic-community/smart-mastering-core/pull/158) ([dmcassel](https://github.com/dmcassel))
 - MDM-535 Check parameters and report errors [\#157](https://github.com/marklogic-community/smart-mastering-core/pull/157) ([ryanjdew](https://github.com/ryanjdew))

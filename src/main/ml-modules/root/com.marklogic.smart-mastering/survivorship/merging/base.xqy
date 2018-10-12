@@ -141,6 +141,11 @@ declare function merge-impl:all-merged($uris as xs:string*) as xs:boolean
     )
 };
 
+declare function merge-impl:build-merge-uri($id as xs:string, $source-uris as xs:string+)
+{
+  $MERGED-DIR || $id || (if (fn:ends-with(fn:head($source-uris), ".json")) then ".json" else ".xml")
+};
+
 (:~
  : Merge the documents as specified by the merge options and update the
  : involved files in the database.
@@ -164,7 +169,7 @@ declare function merge-impl:save-merge-models-by-uri(
       else
         $merge-options
     let $id := sem:uuid-string()
-    let $merge-uri := $MERGED-DIR||$id||".xml"
+    let $merge-uri := merge-impl:build-merge-uri($id, $uris)
     let $merged-uris := $uris[xdmp:document-get-collections(.) = $const:MERGED-COLL]
     let $uris :=
       for $uri in $uris
@@ -1029,6 +1034,16 @@ declare function merge-impl:find-updates($updates as map:map, $path-properties a
 
 };
 
+declare function merge-impl:build-prefix-map($source)
+{
+  map:new(
+    for $prefix in fn:in-scope-prefixes($source)
+    where fn:not($prefix = "")
+    return
+      map:entry($prefix, fn:namespace-uri-for-prefix($prefix, $source))
+  )
+};
+
 (:
  : Given a sequence of documents, extract the Entity Services instance from
  : each of them.
@@ -1054,21 +1069,17 @@ declare function merge-impl:get-sources(
   $merge-options as element(merging:options))
   as object-node()*
 {
+  let $ts-path := $merge-options/merging:algorithms/merging:std-algorithm/merging:timestamp/@path
+  let $ns-path := $merge-options/merging:algorithms/merging:std-algorithm
+  let $ns-map :=
+    if (fn:exists($ns-path)) then
+      merge-impl:build-prefix-map($ns-path)
+    else ()
   for $source in
     $docs/(es:envelope|object-node("envelope"))
     /(es:headers|object-node("headers"))
     /(sm:sources|array-node("sources"))
     /(sm:source|object-node())
-  let $ts-path := $merge-options/merging:algorithms/merging:std-algorithm/merging:timestamp/@path
-  let $ns-path := $merge-options/merging:algorithms/merging:std-algorithm
-  let $ns-map :=
-    if (fn:exists($ns-path)) then
-      map:new(
-        for $prefix in fn:in-scope-prefixes($ns-path)
-        return
-          map:entry($prefix, fn:namespace-uri-for-prefix($prefix, $ns-path))
-      )
-    else ()
   let $last-updated :=
     if (fn:string-length($ts-path) > 0) then
       fn:head(xdmp:unpath($ts-path, $ns-map, $source)[. castable as xs:dateTime] ! xs:dateTime(.))
@@ -1174,13 +1185,7 @@ declare function merge-impl:build-final-headers(
       xdmp:base64-encode(xdmp:describe($merge-options, (), ()))
     else
       null-node{}
-  let $ns-map :=
-    map:new(
-      let $parent := $merge-options/merging:property-defs
-      for $prefix in fn:in-scope-prefixes($parent)
-      where fn:not($prefix = "")
-      return map:entry($prefix, fn:namespace-uri-for-prefix($prefix, $parent))
-    )
+  let $ns-map := merge-impl:build-prefix-map($merge-options/merging:property-defs)
   return (
     $ns-map,
     for $property in $property-defs
@@ -1348,7 +1353,10 @@ declare function merge-impl:get-path-merge-spec(
 {
   let $property-name := $options/merging:property-defs/merging:property[@path = $path]/@name
   return
-    $options/merging:merging/merging:merge[@property-name = $property-name]
+    merge-impl:expand-merge-spec(
+      $options,
+      $options/merging:merging/merging:merge[@property-name = $property-name]
+    )
 };
 
 (:
@@ -1365,7 +1373,44 @@ declare function merge-impl:get-merge-spec(
     $options/merging:property-defs
       /merging:property[@namespace = $property-namespace and @localname = $property-local-name]/@name
   return
-    $options/merging:merging/merging:merge[@property-name = $property-name]
+    merge-impl:expand-merge-spec(
+      $options,
+      $options/merging:merging/merging:merge[@property-name = $property-name]
+    )
+};
+
+(:
+ : Take in a merge spec and if doesn't exist search for a default merge from the options.
+ : Also, look for any referenced merge strategies and pull in the properties from the strategy.
+ :
+ : @param $options element(merging:options) the entire merge options
+ : @param $merge-details element(merging:merge) the element describing how a merge should occur
+ : @return $merge-details element(merging:merge) with details filled in from referenced strategy
+ :)
+declare function merge-impl:expand-merge-spec(
+  $options as element(merging:options),
+  $merge-details as element(merging:merge)?
+) as element(merging:merge)?
+{
+
+  let $merge-details :=
+    if (fn:exists($merge-details)) then
+      $merge-details
+    else
+      $options/merging:merging/merging:merge[@default][@default cast as xs:boolean]
+  let $strategy-name := $merge-details/@strategy
+  return
+    if (fn:exists($strategy-name)) then
+      let $strategy := $options/merging:merging/merging:merge-strategy[@name eq $strategy-name]
+      return
+        element merging:merge {
+          for $node-name in fn:distinct-values(($strategy/@*, $merge-details/@*) ! fn:node-name())
+          return fn:head(($merge-details/@*[fn:node-name() eq $node-name],$strategy/@*[fn:node-name() eq $node-name])),
+          for $node-name in fn:distinct-values(($strategy/*, $merge-details/*) ! fn:node-name())
+          return fn:head(($merge-details/*[fn:node-name() eq $node-name],$strategy/*[fn:node-name() eq $node-name]))
+        }
+    else
+      $merge-details
 };
 
 (:
@@ -1398,12 +1443,7 @@ declare function merge-impl:build-final-properties(
   let $first-doc := fn:head($docs)
   return (
     (: TODO: refactor. These two cases repeat a lot of code. :)
-    let $ns-map :=
-      map:new((
-        for $pre in fn:in-scope-prefixes($property-defs)
-        return map:entry($pre, fn:namespace-uri-for-prefix($pre, $property-defs)),
-        map:entry("", "") (: Make sure blank namespace isn't inherited :)
-      ))
+    let $ns-map := merge-impl:build-prefix-map($property-defs)
     for $path-prop in $path-property-defs
     let $merge-spec := merge-impl:get-path-merge-spec($merge-options, $path-prop/@path)
     let $algorithm-name := fn:string($merge-spec/@algorithm-ref)
@@ -1826,7 +1866,7 @@ declare function merge-impl:options-to-json($options-xml as element(merging:opti
                       "timestamp": object-node {
                         "path":
                           let $path :=
-                            fn:head($options-xml/merging:algorithms/merging:std-algorithm/merging:timestamp/@path/fn:string())
+                            fn:head($options-xml/merging:algorithms/merging:std-algorithm/merging:timestamp/@path/fn:string()[. ne ''])
                           return
                             if (fn:exists($path)) then $path
                             else null-node {}
@@ -1835,6 +1875,16 @@ declare function merge-impl:options-to-json($options-xml as element(merging:opti
                   )
                 else ()
               ))
+            )
+          else (),
+          if (fn:exists($options-xml/merging:merging/merging:merge-strategy)) then
+            map:entry(
+              "mergeStrategies",
+              array-node {
+                for $merge in $options-xml/merging:merging/merging:merge-strategy
+                return
+                  merge-impl:propertyspec-to-json($merge)
+              }
             )
           else (),
           if (fn:exists($options-xml/merging:merging/merging:merge)) then
@@ -1938,12 +1988,19 @@ declare function merge-impl:options-from-json($options-json as object-node())
         let $config := json:config("custom")
           => map:with("camel-case", fn:true())
           => map:with("whitespace", "ignore")
-          => map:with("attribute-names", ("propertyName", "algorithmRef", "maxValues"))
-        for $merge in $options-json/*:options/*:merging
-        return
-          element merge {
-            json:transform-from-json($merge, $config)
-          }
+          => map:with("attribute-names", ("name", "weight", "strategy", "propertyName", "algorithmRef", "maxValues"))
+        return (
+          for $merge in $options-json/*:options/*:merging
+          return
+            element merge {
+              json:transform-from-json($merge, $config)
+            },
+          for $merge-strategy in $options-json/*:options/*:mergeStrategies
+          return
+            element merge-strategy {
+              json:transform-from-json($merge-strategy, $config)
+            }
+        )
       },
       let $triple-merge := $options-json/*:options/*:tripleMerge
       return
@@ -1971,12 +2028,12 @@ declare function merge-impl:_options-json-config()
 {
   let $config := json:config("custom")
   return (
-    map:put($config, "array-element-names", ("algorithm","threshold","scoring","property", "reduce", "add", "expand", "merging")),
+    map:put($config, "array-element-names", ("algorithm","threshold","scoring","property", "reduce", "add", "expand", "merging", "merge-strategy", "mergeStrategy")),
     map:put($config, "element-namespace", "http://marklogic.com/smart-mastering/merging"),
     map:put($config, "element-namespace-prefix", "merging"),
     map:put($config, "attribute-names",
       ("name","localname", "namespace", "function",
-        "at", "property-name", "propertyName", "weight", "above", "label","algorithm-ref", "algorithmRef")
+        "at", "property-name", "propertyName", "weight", "above", "label","algorithm-ref", "algorithmRef", "strategy", "default")
     ),
     map:put($config, "camel-case", fn:true()),
     map:put($config, "whitepsace", "ignore"),

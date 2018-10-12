@@ -19,7 +19,7 @@ declare option xdmp:mapping "false";
  :    name="zip-code"
  :    function="zip-match"
  :    namespace="http://marklogic.com/smart-mastering/algorithms"
- :    at="/com.marklogic.smart-mastering"/>
+ :    at="/com.marklogic.smart-mastering/algorithms/zip.xqy"/>
  : </algorithms>
  : <scoring>
  :   <add property-name="zip" weight="5"/>
@@ -28,6 +28,37 @@ declare option xdmp:mapping "false";
  :     <zip origin="9" weight="2"/>
  :   </expand>
  : </scoring>
+ :
+ : {
+ :  "options": {
+ :    "algorithms": {
+ :      "algorithm": [
+ :        {
+ :          "name": "zip-code",
+ :          "namespace": "http://marklogic.com/smart-mastering/algorithms",
+ :          "function": "zip-match",
+ :          "at": "/com.marklogic.smart-mastering/algorithms/zip.xqy"
+ :        }
+ :      ]
+ :    },
+ :    "scoring": {
+ :      "add": [
+ :        { "propertyName": "zip", "weight": "5" }
+ :      ],
+ :      "expand": [
+ :        {
+ :          "propertyName": "zip",
+ :          "algorithmRef": "zip-code",
+ :          "zip": [
+ :            { "origin": 5, "weight": 3 },
+ :            { "origin": 9, "weight": 2 }
+ :          ]
+ :        }
+ :      ]
+ :    }
+ :  }
+ : }
+ :
  : Effect:
  :   If the original document has a 5-digit zip:
  :     A potential match with the same 5-digit zip will get 5 points.

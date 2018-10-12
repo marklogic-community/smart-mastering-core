@@ -54,11 +54,14 @@ let $merged-doc :=
   }
 
  :)
+let $merged-uris := cts:uris((), (), cts:collection-query($const:MERGED-COLL))
 
 return (
   test:assert-exists($merged-doc/envelope/headers/id),
   test:assert-equal("shallow value 1", $merged-doc/envelope/headers/shallow/fn:string()),
   test:assert-equal("deep value 12", $merged-doc/envelope/headers/custom/this/has/a/deep/path/fn:string()),
   test:assert-same-values(("unconfigured value 1a", "unconfigured value 2a"), $merged-doc/envelope/headers/unconfigured/fn:string()),
-  test:assert-same-values(("unconfigured value 1b", "unconfigured value 2b"), $merged-doc/envelope/headers/custom/unconfigured/fn:string())
+  test:assert-same-values(("unconfigured value 1b", "unconfigured value 2b"), $merged-doc/envelope/headers/custom/unconfigured/fn:string()),
+  test:assert-equal(1, fn:count($merged-uris)),
+  test:assert-true(fn:matches(fn:head($merged-uris), "\.json$"))
 )

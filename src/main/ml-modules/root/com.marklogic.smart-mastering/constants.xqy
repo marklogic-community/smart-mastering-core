@@ -52,3 +52,7 @@ declare variable $TRACE-MATCH-RESULTS := "SM-MATCH";
 
 (: ERRORS :)
 declare variable $NO-MERGE-OPTIONS-ERROR := xs:QName("SM-NO-MERGING-OPTIONS");
+
+(: Scope for instance bodies :)
+declare variable $JSON-INSTANCE as xs:string? := "instance";
+declare variable $XML-INSTANCE as xs:QName? := fn:QName("http://marklogic.com/entity-services", "instance");
