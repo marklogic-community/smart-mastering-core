@@ -4,7 +4,7 @@ This document describes steps needed when upgrading Smart Mastering Core from on
 
 ## v1.1.0 to v1.1.1
 
-No known 
+No known incompatibilities. 
 
 ## v1.0.0 to v1.1.0
 
