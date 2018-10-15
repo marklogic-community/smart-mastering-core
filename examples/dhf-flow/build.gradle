@@ -12,7 +12,7 @@ buildscript {
 
 plugins {
   id 'net.saliman.properties' version '1.4.6'
-  id 'com.marklogic.ml-data-hub' version '3.0.0'
+  id 'com.marklogic.ml-data-hub' version '4.0.1'
 
   // for making REST calls
   id "org.tenne.rest" version "0.4.2"
