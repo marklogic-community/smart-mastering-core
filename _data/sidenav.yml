@@ -12,6 +12,7 @@ main:
         url: '/docs/matching-options/',
         text: 'Matching Options',
         childPages: [
+          { url: '/docs/match-algorithms/', text: 'Included Matching Algorithms' },
           { url: '/docs/custom-match-algorithms/', text: 'Custom Matching Algorithms' },
           { url: '/docs/custom-actions/', text: 'Custom Actions' }
         ]
