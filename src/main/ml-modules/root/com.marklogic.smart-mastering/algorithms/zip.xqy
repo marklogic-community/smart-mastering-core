@@ -10,62 +10,8 @@ declare namespace matcher = "http://marklogic.com/smart-mastering/matcher";
 declare option xdmp:mapping "false";
 
 (:~
- : Allow matches between 5- and 9-digit US ZIP codes. For each zip in $expand-values, generates a query to match values
- : that have the same first five digits. To add this algorithm to your match configuration, add XML like the following,
- : assuming that you have configured a property named "zip". Change the weights to work with your other properties.
- :
- : <algorithms>
- :  <algorithm
- :    name="zip-code"
- :    function="zip-match"
- :    namespace="http://marklogic.com/smart-mastering/algorithms"
- :    at="/com.marklogic.smart-mastering/algorithms/zip.xqy"/>
- : </algorithms>
- : <scoring>
- :   <add property-name="zip" weight="5"/>
- :   <expand property-name="zip" algorithm-ref="zip-code">
- :     <zip origin="5" weight="3"/>
- :     <zip origin="9" weight="2"/>
- :   </expand>
- : </scoring>
- :
- : {
- :  "options": {
- :    "algorithms": {
- :      "algorithm": [
- :        {
- :          "name": "zip-code",
- :          "namespace": "http://marklogic.com/smart-mastering/algorithms",
- :          "function": "zip-match",
- :          "at": "/com.marklogic.smart-mastering/algorithms/zip.xqy"
- :        }
- :      ]
- :    },
- :    "scoring": {
- :      "add": [
- :        { "propertyName": "zip", "weight": "5" }
- :      ],
- :      "expand": [
- :        {
- :          "propertyName": "zip",
- :          "algorithmRef": "zip-code",
- :          "zip": [
- :            { "origin": 5, "weight": 3 },
- :            { "origin": 9, "weight": 2 }
- :          ]
- :        }
- :      ]
- :    }
- :  }
- : }
- :
- : Effect:
- :   If the original document has a 5-digit zip:
- :     A potential match with the same 5-digit zip will get 5 points.
- :     A potential match with a 9-digit zip that starts with the same five digits will get (5+3=)8 points.
- :   If the original document has a 9-digit zip:
- :     A potential match with the same 9-digit zip will get 5 points.
- :     A potential match with a 5-digit zip that matches the first five digits of the original document will get 2 points.
+ : Allow matches between 5- and 9-digit US ZIP codes.
+ : For more information, see https://marklogic-community.github.io/smart-mastering-core/docs/match-algorithms/#zip
  :
  : @param $expand-values  the value(s) that the original document has for this property
  : @param $expand-xml  the scoring/expand element in the match options that applies this algorithm to a property
