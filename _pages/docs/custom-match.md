@@ -106,7 +106,7 @@ prefix for XQuery code).
     <algorithm 
       name="favorite-color" 
       at="/smart-mastering/match/favorite-color.xqy" 
-      ns="http://example.com/big-hub/smart-mastering/match/favorite-color"
+      namespace="http://example.com/big-hub/smart-mastering/match/favorite-color"
       function="favorite-color"/>
   </algorithms>
 ```

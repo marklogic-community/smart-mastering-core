@@ -12,7 +12,9 @@ main:
         url: '/docs/matching-options/',
         text: 'Matching Options',
         childPages: [
+          { url: '/docs/match-algorithms/', text: 'Included Matching Algorithms' },
           { url: '/docs/custom-match-algorithms/', text: 'Custom Matching Algorithms' },
+          { url: '/docs/actions/', text: 'Included Actions' },
           { url: '/docs/custom-actions/', text: 'Custom Actions' }
         ]
       },
@@ -20,6 +22,7 @@ main:
         url: '/docs/merging-options/',
         text: 'Merging Options',
         childPages: [
+          { url: '/docs/merge-algorithms/', text: 'Included Merging Algorithms' },
           { url: '/docs/custom-merge-algorithms/', text: 'Custom Merging Algorithms' }
         ]
       },
