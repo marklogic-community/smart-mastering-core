@@ -142,8 +142,10 @@ The algorithm will then construct a case-insensitive query with the values "will
 
 For more information about using thesauri in MarkLogic, including the required schema, see 
 [Using the Thesaurus Functions](http://docs.marklogic.com/guide/search-dev/thesaurus#chapter) in the Search Developer's 
-Guide. Insert a thesaurus using [`thsr:load`](http://docs.marklogic.com/thsr:load) or 
-[`thsr.load`](http://docs.marklogic.com/thsr.load). 
+Guide. You can insert a thesaurus using [`thsr:load`](http://docs.marklogic.com/thsr:load) or 
+[`thsr.load`](http://docs.marklogic.com/thsr.load), which will validate that the content matches the expected schema, 
+or you can directly insert it into your content database. In either case, use the URI at which you insert the thesaurus
+document to configure the thesaurus option. 
 
 To add this algorithm to your match configuration, add XML or JSON like the following, assuming that you have
 configured a property named "first-name". Change the weights to work with your other properties.
