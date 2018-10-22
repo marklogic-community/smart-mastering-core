@@ -18,6 +18,8 @@ plugins {
   id "org.tenne.rest" version "0.4.2"
 }
 
+apply plugin: 'com.marklogic.ml-data-hub'
+
 repositories {
   mavenLocal()
   jcenter()
@@ -51,6 +53,24 @@ dependencies {
   // MLCP dependencies
   mlcp "com.marklogic:mlcp:9.0.5"
 }
+
+// Bugfix for DHF4 - see https://github.com/marklogic/marklogic-data-hub/pull/1416
+ext {
+  def loadModulesCommand = mlAppDeployer.getCommand("LoadModulesCommand")
+  mlAppDeployer.getCommand("LoadHubModulesCommand").setExecuteSortOrder(loadModulesCommand.getExecuteSortOrder() - 1)
+
+  mlAppDeployer.removeCommand("LoadHubModulesCommand")
+  mlAppDeployer.removeCommand("LoadModulesCommand")
+  mlAppDeployer.removeCommand("LoadUserStagingModulesCommand")
+}
+
+// Bugfix for DHF4
+task deleteModuleTimestampsFile(type: Delete) {
+  description = "Use this as mlDeleteModuleTimestampsFile doesn't seem to work with DHF4"
+  delete "build/ml-javaclient-util/module-timestamps.properties"
+}
+mlReloadModules.dependsOn deleteModuleTimestampsFile
+mlDeploy.dependsOn deleteModuleTimestampsFile
 
 // this task runs MLCP to ingest the CRM data
 // note that we have pre-processed this data for you
@@ -254,7 +274,7 @@ task harmonize(type: com.marklogic.gradle.task.RunFlowTask) {
 // for you completely
 task loadCode {
   mustRunAfter mlDeploy
-  dependsOn mlReloadModules
+//  dependsOn mlReloadModules
   dependsOn deployMatchOptions
   dependsOn deployMergeOptions
   dependsOn importThesauri
@@ -265,13 +285,13 @@ task loadCode {
 // this is a convenience task to setup the example project
 // for you completely
 task setupExample {
+  dependsOn mlDeploy
   mustRunAfter mlDeploySecurity
   dependsOn mlDeploySecurity
-  dependsOn mlDeploy
   dependsOn loadCode
 }
 
-
+// mlDeploySecurity.dependsOn mlDeployApp
 
 task runPersonMastering(type: com.marklogic.gradle.task.RunFlowTask) {
   mustRunAfter importThesauri
@@ -331,13 +351,7 @@ task clearFinalDatabase(type: com.marklogic.gradle.task.databases.ClearDatabaseT
   }
   outputs.upToDateWhen { false }
 }
-task clearTraceDatabase(type: com.marklogic.gradle.task.databases.ClearDatabaseTask) {
-  doFirst {
-    project.ext.database = project.properties.mlTraceDbName
-    project.ext.confirm = "true"
-  }
-  outputs.upToDateWhen { false }
-}
+
 task clearJobDatabase(type: com.marklogic.gradle.task.databases.ClearDatabaseTask) {
   doFirst {
     project.ext.database = project.properties.mlJobDbName
@@ -351,7 +365,6 @@ task clearJobDatabase(type: com.marklogic.gradle.task.databases.ClearDatabaseTas
 task resetExample {
   dependsOn clearStagingDatabase
   dependsOn clearFinalDatabase
-  dependsOn clearTraceDatabase
   dependsOn clearJobDatabase
 }
 
@@ -359,17 +372,17 @@ task resetExample {
 // bug workaround!
 // Use this until bug 910 gets fixed
 // https://github.com/marklogic/marklogic-data-hub/issues/910
-task mlGradleLoadModules(type: com.marklogic.gradle.task.client.LoadModulesTask) {
-  dependsOn mlPrepareRestApiDependencies
-  mustRunAfter mlClearModulesDatabase
-}
+// task mlGradleLoadModules(type: com.marklogic.gradle.task.client.LoadModulesTask) {
+//   dependsOn mlPrepareRestApiDependencies
+//   mustRunAfter mlClearModulesDatabase
+// }
 
-task mlGradleWatch(type: com.marklogic.gradle.task.client.WatchTask)
-task mlGradleDeleteModuleTimestampsFile(type: com.marklogic.gradle.task.DeleteModuleTimestampsFileTask)
+// task mlGradleWatch(type: com.marklogic.gradle.task.client.WatchTask)
+// task mlGradleDeleteModuleTimestampsFile(type: com.marklogic.gradle.task.DeleteModuleTimestampsFileTask)
 
-mlLoadModules.dependsOn mlGradleLoadModules
-mlWatch.dependsOn mlGradleWatch
-mlDeleteModuleTimestampsFile.dependsOn mlGradleDeleteModuleTimestampsFile
+// mlLoadModules.dependsOn mlGradleLoadModules
+// mlWatch.dependsOn mlGradleWatch
+// mlDeleteModuleTimestampsFile.dependsOn mlGradleDeleteModuleTimestampsFile
 // end bug workaround
 //////////////////////////////////////////////////////////////
 
