@@ -1,39 +1,11 @@
-buildscript {
-  repositories {
-    mavenLocal()
-    jcenter()
-    mavenCentral()
-  }
-
-  dependencies {
-    classpath "com.marklogic:ml-gradle:3.6.3"
-  }
-}
-
 plugins {
   id 'net.saliman.properties' version '1.4.6'
   id 'com.marklogic.ml-data-hub' version '4.0.1'
-
-  // for making REST calls
-  id "org.tenne.rest" version "0.4.2"
 }
 
-apply plugin: 'com.marklogic.ml-data-hub'
-
 repositories {
-  mavenLocal()
   jcenter()
   mavenCentral()
-
-  // Needed for ml-unit-test-client dependency until it's available via jcenter()
-  maven {
-    url {"https://dl.bintray.com/rjrudin/maven/"}
-  }
-
-  // Needed for smart-mastering-core dependency until it's available via jcenter()
-  maven {
-    url {"https://dl.bintray.com/marklogic-community/Maven/"}
-  }
 
   // needed for the mlcp dependencies
   maven {
@@ -58,10 +30,6 @@ dependencies {
 ext {
   def loadModulesCommand = mlAppDeployer.getCommand("LoadModulesCommand")
   mlAppDeployer.getCommand("LoadHubModulesCommand").setExecuteSortOrder(loadModulesCommand.getExecuteSortOrder() - 1)
-
-  mlAppDeployer.removeCommand("LoadHubModulesCommand")
-  mlAppDeployer.removeCommand("LoadModulesCommand")
-  mlAppDeployer.removeCommand("LoadUserStagingModulesCommand")
 }
 
 // Bugfix for DHF4
@@ -196,26 +164,24 @@ task importThesauri(type: com.marklogic.gradle.task.MlcpTask) {
 
 // this is a convenience task to deploy match options
 // easily from gradle
-task deployMDMMatchOptions(type: org._10ne.gradle.rest.RestTask) {
+task deployMDMMatchOptions(type: com.marklogic.gradle.task.client.CallResourceTask) {
   mustRunAfter mlLoadModules
-  httpMethod = 'post'
-  uri = 'http://' + mlHost + ':' + mlFinalPort + '/v1/resources/sm-match-options?rs:name=mdm-match-options'
-  username = mlAppAdminUsername
-  password = mlAppAdminPassword
-  requestBody = file('smart-mastering-config/mdm-match-options.xml').text
-  contentType = groovyx.net.http.ContentType.XML
-  responseHandler = {}
+  client = hubConfig.newFinalClient()
+  resourceName = 'sm-match-options'
+  method = 'POST'
+  params = ['name': 'mdm-match-options']
+  body = file('smart-mastering-config/mdm-match-options.xml').text
+  mimeType = 'application/xml'
 }
 
-task deployOrgMatchOptions(type: org._10ne.gradle.rest.RestTask) {
+task deployOrgMatchOptions(type: com.marklogic.gradle.task.client.CallResourceTask) {
   mustRunAfter mlLoadModules
-  httpMethod = 'post'
-  uri = 'http://' + mlHost + ':' + mlFinalPort + '/v1/resources/sm-match-options?rs:name=org-match-options'
-  username = mlAppAdminUsername
-  password = mlAppAdminPassword
-  requestBody = file('smart-mastering-config/org-match-options.xml').text
-  contentType = groovyx.net.http.ContentType.XML
-  responseHandler = {}
+  client = hubConfig.newFinalClient()
+  resourceName = 'sm-match-options'
+  method = 'POST'
+  params = ['name': 'org-match-options']
+  body = file('smart-mastering-config/org-match-options.xml').text
+  mimeType = 'application/xml'
 }
 
 task deployMatchOptions {
@@ -225,26 +191,24 @@ task deployMatchOptions {
 
 // this is a convenience task to deploy merge options
 // easily from gradle
-task deployMDMMergeOptions(type: org._10ne.gradle.rest.RestTask) {
+task deployMDMMergeOptions(type: com.marklogic.gradle.task.client.CallResourceTask) {
   mustRunAfter mlLoadModules
-  httpMethod = 'post'
-  uri = 'http://' + mlHost + ':' + mlFinalPort + '/v1/resources/sm-merge-options?rs:name=mdm-merge-options'
-  username = mlAppAdminUsername
-  password = mlAppAdminPassword
-  requestBody = file('smart-mastering-config/mdm-merge-options.xml').text
-  contentType = groovyx.net.http.ContentType.XML
-  responseHandler = {}
+  client = hubConfig.newFinalClient()
+  resourceName = 'sm-merge-options'
+  method = 'POST'
+  params = ['name': 'mdm-merge-options']
+  body = file('smart-mastering-config/mdm-merge-options.xml').text
+  mimeType = 'application/xml'
 }
 
-task deployOrgMergeOptions(type: org._10ne.gradle.rest.RestTask) {
+task deployOrgMergeOptions(type: com.marklogic.gradle.task.client.CallResourceTask) {
   mustRunAfter mlLoadModules
-  httpMethod = 'post'
-  uri = 'http://' + mlHost + ':' + mlFinalPort + '/v1/resources/sm-merge-options?rs:name=org-merge-options'
-  username = mlAppAdminUsername
-  password = mlAppAdminPassword
-  requestBody = file('smart-mastering-config/org-merge-options.xml').text
-  contentType = groovyx.net.http.ContentType.XML
-  responseHandler = {}
+  client = hubConfig.newFinalClient()
+  resourceName = 'sm-merge-options'
+  method = 'POST'
+  params = ['name': 'org-merge-options']
+  body = file('smart-mastering-config/org-merge-options.xml').text
+  mimeType = 'application/xml'
 }
 
 task deployMergeOptions {
@@ -367,24 +331,6 @@ task resetExample {
   dependsOn clearFinalDatabase
   dependsOn clearJobDatabase
 }
-
-//////////////////////////////////////////////////////////////
-// bug workaround!
-// Use this until bug 910 gets fixed
-// https://github.com/marklogic/marklogic-data-hub/issues/910
-// task mlGradleLoadModules(type: com.marklogic.gradle.task.client.LoadModulesTask) {
-//   dependsOn mlPrepareRestApiDependencies
-//   mustRunAfter mlClearModulesDatabase
-// }
-
-// task mlGradleWatch(type: com.marklogic.gradle.task.client.WatchTask)
-// task mlGradleDeleteModuleTimestampsFile(type: com.marklogic.gradle.task.DeleteModuleTimestampsFileTask)
-
-// mlLoadModules.dependsOn mlGradleLoadModules
-// mlWatch.dependsOn mlGradleWatch
-// mlDeleteModuleTimestampsFile.dependsOn mlGradleDeleteModuleTimestampsFile
-// end bug workaround
-//////////////////////////////////////////////////////////////
 
 /////////////////
 // PROFILING
