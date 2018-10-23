@@ -1,5 +1,14 @@
 plugins {
+  // This plugin allows you to create different environments
+  // for your gradle deploy. Each environment is represented
+  // by a gradle-${env}.properties file
+  // See https://github.com/stevesaliman/gradle-properties-plugin
+  // specify the env on the command line with:
+  // gradle -PenvironmentName=x ...
   id 'net.saliman.properties' version '1.4.6'
+
+  // This gradle plugin extends the ml-gradle plugin with
+  // commands that make the Data Hub Framework do its magic
   id 'com.marklogic.ml-data-hub' version '4.0.1'
 }
 
@@ -23,7 +32,7 @@ dependencies {
   mlRestApi "com.marklogic.community:smart-mastering-core:${smartMasteringVersion}"
 
   // MLCP dependencies
-  mlcp "com.marklogic:mlcp:9.0.5"
+  mlcp "com.marklogic:mlcp:9.0.7"
 }
 
 // Bugfix for DHF4 - see https://github.com/marklogic/marklogic-data-hub/pull/1416
@@ -39,6 +48,26 @@ task deleteModuleTimestampsFile(type: Delete) {
 }
 mlReloadModules.dependsOn deleteModuleTimestampsFile
 mlDeploy.dependsOn deleteModuleTimestampsFile
+
+
+
+//////////////////////////////////////////////////////////////
+// bug workaround!
+// Use this until bug 910 gets fixed
+// https://github.com/marklogic/marklogic-data-hub/issues/910
+// task mlGradleLoadModules(type: com.marklogic.gradle.task.client.LoadModulesTask) {
+//   dependsOn mlPrepareRestApiDependencies
+//   mustRunAfter mlClearModulesDatabase
+// }
+
+// task mlGradleWatch(type: com.marklogic.gradle.task.client.WatchTask)
+// task mlGradleDeleteModuleTimestampsFile(type: com.marklogic.gradle.task.DeleteModuleTimestampsFileTask)
+
+// mlLoadModules.dependsOn mlGradleLoadModules
+// mlWatch.dependsOn mlGradleWatch
+// mlDeleteModuleTimestampsFile.dependsOn mlGradleDeleteModuleTimestampsFile
+// end bug workaround
+//////////////////////////////////////////////////////////////
 
 // this task runs MLCP to ingest the CRM data
 // note that we have pre-processed this data for you
@@ -254,8 +283,6 @@ task setupExample {
   dependsOn mlDeploySecurity
   dependsOn loadCode
 }
-
-// mlDeploySecurity.dependsOn mlDeployApp
 
 task runPersonMastering(type: com.marklogic.gradle.task.RunFlowTask) {
   mustRunAfter importThesauri
