@@ -1,7 +1,7 @@
 {
   "role-name": "mdm-user",
   "description": "Smart Mastering user role",
-  "role": ["rest-reader", "rest-writer"],
+  "role": ["rest-reader", "rest-writer", "data-hub-role"],
   "privilege": [
     {
       "privilege-name": "any-uri",
