@@ -1,9 +1,18 @@
 {
   "database-name": "%%mlFinalDbName%%",
-  "range-element-index": [],
   "schema-database": "%%mlFinalSchemasDbName%%",
   "triggers-database": "%%mlFinalTriggersDbName%%",
   "triple-index": true,
   "collection-lexicon": true,
-  "uri-lexicon": true
+  "uri-lexicon": true,
+  "range-element-index": [
+    {
+      "invalid-values": "reject",
+      "collation": "http://marklogic.com/collation/",
+      "localname": "PersonSurName ",
+      "namespace-uri": "",
+      "range-value-positions": false,
+      "scalar-type": "string"
+    }
+  ]
 }
