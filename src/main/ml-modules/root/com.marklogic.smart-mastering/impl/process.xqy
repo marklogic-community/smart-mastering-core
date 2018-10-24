@@ -64,7 +64,7 @@ declare function proc-impl:process-match-and-merge-with-options(
   tel:increment(),
 
   let $_ := xdmp:trace($const:TRACE-MATCH-RESULTS, "processing: " || $uri)
-  let $matching-options := matcher:get-options-as-xml(fn:string($options/merging:match-options))
+  let $matching-options := matcher:get-options(fn:string($options/merging:match-options), $const:FORMAT-XML)
   let $thresholds := $matching-options/matcher:thresholds/matcher:threshold[@action = ($const:MERGE-ACTION, $const:NOTIFY-ACTION)]
   let $threshold-labels := $thresholds/@label
   let $minimum-threshold :=

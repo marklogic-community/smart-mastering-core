@@ -4,6 +4,8 @@ module namespace resource = "http://marklogic.com/rest-api/resource/sm-match";
 
 import module namespace matcher = "http://marklogic.com/smart-mastering/matcher"
   at "/com.marklogic.smart-mastering/matcher.xqy";
+import module namespace const = "http://marklogic.com/smart-mastering/constants"
+  at "/com.marklogic.smart-mastering/constants.xqy";
 
 declare namespace rapi = "http://marklogic.com/rest-api";
 
@@ -49,7 +51,7 @@ function post(
     else ()
   let $options :=
     if (map:contains($params, "options")) then
-      matcher:get-options-as-xml(map:get($params, "options"))
+      matcher:get-options(map:get($params, "options"), $const:FORMAT-XML)
     else
       $input-root/(element(matcher:options)|self::object-node()[object-node("options")])
   let $_options-check :=

@@ -58,7 +58,7 @@ as element(results)
 {
   matcher:find-document-matches-by-options(
     $document,
-    matcher:get-options-as-xml($options-name),
+    matcher:get-options($options-name, $const:FORMAT-XML),
     fn:false(),
     cts:true-query()
   )
@@ -84,7 +84,12 @@ declare function matcher:find-document-matches-by-options-name(
 )
   as element(results)
 {
-  matcher:find-document-matches-by-options($document, matcher:get-options-as-xml($options-name), $include-matches, $filter-query)
+  matcher:find-document-matches-by-options(
+    $document,
+    matcher:get-options($options-name, $const:FORMAT-XML),
+    $include-matches,
+    $filter-query
+  )
 };
 
 (:
@@ -202,6 +207,36 @@ declare function matcher:results-to-json($results-xml)
 (:
  : Retrieve names of all previously saved matcher options.
  :
+ : @param $format  either $const:FORMAT-XML or $const:FORMAT-JSON
+ : @return  <matcher:options> element containing zero or more <matcher:option> elements
+ :)
+declare function matcher:get-option-names($format as xs:string)
+{
+  if ($format = $const:FORMAT-XML) then
+    opt-impl:get-option-names-as-xml()
+  else
+    opt-impl:get-option-names-as-json()
+};
+
+(:
+ : Retrieve names of all previously saved matcher options.
+ :
+ : @param $options-name  the name under which the options were saved
+ : @param $format  either $const:FORMAT-XML or $const:FORMAT-JSON
+ : @return  <matcher:options> element containing zero or more <matcher:option> elements
+ :)
+declare function matcher:get-options($options-name as xs:string, $format as xs:string)
+{
+  if ($format = $const:FORMAT-XML) then
+    opt-impl:get-options-as-xml($options-name)
+  else
+    opt-impl:get-options-as-json($options-name)
+};
+
+(:
+ : Retrieve names of all previously saved matcher options.
+ : @deprecated call `matcher:get-option-names($const:FORMAT-XML)` instead
+ :
  : @return  <matcher:options> element containing zero or more <matcher:option> elements
  :)
 declare function matcher:get-option-names-as-xml()
@@ -212,6 +247,7 @@ declare function matcher:get-option-names-as-xml()
 
 (:
  : Retrieve names of all previously saved matcher options.
+ : @deprecated call `matcher:get-option-names($const:FORMAT-JSON)` instead
  :
  : @return  JSON array of strings
  :)
@@ -221,12 +257,18 @@ declare function matcher:get-option-names-as-json()
   opt-impl:get-option-names-as-json()
 };
 
+(:
+ : @deprecated call `matcher:get-options($options-name, $const:FORMAT-XML)` instead
+ :)
 declare function matcher:get-options-as-xml($options-name as xs:string)
   as element(matcher:options)?
 {
   opt-impl:get-options-as-xml($options-name)
 };
 
+(:
+ : @deprecated call `matcher:get-options($options-name, $const:FORMAT-JSON)` instead
+ :)
 declare function matcher:get-options-as-json($options-name as xs:string)
   as object-node()?
 {
