@@ -12,6 +12,8 @@ plugins {
   id 'com.marklogic.ml-data-hub' version '4.0.1'
 }
 
+import com.marklogic.client.DatabaseClientFactory;
+
 repositories {
   jcenter()
   mavenCentral()
@@ -134,8 +136,13 @@ task importThesauri(type: com.marklogic.gradle.task.MlcpTask) {
 // this is a convenience task to deploy match options
 // easily from gradle
 task deployMatchOptions(type: com.marklogic.gradle.task.client.CallResourceTask) {
+  doFirst {
+    client = com.marklogic.client.DatabaseClientFactory.newClient(
+      mlHost,
+      Integer.parseInt(mlFinalPort),
+      new DatabaseClientFactory.DigestAuthContext(mlAppAdminUsername, mlAppAdminPassword))
+  }
   mustRunAfter mlLoadModules
-  client = hubConfig.newFinalClient()
   resourceName = 'sm-match-options'
   method = 'POST'
   params = ['name': 'mdm-match-options']
@@ -146,8 +153,13 @@ task deployMatchOptions(type: com.marklogic.gradle.task.client.CallResourceTask)
 // this is a convenience task to deploy merge options
 // easily from gradle
 task deployMergeOptions(type: com.marklogic.gradle.task.client.CallResourceTask) {
+  doFirst {
+    client = com.marklogic.client.DatabaseClientFactory.newClient(
+      mlHost,
+      Integer.parseInt(mlFinalPort),
+      new DatabaseClientFactory.DigestAuthContext(mlAppAdminUsername, mlAppAdminPassword))
+  }
   mustRunAfter mlLoadModules
-  client = hubConfig.newFinalClient()
   resourceName = 'sm-merge-options'
   method = 'POST'
   params = ['name': 'mdm-merge-options']
@@ -167,10 +179,28 @@ task loadCode {
 // this is a convenience task to setup the example project
 // for you completely
 task setupExample {
+  dependsOn mlDeploy
   mustRunAfter mlDeploySecurity
   dependsOn mlDeploySecurity
-  dependsOn mlDeploy
   dependsOn loadCode
+}
+
+// this task runs the MDM => MDMHarmonize flow
+// which moves the staging data into the Final DB
+// This flow can also be run via QuickStart
+task harmonize(type: com.marklogic.gradle.task.RunFlowTask) {
+  mustRunAfter importThesauri
+  mustRunAfter deployMatchOptions
+  mustRunAfter deployMergeOptions
+  mustRunAfter loadCRMData
+  mustRunAfter loadOracleData
+  mustRunAfter loadCSVFileData
+  mustRunAfter loadData
+
+  entityName = "MDM"
+  flowName = "MDMHarmonize"
+  batchSize = 100
+  threadCount = 4
 }
 
 mlPostDeploy.dependsOn mlDeployTriggers
