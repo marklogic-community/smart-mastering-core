@@ -24,6 +24,5 @@
   </thresholds>
   <tuning>
     <max-scan>200</max-scan>  <!-- never look at more than 200 -->
-    <initial-scan>20</initial-scan>
   </tuning>
 </options>
