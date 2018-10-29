@@ -893,11 +893,26 @@ declare function merge-impl:build-instance-body-by-final-properties(
             $map-a + $map-b
           },
           map:map(),
-          for $prop in $final-properties[fn:not(map:contains(., "path"))]
+          let $non-path-properties := $final-properties[fn:not(map:contains(., "path"))]
+          for $prop at $pos in $non-path-properties
           let $prop-name := fn:string($prop => map:get("name"))
+          let $other-values-for-props := $non-path-properties
+            [fn:not(fn:position() = $pos)]
+            [fn:string(map:get(.,"name")) = $prop-name]
+            [fn:exists(map:get(.,"values"))]
           let $prop-values := $prop => map:get("values")
           return
-            map:entry($prop-name, $prop-values)
+            map:entry(
+              $prop-name,
+              if (
+                fn:empty($other-values-for-props)
+                  and
+                fn:boolean($prop => map:get("retainArray")) = fn:true()
+              ) then
+                array-node {$prop-values}
+              else
+                $prop-values
+            )
         ),
         $wrapper-qnames
       )
@@ -1476,7 +1491,7 @@ declare function merge-impl:build-final-properties(
             let $props-for-instance :=
               for $prop-val in $instance-props[fn:root(.) is $doc]
               return
-                (: Propertly extract values from arrays :)
+                (: Properly extract values from arrays :)
                 (: TODO: consider array case
                 if ($prop-val instance of array-node()) then
                   let $children := $prop-val/node()
@@ -1551,11 +1566,15 @@ declare function merge-impl:build-final-properties(
           merge-impl:wrap-revision-info($prop, $instance-props[fn:root(.) is $first-doc], $sources, (), ())
         else
           let $wrapped-properties :=
+            let $props-for-instance-in-array :=
+              some $prop-val in $instance-props/(.|..)
+                satisfies $prop-val instance of array-node()
+            let $property-wrapper-extenstions := map:entry('retainArray', $props-for-instance-in-array)
             for $doc at $pos in $docs
             let $props-for-instance :=
               for $prop-val in $instance-props[fn:root(.) is $doc]
               return
-                (: Propertly extract values from arrays :)
+                (: Properly extract values from arrays :)
                 if ($prop-val instance of array-node()) then
                   let $children := $prop-val/node()
                   return
@@ -1577,7 +1596,7 @@ declare function merge-impl:build-final-properties(
             let $prop-sources := $sources[documentUri = $lineage-uris]
             where fn:exists($props-for-instance)
             return
-              merge-impl:wrap-revision-info($prop, $prop-value, $prop-sources, (), ())
+              merge-impl:wrap-revision-info-with-extensions($prop, $prop-value, $prop-sources, $property-wrapper-extenstions)
           return
             if (fn:exists($algorithm)) then
               merge-impl:execute-algorithm(
@@ -1613,17 +1632,40 @@ declare function merge-impl:wrap-revision-info(
   $ns-map as map:map?
 ) as map:map*
 {
+  merge-impl:wrap-revision-info-with-extensions(
+    $property-name,
+    $properties,
+    $sources,
+    if (fn:exists($path)) then map:new((
+      map:entry("path", $path),
+      map:entry("nsMap", $ns-map)
+    ))
+    else ()
+  )
+};
+
+(:
+ : Create maps to connect a property's name, values, and sources with extension ability.
+ : @param $property-name  XML element or JSON property name
+ : @param $properties  XML elements or JSON properties corresponding to ES instance properties
+ : @param $sources  information pulled from the source document headers
+ : @param $extension map for any additional details that need to be associated with a property
+ : @return sequence of maps
+ :)
+declare function merge-impl:wrap-revision-info-with-extensions(
+  $property-name as xs:QName,
+  $properties as item()*,
+  $sources as item()*,
+  $extensions as map:map?
+) as map:map*
+{
   for $prop in $properties
   return
     map:new((
       map:entry("name", $property-name),
       map:entry("sources", $sources),
       map:entry("values", $prop),
-      if (fn:exists($path)) then (
-        map:entry("path", $path),
-        map:entry("nsMap", $ns-map)
-      )
-      else ()
+      $extensions
     ))
 };
 
