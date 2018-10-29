@@ -110,6 +110,11 @@ declare function opt-impl:save-options(
 )
 {
   let $options :=
+    if ($options instance of document-node()) then
+      $options/node()
+    else
+      $options
+  let $options :=
     if ($options instance of object-node()) then
       opt-impl:options-from-json($options)
     else
