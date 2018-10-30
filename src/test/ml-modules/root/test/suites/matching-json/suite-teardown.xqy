@@ -8,4 +8,7 @@ declare option xdmp:mapping "false";
 
 xdmp:collection-delete($const:OPTIONS-COLL),
 
+xdmp:document-delete("fname-dictionary.xml"),
+xdmp:document-delete("lname-dictionary.xml"),
+
 map:keys($lib:TEST-DATA) ! xdmp:document-delete(.)

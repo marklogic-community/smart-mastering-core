@@ -1,13 +1,14 @@
 const test = require('/test/test-helper.xqy');
 const lib = require('/test/suites/matching/lib/lib.xqy');
 const matcher = require('/com.marklogic.smart-mastering/matcher.xqy');
+const con = require('/com.marklogic.smart-mastering/constants.xqy');
 
 /**
  * Purpose of test: retrieve match options as JSON and make sure they are
  * formatted correctly.
  */
 
-const actual = matcher.getOptionsAsJson(lib['MATCH-OPTIONS-NAME']).toObject();
+const actual = matcher.getOptions(lib['MATCH-OPTIONS-NAME'], con['FORMAT-JSON']).toObject();
 
 let assertions = [];
 
@@ -37,9 +38,9 @@ for (let expand of actual.options.scoring.expand) {
   if (expand.propertyName === 'first-name') {
     assertions.push(
       test.assertEqual('dbl-metaphone', expand.algorithmRef),
-      test.assertEqual('6', expand.weight),
-      test.assertEqual('name-dictionary.xml', expand.dictionary),
-      test.assertEqual('10', expand.distanceThreshold)
+      test.assertEqual('12', expand.weight),
+      test.assertEqual('fname-dictionary.xml', expand.dictionary),
+      test.assertEqual('100', expand.distanceThreshold)
     );
   } else if (expand.propertyName === 'last-name') {
     // all's well
