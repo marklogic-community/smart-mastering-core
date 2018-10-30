@@ -152,6 +152,12 @@ declare function proc-impl:process-match-and-merge-with-options(
   let $consolidated-notifies := proc-impl:consolidate-notifies($all-matches, $consolidated-merges)
 
   return (
+    if (xdmp:trace-enabled($const:TRACE-MATCH-RESULTS)) then (
+      xdmp:trace($const:TRACE-MATCH-RESULTS, "Consolidated merges: " || xdmp:quote($consolidated-merges)),
+      xdmp:trace($const:TRACE-MATCH-RESULTS, "Consolidated notifications: " || xdmp:quote($consolidated-notifies))
+    )
+    else (),
+
     (: Process merges :)
     for $new-uri in map:keys($consolidated-merges)
     return
