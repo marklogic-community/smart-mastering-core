@@ -165,6 +165,8 @@ declare function merging:merge-complementing-properties(
         return (
           $merged-properties,
           map:new((
+            $current-property,
+            $complementing-properties,
             map:entry("sources", (
               $current-property => map:get("sources"),
               $complementing-properties ! map:get(., "sources")
@@ -249,25 +251,31 @@ declare function merging:merge-complementing-properties(
 
 declare function merging:are-grouped-nodes-complementary($grouped-nodes-1 as map:map, $grouped-nodes-2 as map:map)
 {
-  every $node-kind in fn:distinct-values((map:keys($grouped-nodes-1),map:keys($grouped-nodes-2)))
-  satisfies (
-    let $nodes-of-kind-1 := map:get($grouped-nodes-1, $node-kind)
-    let $nodes-of-kind-2 := map:get($grouped-nodes-2, $node-kind)
-    let $nodes-1-is-min-count := fn:count($nodes-of-kind-1) lt fn:count($nodes-of-kind-2)
-    let $min-set-of-nodes :=
-      if ($nodes-1-is-min-count) then
-        $nodes-of-kind-1
-      else
-        $nodes-of-kind-2
-    let $max-set-of-nodes :=
-      if ($nodes-1-is-min-count) then
-        $nodes-of-kind-2
-      else
-        $nodes-of-kind-1
-    return
-      every $n in $min-set-of-nodes satisfies
-      $n = $max-set-of-nodes
-  )
+  let $group-1-keys := map:keys($grouped-nodes-1)
+  let $group-2-keys := map:keys($grouped-nodes-2)
+  return
+    $group-1-keys = $group-2-keys
+    and (
+      every $node-kind in fn:distinct-values(($group-1-keys,$group-2-keys))
+      satisfies (
+        let $nodes-of-kind-1 := map:get($grouped-nodes-1, $node-kind)
+        let $nodes-of-kind-2 := map:get($grouped-nodes-2, $node-kind)
+        let $nodes-1-is-min-count := fn:count($nodes-of-kind-1) lt fn:count($nodes-of-kind-2)
+        let $min-set-of-nodes :=
+          if ($nodes-1-is-min-count) then
+            $nodes-of-kind-1
+          else
+            $nodes-of-kind-2
+        let $max-set-of-nodes :=
+          if ($nodes-1-is-min-count) then
+            $nodes-of-kind-2
+          else
+            $nodes-of-kind-1
+        return
+          every $n in $min-set-of-nodes satisfies
+          $n = $max-set-of-nodes
+      )
+    )
 };
 
 
