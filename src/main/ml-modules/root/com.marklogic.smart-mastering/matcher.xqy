@@ -214,8 +214,10 @@ declare function matcher:get-option-names($format as xs:string)
 {
   if ($format = $const:FORMAT-XML) then
     opt-impl:get-option-names-as-xml()
-  else
+  else if ($format = $const:FORMAT-JSON) then
     opt-impl:get-option-names-as-json()
+  else
+    fn:error(xs:QName("SM-INVALID-FORMAT"), "matcher:get-option-names called with invalid format " || $format)
 };
 
 (:
@@ -229,8 +231,10 @@ declare function matcher:get-options($options-name as xs:string, $format as xs:s
 {
   if ($format = $const:FORMAT-XML) then
     opt-impl:get-options-as-xml($options-name)
-  else
+  else if ($format = $const:FORMAT-JSON) then
     opt-impl:get-options-as-json($options-name)
+  else
+    fn:error(xs:QName("SM-INVALID-FORMAT"), "matcher:get-option called with invalid format " || $format)
 };
 
 (:
@@ -242,7 +246,8 @@ declare function matcher:get-options($options-name as xs:string, $format as xs:s
 declare function matcher:get-option-names-as-xml()
   as element(matcher:options)
 {
-  opt-impl:get-option-names-as-xml()
+  opt-impl:get-option-names-as-xml(),
+  xdmp:log("DEPRECATED: matcher:get-option-names-as-xml() has been deprecated; call matcher:get-option-names($const:FORMAT-XML) instead")
 };
 
 (:
@@ -254,7 +259,8 @@ declare function matcher:get-option-names-as-xml()
 declare function matcher:get-option-names-as-json()
   as object-node()?
 {
-  opt-impl:get-option-names-as-json()
+  opt-impl:get-option-names-as-json(),
+  xdmp:log("DEPRECATED: matcher:get-option-names-as-json() has been deprecated; call matcher:get-option-names($const:FORMAT-JSON) instead")
 };
 
 (:
@@ -263,7 +269,8 @@ declare function matcher:get-option-names-as-json()
 declare function matcher:get-options-as-xml($options-name as xs:string)
   as element(matcher:options)?
 {
-  opt-impl:get-options-as-xml($options-name)
+  opt-impl:get-options-as-xml($options-name),
+  xdmp:log("DEPRECATED: matcher:get-options-as-xml() has been deprecated; call matcher:get-options($options-name, $const:FORMAT-XML) instead")
 };
 
 (:
@@ -272,7 +279,8 @@ declare function matcher:get-options-as-xml($options-name as xs:string)
 declare function matcher:get-options-as-json($options-name as xs:string)
   as object-node()?
 {
-  opt-impl:get-options-as-json($options-name)
+  opt-impl:get-options-as-json($options-name),
+  xdmp:log("DEPRECATED: matcher:get-options-as-json() has been deprecated; call matcher:get-options($options-name, $const:FORMAT-JSON) instead")
 };
 
 declare function matcher:save-options(
@@ -353,8 +361,10 @@ declare function matcher:get-notifications(
 {
   if ($format eq $const:FORMAT-JSON) then
     notify-impl:get-notifications-as-json($start, $end, $extractions)
-  else
+  else if ($format eq $const:FORMAT-XML) then
     notify-impl:get-notifications-as-xml($start, $end, $extractions)
+  else
+    fn:error(xs:QName("SM-INVALID-FORMAT"), "matcher:get-notifications called with invalid format " || $format)
 };
 
 (:
@@ -364,7 +374,8 @@ declare function matcher:get-notifications(
 declare function matcher:get-notifications-as-xml($start as xs:int, $end as xs:int, $extractions as map:map)
   as element(sm:notification)*
 {
-  notify-impl:get-notifications-as-xml($start, $end, $extractions)
+  notify-impl:get-notifications-as-xml($start, $end, $extractions),
+  xdmp:log("DEPRECATED: matcher:get-notifications-as-xml() has been deprecated; call matcher:get-notifications() with $const:FORMAT-XML instead")
 };
 
 (:
@@ -374,7 +385,8 @@ declare function matcher:get-notifications-as-xml($start as xs:int, $end as xs:i
 declare function matcher:get-notifications-as-json($start as xs:int, $end as xs:int, $extractions as map:map)
   as array-node()
 {
-  notify-impl:get-notifications-as-json($start, $end, $extractions)
+  notify-impl:get-notifications-as-json($start, $end, $extractions),
+  xdmp:log("DEPRECATED: matcher:get-notifications-as-json() has been deprecated; call matcher:get-notifications() with $const:FORMAT-JSON instead")
 };
 
 (:

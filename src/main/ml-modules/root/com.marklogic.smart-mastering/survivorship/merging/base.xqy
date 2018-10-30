@@ -328,27 +328,6 @@ declare function merge-impl:generate-audit-attachments(
   )
 };
 
-(:~
- : Insert the merged document into the database.
- : @param $merge-uri  the URI for the merged document
- : @param $merged-document  merged content
- : @param $merged-doc-collections  collections for the merged document
- : @return  ()
- :)
-declare function merge-impl:record-merge($merge-uri, $merged-document, $merged-doc-collections)
-  as empty-sequence()
-{
-  xdmp:document-insert(
-    $merge-uri,
-    $merged-document,
-    (
-      xdmp:permission($const:MDM-ADMIN, "update"),
-      xdmp:permission($const:MDM-USER, "read")
-    ),
-    $merged-doc-collections
-  )
-};
-
 (:
  : Unmerge a merged document, un-archive the source documents. Create a match
  : block to make sure these documents don't get auto-merged again.
@@ -548,6 +527,11 @@ declare function merge-impl:build-headers(
   (: Combine the merged non-Smart-Mastering namespace headers. Some will be
     : configured and merged; some will not be configured and will just get
     : copied over. :)
+
+  if ($format = ($const:FORMAT-XML, $const:FORMAT-JSON)) then
+    ()
+  else fn:error(xs:QName("SM-INVALID-FORMAT"), "merge-impl:build-headers called with invalid format " || $format),
+
 
   let $is-xml := $format = $const:FORMAT-XML
   (: remove "/*:envelope/*:headers" from the paths; already accounted for :)
@@ -1763,8 +1747,10 @@ declare function merge-impl:get-options($format as xs:string)
   return
     if ($format eq $const:FORMAT-XML) then
       $options
-    else
+    else if ($format eq $const:FORMAT-JSON) then
       array-node { $options ! merge-impl:options-to-json(.) }
+    else
+      fn:error(xs:QName("SM-INVALID-FORMAT"), "matcher:get-option-names called with invalid format " || $format)
 };
 
 declare function merge-impl:get-options($options-name, $format as xs:string)
@@ -1773,8 +1759,10 @@ declare function merge-impl:get-options($options-name, $format as xs:string)
   return
     if ($format eq $const:FORMAT-XML) then
       $options
-    else
+    else if ($format eq $const:FORMAT-JSON) then
       merge-impl:options-to-json($options)
+    else
+      fn:error(xs:QName("SM-INVALID-FORMAT"), "merge-impl:get-options called with invalid format " || $format)
 };
 
 declare function merge-impl:save-options(
