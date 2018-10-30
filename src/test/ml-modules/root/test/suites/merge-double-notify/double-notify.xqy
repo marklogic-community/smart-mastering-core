@@ -40,8 +40,7 @@ return
 let $_ :=
   xdmp:invoke-function(
     function() {
-      process:process-match-and-merge($lib:URI1, $lib:MERGE-OPTIONS-NAME),
-      process:process-match-and-merge($lib:URI2, $lib:MERGE-OPTIONS-NAME)
+      process:process-match-and-merge(($lib:URI1, $lib:URI2), $lib:MERGE-OPTIONS-NAME)
     },
     $lib:INVOKE_OPTIONS
   )

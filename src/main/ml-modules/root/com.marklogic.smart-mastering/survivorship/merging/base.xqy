@@ -158,6 +158,23 @@ declare function merge-impl:save-merge-models-by-uri(
   $merge-options as item()?
 )
 {
+  merge-impl:save-merge-models-by-uri($uris, $merge-options, sem:uuid-string())
+};
+
+(:~
+ : Merge the documents as specified by the merge options and update the
+ : involved files in the database.
+ : @param $uris URIs of the source documents that will be merged
+ : @param $merge-options specification of how options are to be merged
+ : @param $id  an id that will uniquely identify this merged document
+ : @return in-memory copy of the merge result
+ :)
+declare function merge-impl:save-merge-models-by-uri(
+  $uris as xs:string*,
+  $merge-options as item()?,
+  $id as xs:string
+)
+{
   tel:increment(),
   if (merge-impl:all-merged($uris)) then
     xdmp:log("Skipping merge because all uris to be merged (" || fn:string-join($uris, ", ") ||
@@ -168,7 +185,6 @@ declare function merge-impl:save-merge-models-by-uri(
         merge-impl:options-from-json($merge-options)
       else
         $merge-options
-    let $id := sem:uuid-string()
     let $merge-uri := merge-impl:build-merge-uri($id, $uris)
     let $merged-uris := $uris[xdmp:document-get-collections(.) = $const:MERGED-COLL]
     let $uris :=
@@ -209,27 +225,24 @@ declare function merge-impl:save-merge-models-by-uri(
     return (
       $merged-document,
       let $distinct-uris := fn:distinct-values(($uris, $merged-uris))[fn:doc-available(.)]
-      let $collections := (
-        $const:CONTENT-COLL,
-        $const:MERGED-COLL,
-        fn:distinct-values(
-          $distinct-uris ! xdmp:document-get-collections(.)[fn:not(fn:starts-with(.,"mdm-"))]
-        )
-      )
-      (: Can't archive these documents in the child transaction because this
-       : transaction (the parent) already has read locks on them. We do the
-       : merge in a child transaction so that for any notifications that get
-       : generated, we can check whether the docs have been merged already and
-       : have the notification report the new URI.
-       :)
-      let $_ := $distinct-uris ! merge-impl:archive-document(.)
+      let $archive := $distinct-uris ! merge-impl:archive-document(.)
       return
-        xdmp:invoke-function(
-          function() {
-            merge-impl:record-merge($merge-uri, $merged-document, $collections)
-          },
-          map:new((map:entry("isolation", "different-transaction"), map:entry("update", "true")))
+        xdmp:document-insert(
+          $merge-uri,
+          $merged-document,
+          (
+            xdmp:permission($const:MDM-ADMIN, "update"),
+            xdmp:permission($const:MDM-USER, "read")
+          ),
+          (
+            $const:CONTENT-COLL,
+            $const:MERGED-COLL,
+            fn:distinct-values(
+              $distinct-uris ! xdmp:document-get-collections(.)[fn:not(fn:starts-with(.,"mdm-"))]
+            )
+          )
         )
+
     )
 };
 
@@ -312,27 +325,6 @@ declare function merge-impl:generate-audit-attachments(
       element prov:label {fn:substring-before(fn:substring-after($agent-id,"algorithm:"), ";")},
       element prov:location {fn:substring-after($agent-id,"options:")}
     }
-  )
-};
-
-(:~
- : Insert the merged document into the database.
- : @param $merge-uri  the URI for the merged document
- : @param $merged-document  merged content
- : @param $merged-doc-collections  collections for the merged document
- : @return  ()
- :)
-declare function merge-impl:record-merge($merge-uri, $merged-document, $merged-doc-collections)
-  as empty-sequence()
-{
-  xdmp:document-insert(
-    $merge-uri,
-    $merged-document,
-    (
-      xdmp:permission($const:MDM-ADMIN, "update"),
-      xdmp:permission($const:MDM-USER, "read")
-    ),
-    $merged-doc-collections
   )
 };
 
@@ -535,6 +527,11 @@ declare function merge-impl:build-headers(
   (: Combine the merged non-Smart-Mastering namespace headers. Some will be
     : configured and merged; some will not be configured and will just get
     : copied over. :)
+
+  if ($format = ($const:FORMAT-XML, $const:FORMAT-JSON)) then
+    ()
+  else fn:error(xs:QName("SM-INVALID-FORMAT"), "merge-impl:build-headers called with invalid format " || $format),
+
 
   let $is-xml := $format = $const:FORMAT-XML
   (: remove "/*:envelope/*:headers" from the paths; already accounted for :)
@@ -1750,8 +1747,10 @@ declare function merge-impl:get-options($format as xs:string)
   return
     if ($format eq $const:FORMAT-XML) then
       $options
-    else
+    else if ($format eq $const:FORMAT-JSON) then
       array-node { $options ! merge-impl:options-to-json(.) }
+    else
+      fn:error(xs:QName("SM-INVALID-FORMAT"), "matcher:get-option-names called with invalid format " || $format)
 };
 
 declare function merge-impl:get-options($options-name, $format as xs:string)
@@ -1760,8 +1759,10 @@ declare function merge-impl:get-options($options-name, $format as xs:string)
   return
     if ($format eq $const:FORMAT-XML) then
       $options
-    else
+    else if ($format eq $const:FORMAT-JSON) then
       merge-impl:options-to-json($options)
+    else
+      fn:error(xs:QName("SM-INVALID-FORMAT"), "merge-impl:get-options called with invalid format " || $format)
 };
 
 declare function merge-impl:save-options(
