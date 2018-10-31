@@ -64,13 +64,15 @@ declare
           "case-insensitive",
           $expand-xml/@weight
         )
-      else
+      else if ($options-xml/match:data-format = $const:FORMAT-XML) then
         cts:element-value-query(
           $qname,
           $expanded-values,
           "case-insensitive",
           $expand-xml/@weight
         )
+      else
+        fn:error(xs:QName("SM-INVALID-FORMAT"), "invalid format in match options")
 };
 
 declare function algorithms:setup-double-metaphone($expand-xml, $options-xml, $options)

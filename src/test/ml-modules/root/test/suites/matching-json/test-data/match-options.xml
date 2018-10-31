@@ -1,4 +1,5 @@
 <options xmlns="http://marklogic.com/smart-mastering/matcher">
+  <data-format>json</data-format>
   <property-defs>
     <property namespace="" localname="IdentificationID" name="ssn"/>
     <property namespace="" localname="PersonGivenName" name="first-name"/>
