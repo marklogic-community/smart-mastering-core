@@ -284,7 +284,9 @@ task setupExample {
   dependsOn loadCode
 }
 
-task runPersonMastering(type: com.marklogic.gradle.task.RunFlowTask) {
+// The MDM entity's SmartMaster flow has a collector. Tell the sm-match-and-merge endpoint to call that collector and
+// process the URIs it identifies. All of those URIs will be run in a single transaction.
+task runPersonMastering(type: com.marklogic.gradle.task.client.CallResourceTask) {
   mustRunAfter importThesauri
   mustRunAfter deployMatchOptions
   mustRunAfter deployMergeOptions
@@ -296,13 +298,22 @@ task runPersonMastering(type: com.marklogic.gradle.task.RunFlowTask) {
   mustRunAfter loadCode
   mustRunAfter setupExample
 
-  entityName = "MDM"
-  flowName = "SmartMaster"
-  batchSize = 100
-  threadCount = 4
+  client = hubConfig.newFinalClient()
+  resourceName = 'sm-match-and-merge'
+  method = 'POST'
+  body = []
+  params = [
+    'collector-name': 'collect',
+    'collector-name': 'collect',
+    'collector-ns': 'http://marklogic.com/data-hub/plugins',
+    'collector-at': '/entities/MDM/harmonize/SmartMaster/collector.xqy',
+    'options': 'mdm-merge-options',
+    'query': '<cts:collection-query xmlns:cts=\"http://marklogic.com/cts\"><cts:uri>MDM</cts:uri></cts:collection-query>'
+  ]
 }
 
-task runOrgMastering(type: com.marklogic.gradle.task.RunFlowTask) {
+// Same as runPersonMastering, but for the Orgnization entity.
+task runOrgMastering(type: com.marklogic.gradle.task.client.CallResourceTask) {
   mustRunAfter importThesauri
   mustRunAfter deployMatchOptions
   mustRunAfter deployMergeOptions
@@ -314,12 +325,17 @@ task runOrgMastering(type: com.marklogic.gradle.task.RunFlowTask) {
   mustRunAfter loadCode
   mustRunAfter setupExample
 
-  entityName = "Organization"
-  flowName = "SmartMaster"
-  sourceDB = "data-hub-FINAL"
-  destDB = "data-hub-FINAL"
-  batchSize = 100
-  threadCount = 4
+  client = hubConfig.newFinalClient()
+  resourceName = 'sm-match-and-merge'
+  method = 'POST'
+  body = []
+  params = [
+    'collector-name': 'collect',
+    'collector-name': 'collect',
+    'collector-at': '/entities/Organization/harmonize/SmartMaster/collector.sjs',
+    'options': 'org-merge-options',
+    'query': '<cts:collection-query xmlns:cts=\"http://marklogic.com/cts\"><cts:uri>Organization</cts:uri></cts:collection-query>'
+  ]
 }
 
 // a convenience task to run the Smart Mastering flow
