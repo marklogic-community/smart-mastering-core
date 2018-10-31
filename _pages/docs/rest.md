@@ -16,6 +16,30 @@ merging, as well as services to retrieve history for documents or individual
 properties within merged documents. This page will show you how to access this
 functionality using the REST APIs.
 
+# Table of Contents
+1. [Match Options](#match-options)
+    1. [sm-match-options](#sm-match-options)
+    2. [sm-match-option-names](#sm-match-option-names)
+2. [Matching](#matching)
+    1. [sm-match](#sm-match)
+    2. [sm-block-match](#sm-block-match)
+    3. [sm-notifications](#sm-notifications)
+3. [Merge Options](#merge-options)
+    1. [sm-merge-options](#sm-merge-options)
+    2. [sm-merge-option-names](#sm-merge-option-names)
+4. [Merging](#merging)
+    1. [sm-merge](#sm-merge)
+5. [Match and Merge Together](#match-and-merge-together)
+    1. [sm-match-and-merge](#sm-match-and-merge)
+6. [History](#history)
+    1. [sm-history-document](#sm-history-document)
+    2. [sm-history-properties](#sm-history-properties)
+7. [Other Services](#other-services)
+    1. [mastering-stats](#mastering-stats)
+    2. [sm-dictionaries](#sm-dictionaries)
+    3. [sm-entity-services](#sm-entity-services)
+    4. [sm-thesauri](#sm-thesauri)
+
 ## Match Options
 
 ### sm-match-options
@@ -159,7 +183,7 @@ Manage the available merge options.
   - body of message -- the options, in either XML or JSON format
 - POST: identical to PUT
 
-###sm-merge-option-names
+### sm-merge-option-names
 
 List the available merging options.
 
@@ -190,6 +214,34 @@ List the available merging options.
     - `rs:retainAuditTrail` -- optional; if `true`, the merged document will be
     moved to an archive collection; if `false`, the merged document will be
     deleted. Defaults to `true`.
+
+## Match and Merge Together
+
+Rather than calling match and merge functions separately, you can call them 
+together on a set of URIs. By doing so, you ensure that both happen in the same
+transaction and that the merges are consistent and non-redundant. 
+
+### sm-match-and-merge
+
+- POST: match and merge on a set of documents
+  - parameters
+    - `rs:uri` -- (repeated parameter) the URIs of the documents to merge
+    - `rs:collector-name` -- the local name of a function that will return a 
+    list of URIs
+    - `rs:collector-ns` -- the namespace of the collector function. Skip this
+    for JavaScript
+    - `rs:collector-at` -- the URI in the modules database of a library module 
+    that holds the collector function
+    - `rs:options` -- required; the name of the merge options that will control 
+    how the document properties will be combined
+    - `rs:query` -- optional; a serialized query that will be used to filter 
+    the set documents that are eligible for matching
+  - usage
+    - Either `rs:uri` or `rs:collector-name` is required. 
+    - Queries can be serialized as either [JSON][serial-json] or [XML][serial-xml]. 
+
+[serial-json]: https://docs.marklogic.com/guide/search-dev/cts_query#id_29308
+[serial-xml]: https://docs.marklogic.com/guide/search-dev/cts_query#id_92772
 
 ## History
 
