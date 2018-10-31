@@ -19,6 +19,11 @@
       "kind": "execute"
     },
     {
+      "privilege-name": "sem:sparql",
+      "action": "http://marklogic.com/xdmp/privileges/sem-sparql",
+      "kind": "execute"
+    },
+    {
       "privilege-name": "xdbc:eval",
       "action": "http://marklogic.com/xdmp/privileges/xdbc-eval",
       "kind": "execute"
@@ -51,6 +56,11 @@
     {
       "privilege-name": "xdmp:spawn",
       "action": "http://marklogic.com/xdmp/privileges/xdmp-spawn",
+      "kind": "execute"
+    },
+    {
+      "privilege-name": "xslt:eval",
+      "action": "http://marklogic.com/xdmp/privileges/xslt-eval",
       "kind": "execute"
     }
   ]
