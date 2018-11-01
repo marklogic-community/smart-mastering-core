@@ -11,8 +11,18 @@ import module namespace test = "http://marklogic.com/roxy/test-helper" at "/test
 declare option xdmp:mapping "false";
 
 let $doc := fn:doc($lib:URI2)
+let $expected-scores := map:new((
+    map:entry($lib:URI1, 70),
+    map:entry($lib:URI3, 79)
+  ))
 let $actual := matcher:find-document-matches-by-options-name($doc, $lib:MATCH-OPTIONS-NAME, fn:true(), cts:true-query())
 return (
+  (: Ensure that every result has a match on PersonGivenName, even if one is found via double metaphone :)
+  test:assert-true(every $result in $actual/result satisfies fn:contains(fn:string($result),"PersonGivenName")),
+  (: Ensure correct scores :)
+  for $result in $actual/result
+  return
+    test:assert-equal($result/@uri || ":" || $result/@score, $result/@uri || ":" || map:get($expected-scores, $result/@uri)),
   let $def-match := $actual/result[@threshold="Definitive Match"]
   return (
     test:assert-same-values(($lib:URI3) ! attribute uri {.}, $def-match/@uri),

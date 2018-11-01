@@ -57,12 +57,22 @@ declare
         spell:suggest($dictionary, $value, $spell-options)[fn:not(fn:lower-case(.) = fn:lower-case($value))]
     where fn:exists($expanded-values)
     return
-      cts:element-value-query(
-        $qname,
-        $expanded-values,
-        "case-insensitive",
-        $expand-xml/@weight
-      )
+      if ($options-xml/match:data-format = $const:FORMAT-JSON) then
+        cts:json-property-value-query(
+          fn:string($qname),
+          $expanded-values,
+          "case-insensitive",
+          $expand-xml/@weight
+        )
+      else if ($options-xml/match:data-format = $const:FORMAT-XML) then
+        cts:element-value-query(
+          $qname,
+          $expanded-values,
+          "case-insensitive",
+          $expand-xml/@weight
+        )
+      else
+        fn:error(xs:QName("SM-INVALID-FORMAT"), "invalid format in match options")
 };
 
 declare function algorithms:setup-double-metaphone($expand-xml, $options-xml, $options)
