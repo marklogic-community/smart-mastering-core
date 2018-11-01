@@ -47,7 +47,7 @@ function post(
       else
         fn:error((),"RESTAPI-SRVEXERR",
           (400, "Bad Request",
-          "'options' is a required parameter"))
+          "options parameter is required "))
   let $query :=
     let $q := map:get($params, "query")
     return

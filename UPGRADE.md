@@ -2,6 +2,25 @@
 
 This document describes steps needed when upgrading Smart Mastering Core from one version to another. 
 
+## v1.1.1 to v.next
+
+### Get Options Names as JSON
+
+In v1.1.1, retrieving match option names as JSON from the XQuery function would return a document with a JSON array. 
+The equivalent merge option names function was broken for JSON. Both functions now work and return a JSON array that is
+not in a document node. 
+
+### Deprecated Functions
+
+The following functions are deprecated. Use the indicated replacement. 
+
+- `matcher:get-option-names-as-xml()` => `matcher:get-option-names($const:FORMAT-XML)`
+- `matcher:get-option-names-as-json()` => `matcher:get-option-names($const:FORMAT-JSON)`
+- `matcher:get-options-as-xml($options-name)` => `matcher:get-options($options-name, $const:FORMAT-XML)`
+- `matcher:get-options-as-json($options-name)` => `matcher:get-options($options-name, $const:FORMAT-JSON)`
+- `matcher:get-notifications-as-xml($start, $end, $extractions)` => `matcher:get-notifications($start, $end, $extractions, $const:FORMAT-XML)`
+- `matcher:get-notifications-as-json($start, $end, $extractions)` => `matcher:get-notifications($start, $end, $extractions, $const:FORMAT-JSON)`
+
 ## v1.1.0 to v1.1.1
 
 No known incompatibilities. 
