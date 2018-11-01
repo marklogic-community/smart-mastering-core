@@ -222,16 +222,6 @@ declare function match-impl:build-boost-query(
   $is-json as xs:boolean
 )
 {
-  let $data-format := $options/matcher:data-format
-  let $is-json := $data-format = $const:FORMAT-JSON or fn:exists(($document/object-node(), $document/array-node()))
-  let $options :=
-          if (fn:empty($data-format)) then
-            element matcher:options {
-              element matcher:data-format { if ($is-json) then $const:FORMAT-JSON else $const:FORMAT-XML },
-              $options/*
-            }
-          else
-            $options
   let $property-defs := $options/matcher:property-defs
   return
     cts:or-query((
@@ -242,6 +232,7 @@ declare function match-impl:build-boost-query(
       return
         let $qname := fn:QName($property-def/@namespace, $property-def/@localname)
         let $values := fn:distinct-values($document//*[fn:node-name(.) eq $qname] ! fn:normalize-space(.)[.])
+        let $is-json := fn:exists(($document/object-node(), $document/array-node()))
         where fn:exists($values)
         return
           if ($score instance of element(matcher:add)) then
