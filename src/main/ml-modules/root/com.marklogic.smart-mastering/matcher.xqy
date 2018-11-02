@@ -208,7 +208,8 @@ declare function matcher:results-to-json($results-xml)
  : Retrieve names of all previously saved matcher options.
  :
  : @param $format  either $const:FORMAT-XML or $const:FORMAT-JSON
- : @return  <matcher:options> element containing zero or more <matcher:option> elements
+ : @return  <matcher:options> element containing zero or more <matcher:option> elements (XML) or an
+ :          array of strings (JSON)
  :)
 declare function matcher:get-option-names($format as xs:string)
 {

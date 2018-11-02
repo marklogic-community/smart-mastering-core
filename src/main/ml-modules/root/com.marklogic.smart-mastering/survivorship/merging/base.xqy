@@ -2111,20 +2111,21 @@ declare variable $option-names-json-config := merge-impl:_option-names-json-conf
 
 declare function merge-impl:_option-names-json-config()
 {
-  let $config := json:config("custom")
-  return (
-    map:put($config, "array-element-names", "option"),
-    map:put($config, "element-namespace", "http://marklogic.com/smart-mastering/survivorship/merging"),
-    map:put($config, "element-namespace-prefix", "merging"),
-    $config
-  )
+  json:config("custom")
+    => map:with("array-element-names", xs:QName("merging:option"))
 };
 
 declare function merge-impl:option-names-to-json($options-xml)
+  as array-node()
 {
-  xdmp:to-json(
-    json:transform-to-json-object($options-xml, $option-names-json-config)
-  )
+  array-node {
+    xdmp:to-json(
+      json:transform-to-json-object(
+        $options-xml,
+        merge-impl:_option-names-json-config()
+      )
+    )/options/option
+  }
 };
 
 declare function merge-impl:propertyspec-to-json($property-spec as element()) as object-node()

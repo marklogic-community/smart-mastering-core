@@ -61,7 +61,7 @@ declare function opt-impl:get-option-names-as-xml()
 };
 
 declare function opt-impl:get-option-names-as-json()
-  as object-node()?
+  as array-node()?
 {
   opt-impl:option-names-to-json(
     opt-impl:get-option-names-as-xml()
@@ -82,12 +82,14 @@ declare function opt-impl:option-names-json-config()
 };
 
 declare function opt-impl:option-names-to-json($options-xml)
-  as object-node()?
+  as array-node()?
 {
   if (fn:exists($options-xml)) then
-    xdmp:to-json(
-      json:transform-to-json-object($options-xml, $option-names-json-config)
-    )/node()
+    array-node {
+      xdmp:to-json(
+        json:transform-to-json-object($options-xml, $option-names-json-config)
+      )/node()/options/option
+    }
   else ()
 };
 
