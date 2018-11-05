@@ -18,7 +18,7 @@ import module namespace const = "http://marklogic.com/smart-mastering/constants"
 
 let $doc := fn:doc("/source/1/doc1.xml")
 
-(: The document that should be found is in a non-standard collecction. If the match is found, then we know we're
+(: The document that should be found is in a non-standard collection. If the match is found, then we know we're
  : looking in the right collection. :)
 let $actual := matcher:find-document-matches-by-options-name($doc, $lib:XML-MATCH-OPT-NAME)
 

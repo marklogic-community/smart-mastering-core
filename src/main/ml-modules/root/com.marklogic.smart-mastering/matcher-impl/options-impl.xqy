@@ -74,7 +74,7 @@ declare function opt-impl:option-names-json-config()
 {
   let $config := json:config("custom")
   return (
-    map:put($config, "array-element-names", "option"),
+    map:put($config, "array-element-names", ("option","content")),
     map:put($config, "element-namespace", "http://marklogic.com/smart-mastering/matcher"),
     map:put($config, "element-namespace-prefix", "matcher"),
     $config
@@ -133,7 +133,18 @@ declare function opt-impl:save-options(
 (: Convert JSON match options to XML :)
 declare function opt-impl:options-from-json($options-json)
 {
-  json:transform-from-json($options-json, $opt-impl:options-json-config)
+  (: TODO consider more explicit translation, like merge options :)
+  let $xml := json:transform-from-json($options-json, $opt-impl:options-json-config)
+  return
+    if (fn:exists($options-json/options/collections/content[. instance of null-node()])) then
+      element matcher:options {
+        $xml/* except $xml/matcher:collections,
+        element matcher:collections {
+          element matcher:content {attribute none {"true"}}
+        }
+      }
+    else
+      $xml
 };
 
 declare function opt-impl:options-to-json($options-xml as element(matcher:options)?)
@@ -142,7 +153,7 @@ declare function opt-impl:options-to-json($options-xml as element(matcher:option
   if (fn:exists($options-xml)) then
     xdmp:to-json(
       json:transform-to-json-object($options-xml, $opt-impl:options-json-config)
-    )/node()
+    )/object-node()
   else ()
 };
 

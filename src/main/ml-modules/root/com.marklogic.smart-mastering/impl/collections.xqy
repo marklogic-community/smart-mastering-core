@@ -8,7 +8,7 @@ import module namespace const = "http://marklogic.com/smart-mastering/constants"
 declare namespace matcher = "http://marklogic.com/smart-mastering/matcher";
 declare namespace merging = "http://marklogic.com/smart-mastering/merging";
 
-declare function coll:get-collections($spec as element()*, $default as xs:string)
+declare function coll:get-collections($spec as element()*, $default as xs:string?)
   as xs:string*
 {
   let $coll-names := $spec/fn:string()

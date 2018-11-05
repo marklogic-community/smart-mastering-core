@@ -10,8 +10,8 @@ import module namespace merging = "http://marklogic.com/smart-mastering/merging"
   at "/com.marklogic.smart-mastering/merging.xqy";
 import module namespace test = "http://marklogic.com/roxy/test-helper" at "/test/test-helper.xqy";
 
-declare variable $options := test:get-test-file("merge-options.json");
-declare variable $strategy-options := test:get-test-file("merge-options-with-strategies.json");
+declare variable $options := test:get-test-file("merge-options.json")/object-node();
+declare variable $strategy-options := test:get-test-file("merge-options-with-strategies.json")/object-node();
 
 (: Save JSON options, which will get them written as XML :)
 merging:save-options("json-options", $options),

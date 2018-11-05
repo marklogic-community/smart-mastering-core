@@ -1844,6 +1844,23 @@ declare function merge-impl:options-to-json($options-xml as element(merging:opti
               else ()
             ))
           ),
+          if ($options-xml/merging:collections) then
+            map:entry("collections",
+              map:new((
+                for $collection-type in fn:distinct-values($options-xml/merging:collections/* ! fn:node-name(.))
+                let $collection-type-values := $options-xml/merging:collections/*[fn:node-name(.) eq $collection-type]
+                return map:entry(
+                    fn:local-name-from-QName($collection-type),
+                    if (fn:exists($collection-type-values/@none)) then
+                      null-node {}
+                    else
+                      array-node {
+                        $collection-type-values ! fn:string(.)
+                      }
+                  )
+              ))
+            )
+          else (),
           if (fn:exists($options-xml/merging:algorithms)) then
             map:entry(
               "algorithms",
@@ -1955,14 +1972,14 @@ declare function merge-impl:options-from-json($options-json as object-node())
 declare private function merge-impl:construct-property-defs-element($options-json as object-node())
   as element()
 {
-  element property-defs {
+  element merging:property-defs {
     attribute xmlns { "http://marklogic.com/smart-mastering/merging" },
     for $ns in <r>{fn:data($options-json/*:options/*:propertyDefs/*:namespaces)}</r>/json:object/json:entry
     return
       attribute { xs:QName("xmlns:" || $ns/@key) } { $ns/json:value/fn:string() },
     for $prop in $options-json/*:options/*:propertyDefs/*:properties
     return
-      element property {
+      element merging:property {
         attribute name { $prop/*:name },
         if (fn:exists($prop/*:namespace)) then attribute namespace { $prop/*:namespace } else (),
         if (fn:exists($prop/*:localname)) then attribute localname { $prop/*:localname } else (),
@@ -1974,11 +1991,11 @@ declare private function merge-impl:construct-property-defs-element($options-jso
 declare private function merge-impl:construct-algorithms-element($options-json as object-node())
 {
   if (fn:exists($options-json/*:options/*:algorithms)) then
-    element algorithms {
+    element merging:algorithms {
       attribute xmlns { "http://marklogic.com/smart-mastering/merging" },
       for $alg in $options-json/*:options/*:algorithms/*:custom
       return
-        element algorithm {
+        element merging:algorithm {
           attribute xmlns { "http://marklogic.com/smart-mastering/merging" },
           attribute name { $alg/*:name },
           attribute function { $alg/*:function },
@@ -1986,12 +2003,12 @@ declare private function merge-impl:construct-algorithms-element($options-json a
           if (fn:exists($alg/*:at)) then attribute at { $alg/*:at } else ()
         },
       if (fn:exists($options-json/*:options/*:algorithms/*:stdAlgorithm)) then
-        element std-algorithm {
+        element merging:std-algorithm {
           if (fn:exists($options-json/*:options/*:algorithms/*:stdAlgorithm/*:timestamp)) then (
             for $ns in <r>{fn:data($options-json/*:options/*:algorithms/*:stdAlgorithm/*:namespaces)}</r>/json:object/json:entry
             return
               attribute { xs:QName("xmlns:" || $ns/@key) } { $ns/json:value/fn:string() },
-            element timestamp {
+            element merging:timestamp {
               attribute path {
                 $options-json/*:options/*:algorithms/*:stdAlgorithm/*:timestamp/*:path/fn:string()
               }
@@ -2006,19 +2023,23 @@ declare private function merge-impl:construct-algorithms-element($options-json a
 
 declare private function merge-impl:construct-collections-element($options-json as object-node())
 {
-  element collections {
-    attribute xmlns { "http://marklogic.com/smart-mastering/merging" },
-    if (fn:exists($options-json/*:options/*:collections)) then
-      element collections {
-        (:TODO:)
-      }
-    else ()
-  }
+  if (fn:exists($options-json/*:options/*:collections)) then
+    element merging:collections {
+      attribute xmlns { "http://marklogic.com/smart-mastering/merging" },
+      for $collection-type in $options-json/*:options/*:collections/*
+      let $element-name := fn:string(fn:node-name($collection-type))
+      return
+        if ($collection-type instance of null-node()) then
+          element {fn:QName("http://marklogic.com/smart-mastering/merging",$element-name)} { attribute none {"true"}}
+        else
+          element {fn:QName("http://marklogic.com/smart-mastering/merging",$element-name)} { fn:string($collection-type) }
+    }
+  else ()
 };
 
 declare private function merge-impl:construct-merging-element($options-json as object-node())
 {
-  element merging {
+  element merging:merging {
     attribute xmlns { "http://marklogic.com/smart-mastering/merging" },
     let $config := json:config("custom")
       => map:with("camel-case", fn:true())
@@ -2027,12 +2048,12 @@ declare private function merge-impl:construct-merging-element($options-json as o
     return (
       for $merge in $options-json/*:options/*:merging
       return
-        element merge {
+        element merging:merge {
           json:transform-from-json($merge, $config)
         },
       for $merge-strategy in $options-json/*:options/*:mergeStrategies
       return
-        element merge-strategy {
+        element merging:merge-strategy {
           json:transform-from-json($merge-strategy, $config)
         }
     )
@@ -2044,7 +2065,7 @@ declare private function merge-impl:construct-triple-merge-element($options-json
   let $triple-merge := $options-json/*:options/*:tripleMerge
   return
     if (fn:exists($triple-merge)) then
-      element triple-merge {
+      element merging:triple-merge {
         attribute xmlns { "http://marklogic.com/smart-mastering/merging" },
         attribute namespace { $triple-merge/*:namespace },
         attribute function { $triple-merge/*:function },
