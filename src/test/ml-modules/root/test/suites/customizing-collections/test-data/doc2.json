@@ -1,0 +1,65 @@
+{
+  "envelope": {
+    "headers": {
+      "id": [
+        "f57e1093-4c68-46d7-910c-150825ab2edc"
+      ],
+      "sources": [
+        {
+          "name": "SOURCE2",
+          "import-id": "mdm-import-b96735af-f7c3-4f95-9ea1-f884bc395e0f",
+          "user": "admin",
+          "dateTime": "2018-04-26T16:40:16.760311Z"
+        }
+      ]
+    },
+    "triple": [],
+    "instance": {
+      "info": {
+        "title": "Example",
+        "version": "1.0.0"
+      },
+      "MDM": {
+        "Person": {
+          "PersonType": {
+            "PersonName": {
+              "PersonNameType": {
+                "PersonSurName": "JONES",
+                "PersonGivenName": "LINDSEY"
+              }
+            },
+            "Address": {
+              "AddressType": {
+                "LocationState": "PA",
+                "AddressPrivateMailboxText": "45",
+                "AddressSecondaryUnitText": "JANA",
+                "LocationPostalCode": "18505",
+                "LocationCityName": "SCRANTON"
+              }
+            },
+            "IncidentCategoryCodeDate": null,
+            "id": "6270654339",
+            "PersonBirthDate": "19801001",
+            "CaseAmount": 1287.9,
+            "CustomThing": "2",
+            "ArrayOfVariousThings": [
+              "string"
+            ],
+            "PersonSSNIdentification": {
+              "PersonSSNIdentificationType": {
+                "IdentificationID": "393225353"
+              }
+            },
+            "Revenues": {
+              "RevenuesType": {
+                "Revenue": "4332"
+              }
+            },
+            "CaseStartDate": "20110406"
+          }
+        }
+      }
+    },
+    "attachments": []
+  }
+}

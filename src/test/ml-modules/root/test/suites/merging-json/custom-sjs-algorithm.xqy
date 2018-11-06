@@ -34,7 +34,7 @@ let $merged-doc :=
     $lib:INVOKE_OPTIONS
   )
 
-(: verifiy that the docs were merged and that the higher # survived :)
+(: verify that the docs were merged and that the higher # survived :)
 let $assertions := (
   test:assert-exists($merged-doc),
   test:assert-equal(1, fn:count($merged-doc//*:CustomThing)),

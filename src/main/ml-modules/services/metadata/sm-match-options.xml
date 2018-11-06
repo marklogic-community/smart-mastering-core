@@ -131,8 +131,7 @@
                   }]
                 },
                 "tuning": {
-                  "max-scan": "200",
-                  "initial-scan": "20"
+                  "max-scan": "200"
                 }
               }
             }
@@ -268,8 +267,7 @@
                   }]
                 },
                 "tuning": {
-                  "max-scan": "200",
-                  "initial-scan": "20"
+                  "max-scan": "200"
                 }
               }
             }

@@ -1,0 +1,49 @@
+{
+  "options": {
+    "matchOptions": "mlw-match",
+    "propertyDefs": {
+      "properties": [
+        { "namespace": "", "localname": "IdentificationID", "name": "ssn" },
+        { "namespace": "", "localname": "PersonName", "name": "name" },
+        { "namespace": "", "localname": "Address", "name": "address" }
+      ]
+    },
+    "algorithms": {
+      "stdAlgorithm": {
+        "namespaces": {
+          "sm": "http://marklogic.com/smart-mastering",
+          "es": "http://marklogic.com/entity-services"
+        },
+        "timestamp": { "path": "/es:envelope/es:headers/sm:sources/sm:source/sm:dateTime" }
+      }
+    },
+    "collections": {
+      "dictionary": ["my-dictionary-collection"],
+      "merged": ["my-merged-collection"],
+      "modelMapper": ["my-model-mapper-collection"],
+      "notification": ["my-notification-collection"],
+      "archived": ["my-archived-collection"],
+      "auditing": ["my-auditing-collection"]
+    },
+    "merging": [
+      {
+        "propertyName": "ssn",
+        "sourceWeights": { "source": { "name": "SOURCE1", "weight": "10" } },
+        "maxValues": "1"
+      },
+      {
+        "propertyName": "name",
+        "maxValues": "1",
+        "doubleMetaphone": { "distanceThreshold": "50" },
+        "synonymsSupport": "true",
+        "thesaurus": "/mdm/config/thesauri/first-name-synonyms.xml",
+        "length": { "weight": "8" }
+      },
+      {
+        "propertyName": "address",
+        "sourceWeights": { "source": { "name": "SOURCE2", "weight": "10" } },
+        "maxValues": "1"
+      }
+    ]
+  }
+}

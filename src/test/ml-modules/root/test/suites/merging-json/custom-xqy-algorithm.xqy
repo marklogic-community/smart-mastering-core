@@ -36,7 +36,7 @@ let $merged-doc :=
 let $merged-id := $merged-doc/es:headers/sm:id
 let $merged-uri := $merge-impl:MERGED-DIR || $merged-id || ".xml"
 
-(: verifiy that the docs were merged and that the higher # survived :)
+(: verify that the docs were merged and that the higher # survived :)
 let $assertions := (
   test:assert-exists($merged-doc),
   test:assert-equal(1, fn:count($merged-doc//*:CustomThing)),

@@ -33,6 +33,8 @@ import module namespace opt-impl = "http://marklogic.com/smart-mastering/options
   at "/com.marklogic.smart-mastering/matcher-impl/options-impl.xqy";
 import module namespace tel = "http://marklogic.com/smart-mastering/telemetry"
   at "/com.marklogic.smart-mastering/telemetry.xqy";
+import module namespace coll = "http://marklogic.com/smart-mastering/collections"
+  at "/com.marklogic.smart-mastering/impl/collections.xqy";
 
 declare namespace matcher = "http://marklogic.com/smart-mastering/matcher";
 declare namespace sm = "http://marklogic.com/smart-mastering";
@@ -83,7 +85,7 @@ declare function match-impl:find-document-matches-by-options(
     match-impl:minimum-threshold-combinations($serialized-boost-query, $minimum-threshold)
   let $match-query :=
     cts:and-query((
-      cts:collection-query($const:CONTENT-COLL),
+      match-impl:build-collection-query(coll:content-collections($options)),
       if (fn:exists(xdmp:node-uri($document))) then
         cts:not-query(cts:document-query(xdmp:node-uri($document)))
       else (),
@@ -136,6 +138,16 @@ declare function match-impl:find-document-matches-by-options(
       $matches
     }
   )
+};
+
+declare function match-impl:build-collection-query($collections as xs:string*)
+{
+  if (fn:empty($collections)) then
+    ()
+  else if (fn:count($collections) > 1) then
+    cts:and-query($collections ! cts:collection-query(.))
+  else
+    cts:collection-query($collections)
 };
 
 (:
