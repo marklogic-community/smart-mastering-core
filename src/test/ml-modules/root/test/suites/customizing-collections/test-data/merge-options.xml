@@ -1,5 +1,5 @@
 <options xmlns="http://marklogic.com/smart-mastering/merging">
-  <match-options>basic</match-options>
+  <match-options>match-options-xml</match-options>
   <property-defs>
     <property namespace="" localname="IdentificationID" name="ssn"/>
     <property namespace="" localname="PersonName" name="name"/>
@@ -10,6 +10,30 @@
     <std-algorithm xmlns:es="http://marklogic.com/entity-services" xmlns:sm="http://marklogic.com/smart-mastering">
       <timestamp path="/es:envelope/es:headers/sm:sources/sm:source/sm:dateTime" />
     </std-algorithm>
+    <collections>
+      <on-merge
+        function="collections"
+        namespace="test/merge-collection-algorithm"
+        at="/test/suites/customizing-collections/lib/merged-collections.xqy"
+        />
+      <on-archive>
+        <remove>
+          <collection>Entity</collection>
+        </remove>
+        <add>
+          <collection>custom-archived</collection>
+        </add>
+      </on-archive>
+      <on-no-match
+        function="noMatchCollections"
+        at="/test/suites/customizing-collections/lib/noMatchCollections.sjs"
+        />
+      <on-notification>
+        <set>
+          <collection>notification</collection>
+        </set>
+      </on-notification>
+    </collections>
   </algorithms>
   <collections>
     <dictionary>my-dictionary-collection</dictionary>

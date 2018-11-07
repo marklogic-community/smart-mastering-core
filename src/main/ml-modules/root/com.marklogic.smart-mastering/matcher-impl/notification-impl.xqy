@@ -22,11 +22,14 @@ xquery version "1.0-ml";
 
 module namespace notify-impl = "http://marklogic.com/smart-mastering/notification-impl";
 
+import module namespace coll-impl = "http://marklogic.com/smart-mastering/survivorship/collections"
+  at "/com.marklogic.smart-mastering/survivorship/merging/collections.xqy";
 import module namespace const = "http://marklogic.com/smart-mastering/constants"
   at "/com.marklogic.smart-mastering/constants.xqy";
 import module namespace json="http://marklogic.com/xdmp/json"
   at "/MarkLogic/json/json.xqy";
 
+declare namespace merging = "http://marklogic.com/smart-mastering/merging";
 declare namespace sm = "http://marklogic.com/smart-mastering";
 
 declare option xdmp:mapping "false";
@@ -40,7 +43,8 @@ declare option xdmp:mapping "false";
  :)
 declare function notify-impl:save-match-notification(
   $threshold-label as xs:string,
-  $uris as xs:string*
+  $uris as xs:string*,
+  $options as element(merging:options)?
 ) as element(sm:notification)
 {
   let $existing-notification :=
@@ -77,7 +81,10 @@ declare function notify-impl:save-match-notification(
           xdmp:permission($const:MDM-USER, "read"),
           xdmp:permission($const:MDM-USER, "update")
         ),
-        $const:NOTIFICATION-COLL
+        coll-impl:on-notification(
+          map:map(),
+          $options/merging:algorithms/merging:collections/merging:on-notification
+        )
       )
   )
 };

@@ -31,5 +31,8 @@ return
     $uri,
     $doc,
     xdmp:default-permissions(),
-    coll:content-collections($MATCH-OPTIONS)
+    (
+      coll:content-collections($MATCH-OPTIONS),
+      "Entity"
+    )
   )

@@ -21,31 +21,31 @@ declare function coll:get-collections($spec as element()*, $default as xs:string
       $default
 };
 
-declare function coll:content-collections($options as element(matcher:options))
+declare function coll:content-collections($options as element(matcher:options)?)
   as xs:string*
 {
   coll:get-collections($options/matcher:collections/matcher:content, $const:CONTENT-COLL)
 };
 
-declare function coll:merged-collections($options as element(merging:options))
+declare function coll:merged-collections($options as element(merging:options)?)
   as xs:string*
 {
   coll:get-collections($options/merging:collections/merging:merged, $const:MERGED-COLL)
 };
 
-declare function coll:archived-collections($options as element(merging:options))
+declare function coll:archived-collections($options as element(merging:options)?)
   as xs:string*
 {
   coll:get-collections($options/merging:collections/merging:archived, $const:ARCHIVED-COLL)
 };
 
-declare function coll:notification-collections($options as element(merging:options))
+declare function coll:notification-collections($options as element(merging:options)?)
   as xs:string*
 {
   coll:get-collections($options/merging:collections/merging:notification, $const:NOTIFICATION-COLL)
 };
 
-declare function coll:auditing-collections($options as element(merging:options))
+declare function coll:auditing-collections($options as element(merging:options)?)
   as xs:string*
 {
   coll:get-collections($options/merging:collections/merging:auditing, $const:AUDITING-COLL)

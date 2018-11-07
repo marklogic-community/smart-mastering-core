@@ -30,6 +30,8 @@ module namespace merge-impl = "http://marklogic.com/smart-mastering/survivorship
 
 import module namespace auditing = "http://marklogic.com/smart-mastering/auditing"
   at "../../auditing/base.xqy";
+import module namespace coll-impl = "http://marklogic.com/smart-mastering/survivorship/collections"
+  at "collections.xqy";
 import module namespace fun-ext = "http://marklogic.com/smart-mastering/function-extension"
   at "../../function-extension/base.xqy";
 import module namespace history = "http://marklogic.com/smart-mastering/auditing/history"
@@ -224,8 +226,9 @@ declare function merge-impl:save-merge-models-by-uri(
       )
     return (
       $merged-document,
+      let $on-merge-options := $merge-options/merging:algorithms/merging:collections/merging:on-merge
       let $distinct-uris := fn:distinct-values(($uris, $merged-uris))[fn:doc-available(.)]
-      let $archive := $distinct-uris ! merge-impl:archive-document(.)
+      let $archive := $distinct-uris ! merge-impl:archive-document(., $merge-options)
       return
         xdmp:document-insert(
           $merge-uri,
@@ -234,13 +237,10 @@ declare function merge-impl:save-merge-models-by-uri(
             xdmp:permission($const:MDM-ADMIN, "update"),
             xdmp:permission($const:MDM-USER, "read")
           ),
-          (
-            $const:CONTENT-COLL,
-            $const:MERGED-COLL,
-            fn:distinct-values(
-              $distinct-uris ! xdmp:document-get-collections(.)[fn:not(fn:starts-with(.,"mdm-"))]
-            )
-          )
+          coll-impl:on-merge(map:new((
+            for $uri in $distinct-uris
+            return map:entry($uri, xdmp:document-get-collections($uri))
+          )),$on-merge-options)
         )
 
     )
@@ -1769,10 +1769,15 @@ declare function merge-impl:execute-algorithm(
     xdmp:apply($algorithm, $property-name, $properties, $property-spec)
 };
 
-declare function merge-impl:archive-document($uri as xs:string)
+declare function merge-impl:archive-document($uri as xs:string, $merge-options as element(merging:options)?)
 {
-  xdmp:document-remove-collections($uri, $const:CONTENT-COLL),
-  xdmp:document-add-collections($uri, $const:ARCHIVED-COLL)
+  xdmp:document-set-collections(
+    $uri,
+    coll-impl:on-archive(
+      map:entry($uri, xdmp:document-get-collections($uri)),
+      $merge-options/merging:algorithms/merging:collections/merging:on-archive
+    )
+  )
 };
 
 (:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1933,6 +1938,16 @@ declare function merge-impl:options-to-json($options-xml as element(merging:opti
                       }
                     }
                   )
+                else (),
+                if (fn:exists($options-xml/merging:algorithms/merging:collections)) then
+                  map:entry(
+                    "collections",
+                    map:new(
+                      for $event in $options-xml/merging:algorithms/merging:collections/*
+                      return
+                        merge-impl:collection-event-to-json($event)
+                    )
+                  )
                 else ()
               ))
             )
@@ -1973,6 +1988,19 @@ declare function merge-impl:options-to-json($options-xml as element(merging:opti
     )/node()
   else ()
 };
+
+declare variable $collection-event-json-config := json:config("custom")
+                          => map:with("camel-case", fn:true())
+                          => map:with("whitespace", "ignore")
+                          => map:with("attribute-names", ("namespace", "at", "function"));
+
+declare function merge-impl:collection-event-to-json($event as element())
+{
+  let $config := $collection-event-json-config => map:with("array-element-names", if (fn:empty($event/merging:function)) then xs:QName("merging:collection") else ())
+  return
+    json:transform-to-json($event, $config)/*
+};
+
 
 (:
  : Given an element, return a map entry with the key "namespaces" that holds
@@ -2058,6 +2086,18 @@ declare private function merge-impl:construct-algorithms-element($options-json a
             }
           )
           else ()
+        }
+      else (),
+      if (fn:exists($options-json/*:options/*:algorithms/*:collections)) then
+        element merging:collections {
+          let $config := json:config("custom")
+                          => map:with("camel-case", fn:true())
+                          => map:with("whitespace", "ignore")
+                          => map:with("attribute-names", ("namespace", "at", "function"))
+          for $event in $options-json/*:options/*:algorithms/*:collections/*
+          let $config := $config => map:with("array-element-names", if (fn:empty($event/*:function)) then "collection" else ())
+          return
+            json:transform-from-json($event, $config)
         }
       else ()
     }

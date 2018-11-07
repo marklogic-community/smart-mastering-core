@@ -21,6 +21,8 @@ import module namespace merging = "http://marklogic.com/smart-mastering/merging"
   at "/com.marklogic.smart-mastering/merging.xqy";
 import module namespace merge-impl = "http://marklogic.com/smart-mastering/survivorship/merging"
   at "/com.marklogic.smart-mastering/survivorship/merging/base.xqy";
+import module namespace coll-impl = "http://marklogic.com/smart-mastering/survivorship/collections"
+  at "/com.marklogic.smart-mastering/survivorship/merging/collections.xqy";
 import module namespace tel = "http://marklogic.com/smart-mastering/telemetry"
   at "/com.marklogic.smart-mastering/telemetry.xqy";
 
@@ -108,6 +110,8 @@ declare function proc-impl:consolidate-notifies($all-matches as map:map, $consol
     )
 };
 
+(: The following will store URIs of documents merged in transaction :)
+declare variable $operations-in-transaction as map:map := map:map();
 (:
  : The workhorse function.
  :)
@@ -150,7 +154,6 @@ declare function proc-impl:process-match-and-merge-with-options(
     ))
   let $consolidated-merges := proc-impl:consolidate-merges($all-matches)
   let $consolidated-notifies := proc-impl:consolidate-notifies($all-matches, $consolidated-merges)
-
   return (
     if (xdmp:trace-enabled($const:TRACE-MATCH-RESULTS)) then (
       xdmp:trace($const:TRACE-MATCH-RESULTS, "Consolidated merges: " || xdmp:quote($consolidated-merges)),
@@ -169,7 +172,26 @@ declare function proc-impl:process-match-and-merge-with-options(
     let $threshold := fn:head($parts)
     let $uris := fn:tail($parts)
     return
-      matcher:save-match-notification($threshold, $uris),
+      matcher:save-match-notification($threshold, $uris, $options),
+
+    (: Process collections on no matches :)
+    let $merged-uris := (map:keys($consolidated-merges) ! map:get($consolidated-merges, .))
+    let $_track-operation := ($merged-uris ! map:put($operations-in-transaction, ., ()))
+    for $uri in $uris[fn:not(. = $merged-uris)]
+    where fn:not(map:contains($operations-in-transaction, $uri))
+    return (
+      map:put(
+        $operations-in-transaction,
+        $uri,
+        xdmp:document-set-collections(
+          $uri,
+          coll-impl:on-no-match(
+            map:entry($uri, xdmp:document-get-collections($uri)),
+            $options/merging:algorithms/merging:collections/merging:on-no-match
+          )
+        )
+      )
+    ),
 
     (: Process custom actions :)
     let $action-map :=

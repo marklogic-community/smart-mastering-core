@@ -435,7 +435,25 @@ declare function matcher:save-match-notification(
   $uris as xs:string*
 ) as element(sm:notification)
 {
-  notify-impl:save-match-notification($threshold-label, $uris)
+  matcher:save-match-notification($threshold-label, $uris, ())
+};
+
+(:
+ : Create a new notification. If a notification document already exists for
+ : this label/URIs combination, it will be replaced with the new notification.
+ : @param $threshold-label  human-readable label used to indicate the
+ :                          likelihood of the match
+ : @param $uris  URIs of the content documents that are merge candidates
+ : @param $merge-options  merge options for determining notification collections
+ : @return content of the newly-constructed notification
+ :)
+declare function matcher:save-match-notification(
+  $threshold-label as xs:string,
+  $uris as xs:string*,
+  $options as element()?
+) as element(sm:notification)
+{
+  notify-impl:save-match-notification($threshold-label, $uris, $options)
 };
 
 (:
