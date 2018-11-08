@@ -30,6 +30,10 @@ Here's an example of XML match configuration options.
     <property namespace="" localname="LocationState" name="state"/>
     <property namespace="" localname="LocationPostalCode" name="zip"/>
   </property-defs>
+  <!-- optional collection override. below are the default values. -->
+  <collections>
+    <content>mdm-content</content>
+  </collections>
   <algorithms>
     <algorithm name="std-reduce" function="standard-reduction"/>
     <algorithm name="dbl-metaphone" function="double-metaphone"/>
@@ -96,6 +100,9 @@ And here are the same options in JSON format:
         { "name": "dbl-metaphone", "function": "double-metaphone" },
         { "name": "thesaurus", "function": "thesaurus" }
       ]
+    },
+    "collections": {
+      "content": ["my-content-collection"]
     },
     "scoring": {
       "add": [
@@ -167,8 +174,12 @@ up matching with your custom code, add an `algorithm` element with attributes
 to this algorithm later in the configuration. The other three attributes are
 used to find the code.
 
-For more details, see [Custom Match Algorithsm](../custom-match-algorithms/). 
+For more details, see [Custom Match Algorithms](../custom-match-algorithms/). 
 For an example, see [zip.xqy][zip.xqy]. 
+
+### Collections
+
+The `collections/content` elements can override the default collection used to determine the scope of the dataset being mastered. If multiple `content` elements are specified, the dataset is restricted to an intersection of those collections.
 
 ### Scoring
 
