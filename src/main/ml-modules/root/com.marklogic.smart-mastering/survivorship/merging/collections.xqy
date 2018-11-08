@@ -38,10 +38,10 @@ declare function collection-impl:default-function-lookup(
 
 declare variable $_collection-algorithm-cache as map:map := map:map();
 declare variable $event-names as xs:QName+ := (
-    xs:QName('merging:on-merge'),
-    xs:QName('merging:on-archive'),
-    xs:QName('merging:on-no-match'),
-    xs:QName('merging:on-notification')
+    xs:QName('merging:'|| $const:ON-MERGE-EVENT),
+    xs:QName('merging:'|| $const:ON-NO-MATCH),
+    xs:QName('merging:'|| $const:ON-NOTIFICATION-EVENT),
+    xs:QName('merging:'|| $const:ON-ARCHIVE-EVENT)
   );
 
 declare function collection-impl:build-collection-algorithm-map(
@@ -159,13 +159,13 @@ declare function collection-impl:default-collection-handler(
     let $all-collections := fn:distinct-values((
           map:keys(-$collections-by-uri),
           switch ($event-name)
-            case "on-merge" return
+            case $const:ON-MERGE-EVENT return
               (coll:merged-collections($merge-options),coll:content-collections($match-options))
-            case "on-no-match" return
+            case $const:ON-NO-MATCH return
               coll:content-collections($match-options)
-            case "on-archive" return
+            case $const:ON-ARCHIVE-EVENT return
               coll:archived-collections($merge-options)
-            case "on-notification" return
+            case $const:ON-NOTIFICATION-EVENT return
               coll:notification-collections($merge-options)
             default return
               ()
@@ -173,7 +173,7 @@ declare function collection-impl:default-collection-handler(
     let $remove-collections := fn:distinct-values((
         $event-options/merging:remove/merging:collection ! fn:string(.),
         switch ($event-name)
-          case "on-archive" return
+          case $const:ON-ARCHIVE-EVENT return
             coll:content-collections($match-options)
           default return
             ()
