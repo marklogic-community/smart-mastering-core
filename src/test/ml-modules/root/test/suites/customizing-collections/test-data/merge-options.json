@@ -1,6 +1,6 @@
 {
   "options": {
-    "matchOptions": "mlw-match",
+    "matchOptions": "match-options-json",
     "propertyDefs": {
       "properties": [
         { "namespace": "", "localname": "IdentificationID", "name": "ssn" },
@@ -15,6 +15,30 @@
           "es": "http://marklogic.com/entity-services"
         },
         "timestamp": { "path": "/es:envelope/es:headers/sm:sources/sm:source/sm:dateTime" }
+      },
+      "collections": {
+        "onMerge": {
+          "function": "collections",
+          "namespace": "test/merge-collection-algorithm",
+          "at": "/test/suites/customizing-collections/lib/merged-collections.xqy"
+        },
+        "onArchive": {
+          "remove": {
+            "collection": ["Entity"]
+          },
+          "add": {
+            "collection": ["custom-archived"]
+          }
+        },
+        "onNoMatch": {
+          "function": "noMatchCollections",
+          "at": "/test/suites/customizing-collections/lib/noMatchCollections.sjs"
+        },
+        "onNotification": {
+          "set": {
+            "collection": ["notification"]
+          }
+        }
       }
     },
     "collections": {

@@ -13,10 +13,13 @@ declare variable $XML-TEST-DATA :=
     map:entry("/source/2/doc2.xml", "doc2.xml")
   ));
 
+declare variable $NO-MATCH-URI as xs:string := "/source/3/no-match.json";
+
 declare variable $JSON-TEST-DATA :=
   map:new((
     map:entry("/source/1/doc1.json", "doc1.json"),
-    map:entry("/source/2/doc2.json", "doc2.json")
+    map:entry("/source/2/doc2.json", "doc2.json"),
+    map:entry($NO-MATCH-URI, "no-match.json")
   ));
 
 declare variable $XML-MATCH-OPT-NAME := "match-options-xml";
@@ -66,3 +69,6 @@ declare variable $COLL-NAMES := map:new((
   map:entry("model-mapper", "my-model-mapper-collection"),
   map:entry("notification", "my-notification-collection")
 ));
+
+declare variable $ALGORITHM-MERGE-COLLECTION := "algorithm-merged-document";
+declare variable $ALGORITHM-NO-MATCH-COLLECTION := "algorithm-no-match-document";

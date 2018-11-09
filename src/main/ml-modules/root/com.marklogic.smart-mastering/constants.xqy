@@ -36,6 +36,12 @@ declare variable $MDM-ADMIN as xs:string := "mdm-admin";
 declare variable $MERGE-ACTION as xs:string := "merge";
 declare variable $NOTIFY-ACTION as xs:string := "notify";
 
+(: Events :)
+declare variable $ON-MERGE-EVENT as xs:string := "on-merge";
+declare variable $ON-NO-MATCH as xs:string := "on-no-match";
+declare variable $ON-NOTIFICATION-EVENT as xs:string := "on-notification";
+declare variable $ON-ARCHIVE-EVENT as xs:string := "on-archive";
+
 (: Notification statuses :)
 declare variable $STATUS-READ as xs:string := "read";
 declare variable $STATUS-UNREAD as xs:string := "unread";

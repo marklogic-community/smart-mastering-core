@@ -11,14 +11,18 @@ import module namespace lib = "http://marklogic.com/smart-mastering/test" at "li
 declare option xdmp:mapping "false";
 
 let $custom-collections := fn:distinct-values((
+    $lib:ALGORITHM-MERGE-COLLECTION,
+    $lib:ALGORITHM-NO-MATCH-COLLECTION,
     for $name in map:keys($lib:MATCH-OPTIONS)
-    let $options := test:get-test-file(map:get($lib:MATCH-OPTIONS, $name))
+    let $options := test:get-test-file(map:get($lib:MATCH-OPTIONS, $name))/*:options
     return
-      $options/*:options/*:collections/* ! fn:string(.),
+      $options/*:collections/* ! fn:string(.),
     for $name in map:keys($lib:MERGE-OPTIONS)
-    let $options := test:get-test-file(map:get($lib:MERGE-OPTIONS, $name))
-    return
-      $options/*:options/*:collections/* ! fn:string(.)
+    let $options := test:get-test-file(map:get($lib:MERGE-OPTIONS, $name))/*:options
+    return (
+      $options/*:algorithms/*:collections//*:collection ! fn:string(.),
+      $options/*:collections/* ! fn:string(.)
+    )
   ))[. ne '']
 for $custom-collection in $custom-collections
 return xdmp:collection-delete($custom-collection),
