@@ -1202,8 +1202,7 @@ declare function merge-impl:build-final-headers(
     $ns-map,
     for $property in $property-defs
     let $prop-name as xs:string := $property/@name
-    let $property-spec :=
-      $merge-options/merging:merging/merging:merge[@property-name = $prop-name]
+    let $property-spec := merge-impl:get-path-merge-spec($merge-options, $property/@path)
     let $algorithm-name := fn:string($property-spec/@algorithm-ref)
     let $algorithm := map:get($algorithms-map, $algorithm-name)
     let $algorithm-info :=
