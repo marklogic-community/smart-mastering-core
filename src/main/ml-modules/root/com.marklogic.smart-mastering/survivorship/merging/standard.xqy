@@ -189,7 +189,7 @@ declare function merging:merge-complementing-properties(
                       $selected-items
                 }
               else if ($current-property-values instance of object-node()) then
-                object-node {
+                (object-node {
                   $current-property-name: (
                     xdmp:to-json(map:new((
                       for $prop-name in $distinct-property-names
@@ -201,7 +201,7 @@ declare function merging:merge-complementing-properties(
                     ))
                     )/object-node()
                   )
-                }
+                })/*[fn:node-name(.) eq $current-property-name]
               else
                 let $original-values := $all-complementing-values/(.[fn:empty(self::array-node())]/node()|.)
                 let $group-by-node-type := merging:group-properties-by-type($original-values)
