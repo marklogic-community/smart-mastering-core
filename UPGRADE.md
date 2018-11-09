@@ -2,7 +2,7 @@
 
 This document describes steps needed when upgrading Smart Mastering Core from one version to another. 
 
-## v1.1.1 to v.next
+## v1.1.1 to v1.2.0
 
 ### Get Options Names as JSON
 
