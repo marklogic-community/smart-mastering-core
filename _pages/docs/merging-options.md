@@ -47,7 +47,55 @@ retrieved as either XML or JSON.
            provided then there is no recency sort -->
       <timestamp path="/es:envelope/es:headers/sm:sources/sm:source/sm:dateTime" />
     </std-algorithm>
+    <!-- Optionally override how collections are applied to documents during different events -->
+    <collections>
+      <!-- Reference an XQuery function that takes 3 parameters
+        1. event name string
+        2. map:map of collections stored by document URI
+        3. options element for event (e.g., on-merge element)
+       -->
+      <on-merge
+        function="collections"
+        namespace="test/merge-collection-algorithm"
+        at="/test/suites/customizing-collections/lib/merged-collections.xqy"
+        />
+      <!-- 
+        Make adjustments to the standard set of collections with add and remove collection elements.
+       -->
+      <on-archive>
+        <remove>
+          <collection>Entity</collection>
+        </remove>
+        <add>
+          <collection>custom-archived</collection>
+        </add>
+      </on-archive>
+      <!-- Reference a JavaScript function that takes 3 parameters
+        1. event name string
+        2. JSON Object of collections stored by document URI
+        3. JSON representation of options element for event (e.g., Object with onMerge property)
+       -->
+      <on-no-match
+        function="noMatchCollections"
+        at="/test/suites/customizing-collections/lib/noMatchCollections.sjs"
+        />
+      <!-- 
+        Define the full of collections that should be set on a document with set collection elements.
+       -->
+      <on-notification>
+        <set>
+          <collection>notification</collection>
+        </set>
+      </on-notification>
+    </collections>
   </algorithms>
+  <!-- Optionally override the standard collection names -->
+  <collections>
+    <merged>mdm-merged</merged>
+    <notification>mdm-notification</notification>
+    <archived>mdm-archived</archived>
+    <auditing>mdm-auditing</auditing>
+  </collections>
   <merging>
     <!-- Define merging strategies that can be referenced by
       merge specifications below. This can cut down on configuration for repeated patterns   -->
@@ -181,7 +229,31 @@ retrieved as either XML or JSON.
           "path": "/es:envelope/es:headers/sm:sources/sm:source/sm:dateTime"
         }
       },
-      "custom": []
+      "custom": [],
+      "collections": {
+        "onMerge": {
+          "function": "collections",
+          "namespace": "test/merge-collection-algorithm",
+          "at": "/test/suites/customizing-collections/lib/merged-collections.xqy"
+        },
+        "onArchive": {
+          "remove": {
+            "collection": ["Entity"]
+          },
+          "add": {
+            "collection": ["custom-archived"]
+          }
+        },
+        "onNoMatch": {
+          "function": "noMatchCollections",
+          "at": "/test/suites/customizing-collections/lib/noMatchCollections.sjs"
+        },
+        "onNotification": {
+          "set": {
+            "collection": ["notification"]
+          }
+        }
+      }
     },
     "mergeStrategies": [
     {
@@ -337,9 +409,11 @@ to find the source code for this function, and a `namespace` attribute.
 Smart Mastering comes with a "standard" algorithm. For information about writing and configuring custom merge 
 algorithms, please see the [Custom Merge Algorithms page](/docs/custom-merge-algorithms/). 
 
+#### Standard Algorithm
+
 A `std-algorithm` element will allow you to configure options for the standard algorithm. Supported options are:
 
-#### Timestamp
+##### Timestamp
 
 The timestamp config informs Smart Mastering which element to use for sorting. When merging, the values are sorted in recency order from newest to oldest based on this timestamp. If the timestamp is not provided then there is no recency sort.
 
@@ -396,10 +470,75 @@ The standard algorithm can use this JSON property by setting the path to
 
 > /envelope/instance/Person/lastModified
 
+#### Collections Algorithm
+
+The `collections` algorithm allows the default behavior of how collections are applied to documents to be overridden during various events.
+
+##### Collection Events
+
+There are 4 events that can be configured to act different.
+
+###### On Merge
+
+The `on-merge` event determines what collections are applied to the newly created document that represents a merge of a document set. 
+
+The default behavior is to take the union of existing collections on the original document set and add the `mdm-content` and `mdm-merged` collections.
+
+###### On No Match
+
+The `on-no-match` event determines what collections are applied to the newly created document that represents a merge of a document set. 
+
+The default behavior is to take the union of existing collections on the original document and add the `mdm-content` collection.
+
+###### On Archive
+
+The `on-archive` event determines what collections are applied to the original document set after a merge has taken place. 
+
+The default behavior is to take the existing collections on the original document, remove the `mdm-content` collection and add the `mdm-archived` collection.
+
+###### On Notification
+
+The `on-notification` event determines what collections are applied to a notification document. 
+
+The default behavior is to set the collection to `mdm-notification`.
+
+##### Collection Override Approaches
+
+There are 2 approaches to overriding the behavior of how collections are applied.
+
+###### Simple Collection Override
+
+Simple overrides to behavior can be made with additional configuration. The `add/collection` elements can be used to add collections to the default behavior for an event. The `remove/collection` elements can be used to remove collections to the default behavior for an event. 
+
+The `set/collection` elements can be used to directly determine the full set of collections applied, taking no account for the default collections.
+
+###### Advanced Collection Override
+
+Advanced overrides can be made by referencing an XQuery or JavaScript function that returns a sequence of `xs:string` or array of `String` respectively. 
+
+For XQuery, the function arguments are as follows:
+1. event name string
+2. map:map of collections stored by document URI
+3. options element for event (e.g., on-merge element)
+
+For JavaScript, the function arguments look like the following:
+1. event name string
+2. JSON Object of collections stored by document URI
+3. JSON representation of options element for event (e.g., Object with onMerge property)
+
+### Collections
+
+The `collections/merged` elements can override the default collection(s) applied to merged documents. If multiple `merged` elements are specified, the dataset is restricted to an intersection of those collections.
+
+The `collections/archived` elements can override the default collection(s) applied to archived documents.
+
+The `collections/notification` elements can override the default collection(s) applied to notification documents.
+
+The `collections/auditing` elements can override the default collection(s) applied to auditing documents.
+
 ### Merging
 
-The `merging/merge` elements define how values from the source documents will
-be combined in the merged document.
+The `merging/merge` elements define how values from the source documents will be combined in the merged document.
 
 ### `merge` Element
 
