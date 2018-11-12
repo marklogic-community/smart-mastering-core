@@ -1,0 +1,64 @@
+{
+  "options": {
+    "propertyDefs": {
+      "property": [
+        { "namespace": "", "localname": "IdentificationID", "name": "ssn" },
+        { "namespace": "", "localname": "PersonGivenName", "name": "first-name" },
+        { "namespace": "", "localname": "PersonSurName", "name": "last-name" },
+        { "namespace": "", "localname": "AddressPrivateMailboxText", "name": "addr1" },
+        { "namespace": "", "localname": "LocationCity", "name": "city" },
+        { "namespace": "", "localname": "LocationState", "name": "state" },
+        { "namespace": "", "localname": "LocationPostalCode", "name": "zip" }
+      ]
+    },
+    "algorithms": {
+      "algorithm": [
+        { "name": "std-reduce", "function": "standard-reduction" },
+        { "name": "dbl-metaphone", "function": "double-metaphone" }
+      ]
+    },
+    "collections": {
+      "content": ["my-content-collection"]
+    },
+    "scoring": {
+      "add": [
+        { "propertyName": "ssn", "weight": "50" },
+        { "propertyName": "last-name", "weight": "8" },
+        { "propertyName": "first-name", "weight": "12" },
+        { "propertyName": "addr1", "weight": "5" },
+        { "propertyName": "city", "weight": "3" },
+        { "propertyName": "state", "weight": "1" },
+        { "propertyName": "zip", "weight": "3" }
+      ],
+      "expand": [
+        {
+          "propertyName": "first-name",
+          "algorithmRef": "dbl-metaphone",
+          "weight": "6",
+          "dictionary": "name-dictionary.xml"
+        },
+        {
+          "propertyName": "last-name",
+          "algorithmRef": "dbl-metaphone",
+          "weight": "8",
+          "dictionary": "name-dictionary.xml"
+        }
+      ],
+      "reduce": [
+        {
+          "algorithmRef": "std-reduce",
+          "weight": "4",
+          "allMatch": { "property": ["last-name", "addr1"] }
+        }
+      ]
+    },
+    "thresholds": {
+      "threshold": [
+        { "above": "30", "label": "Possible Match" },
+        { "above": "50", "label": "Likely Match", "action": "notify" },
+        { "above": "75", "label": "Definitive Match", "action": "merge" }
+      ]
+    },
+    "tuning": { "maxScan": "200" }
+  }
+}

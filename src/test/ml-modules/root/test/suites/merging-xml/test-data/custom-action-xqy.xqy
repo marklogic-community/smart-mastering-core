@@ -10,7 +10,7 @@ declare function custom-action:custom-action(
   $merge-options as element(merging:options)
 ) {
   xdmp:document-insert(
-    "/xqy-action-output.xml",
+    "/xqy-action-output" || $uri,
     <test uri="{$uri}">{
       $matched-uris ! <uri>{./@uri/fn:string()}</uri>,
       $merge-options

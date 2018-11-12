@@ -99,10 +99,10 @@ declare function merging:rollback-merge(
 (:
  : Return a list of names under which merge options have been stored.
  :
- : @return a document node containing a JSON array with the names as strings
+ : @return a JSON array with the names as strings
  :)
 declare function merging:get-option-names()
-  as document-node()
+  as array-node()
 {
   impl:get-option-names($const:FORMAT-JSON)
 };
@@ -111,7 +111,7 @@ declare function merging:get-option-names()
  : Return a list of names under which merge options have been stored.
  :
  : @param $format  either $const:FORMAT-XML or $const:FORMAT-JSON
- : @return a document node containing a JSON array with the names as strings, or a merging:options element.
+ : @return a JSON array with the names as strings, or a merging:options element.
  :)
 declare function merging:get-option-names($format as xs:string)
 {

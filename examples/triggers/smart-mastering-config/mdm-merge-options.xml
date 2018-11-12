@@ -1,5 +1,5 @@
 <options xmlns="http://marklogic.com/smart-mastering/merging">
-  <match-options>mlw-match</match-options>
+  <match-options>mdm-match-options</match-options>
   <property-defs>
     <property namespace="" localname="IdentificationID" name="ssn"/>
     <property namespace="" localname="PersonName" name="name"/>

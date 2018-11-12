@@ -8,7 +8,7 @@ import module namespace const = "http://marklogic.com/smart-mastering/constants"
   at "/com.marklogic.smart-mastering/constants.xqy";
 import module namespace merging = "http://marklogic.com/smart-mastering/merging"
   at "/com.marklogic.smart-mastering/merging.xqy";
-import module namespace merging-impl = "http://marklogic.com/smart-mastering/survivorship/merging"
+import module namespace merge-impl = "http://marklogic.com/smart-mastering/survivorship/merging"
   at "/com.marklogic.smart-mastering/survivorship/merging/base.xqy";
 import module namespace matcher = "http://marklogic.com/smart-mastering/matcher"
   at "/com.marklogic.smart-mastering/matcher.xqy";
@@ -183,7 +183,7 @@ let $assertions := (
 )
 
 let $merged-id := $merged-doc/*:envelope/*:headers/*:id
-let $merged-uri := $merging-impl:MERGED-DIR || $merged-id || ".json"
+let $merged-uri := merge-impl:build-merge-uri($merged-id, map:keys($lib:TEST-DATA))
 
 (: At this point, there should be no blocks :)
 let $assertions := ( $assertions, xdmp:eager(

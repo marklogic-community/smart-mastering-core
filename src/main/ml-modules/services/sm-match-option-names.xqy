@@ -4,6 +4,8 @@ module namespace resource = "http://marklogic.com/rest-api/resource/sm-match-opt
 
 import module namespace matcher = "http://marklogic.com/smart-mastering/matcher"
   at "/com.marklogic.smart-mastering/matcher.xqy";
+import module namespace const = "http://marklogic.com/smart-mastering/constants"
+  at "/com.marklogic.smart-mastering/constants.xqy";
 
 declare function get(
   $context as map:map,
@@ -11,6 +13,6 @@ declare function get(
   ) as document-node()*
 {
   document {
-    matcher:get-option-names-as-json()
+    matcher:get-option-names($const:FORMAT-JSON)
   }
 };

@@ -2,7 +2,7 @@ xquery version "1.0-ml";
 
 import module namespace matcher = "http://marklogic.com/smart-mastering/matcher"
   at "/com.marklogic.smart-mastering/matcher.xqy";
-import module namespace constants = "http://marklogic.com/smart-mastering/constants"
+import module namespace const = "http://marklogic.com/smart-mastering/constants"
   at "/com.marklogic.smart-mastering/constants.xqy";
 import module namespace lib = "http://marklogic.com/smart-mastering/test" at "lib/lib.xqy";
 
@@ -11,7 +11,7 @@ import module namespace test = "http://marklogic.com/roxy/test-helper" at "/test
 declare option xdmp:mapping "false";
 
 let $doc := fn:doc($lib:URI2)
-let $options := matcher:get-options-as-xml($lib:MATCH-OPTIONS-NAME)
+let $options := matcher:get-options($lib:MATCH-OPTIONS-NAME, $const:FORMAT-XML)
 return (
   (: test page length gt # of results :)
   let $actual := matcher:find-document-matches-by-options($doc, $options, 1, 6, fn:true(), cts:true-query())

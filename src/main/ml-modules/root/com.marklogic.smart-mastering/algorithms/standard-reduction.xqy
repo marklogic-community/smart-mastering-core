@@ -16,6 +16,7 @@ declare function algorithms:standard-reduction($matching-result, $reduce-xml, $o
   )
 };
 
+(: @deprecated :)
 declare function algorithms:standard-reduction-query(
   $document,
   $reduce-xml,

@@ -4,6 +4,8 @@ module namespace resource = "http://marklogic.com/rest-api/resource/sm-match-opt
 
 import module namespace matcher = "http://marklogic.com/smart-mastering/matcher"
   at "/com.marklogic.smart-mastering/matcher.xqy";
+import module namespace const = "http://marklogic.com/smart-mastering/constants"
+  at "/com.marklogic.smart-mastering/constants.xqy";
 
 declare namespace rapi = "http://marklogic.com/rest-api";
 
@@ -14,7 +16,7 @@ declare function get(
 {
   if (map:contains($params, "name")) then
     document {
-      matcher:get-options-as-json(map:get($params, "name"))
+      matcher:get-options(map:get($params, "name"), $const:FORMAT-JSON)
     }
   else
     fn:error((),"RESTAPI-SRVEXERR",

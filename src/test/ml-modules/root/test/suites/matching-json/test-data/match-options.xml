@@ -1,4 +1,5 @@
 <options xmlns="http://marklogic.com/smart-mastering/matcher">
+  <data-format>json</data-format>
   <property-defs>
     <property namespace="" localname="IdentificationID" name="ssn"/>
     <property namespace="" localname="PersonGivenName" name="first-name"/>
@@ -20,12 +21,12 @@
     <add property-name="city" weight="3"/>
     <add property-name="state" weight="1"/>
     <add property-name="zip" weight="3"/>
-    <expand property-name="first-name" algorithm-ref="dbl-metaphone" weight="6">
-      <dictionary>name-dictionary.xml</dictionary>
-      <distance-threshold>10</distance-threshold>
+    <expand property-name="first-name" algorithm-ref="dbl-metaphone" weight="12">
+      <dictionary>fname-dictionary.xml</dictionary>
+      <distance-threshold>100</distance-threshold>
     </expand>
     <expand property-name="last-name" algorithm-ref="dbl-metaphone" weight="8">
-      <dictionary>name-dictionary.xml</dictionary>
+      <dictionary>lname-dictionary.xml</dictionary>
       <!--defaults to 100 distance -->
     </expand>
     <reduce algorithm-ref="std-reduce" weight="4">
@@ -43,6 +44,5 @@
   </thresholds>
   <tuning>
     <max-scan>200</max-scan>  <!-- never look at more than 200 -->
-    <initial-scan>20</initial-scan>
   </tuning>
 </options>

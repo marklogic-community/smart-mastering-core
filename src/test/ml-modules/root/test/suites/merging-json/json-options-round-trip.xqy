@@ -10,8 +10,8 @@ import module namespace merging = "http://marklogic.com/smart-mastering/merging"
   at "/com.marklogic.smart-mastering/merging.xqy";
 import module namespace test = "http://marklogic.com/roxy/test-helper" at "/test/test-helper.xqy";
 
-declare variable $options := test:get-test-file("merge-options.json");
-declare variable $strategy-options := test:get-test-file("merge-options-with-strategies.json");
+declare variable $options := test:get-test-file("merge-options.json")/object-node();
+declare variable $strategy-options := test:get-test-file("merge-options-with-strategies.json")/object-node();
 
 (: Save JSON options, which will get them written as XML :)
 merging:save-options("json-options", $options),
@@ -49,4 +49,7 @@ return test:assert-equal-json($expected, $actual),
  :)
 let $expected := test:get-test-file("merge-options-with-strategies.json")/node()
 let $actual := merging:get-options($lib:OPTIONS-NAME-STRATEGIES, $const:FORMAT-JSON)
-return test:assert-equal(xdmp:to-json-string($expected), xdmp:to-json-string($actual))
+return test:assert-equal(xdmp:to-json-string($expected), xdmp:to-json-string($actual)),
+
+xdmp:document-delete('/com.marklogic.smart-mastering/options/merging/json-options.xml'),
+xdmp:document-delete('/com.marklogic.smart-mastering/options/merging/json-options-with-strategy.xml')

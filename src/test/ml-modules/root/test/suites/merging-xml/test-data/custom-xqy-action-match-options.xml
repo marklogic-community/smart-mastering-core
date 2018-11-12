@@ -37,8 +37,8 @@
   </scoring>
   <thresholds>
     <threshold above="30" label="Possible Match"/>
-    <threshold above="50" label="Likely Match" action="notify"/>
     <threshold above="55" label="Kinda Match" action="custom-action"/>
+    <threshold above="71" label="Likely Match" action="notify"/>
     <threshold above="75" label="Definitive Match" action="merge"/>
     <!-- below 25 will be NOT-A-MATCH or no category -->
   </thresholds>
@@ -47,6 +47,5 @@
   </actions>
   <tuning>
     <max-scan>200</max-scan>  <!-- never look at more than 200 -->
-    <initial-scan>20</initial-scan>
   </tuning>
 </options>

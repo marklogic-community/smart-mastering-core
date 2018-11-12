@@ -1,5 +1,55 @@
 # Change Log
 
+## [v1.2.0](https://github.com/marklogic-community/smart-mastering-core/tree/v1.2.0) (2018-11-09)
+[Full Changelog](https://github.com/marklogic-community/smart-mastering-core/compare/v1.1.1...v1.2.0)
+
+**Implemented enhancements:**
+
+- Use consistent naming for similar functions [\#201](https://github.com/marklogic-community/smart-mastering-core/issues/201)
+- Document how to integrate smart mastering into DHF 4 and update example project [\#186](https://github.com/marklogic-community/smart-mastering-core/issues/186)
+- Clarify the data model requirements needed [\#174](https://github.com/marklogic-community/smart-mastering-core/issues/174)
+- Declare default algorithms in merging options [\#170](https://github.com/marklogic-community/smart-mastering-core/issues/170)
+- Allow the collection names to be configurable [\#153](https://github.com/marklogic-community/smart-mastering-core/issues/153)
+- Provide config example in comments for each algorithm [\#87](https://github.com/marklogic-community/smart-mastering-core/issues/87)
+
+**Fixed bugs:**
+
+- Default merge strategy doesn't apply to headers section [\#230](https://github.com/marklogic-community/smart-mastering-core/issues/230)
+- merge.getOptionNames\(constant.FORMATJSON\) does not return all saved merge options [\#200](https://github.com/marklogic-community/smart-mastering-core/issues/200)
+- URI of a merged json document shows .xml extension [\#188](https://github.com/marklogic-community/smart-mastering-core/issues/188)
+- Documentation's page "Smart Mastering with Libraries" contains a dead link [\#183](https://github.com/marklogic-community/smart-mastering-core/issues/183)
+
+**Closed issues:**
+
+- Documentation - Merging Options : missing explanation for source-weights/sourceWeights use [\#216](https://github.com/marklogic-community/smart-mastering-core/issues/216)
+- Documentation - Merging Options : source-weights / sourceWeights not explained [\#215](https://github.com/marklogic-community/smart-mastering-core/issues/215)
+- Clarify that to merge based on data freshness \(e.g., timestamp\) there must be data sources provided in a specific format [\#175](https://github.com/marklogic-community/smart-mastering-core/issues/175)
+- Document specific available algorithms and their usage for both matching and merging [\#168](https://github.com/marklogic-community/smart-mastering-core/issues/168)
+
+**Merged pull requests:**
+
+- Avoid constructing additional level when merging array properties [\#240](https://github.com/marklogic-community/smart-mastering-core/pull/240) ([ryanjdew](https://github.com/ryanjdew))
+- Allow headers to be handled with default merge strategy [\#238](https://github.com/marklogic-community/smart-mastering-core/pull/238) ([ryanjdew](https://github.com/ryanjdew))
+- Ensure custom actions are included in match results [\#237](https://github.com/marklogic-community/smart-mastering-core/pull/237) ([ryanjdew](https://github.com/ryanjdew))
+- Allow custom ways of handling collections [\#234](https://github.com/marklogic-community/smart-mastering-core/pull/234) ([ryanjdew](https://github.com/ryanjdew))
+- Allow custom collection names [\#231](https://github.com/marklogic-community/smart-mastering-core/pull/231) ([ryanjdew](https://github.com/ryanjdew))
+- Mdm 576: \#200 fix get option names as JSON [\#229](https://github.com/marklogic-community/smart-mastering-core/pull/229) ([dmcassel](https://github.com/dmcassel))
+- added sm-match-and-merge and a toc [\#228](https://github.com/marklogic-community/smart-mastering-core/pull/228) ([dmcassel](https://github.com/dmcassel))
+- Docs next catchup [\#227](https://github.com/marklogic-community/smart-mastering-core/pull/227) ([dmcassel](https://github.com/dmcassel))
+- Mdm 516: Add match-and-merge service; update dhf-flow example to use it [\#226](https://github.com/marklogic-community/smart-mastering-core/pull/226) ([dmcassel](https://github.com/dmcassel))
+- Ensure double metaphone matches appear in results [\#224](https://github.com/marklogic-community/smart-mastering-core/pull/224) ([ryanjdew](https://github.com/ryanjdew))
+- Preserve array when only one value exists [\#223](https://github.com/marklogic-community/smart-mastering-core/pull/223) ([ryanjdew](https://github.com/ryanjdew))
+- Add mlcp options file for push to globalsearch.marklogic.com [\#222](https://github.com/marklogic-community/smart-mastering-core/pull/222) ([kghmanuel](https://github.com/kghmanuel))
+- Mdm 575: make matching function names consistent with merging names [\#221](https://github.com/marklogic-community/smart-mastering-core/pull/221) ([dmcassel](https://github.com/dmcassel))
+- Mdm 566: update examples to DHF4 [\#220](https://github.com/marklogic-community/smart-mastering-core/pull/220) ([dmcassel](https://github.com/dmcassel))
+- removing duplicate entry, which caused validation to fail [\#212](https://github.com/marklogic-community/smart-mastering-core/pull/212) ([dmcassel](https://github.com/dmcassel))
+- further updates about loading thesauri [\#211](https://github.com/marklogic-community/smart-mastering-core/pull/211) ([dmcassel](https://github.com/dmcassel))
+- clarified thesaurus insert instructions [\#210](https://github.com/marklogic-community/smart-mastering-core/pull/210) ([dmcassel](https://github.com/dmcassel))
+- Docs next [\#209](https://github.com/marklogic-community/smart-mastering-core/pull/209) ([dmcassel](https://github.com/dmcassel))
+- MDM-541: removing comments that were moved to the documentation [\#206](https://github.com/marklogic-community/smart-mastering-core/pull/206) ([dmcassel](https://github.com/dmcassel))
+- Mdm 541: Adding documentation about included algorithms [\#205](https://github.com/marklogic-community/smart-mastering-core/pull/205) ([dmcassel](https://github.com/dmcassel))
+- Mdm 516: pass multiple URIs into process-match-and-merge [\#152](https://github.com/marklogic-community/smart-mastering-core/pull/152) ([dmcassel](https://github.com/dmcassel))
+
 ## [v1.1.1](https://github.com/marklogic-community/smart-mastering-core/tree/v1.1.1) (2018-10-12)
 [Full Changelog](https://github.com/marklogic-community/smart-mastering-core/compare/v1.1.0...v1.1.1)
 
@@ -17,6 +67,8 @@
 
 **Merged pull requests:**
 
+- Updates for v1.1.1 [\#199](https://github.com/marklogic-community/smart-mastering-core/pull/199) ([dmcassel](https://github.com/dmcassel))
+- changes for v1.1.1 [\#198](https://github.com/marklogic-community/smart-mastering-core/pull/198) ([dmcassel](https://github.com/dmcassel))
 - Updating docs for v1.1.1 release [\#197](https://github.com/marklogic-community/smart-mastering-core/pull/197) ([dmcassel](https://github.com/dmcassel))
 - \#188 merged URI extension should depend on the format of source files [\#196](https://github.com/marklogic-community/smart-mastering-core/pull/196) ([dmcassel](https://github.com/dmcassel))
 - Mdm 438: documenting algorithm configurations [\#195](https://github.com/marklogic-community/smart-mastering-core/pull/195) ([dmcassel](https://github.com/dmcassel))

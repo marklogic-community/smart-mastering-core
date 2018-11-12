@@ -33,6 +33,8 @@ import module namespace opt-impl = "http://marklogic.com/smart-mastering/options
   at "/com.marklogic.smart-mastering/matcher-impl/options-impl.xqy";
 import module namespace tel = "http://marklogic.com/smart-mastering/telemetry"
   at "/com.marklogic.smart-mastering/telemetry.xqy";
+import module namespace coll = "http://marklogic.com/smart-mastering/collections"
+  at "/com.marklogic.smart-mastering/impl/collections.xqy";
 
 declare namespace matcher = "http://marklogic.com/smart-mastering/matcher";
 declare namespace sm = "http://marklogic.com/smart-mastering";
@@ -83,7 +85,7 @@ declare function match-impl:find-document-matches-by-options(
     match-impl:minimum-threshold-combinations($serialized-boost-query, $minimum-threshold)
   let $match-query :=
     cts:and-query((
-      cts:collection-query($const:CONTENT-COLL),
+      match-impl:build-collection-query(coll:content-collections($options)),
       if (fn:exists(xdmp:node-uri($document))) then
         cts:not-query(cts:document-query(xdmp:node-uri($document)))
       else (),
@@ -136,6 +138,16 @@ declare function match-impl:find-document-matches-by-options(
       $matches
     }
   )
+};
+
+declare function match-impl:build-collection-query($collections as xs:string*)
+{
+  if (fn:empty($collections)) then
+    ()
+  else if (fn:count($collections) > 1) then
+    cts:and-query($collections ! cts:collection-query(.))
+  else
+    cts:collection-query($collections)
 };
 
 (:
@@ -222,6 +234,16 @@ declare function match-impl:build-boost-query(
   $is-json as xs:boolean
 )
 {
+  let $data-format := $options/matcher:data-format
+  let $is-json := $data-format = $const:FORMAT-JSON or fn:exists(($document/object-node(), $document/array-node()))
+  let $options :=
+          if (fn:empty($data-format)) then
+            element matcher:options {
+              element matcher:data-format { if ($is-json) then $const:FORMAT-JSON else $const:FORMAT-XML },
+              $options/*
+            }
+          else
+            $options
   let $property-defs := $options/matcher:property-defs
   return
     cts:or-query((
@@ -232,7 +254,6 @@ declare function match-impl:build-boost-query(
       return
         let $qname := fn:QName($property-def/@namespace, $property-def/@localname)
         let $values := fn:distinct-values($document//*[fn:node-name(.) eq $qname] ! fn:normalize-space(.)[.])
-        let $is-json := fn:exists(($document/object-node(), $document/array-node()))
         where fn:exists($values)
         return
           if ($score instance of element(matcher:add)) then

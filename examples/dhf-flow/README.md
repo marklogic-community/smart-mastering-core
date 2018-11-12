@@ -63,7 +63,7 @@ As with any DHF (Data Hub Framework) Harmonize flow you can run it via gradle or
 
 - Download the [QuickStart Application](https://github.com/marklogic/marklogic-data-hub/releases)
 - Run the QuickStart Application
-  `java -jar quickstart-3.0.0.war`
+  `java -jar quickstart-4.0.1.war`
 - Open your browser to (http://localhost:8080)[http://localhost:8080]
 - Browse to this directory and click **Next**  
   <img src=".images/browse-to-folder.png" width="400px"></img>

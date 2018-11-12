@@ -1,9 +1,5 @@
 xquery version "1.0-ml";
 
-import module namespace matcher = "http://marklogic.com/smart-mastering/matcher"
-  at "/com.marklogic.smart-mastering/matcher.xqy";
-import module namespace constants = "http://marklogic.com/smart-mastering/constants"
-  at "/com.marklogic.smart-mastering/constants.xqy";
 import module namespace process = "http://marklogic.com/smart-mastering/process-records"
   at "/com.marklogic.smart-mastering/process-records.xqy";
 import module namespace lib = "http://marklogic.com/smart-mastering/test" at "lib/lib.xqy";
@@ -27,16 +23,9 @@ declare option xdmp:mapping "false";
 let $actual :=
   xdmp:invoke-function(
     function() {
-      <result>{
-        let $q := cts:not-query(cts:document-query($lib:URI4))
-        return
-          process:process-match-and-merge($lib:URI2, $lib:MERGE-OPTIONS-NAME, $q)
-      }</result>,
-      <result>{
-        let $q := cts:not-query(cts:document-query($lib:URI4))
-        return
-          process:process-match-and-merge($lib:URI3, $lib:MERGE-OPTIONS-NAME, $q)
-      }</result>
+      let $q := cts:not-query(cts:document-query($lib:URI4))
+      return
+        process:process-match-and-merge(($lib:URI2, $lib:URI3), $lib:MERGE-OPTIONS-NAME, $q)
     },
     $lib:INVOKE_OPTIONS
   )
@@ -44,26 +33,8 @@ let $actual :=
 
 return (
   test:assert-equal(2, fn:count($actual)),
-  test:assert-exists(($actual[1]/node())),
-  test:assert-equal(xs:QName("es:envelope"), fn:node-name($actual[1]/node()[1])),
-  test:assert-equal(xs:QName("sm:notification"), fn:node-name($actual[1]/node()[2])),
-  test:assert-equal(xs:QName("sm:notification"), fn:node-name($actual[2]/node()[1])),
-  test:assert-same-values(($lib:URI2, $lib:URI3), $actual[1]/es:envelope/es:headers/sm:merges/sm:document-uri/fn:string())
-),
-
-(: test w/o filtering query :)
-let $actual :=
-  xdmp:invoke-function(
-    function() {
-      <result>{process:process-match-and-merge($lib:URI2, $lib:MERGE-OPTIONS-NAME)}</result>,
-      <result>{process:process-match-and-merge($lib:URI3, $lib:MERGE-OPTIONS-NAME)}</result>
-    },
-    $lib:INVOKE_OPTIONS
-  )
-
-return (
-  test:assert-equal(2, fn:count($actual)),
-  test:assert-exists(($actual[1]/node())),
-  test:assert-equal(xs:QName("sm:notification"), fn:node-name($actual[1]/node()[1])),
-  test:assert-equal(xs:QName("sm:notification"), fn:node-name($actual[2]/node()[1]))
+  test:assert-exists(($actual[1])),
+  test:assert-equal(xs:QName("es:envelope"), fn:node-name($actual[1])),
+  test:assert-equal(xs:QName("sm:notification"), fn:node-name($actual[2])),
+  test:assert-same-values(($lib:URI2, $lib:URI3), $actual[1]/es:headers/sm:merges/sm:document-uri/fn:string())
 )
