@@ -486,7 +486,7 @@ The default behavior is to take the union of existing collections on the origina
 
 ###### On No Match
 
-The `on-no-match` event determines what collections are applied to the newly created document that represents a merge of a document set. 
+The `on-no-match` event determines what collections are applied to a document the for which no documents were found to merge with. 
 
 The default behavior is to take the union of existing collections on the original document and add the `mdm-content` collection.
 
