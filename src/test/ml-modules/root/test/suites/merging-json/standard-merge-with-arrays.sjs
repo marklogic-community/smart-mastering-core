@@ -45,5 +45,43 @@ results.toArray().forEach((result) => {
     assertions.push(test.assertExists(result.values.code));
   }
 });
+// Deeply nested arrays
+let doc1DeepArray = xdmp.toJSON({
+  "myprop": [{
+      "code": "ABC",
+      "startDate": "2018-01-01",
+      "array": [{
+        "nested": true
+      }]
+    }]
+  });
+let doc2DeepArray = xdmp.toJSON({
+  "myprop": [{
+      "code": "ABC",
+      "startDate": "2018-01-01",
+      "array": [{
+        "nested": true
+      }]
+    }]
+  });
+let doc1DeepArrayProps = [];
+for (let prop of doc1DeepArray.root.myprop.xpath('./object-node()')) {
+  doc1DeepArrayProps.push({ "values": Sequence.from([prop]), "sources": Sequence.from([source1]), "name": propName });
+}
+let doc2DeepArrayProps = [];
+for (let prop of doc2DeepArray.root.myprop.xpath('./object-node()')) {
+  doc2DeepArrayProps.push({ "values": Sequence.from([prop]), "sources": Sequence.from([source2]), "name": propName });
+}
+let allDeepArrayProperties = doc2DeepArrayProps.concat(doc1DeepArrayProps);
+
+let deepArrayResults = stdMerge.standard(propName, allDeepArrayProperties, null);
+deepArrayResults.toArray().forEach((result) => {
+  if (result.values instanceof Sequence) {
+    result.values.toArray().forEach((val) => assertions.push(test.assertExists(val.array)));
+  } else {
+    assertions.push(test.assertExists(result.values.array));
+  }
+});
+
 assertions;
 

@@ -141,9 +141,19 @@ declare function merging:merge-complementing-properties(
             $sub-value-qn in fn:node-name($sub-value),
             $counterpart-sub-value in $current-property-values/(.|*)/*[fn:node-name(.) eq $sub-value-qn]
           satisfies
-            fn:string($sub-value) eq ""
+            fn:deep-equal($counterpart-sub-value, $sub-value)
               or
-            $counterpart-sub-value = $sub-value)
+            $sub-value instance of null-node()
+              or
+            (
+              (
+                $sub-value instance of text() or $sub-value instance of boolean-node()
+                or $sub-value instance of number-node() or $sub-value instance of element()
+              )
+                and
+              fn:string($sub-value) eq ""
+            )
+          )
         )
       return
         let $_set-index :=
@@ -177,7 +187,7 @@ declare function merging:merge-complementing-properties(
                   let $selected-items :=
                     for $prop-name in $distinct-property-names
                     return
-                      fn:head($all-complementing-values/(.|*)/*[fn:node-name(.) eq $prop-name][fn:normalize-space()])
+                      fn:head($all-complementing-values/(.|*)/*[fn:node-name(.) eq $prop-name][fn:normalize-space(fn:string())])
                   return
                     if (fn:empty($current-property-values/*)) then
                       $current-property-values/text()
@@ -189,14 +199,15 @@ declare function merging:merge-complementing-properties(
                       $selected-items
                 }
               else if ($current-property-values instance of object-node()) then
-                (object-node {
+                (
+                object-node {
                   $current-property-name: (
                     xdmp:to-json(map:new((
                       for $prop-name in $distinct-property-names
                       return
                         map:entry(
                           fn:string($prop-name),
-                          fn:head($all-complementing-values/(.|*)/*[fn:node-name(.) eq $prop-name][fn:normalize-space()])
+                          fn:head($all-complementing-values/(.|node())/node()[fn:node-name(.) eq $prop-name][fn:normalize-space(fn:string()) or . instance of object-node() or . instance of array-node()])
                         )
                     ))
                     )/object-node()
