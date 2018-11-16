@@ -55,6 +55,7 @@ declare variable $FORMAT-XML  as xs:string := "xml";
 
 (: Trace Events :)
 declare variable $TRACE-MATCH-RESULTS := "SM-MATCH";
+declare variable $TRACE-MERGE-RESULTS := "SM-MERGE";
 
 (: ERRORS :)
 declare variable $NO-MERGE-OPTIONS-ERROR := xs:QName("SM-NO-MERGING-OPTIONS");

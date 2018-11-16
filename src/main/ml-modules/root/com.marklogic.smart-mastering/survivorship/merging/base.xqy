@@ -1530,7 +1530,10 @@ declare function merge-impl:build-final-properties(
 
 
     for $prop in $top-level-properties
-    let $log := xdmp:log(xdmp:describe(('$top-prop',$prop),(),()))
+    let $_trace :=
+      if (xdmp:trace-enabled($const:TRACE-MERGE-RESULTS)) then
+        xdmp:trace($const:TRACE-MERGE-RESULTS, xdmp:describe(('Processing top level property',$prop),(),()))
+      else ()
     let $merge-spec := merge-impl:get-merge-spec($merge-options, $prop)
     let $algorithm-name := fn:string($merge-spec/@algorithm-ref)
     let $algorithm := map:get($algorithms-map, $algorithm-name)
@@ -1542,7 +1545,10 @@ declare function merge-impl:build-final-properties(
     let $instance-props :=
       for $instance-prop in $instances/*[fn:node-name(.) = $prop]
       return ($instance-prop/self::array-node()/*, $instance-prop except $instance-prop/self::array-node())
-    let $log := xdmp:log(xdmp:describe(('$instance-props',$instance-props),(),()))
+    let $_trace :=
+      if (xdmp:trace-enabled($const:TRACE-MERGE-RESULTS)) then
+        xdmp:trace($const:TRACE-MERGE-RESULTS, xdmp:describe(('Instance properties found',$instance-props),(),()))
+      else ()
     return
       fn:fold-left(
         function($a as item()*, $b as item()) as item()* {
@@ -1584,7 +1590,10 @@ declare function merge-impl:build-final-properties(
                 else:)
               xdmp:node-uri($doc)
             let $prop-sources := $sources[documentUri = $lineage-uris]
-            let $log := xdmp:log(xdmp:describe(('$props-for-instance',$props-for-instance),(),()))
+            let $_trace :=
+              if (xdmp:trace-enabled($const:TRACE-MERGE-RESULTS)) then
+                xdmp:trace($const:TRACE-MERGE-RESULTS, xdmp:describe(('Doc', $doc , 'Properties for doc', $props-for-instance),(),()))
+              else ()
             where fn:exists($props-for-instance)
             return
               merge-impl:wrap-revision-info-with-extensions($prop, $prop-value, $prop-sources, $property-wrapper-extenstions)

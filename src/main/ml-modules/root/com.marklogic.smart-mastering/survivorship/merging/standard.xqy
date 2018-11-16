@@ -2,6 +2,9 @@ xquery version "1.0-ml";
 
 module namespace merging = "http://marklogic.com/smart-mastering/survivorship/merging";
 
+import module namespace const = "http://marklogic.com/smart-mastering/constants"
+  at "/com.marklogic.smart-mastering/constants.xqy";
+
 declare namespace m = "http://marklogic.com/smart-mastering/merging";
 (:
  : This is the default method of combining the set of values for a property across entities that are being merged.
@@ -74,7 +77,11 @@ declare function merging:standard(
           0
         ))
       for $property in $condensed-properties
-      let $log := xdmp:log(xdmp:describe(('$property',$property),(),()))
+      let $_trace :=
+        if (xdmp:trace-enabled($const:TRACE-MERGE-RESULTS)) then
+          xdmp:trace($const:TRACE-MERGE-RESULTS, xdmp:describe(('Processing property in standard merge',$property),(),()))
+        else
+          ()
       let $prop-value := map:get($property, "values")
       let $sources := map:get($property,"sources")
       let $source-dateTime := fn:max($sources/dateTime[. castable as xs:dateTime] ! xs:dateTime(.))

@@ -525,8 +525,12 @@ declare function match-impl:lock-on-search($query-results)
     fn:normalize-unicode(
       fn:normalize-space(fn:lower-case(fn:string($required-query)))
     )
-  return
+  return (
+    if (xdmp:trace-enabled($const:TRACE-MATCH-RESULTS)) then
+      xdmp:trace($const:TRACE-MATCH-RESULTS, "locking on URI: " || $lock-uri)
+    else (),
     fn:function-lookup(xs:QName("xdmp:lock-for-update"),1)($lock-uri)
+  )
 };
 
 (:
