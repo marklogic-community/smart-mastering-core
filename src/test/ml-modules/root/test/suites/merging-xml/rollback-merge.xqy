@@ -104,6 +104,7 @@ let $assertions := xdmp:eager(
                 <LocationCityName>SCRANTON</LocationCityName>
               </AddressType>
             </Address>
+            <IncidentCategoryCodeDate/>
             <id>6986792174</id>
             <id>6270654339</id>
             <PersonBirthDate>19801001</PersonBirthDate>
@@ -117,7 +118,12 @@ let $assertions := xdmp:eager(
                 <IdentificationID>393225353</IdentificationID>
               </PersonSSNIdentificationType>
             </PersonSSNIdentification>
-            <Revenues><RevenuesType><Revenue>4332</Revenue></RevenuesType></Revenues>
+            <Revenues>
+              <RevenuesType><Revenue/></RevenuesType>
+            </Revenues>
+            <Revenues>
+              <RevenuesType><Revenue>4332</Revenue></RevenuesType>
+            </Revenues>
             <CaseStartDate>20110406</CaseStartDate>
             <PersonSex>F</PersonSex>
           </PersonType>
@@ -156,6 +162,7 @@ let $assertions := xdmp:eager(
   return (
     test:assert-equal-xml($expected-headers, $merged-doc/es:headers),
     test:assert-equal-xml($expected-triples, $merged-doc/es:triples),
+    xdmp:log(xdmp:describe($merged-doc/es:instance,(),())),
     test:assert-equal-xml($expected-instance, $merged-doc/es:instance)
   )
 )

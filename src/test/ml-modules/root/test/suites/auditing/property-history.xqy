@@ -9,7 +9,7 @@ import module namespace test = "http://marklogic.com/roxy/test-helper" at "/test
 
 declare variable $property-list := (
   "CaseStartDate", "Address", "PersonSex", "PersonBirthDate", "PersonName", "CaseAmount",
-  "PersonSSNIdentification", "Revenues", "id"
+  "PersonSSNIdentification", "Revenues", "IncidentCategoryCodeDate", "id"
 );
 
 declare option xdmp:mapping "false";

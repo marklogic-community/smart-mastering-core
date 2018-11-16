@@ -148,6 +148,7 @@ let $assertions := (
               }
             },
             "PersonSex":"F",
+            "IncidentCategoryCodeDate": null-node{},
             "PersonBirthDate":"19801001",
             "PersonName": object-node {
               "PersonNameType": object-node {
@@ -156,11 +157,15 @@ let $assertions := (
               }
             },
             "CaseStartDate":"20110406",
-            "Revenues": object-node {
+            "Revenues": array-node {object-node {
+              "RevenuesType": object-node {
+                "Revenue":""
+              }
+            },object-node {
               "RevenuesType": object-node {
                 "Revenue":"4332"
               }
-            },
+            }},
             "CaseAmount": 1287.9,
             "id": array-node {"6986792174","6270654339"}
           }
@@ -178,7 +183,10 @@ let $assertions := (
         }
       }
   return (
-    test:assert-equal-json($expected, $merged-doc)
+    if (fn:deep-equal($expected, $merged-doc)) then
+      test:success()
+    else
+      fn:error(xs:QName("ASSERT-EQUAL-JSON-FAILED"), "Assert Equal Json failed", ($expected, $merged-doc))
   )
 )
 

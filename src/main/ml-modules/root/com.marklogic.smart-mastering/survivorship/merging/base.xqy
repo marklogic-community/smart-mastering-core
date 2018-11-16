@@ -1479,9 +1479,6 @@ declare function merge-impl:build-final-properties(
             ($a, $b + map:entry("algorithm", $algorithm-info))
         },
         (),
-        if (merge-impl:properties-are-equal($instance-props, $docs)) then
-          merge-impl:wrap-revision-info($prop-qname, $instance-props[fn:root(.) is $first-doc], $sources, $path-prop/@path, $ns-map)
-        else
           let $wrapped-properties :=
             for $doc at $pos in $docs
             let $props-for-instance :=
@@ -1533,6 +1530,7 @@ declare function merge-impl:build-final-properties(
 
 
     for $prop in $top-level-properties
+    let $log := xdmp:log(xdmp:describe(('$top-prop',$prop),(),()))
     let $merge-spec := merge-impl:get-merge-spec($merge-options, $prop)
     let $algorithm-name := fn:string($merge-spec/@algorithm-ref)
     let $algorithm := map:get($algorithms-map, $algorithm-name)
@@ -1543,9 +1541,8 @@ declare function merge-impl:build-final-properties(
       }
     let $instance-props :=
       for $instance-prop in $instances/*[fn:node-name(.) = $prop]
-      (: require the property to have a value :)
-      where fn:normalize-space(fn:string-join(($instance-prop|$instance-prop//node()) ! fn:string())) ne ""
       return ($instance-prop/self::array-node()/*, $instance-prop except $instance-prop/self::array-node())
+    let $log := xdmp:log(xdmp:describe(('$instance-props',$instance-props),(),()))
     return
       fn:fold-left(
         function($a as item()*, $b as item()) as item()* {
@@ -1558,9 +1555,6 @@ declare function merge-impl:build-final-properties(
             ($a, $b + map:entry("algorithm", $algorithm-info))
         },
         (),
-        if (merge-impl:properties-are-equal($instance-props, $docs)) then
-          merge-impl:wrap-revision-info($prop, $instance-props[fn:root(.) is $first-doc], $sources, (), ())
-        else
           let $wrapped-properties :=
             let $props-for-instance-in-array :=
               some $prop-val in $instance-props/(.|..)
@@ -1590,6 +1584,7 @@ declare function merge-impl:build-final-properties(
                 else:)
               xdmp:node-uri($doc)
             let $prop-sources := $sources[documentUri = $lineage-uris]
+            let $log := xdmp:log(xdmp:describe(('$props-for-instance',$props-for-instance),(),()))
             where fn:exists($props-for-instance)
             return
               merge-impl:wrap-revision-info-with-extensions($prop, $prop-value, $prop-sources, $property-wrapper-extenstions)
@@ -1663,48 +1658,6 @@ declare function merge-impl:wrap-revision-info-with-extensions(
       map:entry("values", $prop),
       $extensions
     ))
-};
-
-(:
- : Compares the property values in the first document to property values in the
- : remaining documents. Returns true if the count, types, and values are the
- : same.
- :)
-declare function merge-impl:properties-are-equal(
-  $properties as item()*,
-  $docs as item()*
-) as xs:boolean
-{
-  let $first-doc := fn:head($docs)
-  let $first-doc-props := $properties[fn:root(.) is $first-doc]
-  let $doc-1-prop-count := fn:count($first-doc-props)
-  let $other-docs := fn:tail($docs)
-  let $equal-count-of-properties :=
-    every $doc in $other-docs
-    satisfies
-      fn:count($properties[fn:root(.) is $doc]) eq $doc-1-prop-count
-  return
-    $equal-count-of-properties
-    and (
-      every $doc in $other-docs
-        satisfies
-          every $prop1 in $first-doc-props
-          satisfies
-            some $prop2 in $properties[fn:root(.) is $doc]
-            satisfies
-              let $same-type := xdmp:type($prop1) eq xdmp:type($prop2)
-              let $is-object := $prop1 instance of object-node()
-              let $is-array := $prop1 instance of array-node()
-              return
-                if (fn:not($same-type)) then
-                  fn:false()
-                else if ($is-object) then
-                  merge-impl:objects-equal($prop1, $prop2)
-                else if ($is-array) then
-                  fn:deep-equal(<r>{xdmp:from-json($prop1)}</r>, <r>{xdmp:from-json($prop2)}</r>)
-                else
-                  $prop1 = $prop2
-    )
 };
 
 (: Compare all keys and values between two maps :)
@@ -2126,7 +2079,7 @@ declare private function merge-impl:construct-merging-element($options-json as o
     let $config := json:config("custom")
       => map:with("camel-case", fn:true())
       => map:with("whitespace", "ignore")
-      => map:with("attribute-names", ("name", "weight", "strategy", "propertyName", "algorithmRef", "maxValues"))
+      => map:with("attribute-names", ("name", "weight", "strategy", "propertyName", "algorithmRef", "maxValues", "maxSources"))
     return (
       for $merge in $options-json/*:options/*:merging
       return
