@@ -519,7 +519,7 @@ declare function match-impl:filter-for-required-queries(
 declare function match-impl:lock-on-search($query-results)
   as empty-sequence()
 {
-  let $required-queries := $query-results/element(*,cts:query)
+  let $required-queries := $query-results/(element(*,cts:query) except cts:collection-query)
   for $required-query in $required-queries
   let $lock-uri := "/com.marklogic.smart-mastering/query-lock/"||
     fn:normalize-unicode(
