@@ -69,7 +69,7 @@ declare function proc-impl:consolidate-merges($matches as map:map) as map:map
     let $merges :=
       fn:distinct-values(
         for $key in map:keys($matches)
-        let $merge-uris as xs:string* := map:get($matches, $key)/result[@action="merge"]/@uri
+        let $merge-uris as xs:string* := map:get($matches, $key)/result[@action=$const:MERGE-ACTION]/@uri
         where fn:exists($merge-uris)
         return
           fn:string-join(
@@ -98,15 +98,25 @@ declare function proc-impl:consolidate-notifies($all-matches as map:map, $consol
           merge-impl:build-merge-uri(map:get($merged-into, $key), $key)
         else
           $key
-      for $key-notification in map:get($all-matches, $key)/result[@action="notify"]
-      let $key-uri as xs:string := $key-notification/@uri
-      let $updated-uri :=
-        if (map:contains($merged-into, $key-uri)) then
-          merge-impl:build-merge-uri(map:get($merged-into, $key-uri), $key-uri)
-        else
-          $key-uri
+      let $key-notifications := map:get($all-matches, $key)/result[@action=$const:NOTIFY-ACTION]
+      let $key-thresholds := fn:distinct-values($key-notifications/@threshold)
+      for $key-threshold in $key-thresholds
+      let $updated-notification-uris :=
+        for $key-notification in $key-notifications[@threshold = $key-threshold]
+        let $key-uri as xs:string := $key-notification/@uri
+        let $updated-uri :=
+          if (map:contains($merged-into, $key-uri)) then
+            merge-impl:build-merge-uri(map:get($merged-into, $key-uri), $key-uri)
+          else
+            $key-uri
+        return $updated-uri
       return
-        fn:string-join(($key-notification/@threshold, for $uri in ($updated-key, $updated-uri) order by $uri return $uri ), $STRING-TOKEN)
+        fn:string-join((
+          $key-threshold,
+          for $uri in ($updated-key, $updated-notification-uris)
+          order by $uri
+          return $uri
+        ), $STRING-TOKEN)
     )
 };
 
@@ -126,7 +136,7 @@ declare function proc-impl:process-match-and-merge-with-options(
   let $_ := xdmp:trace($const:TRACE-MATCH-RESULTS, "processing: " || fn:string-join($uris, ", "))
   let $matching-options := matcher:get-options(fn:string($options/merging:match-options), $const:FORMAT-XML)
   let $actions := fn:distinct-values(($matching-options/matcher:actions/matcher:action/@name ! fn:string(.), $const:MERGE-ACTION, $const:NOTIFY-ACTION))
-  let $thresholds := $matching-options/matcher:thresholds/matcher:threshold[@action = $actions]
+  let $thresholds := $matching-options/matcher:thresholds/matcher:threshold[(@action|matcher:action) = $actions]
   let $threshold-labels := $thresholds/@label
   let $minimum-threshold :=
     fn:min(
@@ -169,9 +179,11 @@ declare function proc-impl:process-match-and-merge-with-options(
 
     (: Process notifications :)
     for $notification in $consolidated-notifies
+    let $_track-operation := ($notification ! map:put($operations-in-transaction, ., ()))
     let $parts := fn:tokenize($notification, $STRING-TOKEN)
     let $threshold := fn:head($parts)
     let $uris := fn:tail($parts)
+    where fn:not(map:contains($operations-in-transaction, $notification))
     return
       matcher:save-match-notification($threshold, $uris, $options),
 
@@ -197,7 +209,7 @@ declare function proc-impl:process-match-and-merge-with-options(
     (: Process custom actions :)
     let $action-map :=
       map:new((
-        let $custom-action-names := $matching-options/matcher:thresholds/matcher:threshold/@action[fn:not(. = $const:NOTIFY-ACTION or . = $const:MERGE-ACTION)]
+        let $custom-action-names := $matching-options/matcher:thresholds/matcher:threshold/(matcher:action|@action)[fn:not(. = $const:NOTIFY-ACTION or . = $const:MERGE-ACTION)]
         for $custom-action-name in fn:distinct-values($custom-action-names)
         let $action-xml := $matching-options/matcher:actions/matcher:action[@name = $custom-action-name]
         return
