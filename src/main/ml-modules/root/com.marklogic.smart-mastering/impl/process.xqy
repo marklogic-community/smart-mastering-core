@@ -188,7 +188,7 @@ declare function proc-impl:process-match-and-merge-with-options(
       matcher:save-match-notification($threshold, $uris, $options),
 
     (: Process collections on no matches :)
-    let $merged-uris := (map:keys($consolidated-merges) ! map:get($consolidated-merges, .))
+    let $merged-uris := map:keys(-$consolidated-merges)
     let $_track-operation := ($merged-uris ! map:put($operations-in-transaction, ., ()))
     for $uri in $uris[fn:not(. = $merged-uris)]
     where fn:not(map:contains($operations-in-transaction, $uri))

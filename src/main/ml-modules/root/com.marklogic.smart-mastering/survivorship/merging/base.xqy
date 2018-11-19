@@ -338,7 +338,7 @@ declare function merge-impl:rollback-merge(
   $merged-doc-uri as xs:string
 ) as empty-sequence()
 {
-  merge-impl:rollback-merge($merged-doc-uri, fn:true())
+  merge-impl:rollback-merge($merged-doc-uri, fn:true(), fn:true())
 };
 
 (:
@@ -349,11 +349,15 @@ declare function merge-impl:rollback-merge(
  :                               added to the archive collection; otherwise,
  :                               the merged document and its audit records will
  :                               be deleted
+ : @param $block-future-merges   if true, then the future matches between documents
+ :                               will be blocked; otherwise, the documents could match
+ :                               on next process-match-and-merge
  : @return ()
  :)
 declare function merge-impl:rollback-merge(
   $merged-doc-uri as xs:string,
-  $retain-rollback-info as xs:boolean
+  $retain-rollback-info as xs:boolean,
+  $block-future-merges as xs:boolean
 ) as empty-sequence()
 {
   let $auditing-receipts-for-doc :=
@@ -361,14 +365,18 @@ declare function merge-impl:rollback-merge(
   where fn:exists($auditing-receipts-for-doc)
   return (
     let $uris := $auditing-receipts-for-doc/auditing:previous-uri ! fn:string(.)
-    let $prevent-auto-match := matcher:block-matches($uris)
+    let $prevent-auto-match :=
+      if ($block-future-merges) then
+        matcher:block-matches($uris)
+      else ()
     for $previous-doc-uri in $uris
     let $new-collections := (
       xdmp:document-get-collections($previous-doc-uri)[fn:not(. = $const:ARCHIVED-COLL)],
       $const:CONTENT-COLL
     )
-    return
-      xdmp:document-set-collections($previous-doc-uri, $new-collections),
+    return (
+      xdmp:document-set-collections($previous-doc-uri, $new-collections)
+    ),
     if ($retain-rollback-info) then (
       xdmp:document-set-collections($merged-doc-uri,
         (

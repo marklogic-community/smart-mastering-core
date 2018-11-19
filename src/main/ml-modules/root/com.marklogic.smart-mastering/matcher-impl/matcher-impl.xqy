@@ -366,7 +366,7 @@ declare function match-impl:minimum-threshold-combinations($query-results, $thre
   as cts:query*
 {
   let $weighted-queries :=
-    for $query in ($query-results//element(*,cts:query) except $query-results//(cts:and-query|cts:or-query))
+    for $query in ($query-results//(element(*,cts:query) except (cts:and-query|cts:or-query)))
     let $weight := $query/@weight ! fn:number(.)
     where fn:empty($weight) or $weight gt 0
     order by $weight descending empty least
