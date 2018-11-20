@@ -49,6 +49,10 @@ declare function merging:standard(
   $property-spec as element()?
 )
 {
+  if (xdmp:trace-enabled($const:TRACE-MERGE-RESULTS)) then
+    xdmp:trace($const:TRACE-MERGE-RESULTS, xdmp:describe(('Merging Property Name: ',$property-name, 'Property Merge Options:', $property-spec),(),()))
+  else
+    (),
   let $condensed-properties := merging:standard-condense-properties(
                           $property-name,
                           $all-properties,
