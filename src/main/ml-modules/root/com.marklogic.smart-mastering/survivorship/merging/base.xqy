@@ -1758,7 +1758,10 @@ declare function merge-impl:get-options($format as xs:string)
   let $options :=
     cts:search(fn:collection(), cts:and-query((
         cts:collection-query($const:OPTIONS-COLL),
-        cts:collection-query($const:MERGE-COLL)
+        (: In future version, remove mdm-merge collection from query
+          Currently part of the query to avoid breaking changes.
+        :)
+        cts:collection-query(('mdm-merge',$const:MERGE-OPTIONS-COLL))
     )))/merging:options
   return
     if ($format eq $const:FORMAT-XML) then
@@ -1801,7 +1804,7 @@ declare function merge-impl:save-options(
       $MERGING-OPTIONS-DIR||$name||".xml",
       $options,
       (xdmp:permission($const:MDM-ADMIN, "update"), xdmp:permission($const:MDM-USER, "read")),
-      ($const:OPTIONS-COLL, $const:MERGE-COLL)
+      ($const:OPTIONS-COLL, $const:MERGE-OPTIONS-COLL)
     )
 };
 
@@ -2156,7 +2159,10 @@ declare function merge-impl:get-option-names($format as xs:string)
   if ($format eq $const:FORMAT-XML) then
     let $options := cts:uris('', (), cts:and-query((
         cts:collection-query($const:OPTIONS-COLL),
-        cts:collection-query($const:MERGE-COLL)
+        (: In future version, remove mdm-merge collection from query
+          Currently part of the query to avoid breaking changes.
+        :)
+        cts:collection-query(('mdm-merge',$const:MERGE-OPTIONS-COLL))
       )))
     let $option-names := $options ! fn:replace(
       fn:replace(., $MERGING-OPTIONS-DIR, ""),
