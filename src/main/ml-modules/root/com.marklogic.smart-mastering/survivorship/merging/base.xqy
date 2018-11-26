@@ -95,6 +95,7 @@ declare function merge-impl:default-function-lookup(
   )
 };
 
+declare variable $cached-merging-map as map:map := map:map();
 (:
  : Based on the merging options, this is a map from the algorithm names to the
  : corresponding function references.
@@ -105,19 +106,27 @@ declare function merge-impl:build-merging-map(
   $merging-xml as element(merging:options)
 ) as map:map
 {
-  map:new((
-    for $algorithm-xml in $merging-xml//*:algorithm
-    return
-      map:entry(
-        $algorithm-xml/@name,
-        fun-ext:function-lookup(
-          fn:string($algorithm-xml/@function),
-          fn:string($algorithm-xml/@namespace),
-          fn:string($algorithm-xml/@at),
-          merge-impl:default-function-lookup(?, 3)
-        )
-      )
-  ))
+  if (map:contains($cached-merging-map, fn:generate-id($merging-xml))) then
+    map:get($cached-merging-map, fn:generate-id($merging-xml))
+  else
+    let $merging-map :=
+      map:new((
+        for $algorithm-xml in $merging-xml//*:algorithm
+        return
+          map:entry(
+            $algorithm-xml/@name,
+            fun-ext:function-lookup(
+              fn:string($algorithm-xml/@function),
+              fn:string($algorithm-xml/@namespace),
+              fn:string($algorithm-xml/@at),
+              merge-impl:default-function-lookup(?, 3)
+            )
+          )
+      ))
+    return (
+      map:put($cached-merging-map, fn:generate-id($merging-xml), $merging-map),
+      $merging-map
+    )
 };
 
 (:
@@ -544,6 +553,10 @@ declare function merge-impl:build-headers(
   let $is-xml := $format = $const:FORMAT-XML
   (: remove "/*:envelope/*:headers" from the paths; already accounted for :)
   let $configured-paths := $final-headers ! map:get(., "path") ! fn:replace(., "/.*headers(/.*)", "$1")
+  let $_trace :=
+      if (xdmp:trace-enabled($const:TRACE-MERGE-RESULTS)) then
+        xdmp:trace($const:TRACE-MERGE-RESULTS, xdmp:describe(("Building Headers with: ", $final-headers),(),()))
+      else ()
   (: Identify the full and partial paths of the configured paths. Record in
     : a map for quick access. :)
   let $anc-path-map := map:new(merge-impl:config-paths-and-ancestors($configured-paths) ! map:entry(., 1))
@@ -554,7 +567,7 @@ declare function merge-impl:build-headers(
     if ($is-xml) then
       $docs/es:envelope/es:headers/*[fn:empty(self::sm:*)]
     else
-      let $sm-keys := ("id", "sources")
+      let $sm-keys := ("id", "sources", "merges")
       let $sm-map := fn:data($docs/object-node("envelope")/object-node("headers"))
       return
         let $m := map:map()
@@ -766,6 +779,8 @@ declare function merge-impl:add-merged-part(
         let $populate := merge-impl:add-merged-part($child-map, fn:tail($path-parts), $value)
         return
           map:put($m, $key, $child-map)
+      else if ($value instance of map:map and map:contains($value, "values") and map:contains($value, "sources")) then
+        map:put($m, $key, map:get($value, "values"))
       else
         map:put($m, $key, $value)
 };
@@ -1206,8 +1221,60 @@ declare function merge-impl:build-final-headers(
     else
       null-node{}
   let $ns-map := merge-impl:build-prefix-map($merge-options/merging:property-defs)
+  let $top-level-properties := fn:distinct-values(($docs/*:envelope/*:headers/node()[fn:not(fn:local-name-from-QName(fn:node-name(.)) = ("id","merges","sources"))] ! (fn:node-name(.))))
   return (
     $ns-map,
+    for $top-level-property in $top-level-properties
+    let $local-name := fn:local-name-from-QName($top-level-property)
+    let $path-regex := "^/[\w]*:?envelope/[\w]*:?headers/[\w]*:?" || $local-name
+    where fn:empty($property-defs[fn:matches(@path, $path-regex)])
+    return
+    let $property-spec := merge-impl:get-merge-spec($merge-options, $top-level-property)
+    let $algorithm-name := fn:string($property-spec/@algorithm-ref)
+    let $algorithm := map:get($algorithms-map, $algorithm-name)
+    let $algorithm-info :=
+      object-node {
+        "name": fn:head(($algorithm-name[fn:exists($algorithm)], "standard")),
+        "optionsReference": $merge-options-ref
+      }
+    let $properties :=  $docs/*:envelope/*:headers/node()[fn:node-name(.) eq $top-level-property]
+    let $raw-values :=
+      for $prop-value in $properties
+      let $curr-uri := xdmp:node-uri($prop-value)
+      let $prop-sources := $sources[documentUri = $curr-uri]
+      return
+          merge-impl:wrap-revision-info(
+            $top-level-property,
+            $prop-value,
+            $prop-sources,
+            (), ()
+          )
+    return
+      if (fn:exists($raw-values)) then
+        map:new((
+          map:entry("algorithm", $algorithm-info),
+          fn:fold-left(
+            function($cumulative, $map) {
+              $cumulative + $map
+            },
+            map:map(),
+            if (fn:exists($algorithm)) then
+              merge-impl:execute-algorithm(
+                $algorithm,
+                $top-level-property,
+                $raw-values,
+                $property-spec
+              )
+            else
+              merge-impl:standard(
+                $top-level-property,
+                $raw-values,
+                $property-spec
+              )
+          ),
+          map:entry("path", '/es:envelope/es:headers/' || $local-name)
+        ))
+      else (),
     for $property in $property-defs
     let $prop-name as xs:string := $property/@name
     let $property-spec := merge-impl:get-path-merge-spec($merge-options, $property/@path)
