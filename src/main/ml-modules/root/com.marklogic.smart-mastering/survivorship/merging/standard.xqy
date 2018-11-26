@@ -2,6 +2,9 @@ xquery version "1.0-ml";
 
 module namespace merging = "http://marklogic.com/smart-mastering/survivorship/merging";
 
+import module namespace const = "http://marklogic.com/smart-mastering/constants"
+  at "/com.marklogic.smart-mastering/constants.xqy";
+
 declare namespace m = "http://marklogic.com/smart-mastering/merging";
 (:
  : This is the default method of combining the set of values for a property across entities that are being merged.
@@ -46,6 +49,30 @@ declare function merging:standard(
   $property-spec as element()?
 )
 {
+  if (xdmp:trace-enabled($const:TRACE-MERGE-RESULTS)) then
+    xdmp:trace($const:TRACE-MERGE-RESULTS, xdmp:describe(('Merging Property Name: ',$property-name, 'Property Merge Options:', $property-spec),(),()))
+  else
+    (),
+  let $condensed-properties := merging:standard-condense-properties(
+                          $property-name,
+                          $all-properties,
+                          $property-spec
+                        )
+  let $selected-sources := fn:subsequence(
+    for $source in ($condensed-properties ! . => map:get("sources")) union ()
+    let $source-score := fn:head((
+              $property-spec/*:source-weights/*:source[@name = $source/name]/@weight,
+              $property-spec/*:source-weights/*:source[*:name = $source/name]/*:weight,
+              0
+            ))
+    let $source-dateTime := fn:max($source/dateTime[. castable as xs:dateTime] ! xs:dateTime(.))
+    order by $source-score descending, $source-dateTime descending
+    return $source,
+    1,
+    fn:head(
+      ($property-spec/@max-sources, 99)
+    ))
+  return
   fn:subsequence(
     (
       let $length-weight :=
@@ -53,11 +80,12 @@ declare function merging:standard(
           $property-spec/*:length/@weight ! fn:number(.),
           0
         ))
-      for $property in merging:standard-condense-properties(
-                          $property-name,
-                          $all-properties,
-                          $property-spec
-                        )
+      for $property in $condensed-properties
+      let $_trace :=
+        if (xdmp:trace-enabled($const:TRACE-MERGE-RESULTS)) then
+          xdmp:trace($const:TRACE-MERGE-RESULTS, xdmp:describe(('Processing property in standard merge',$property),(),()))
+        else
+          ()
       let $prop-value := map:get($property, "values")
       let $sources := map:get($property,"sources")
       let $source-dateTime := fn:max($sources/dateTime[. castable as xs:dateTime] ! xs:dateTime(.))
@@ -72,6 +100,7 @@ declare function merging:standard(
             ))
         ))
       let $weight := $length-score + $source-score
+      where fn:exists($sources[fn:exists(. intersect $selected-sources)])
       stable order by $weight descending, $source-dateTime descending
       return
         $property
@@ -113,43 +142,60 @@ declare function merging:merge-complementing-properties(
     let $complementing-indexes-map := map:map()
     let $current-property := fn:head($remaining-properties)
     let $current-property-values := $current-property => map:get("values")
+    let $prop-has-values := ($current-property-values ! merging:node-has-values(.)) = fn:true()
     let $current-property-values-by-type := merging:group-properties-by-type($current-property-values)
     let $following-properties := fn:tail($remaining-properties)
     let $is-nested := fn:count(fn:head($current-property-values)/*) eq 1 and fn:exists($current-property-values/*/*)
     let $complementing-properties :=
-      for $prop at $pos in $following-properties
-      let $prop-values := $prop => map:get("values")
-      let $sub-values :=
-        if ($is-nested) then
-          $prop-values/*/*
-        else
-          $prop-values/*
-      where
-        (
-          fn:empty($sub-values)
-            and
-          merging:are-grouped-nodes-complementary(
-            $current-property-values-by-type,
-            merging:group-properties-by-type($prop-values)
+      if ($prop-has-values) then
+        for $prop at $pos in $following-properties
+        let $prop-values := $prop => map:get("values")
+        let $sub-values :=
+          if ($is-nested) then
+            $prop-values/*/*
+          else
+            $prop-values/*
+        where
+          ($prop-values ! merging:node-has-values(.)) = fn:true()
+          and
+          ((
+            fn:empty($sub-values)
+              and
+            merging:are-grouped-nodes-complementary(
+              $current-property-values-by-type,
+              merging:group-properties-by-type($prop-values)
+            )
           )
-        )
-        or
-        (
-          fn:exists($sub-values)
-            and
-          (every $sub-value in $sub-values,
-            $sub-value-qn in fn:node-name($sub-value),
-            $counterpart-sub-value in $current-property-values/(.|*)/*[fn:node-name(.) eq $sub-value-qn]
-          satisfies
-            fn:string($sub-value) eq ""
-              or
-            $counterpart-sub-value = $sub-value)
-        )
-      return
-        let $_set-index :=
-          $complementing-indexes-map => map:put("$indexes", (map:get($complementing-indexes-map, "$indexes"),$pos))
+          or
+          (
+            fn:exists($sub-values)
+              and
+            (fn:string-length(fn:string($prop-values)) > 0)
+              and
+            (every $sub-value in $sub-values,
+              $sub-value-qn in fn:node-name($sub-value),
+              $counterpart-sub-value in $current-property-values/(.|*)/*[fn:node-name(.) eq $sub-value-qn]
+            satisfies
+              fn:deep-equal($counterpart-sub-value, $sub-value)
+                or
+              $sub-value instance of null-node()
+                or
+              (
+                (
+                  $sub-value instance of text() or $sub-value instance of boolean-node()
+                  or $sub-value instance of number-node() or $sub-value instance of element()
+                )
+                  and
+                fn:string($sub-value) eq ""
+              )
+            )
+          ))
         return
-          $prop
+          let $_set-index :=
+            $complementing-indexes-map => map:put("$indexes", (map:get($complementing-indexes-map, "$indexes"),$pos))
+          return
+            $prop
+      else ()
     let $merged-properties :=
       if (fn:exists($complementing-properties)) then
         let $all-complementing-values := (
@@ -177,10 +223,10 @@ declare function merging:merge-complementing-properties(
                   let $selected-items :=
                     for $prop-name in $distinct-property-names
                     return
-                      fn:head($all-complementing-values/(.|*)/*[fn:node-name(.) eq $prop-name][fn:normalize-space()])
+                      fn:head($all-complementing-values/(.|*)/*[fn:node-name(.) eq $prop-name][fn:normalize-space(fn:string())])
                   return
                     if (fn:empty($current-property-values/*)) then
-                      $current-property-values/text()
+                      text { $current-property-values/text() ! fn:string(.) }
                     else if ($is-nested) then
                       element {fn:node-name(fn:head($current-property-values)/*)} {
                         $selected-items
@@ -189,16 +235,28 @@ declare function merging:merge-complementing-properties(
                       $selected-items
                 }
               else if ($current-property-values instance of object-node()) then
-                (object-node {
+                (
+                object-node {
                   $current-property-name: (
-                    xdmp:to-json(map:new((
-                      for $prop-name in $distinct-property-names
+                    xdmp:to-json(
+                      let $object-body := map:new((
+                          for $prop-name in $distinct-property-names
+                          let $complementing-values := $all-complementing-values/(.|node())/node()[fn:node-name(.) eq $prop-name]
+                          return
+                            map:entry(
+                              fn:string($prop-name),
+                              fn:head((
+                                for $val in $complementing-values
+                                order by fn:string-length(fn:string-join($val//node() ! fn:string(.),"")) descending
+                                return $val
+                              ))
+                            )
+                        ))
                       return
-                        map:entry(
-                          fn:string($prop-name),
-                          fn:head($all-complementing-values/(.|*)/*[fn:node-name(.) eq $prop-name][fn:normalize-space()])
-                        )
-                    ))
+                        if ($is-nested) then
+                          map:entry(fn:string(fn:node-name(fn:head($current-property-values)/*)), $object-body)
+                        else
+                          $object-body
                     )/object-node()
                   )
                 })/*[fn:node-name(.) eq $current-property-name]
@@ -306,4 +364,13 @@ declare function merging:standard-triples(
       (), "map",
       sem:store((), cts:document-query($uris))
     )
+};
+
+declare function merging:node-has-values($node as node())
+{
+  typeswitch($node)
+    case object-node()|array-node() return
+      fn:normalize-space(fn:string-join($node//(text()|boolean-node()|number-node()) ! fn:string(.), "")) ne ""
+    default return
+      fn:normalize-space(fn:string($node)) ne ""
 };

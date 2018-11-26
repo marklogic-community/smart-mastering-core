@@ -73,7 +73,7 @@ declare function merging:rollback-merge(
   $merged-doc-uri as xs:string
 ) as empty-sequence()
 {
-  merging:rollback-merge($merged-doc-uri, fn:true())
+  impl:rollback-merge($merged-doc-uri, fn:true(), fn:true())
 };
 
 (:
@@ -89,7 +89,26 @@ declare function merging:rollback-merge(
   $retain-rollback-info as xs:boolean
 ) as empty-sequence()
 {
-  impl:rollback-merge($merged-doc-uri, $retain-rollback-info)
+  impl:rollback-merge($merged-doc-uri, $retain-rollback-info, fn:true())
+};
+
+(:
+ : Unmerge a previously merged document, removing it from the searchable data set and restoring the original documents.
+ :
+ : @param $merged-doc-uri  the URI of the merged document that will be removed
+ : @param $retain-rollback-info  if fn:true(), the merged document will be archived and auditing records will be kept.
+ :                               If fn:false(), the merged document and auditing records of the merge and unmerge will
+ :                               be deleted.
+ : @param $block-future-merges   if fn:true(), future matches between the documents will be blocked.
+ :                               If fn:false(), documents that matched prior, will match again on next search
+ :)
+declare function merging:rollback-merge(
+  $merged-doc-uri as xs:string,
+  $retain-rollback-info as xs:boolean,
+  $block-future-merges as xs:boolean
+) as empty-sequence()
+{
+  impl:rollback-merge($merged-doc-uri, $retain-rollback-info, $block-future-merges)
 };
 
 (:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

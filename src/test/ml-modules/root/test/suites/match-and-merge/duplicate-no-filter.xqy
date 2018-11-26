@@ -16,8 +16,8 @@ declare option xdmp:update "true";
 declare option xdmp:mapping "false";
 
 (:
- : We're batching calls to process-match-and-merge. URI2 and URI3 should get merged. We should then get notifications
- : about the merged document + URI1 and the merged document + URI4.
+ : We're batching calls to process-match-and-merge. URI2 and URI3 should get merged. We should then get a notification
+ : about the merged document + URI1 + URI4.
  :)
 
 (: test w/o filtering query :)
@@ -30,8 +30,8 @@ let $actual :=
   )
 
 return (
-  test:assert-equal(3, fn:count($actual)),
+  test:assert-equal(2, fn:count($actual)),
   test:assert-equal(xs:QName("es:envelope"), fn:node-name($actual[1])),
   test:assert-equal(xs:QName("sm:notification"), fn:node-name($actual[2])),
-  test:assert-equal(xs:QName("sm:notification"), fn:node-name($actual[3]))
+  test:assert-equal(3, fn:count($actual[2]/sm:document-uris/sm:document-uri))
 )

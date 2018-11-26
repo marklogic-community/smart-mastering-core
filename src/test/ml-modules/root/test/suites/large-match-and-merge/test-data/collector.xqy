@@ -17,6 +17,5 @@ declare option xdmp:mapping "false";
 declare function plugin:collect(
   $options as map:map) as xs:string*
 {
-  cts:uris((), (), cts:collection-query($const:CONTENT-COLL))
+ cts:uris((), (), cts:collection-query($const:CONTENT-COLL))
 };
-

@@ -22,7 +22,7 @@ declare variable $AUDITING-COLL as xs:string := "mdm-auditing";
 declare variable $CONTENT-COLL as xs:string := "mdm-content";
 declare variable $DICTIONARY-COLL as xs:string := "mdm-dictionary";
 declare variable $MATCH-OPTIONS-COLL as xs:string := "mdm-match-options";
-declare variable $MERGE-COLL as xs:string := "mdm-merge";
+declare variable $MERGE-OPTIONS-COLL as xs:string := "mdm-merge-options";
 declare variable $MERGED-COLL as xs:string := "mdm-merged";
 declare variable $MODEL-MAPPER-COLL as xs:string := "mdm-model-mapper";
 declare variable $NOTIFICATION-COLL as xs:string := "mdm-notification";
@@ -55,6 +55,7 @@ declare variable $FORMAT-XML  as xs:string := "xml";
 
 (: Trace Events :)
 declare variable $TRACE-MATCH-RESULTS := "SM-MATCH";
+declare variable $TRACE-MERGE-RESULTS := "SM-MERGE";
 
 (: ERRORS :)
 declare variable $NO-MERGE-OPTIONS-ERROR := xs:QName("SM-NO-MERGING-OPTIONS");

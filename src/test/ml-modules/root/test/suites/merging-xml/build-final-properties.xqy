@@ -39,7 +39,7 @@ let $personsex-map :=
   where map:contains(-$map, "PersonSex")
   return $map
 (: The revenue property is in only one of the documents. Make sure the attributed source is correct. :)
-let $revenue-map :=
+let $revenue-maps :=
   for $map in $actual
   where map:contains(-$map, "Revenues")
   return $map
@@ -71,9 +71,16 @@ return (
   return
     test:assert-equal-xml($expected, map:get($personsex-map, "values")),
 
-  test:assert-exists($revenue-map),
-  test:assert-equal(1, fn:count(map:get($revenue-map, "sources"))),
-  test:assert-equal(text{ "SOURCE2" }, map:get($revenue-map, "sources")/name),
+  test:assert-equal(2, fn:count($revenue-maps)),
+  xdmp:log(xdmp:describe($revenue-maps, (),())),
+  test:assert-true(
+    let $map := $revenue-maps[1]
+    let $truths := (
+      (map:get($map, "sources")/name = text{"SOURCE1"} and fn:deep-equal(map:get($map, "values")/RevenuesType/Revenue, <Revenue/>)) or
+      (map:get($map, "sources")/name = text{"SOURCE2"} and fn:deep-equal(map:get($map, "values")/RevenuesType/Revenue, <Revenue>4332</Revenue>))
+    )
+    return  local:all-true($truths)
+  ),
 
   test:assert-exists($case-amount-map),
   test:assert-equal(2, fn:count(map:get($case-amount-map, "sources"))),

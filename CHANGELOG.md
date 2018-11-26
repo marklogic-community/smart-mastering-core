@@ -1,6 +1,29 @@
 # Change Log
 
-## [v1.2.0](https://github.com/marklogic-community/smart-mastering-core/tree/v1.2.0) (2018-11-09)
+## [v1.2.1](https://github.com/marklogic-community/smart-mastering-core/tree/v1.2.1) (2018-11-26)
+[Full Changelog](https://github.com/marklogic-community/smart-mastering-core/compare/v1.2.0...v1.2.1)
+
+**Implemented enhancements:**
+
+- Missing documentation details regarding thesaurus use for matching [\#207](https://github.com/marklogic-community/smart-mastering-core/issues/207)
+- Allow processMatchAndMerge to put unmatched documents into the mastered collections [\#191](https://github.com/marklogic-community/smart-mastering-core/issues/191)
+- Enable users to control collections during merging [\#190](https://github.com/marklogic-community/smart-mastering-core/issues/190)
+
+**Fixed bugs:**
+
+- An array of objects wraps any duplicate objects in an additional parent property in the merged record [\#235](https://github.com/marklogic-community/smart-mastering-core/issues/235)
+- Match result reported with matcher:find-document-matches-by-options-name does not list match based on dbl-metaphone algorithm [\#208](https://github.com/marklogic-community/smart-mastering-core/issues/208)
+
+**Closed issues:**
+
+- Can't open smart-mastering-core/examples/dhf-flow with DHF QuickStart v4.0.3 [\#255](https://github.com/marklogic-community/smart-mastering-core/issues/255)
+
+**Merged pull requests:**
+
+- Correct on-no-match description [\#249](https://github.com/marklogic-community/smart-mastering-core/pull/249) ([ryanjdew](https://github.com/ryanjdew))
+- GH \#246 handle deeply nested JSON with merge [\#248](https://github.com/marklogic-community/smart-mastering-core/pull/248) ([ryanjdew](https://github.com/ryanjdew))
+
+## [v1.2.0](https://github.com/marklogic-community/smart-mastering-core/tree/v1.2.0) (2018-11-12)
 [Full Changelog](https://github.com/marklogic-community/smart-mastering-core/compare/v1.1.1...v1.2.0)
 
 **Implemented enhancements:**
@@ -28,9 +51,12 @@
 
 **Merged pull requests:**
 
+- Update docs for 1.2.0 release [\#242](https://github.com/marklogic-community/smart-mastering-core/pull/242) ([ryanjdew](https://github.com/ryanjdew))
+- Smart Mastering 1.2.0 release [\#241](https://github.com/marklogic-community/smart-mastering-core/pull/241) ([ryanjdew](https://github.com/ryanjdew))
 - Avoid constructing additional level when merging array properties [\#240](https://github.com/marklogic-community/smart-mastering-core/pull/240) ([ryanjdew](https://github.com/ryanjdew))
 - Allow headers to be handled with default merge strategy [\#238](https://github.com/marklogic-community/smart-mastering-core/pull/238) ([ryanjdew](https://github.com/ryanjdew))
 - Ensure custom actions are included in match results [\#237](https://github.com/marklogic-community/smart-mastering-core/pull/237) ([ryanjdew](https://github.com/ryanjdew))
+- Add documentation for new collection options [\#236](https://github.com/marklogic-community/smart-mastering-core/pull/236) ([ryanjdew](https://github.com/ryanjdew))
 - Allow custom ways of handling collections [\#234](https://github.com/marklogic-community/smart-mastering-core/pull/234) ([ryanjdew](https://github.com/ryanjdew))
 - Allow custom collection names [\#231](https://github.com/marklogic-community/smart-mastering-core/pull/231) ([ryanjdew](https://github.com/ryanjdew))
 - Mdm 576: \#200 fix get option names as JSON [\#229](https://github.com/marklogic-community/smart-mastering-core/pull/229) ([dmcassel](https://github.com/dmcassel))

@@ -1,0 +1,43 @@
+{
+  "options": {
+    "matchOptions": "basic",
+    "propertyDefs": {
+      "properties": [
+        {
+          "namespace": "",
+          "localname": "firstName",
+          "name": "firstName"
+        },
+        {
+          "namespace": "",
+          "localname": "lastName",
+          "name": "lastName"
+        },
+        {
+          "namespace": "",
+          "localname": "Address",
+          "name": "address"
+        }
+      ]
+    },
+    "algorithms": {
+      "stdAlgorithm": {
+        "timestamp": {
+          "path": "/envelope/headers/ingestDateTime"
+        }
+      }
+    },
+    "merging": [
+      {
+        "default": "true",
+        "maxSources": "1",
+        "sourceWeights": {
+          "source": {
+            "name": "A",
+            "weight": "10"
+          }
+        }
+      }
+    ]
+  }
+}

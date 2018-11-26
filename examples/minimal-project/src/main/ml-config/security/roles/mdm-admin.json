@@ -1,0 +1,5 @@
+{
+  "role-name": "mdm-admin",
+  "description": "Smart Mastering application administrator role",
+  "role": ["mdm-user"]
+}

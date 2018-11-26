@@ -111,8 +111,6 @@ declare function match-impl:find-document-matches-by-options(
       match-impl:lock-on-search($serialized-match-query/cts:and-query/cts:or-query)
     else ()
   let $matches :=
-    match-impl:drop-redundant(
-      xdmp:node-uri($document),
       match-impl:search(
         $match-query,
         $reduced-boost,
@@ -126,7 +124,6 @@ declare function match-impl:find-document-matches-by-options(
         $include-matches,
         $is-json
       )
-    )
   return (
     $_lock-on-search,
     element results {
@@ -156,65 +153,6 @@ declare function match-impl:build-collection-query($collections as xs:string*)
 declare function match-impl:seq-contains($s1, $s2)
 {
   every $s in $s1 satisfies $s = $s2
-};
-
-(:
- : Merges happen in a child transaction. If we're calling match functions
- : multiple times within the same transaction, a merge document may end up
- : matching. In case that happens, remove it and its source documents from the
- : list of matches.
- : Rule: if all sources from a merged document are in the list of documents to
- :       be merged, drop the merged document and the sources.
- : @param $uri  URI of the original document
- : @param $matches  matches that have been found for the original document
- : @result a subset of the $matches passed in
- :)
-declare function match-impl:drop-redundant($uri, $matches as element(result)*)
-  as element(result)*
-{
-  let $drop := map:map()
-
-  (: Look for merge-results that have already happened since matching ran :)
-  let $merge-results := $matches[@action=$const:MERGE-ACTION]
-  let $merge-uris := ($uri, $merge-results/@uri/fn:string())
-  let $merges :=
-    for $merge in $merge-results
-    return
-      if (xdmp:document-get-collections($merge/@uri) = $const:MERGED-COLL) then
-        let $sources := fn:doc($merge/@uri)/es:envelope/es:headers/sm:merges/sm:document-uri/fn:string()
-        return
-          if (match-impl:seq-contains($sources, $merge-uris)) then
-            ($sources ! map:put($drop, ., fn:true()))
-          else ()
-      else
-        $merge
-
-  (: Look for notification-results that have already happened since matching ran :)
-  let $notification-results := $matches[@action=$const:NOTIFY-ACTION]
-  let $notification-uris := $notification-results/@uri
-  let $notifications :=
-    let $notifications := xdmp:invoke-function(
-      function() {
-        notify-impl:get-existing-match-notification((), $notification-uris)
-      },
-      map:entry("isolation", "different-transaction")
-    )
-    for $notification in $notifications
-    let $sources := $notification/sm:document-uris/sm:document-uri[fn:not(. = $notification-uris)]
-    return
-      if (match-impl:seq-contains($sources, $notification-uris)) then
-        ($sources ! map:put($drop, ., fn:true()))
-      else ()
-
-  let $drop-uris := map:keys($drop)
-  let $results := (
-    $merges except $merge-results[@uri = $drop-uris],
-    $notification-results except $notification-results[@uri = $drop-uris],
-    $matches[fn:not(@action = $const:MERGE-ACTION or @action = $const:NOTIFY-ACTION)]
-  )
-  for $result in $results
-  order by $result/@index
-  return $result
 };
 
 (:
@@ -253,7 +191,7 @@ declare function match-impl:build-boost-query(
       where fn:exists($property-def)
       return
         let $qname := fn:QName($property-def/@namespace, $property-def/@localname)
-        let $values := fn:distinct-values($document//*[fn:node-name(.) eq $qname] ! fn:normalize-space(.)[.])
+        let $values := fn:distinct-values($document//*[fn:node-name(.) eq $qname] ! fn:normalize-space(fn:string(.))[.])
         where fn:exists($values)
         return
           if ($score instance of element(matcher:add)) then
@@ -378,7 +316,7 @@ declare function match-impl:search(
       )[1]
       return (
         attribute threshold { fn:string($selected-threshold/@label) },
-        attribute action { fn:string($selected-threshold/@action) }
+        attribute action { fn:string($selected-threshold/(matcher:action|@action)) }
       ),
       $result-stub/*
     }
@@ -428,7 +366,7 @@ declare function match-impl:minimum-threshold-combinations($query-results, $thre
   as cts:query*
 {
   let $weighted-queries :=
-    for $query in ($query-results//element(*,cts:query) except $query-results//(cts:and-query|cts:or-query))
+    for $query in ($query-results//(element(*,cts:query) except (cts:and-query|cts:or-query)))
     let $weight := $query/@weight ! fn:number(.)
     where fn:empty($weight) or $weight gt 0
     order by $weight descending empty least
@@ -519,14 +457,18 @@ declare function match-impl:filter-for-required-queries(
 declare function match-impl:lock-on-search($query-results)
   as empty-sequence()
 {
-  let $required-queries := $query-results/element(*,cts:query)
+  let $required-queries := $query-results/(element(*,cts:query) except cts:collection-query)
   for $required-query in $required-queries
   let $lock-uri := "/com.marklogic.smart-mastering/query-lock/"||
     fn:normalize-unicode(
       fn:normalize-space(fn:lower-case(fn:string($required-query)))
     )
-  return
+  return (
+    if (xdmp:trace-enabled($const:TRACE-MATCH-RESULTS)) then
+      xdmp:trace($const:TRACE-MATCH-RESULTS, "locking on URI: " || $lock-uri)
+    else (),
     fn:function-lookup(xs:QName("xdmp:lock-for-update"),1)($lock-uri)
+  )
 };
 
 (:

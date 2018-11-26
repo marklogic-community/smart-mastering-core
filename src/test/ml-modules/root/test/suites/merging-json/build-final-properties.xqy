@@ -36,14 +36,14 @@ let $personname-map :=
   return $map
 
 (: The revenue property is in only one of the documents. Make sure the attributed source is correct. :)
-let $revenue-map :=
+let $revenue-maps :=
   for $map in $actual
-  where map:contains(-$map, "Revenues")
+  where map:contains(-$map, "Revenues") and fn:exists(map:get($map, "values"))
   return $map
 (: Both docs have the same value for the CaseAmount property. :)
 let $case-amount-map :=
   for $map in $actual
-  where map:contains(-$map, "CaseAmount")
+  where map:contains(-$map, "CaseAmount") and fn:exists(map:get($map, "values"))
   return $map
 (: The docs have different values for the id property. :)
 let $id-maps :=
@@ -56,13 +56,19 @@ return (
   let $actual := map:get($personname-map, "values")
   return
     test:assert-equal-json($expected, $actual),
-  test:assert-exists($revenue-map),
-  test:assert-equal(1, fn:count(map:get($revenue-map, "sources"))),
-  test:assert-equal(text{ "SOURCE2" }, map:get($revenue-map, "sources")/name),
+  test:assert-exists($revenue-maps),
+  test:assert-true(
+    let $map := $revenue-maps[1]
+    let $truths := (
+      (map:get($map, "sources")/name = text{"SOURCE1"} and fn:deep-equal(map:get($map, "values"), xdmp:to-json(xdmp:from-json-string('{"RevenuesType":{"Revenue":""}}'))/object-node())) or
+      (map:get($map, "sources")/name = text{"SOURCE2"} and fn:deep-equal(map:get($map, "values"), xdmp:to-json(xdmp:from-json-string('{"RevenuesType":{"Revenue":"4332"}}'))/object-node()))
+    )
+    return  local:all-true($truths)
+  ),
 
   test:assert-exists($case-amount-map),
   test:assert-equal(2, fn:count(map:get($case-amount-map, "sources"))),
-  test:assert-equal(object-node { "CaseAmount": 1287.9 }/node(), map:get($case-amount-map, "values")),
+  test:assert-equal(fn:number(1287.9), fn:number(map:get($case-amount-map, "values"))),
 
   test:assert-equal(2, fn:count($id-maps)),
   test:assert-true(

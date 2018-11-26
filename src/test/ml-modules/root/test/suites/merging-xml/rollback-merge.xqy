@@ -69,20 +69,20 @@ let $assertions := xdmp:eager(
           <sm:two-first>2017-04-26T16:40:02.1386Z</sm:two-first>
         </sm:source>
       </sm:sources>
-      <custom xmlns:has="has" xmlns:endswith="endswith">
-        <this><has:a><deep><path>deep value 2</path></deep></has:a></this>
-        <this><has:a><deep><endswith:ns>endswith value 2</endswith:ns></deep></has:a></this>
-        <unconfigured>unconfigured value 2b</unconfigured>
-      </custom>
+      <shallow>shallow value 1</shallow>
+      <shallow>shallow value 2</shallow>
+      <es:unconfigured>unconfigured value 1a</es:unconfigured>
+      <es:unconfigured>unconfigured value 2a</es:unconfigured>
       <custom xmlns:has="has" xmlns:endswith="endswith">
         <this><has:a><deep><path>deep value 1</path></deep></has:a></this>
         <this><has:a><deep><endswith:ns>endswith value 1</endswith:ns></deep></has:a></this>
         <unconfigured>unconfigured value 1b</unconfigured>
       </custom>
-      <shallow>shallow value 2</shallow>
-      <shallow>shallow value 1</shallow>
-      <es:unconfigured>unconfigured value 2a</es:unconfigured>
-      <es:unconfigured>unconfigured value 1a</es:unconfigured>
+      <custom xmlns:has="has" xmlns:endswith="endswith">
+        <this><has:a><deep><path>deep value 2</path></deep></has:a></this>
+        <this><has:a><deep><endswith:ns>endswith value 2</endswith:ns></deep></has:a></this>
+        <unconfigured>unconfigured value 2b</unconfigured>
+      </custom>
     </es:headers>
   let $expected-instance :=
     <es:instance>
@@ -104,6 +104,7 @@ let $assertions := xdmp:eager(
                 <LocationCityName>SCRANTON</LocationCityName>
               </AddressType>
             </Address>
+            <IncidentCategoryCodeDate/>
             <id>6986792174</id>
             <id>6270654339</id>
             <PersonBirthDate>19801001</PersonBirthDate>
@@ -117,7 +118,12 @@ let $assertions := xdmp:eager(
                 <IdentificationID>393225353</IdentificationID>
               </PersonSSNIdentificationType>
             </PersonSSNIdentification>
-            <Revenues><RevenuesType><Revenue>4332</Revenue></RevenuesType></Revenues>
+            <Revenues>
+              <RevenuesType><Revenue/></RevenuesType>
+            </Revenues>
+            <Revenues>
+              <RevenuesType><Revenue>4332</Revenue></RevenuesType>
+            </Revenues>
             <CaseStartDate>20110406</CaseStartDate>
             <PersonSex>F</PersonSex>
           </PersonType>
@@ -156,6 +162,7 @@ let $assertions := xdmp:eager(
   return (
     test:assert-equal-xml($expected-headers, $merged-doc/es:headers),
     test:assert-equal-xml($expected-triples, $merged-doc/es:triples),
+    xdmp:log(xdmp:describe($merged-doc/es:instance,(),())),
     test:assert-equal-xml($expected-instance, $merged-doc/es:instance)
   )
 )

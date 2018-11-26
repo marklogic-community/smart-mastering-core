@@ -21,6 +21,7 @@ const small =
             "propertyName": "address",
             "algorithmRef": "standard",
             "maxValues": "1",
+            "maxSources": "1",
             "sourceWeights": {
               "source": { "name": "SOURCE2", "weight": "10" }
             }

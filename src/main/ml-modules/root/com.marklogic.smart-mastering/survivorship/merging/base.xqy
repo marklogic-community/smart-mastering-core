@@ -95,6 +95,7 @@ declare function merge-impl:default-function-lookup(
   )
 };
 
+declare variable $cached-merging-map as map:map := map:map();
 (:
  : Based on the merging options, this is a map from the algorithm names to the
  : corresponding function references.
@@ -105,19 +106,27 @@ declare function merge-impl:build-merging-map(
   $merging-xml as element(merging:options)
 ) as map:map
 {
-  map:new((
-    for $algorithm-xml in $merging-xml//*:algorithm
-    return
-      map:entry(
-        $algorithm-xml/@name,
-        fun-ext:function-lookup(
-          fn:string($algorithm-xml/@function),
-          fn:string($algorithm-xml/@namespace),
-          fn:string($algorithm-xml/@at),
-          merge-impl:default-function-lookup(?, 3)
-        )
-      )
-  ))
+  if (map:contains($cached-merging-map, fn:generate-id($merging-xml))) then
+    map:get($cached-merging-map, fn:generate-id($merging-xml))
+  else
+    let $merging-map :=
+      map:new((
+        for $algorithm-xml in $merging-xml//*:algorithm
+        return
+          map:entry(
+            $algorithm-xml/@name,
+            fun-ext:function-lookup(
+              fn:string($algorithm-xml/@function),
+              fn:string($algorithm-xml/@namespace),
+              fn:string($algorithm-xml/@at),
+              merge-impl:default-function-lookup(?, 3)
+            )
+          )
+      ))
+    return (
+      map:put($cached-merging-map, fn:generate-id($merging-xml), $merging-map),
+      $merging-map
+    )
 };
 
 (:
@@ -338,7 +347,7 @@ declare function merge-impl:rollback-merge(
   $merged-doc-uri as xs:string
 ) as empty-sequence()
 {
-  merge-impl:rollback-merge($merged-doc-uri, fn:true())
+  merge-impl:rollback-merge($merged-doc-uri, fn:true(), fn:true())
 };
 
 (:
@@ -349,11 +358,15 @@ declare function merge-impl:rollback-merge(
  :                               added to the archive collection; otherwise,
  :                               the merged document and its audit records will
  :                               be deleted
+ : @param $block-future-merges   if true, then the future matches between documents
+ :                               will be blocked; otherwise, the documents could match
+ :                               on next process-match-and-merge
  : @return ()
  :)
 declare function merge-impl:rollback-merge(
   $merged-doc-uri as xs:string,
-  $retain-rollback-info as xs:boolean
+  $retain-rollback-info as xs:boolean,
+  $block-future-merges as xs:boolean
 ) as empty-sequence()
 {
   let $auditing-receipts-for-doc :=
@@ -361,14 +374,18 @@ declare function merge-impl:rollback-merge(
   where fn:exists($auditing-receipts-for-doc)
   return (
     let $uris := $auditing-receipts-for-doc/auditing:previous-uri ! fn:string(.)
-    let $prevent-auto-match := matcher:block-matches($uris)
+    let $prevent-auto-match :=
+      if ($block-future-merges) then
+        matcher:block-matches($uris)
+      else ()
     for $previous-doc-uri in $uris
     let $new-collections := (
       xdmp:document-get-collections($previous-doc-uri)[fn:not(. = $const:ARCHIVED-COLL)],
       $const:CONTENT-COLL
     )
-    return
-      xdmp:document-set-collections($previous-doc-uri, $new-collections),
+    return (
+      xdmp:document-set-collections($previous-doc-uri, $new-collections)
+    ),
     if ($retain-rollback-info) then (
       xdmp:document-set-collections($merged-doc-uri,
         (
@@ -536,6 +553,10 @@ declare function merge-impl:build-headers(
   let $is-xml := $format = $const:FORMAT-XML
   (: remove "/*:envelope/*:headers" from the paths; already accounted for :)
   let $configured-paths := $final-headers ! map:get(., "path") ! fn:replace(., "/.*headers(/.*)", "$1")
+  let $_trace :=
+      if (xdmp:trace-enabled($const:TRACE-MERGE-RESULTS)) then
+        xdmp:trace($const:TRACE-MERGE-RESULTS, xdmp:describe(("Building Headers with: ", $final-headers),(),()))
+      else ()
   (: Identify the full and partial paths of the configured paths. Record in
     : a map for quick access. :)
   let $anc-path-map := map:new(merge-impl:config-paths-and-ancestors($configured-paths) ! map:entry(., 1))
@@ -546,7 +567,7 @@ declare function merge-impl:build-headers(
     if ($is-xml) then
       $docs/es:envelope/es:headers/*[fn:empty(self::sm:*)]
     else
-      let $sm-keys := ("id", "sources")
+      let $sm-keys := ("id", "sources", "merges")
       let $sm-map := fn:data($docs/object-node("envelope")/object-node("headers"))
       return
         let $m := map:map()
@@ -758,6 +779,8 @@ declare function merge-impl:add-merged-part(
         let $populate := merge-impl:add-merged-part($child-map, fn:tail($path-parts), $value)
         return
           map:put($m, $key, $child-map)
+      else if ($value instance of map:map and map:contains($value, "values") and map:contains($value, "sources")) then
+        map:put($m, $key, map:get($value, "values"))
       else
         map:put($m, $key, $value)
 };
@@ -1198,8 +1221,60 @@ declare function merge-impl:build-final-headers(
     else
       null-node{}
   let $ns-map := merge-impl:build-prefix-map($merge-options/merging:property-defs)
+  let $top-level-properties := fn:distinct-values(($docs/*:envelope/*:headers/node()[fn:not(fn:local-name-from-QName(fn:node-name(.)) = ("id","merges","sources"))] ! (fn:node-name(.))))
   return (
     $ns-map,
+    for $top-level-property in $top-level-properties
+    let $local-name := fn:local-name-from-QName($top-level-property)
+    let $path-regex := "^/[\w]*:?envelope/[\w]*:?headers/[\w]*:?" || $local-name
+    where fn:empty($property-defs[fn:matches(@path, $path-regex)])
+    return
+    let $property-spec := merge-impl:get-merge-spec($merge-options, $top-level-property)
+    let $algorithm-name := fn:string($property-spec/@algorithm-ref)
+    let $algorithm := map:get($algorithms-map, $algorithm-name)
+    let $algorithm-info :=
+      object-node {
+        "name": fn:head(($algorithm-name[fn:exists($algorithm)], "standard")),
+        "optionsReference": $merge-options-ref
+      }
+    let $properties :=  $docs/*:envelope/*:headers/node()[fn:node-name(.) eq $top-level-property]
+    let $raw-values :=
+      for $prop-value in $properties
+      let $curr-uri := xdmp:node-uri($prop-value)
+      let $prop-sources := $sources[documentUri = $curr-uri]
+      return
+          merge-impl:wrap-revision-info(
+            $top-level-property,
+            $prop-value,
+            $prop-sources,
+            (), ()
+          )
+    return
+      if (fn:exists($raw-values)) then
+        map:new((
+          map:entry("algorithm", $algorithm-info),
+          fn:fold-left(
+            function($cumulative, $map) {
+              $cumulative + $map
+            },
+            map:map(),
+            if (fn:exists($algorithm)) then
+              merge-impl:execute-algorithm(
+                $algorithm,
+                $top-level-property,
+                $raw-values,
+                $property-spec
+              )
+            else
+              merge-impl:standard(
+                $top-level-property,
+                $raw-values,
+                $property-spec
+              )
+          ),
+          map:entry("path", '/es:envelope/es:headers/' || $local-name)
+        ))
+      else (),
     for $property in $property-defs
     let $prop-name as xs:string := $property/@name
     let $property-spec := merge-impl:get-path-merge-spec($merge-options, $property/@path)
@@ -1479,9 +1554,6 @@ declare function merge-impl:build-final-properties(
             ($a, $b + map:entry("algorithm", $algorithm-info))
         },
         (),
-        if (merge-impl:properties-are-equal($instance-props, $docs)) then
-          merge-impl:wrap-revision-info($prop-qname, $instance-props[fn:root(.) is $first-doc], $sources, $path-prop/@path, $ns-map)
-        else
           let $wrapped-properties :=
             for $doc at $pos in $docs
             let $props-for-instance :=
@@ -1533,6 +1605,10 @@ declare function merge-impl:build-final-properties(
 
 
     for $prop in $top-level-properties
+    let $_trace :=
+      if (xdmp:trace-enabled($const:TRACE-MERGE-RESULTS)) then
+        xdmp:trace($const:TRACE-MERGE-RESULTS, xdmp:describe(('Processing top level property',$prop),(),()))
+      else ()
     let $merge-spec := merge-impl:get-merge-spec($merge-options, $prop)
     let $algorithm-name := fn:string($merge-spec/@algorithm-ref)
     let $algorithm := map:get($algorithms-map, $algorithm-name)
@@ -1543,9 +1619,11 @@ declare function merge-impl:build-final-properties(
       }
     let $instance-props :=
       for $instance-prop in $instances/*[fn:node-name(.) = $prop]
-      (: require the property to have a value :)
-      where fn:normalize-space(fn:string-join(($instance-prop|$instance-prop//node()) ! fn:string())) ne ""
       return ($instance-prop/self::array-node()/*, $instance-prop except $instance-prop/self::array-node())
+    let $_trace :=
+      if (xdmp:trace-enabled($const:TRACE-MERGE-RESULTS)) then
+        xdmp:trace($const:TRACE-MERGE-RESULTS, xdmp:describe(('Instance properties found',$instance-props),(),()))
+      else ()
     return
       fn:fold-left(
         function($a as item()*, $b as item()) as item()* {
@@ -1558,9 +1636,6 @@ declare function merge-impl:build-final-properties(
             ($a, $b + map:entry("algorithm", $algorithm-info))
         },
         (),
-        if (merge-impl:properties-are-equal($instance-props, $docs)) then
-          merge-impl:wrap-revision-info($prop, $instance-props[fn:root(.) is $first-doc], $sources, (), ())
-        else
           let $wrapped-properties :=
             let $props-for-instance-in-array :=
               some $prop-val in $instance-props/(.|..)
@@ -1590,6 +1665,10 @@ declare function merge-impl:build-final-properties(
                 else:)
               xdmp:node-uri($doc)
             let $prop-sources := $sources[documentUri = $lineage-uris]
+            let $_trace :=
+              if (xdmp:trace-enabled($const:TRACE-MERGE-RESULTS)) then
+                xdmp:trace($const:TRACE-MERGE-RESULTS, xdmp:describe(('Doc', $doc , 'Properties for doc', $props-for-instance),(),()))
+              else ()
             where fn:exists($props-for-instance)
             return
               merge-impl:wrap-revision-info-with-extensions($prop, $prop-value, $prop-sources, $property-wrapper-extenstions)
@@ -1663,48 +1742,6 @@ declare function merge-impl:wrap-revision-info-with-extensions(
       map:entry("values", $prop),
       $extensions
     ))
-};
-
-(:
- : Compares the property values in the first document to property values in the
- : remaining documents. Returns true if the count, types, and values are the
- : same.
- :)
-declare function merge-impl:properties-are-equal(
-  $properties as item()*,
-  $docs as item()*
-) as xs:boolean
-{
-  let $first-doc := fn:head($docs)
-  let $first-doc-props := $properties[fn:root(.) is $first-doc]
-  let $doc-1-prop-count := fn:count($first-doc-props)
-  let $other-docs := fn:tail($docs)
-  let $equal-count-of-properties :=
-    every $doc in $other-docs
-    satisfies
-      fn:count($properties[fn:root(.) is $doc]) eq $doc-1-prop-count
-  return
-    $equal-count-of-properties
-    and (
-      every $doc in $other-docs
-        satisfies
-          every $prop1 in $first-doc-props
-          satisfies
-            some $prop2 in $properties[fn:root(.) is $doc]
-            satisfies
-              let $same-type := xdmp:type($prop1) eq xdmp:type($prop2)
-              let $is-object := $prop1 instance of object-node()
-              let $is-array := $prop1 instance of array-node()
-              return
-                if (fn:not($same-type)) then
-                  fn:false()
-                else if ($is-object) then
-                  merge-impl:objects-equal($prop1, $prop2)
-                else if ($is-array) then
-                  fn:deep-equal(<r>{xdmp:from-json($prop1)}</r>, <r>{xdmp:from-json($prop2)}</r>)
-                else
-                  $prop1 = $prop2
-    )
 };
 
 (: Compare all keys and values between two maps :)
@@ -1788,7 +1825,10 @@ declare function merge-impl:get-options($format as xs:string)
   let $options :=
     cts:search(fn:collection(), cts:and-query((
         cts:collection-query($const:OPTIONS-COLL),
-        cts:collection-query($const:MERGE-COLL)
+        (: In future version, remove mdm-merge collection from query
+          Currently part of the query to avoid breaking changes.
+        :)
+        cts:collection-query(('mdm-merge',$const:MERGE-OPTIONS-COLL))
     )))/merging:options
   return
     if ($format eq $const:FORMAT-XML) then
@@ -1831,7 +1871,7 @@ declare function merge-impl:save-options(
       $MERGING-OPTIONS-DIR||$name||".xml",
       $options,
       (xdmp:permission($const:MDM-ADMIN, "update"), xdmp:permission($const:MDM-USER, "read")),
-      ($const:OPTIONS-COLL, $const:MERGE-COLL)
+      ($const:OPTIONS-COLL, $const:MERGE-OPTIONS-COLL)
     )
 };
 
@@ -2126,7 +2166,7 @@ declare private function merge-impl:construct-merging-element($options-json as o
     let $config := json:config("custom")
       => map:with("camel-case", fn:true())
       => map:with("whitespace", "ignore")
-      => map:with("attribute-names", ("name", "weight", "strategy", "propertyName", "algorithmRef", "maxValues"))
+      => map:with("attribute-names", ("name", "weight", "strategy", "propertyName", "algorithmRef", "maxValues", "maxSources"))
     return (
       for $merge in $options-json/*:options/*:merging
       return
@@ -2186,7 +2226,10 @@ declare function merge-impl:get-option-names($format as xs:string)
   if ($format eq $const:FORMAT-XML) then
     let $options := cts:uris('', (), cts:and-query((
         cts:collection-query($const:OPTIONS-COLL),
-        cts:collection-query($const:MERGE-COLL)
+        (: In future version, remove mdm-merge collection from query
+          Currently part of the query to avoid breaking changes.
+        :)
+        cts:collection-query(('mdm-merge',$const:MERGE-OPTIONS-COLL))
       )))
     let $option-names := $options ! fn:replace(
       fn:replace(., $MERGING-OPTIONS-DIR, ""),
