@@ -542,7 +542,7 @@ The `merging/merge` elements define how values from the source documents will be
 
 ### `merge` Element
 
-The `merge` element can have five attributes: `default`, `property-name`, `algorithm-ref`, `max-values`, and `strategy`. 
+The `merge` element can have six attributes: `default`, `property-name`, `algorithm-ref`, `max-values`, `max-sources`, and `strategy`. 
 The `default` attribute accepts a boolean value that determines if the `merge` element should define the default behavior for merging. The `property-name` attribute must match the `name` attribute
 of one of the `property` elements defined under `property-defs`. Use of the `default` attribute and `property-name` attribute are mutually exclusive. The
 `algorithm-ref` attribute must match the `name` attribute of one of the
@@ -560,14 +560,14 @@ The `merge-strategy` element provides a way to reduce verbosity of the options f
 
 The standard algorithm will keep up to 99 values for each property. A `merge`
 element can specify a different number and can control the order in which the
-values are listed. The `merge` element for the standard algorithm can also
+values are listed. The `max-sources` attribute controls the number of sources that can contribute to a property, instead of values. This is convenient when you'd like to limit by source instead of values (e.g., carry over an entire Array from a single source). The `merge` element for the standard algorithm can also
 specify a weighted preference for sources and a weight by which to prefer longer
 values. Any property that does not have a `merge` element or that has a `merge`
 element that does not specify an `algorithm-ref` will use the standard
 algorithm.
 
 ```xml
-  <merge property-name="name" max-values="1" algorithm-ref="standard">
+  <merge property-name="name" max-sources="1" max-values="1" algorithm-ref="standard">
     <length weight="8" />
     <source-weights>
       <source name="good-source" weight="2"/>
@@ -585,6 +585,7 @@ Written as JSON, the above example looks like this:
     {
       "propertyName": "name", 
       "maxValues": "1", 
+      "maxSources": "1", 
       "algorithmRef": "standard",
       "length": { "weight": "8" }, 
       "sourceWeights": {
@@ -594,7 +595,7 @@ Written as JSON, the above example looks like this:
   ]
 ```
 
-Notice that the `property-name`, `max-values`, and `algorithm-ref` attributes
+Notice that the `property-name`, `max-values`, `max-sources`, and `algorithm-ref` attributes
 correspond to JSON properties. 
 
 #### Custom Merging
