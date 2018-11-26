@@ -37,6 +37,14 @@ dependencies {
   mlcp "com.marklogic:mlcp:9.0.7"
 }
 
+// Bugfix for DHF4
+task deleteModuleTimestampsFile(type: Delete) {
+  description = "Use this as mlDeleteModuleTimestampsFile doesn't seem to work with DHF4"
+  delete "build/ml-javaclient-util/module-timestamps.properties"
+}
+mlReloadModules.dependsOn deleteModuleTimestampsFile
+mlDeploy.dependsOn deleteModuleTimestampsFile
+
 // this task runs MLCP to ingest the CRM data
 // note that we have pre-processed this data for you
 // to simplify the example so you can focus on the
