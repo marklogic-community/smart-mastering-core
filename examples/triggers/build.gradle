@@ -9,7 +9,7 @@ plugins {
 
   // This gradle plugin extends the ml-gradle plugin with
   // commands that make the Data Hub Framework do its magic
-  id 'com.marklogic.ml-data-hub' version '4.0.1'
+  id 'com.marklogic.ml-data-hub' version '4.0.3'
 }
 
 import com.marklogic.client.DatabaseClientFactory;
@@ -36,20 +36,6 @@ dependencies {
   // MLCP dependencies
   mlcp "com.marklogic:mlcp:9.0.7"
 }
-
-// Bugfix for DHF4 - see https://github.com/marklogic/marklogic-data-hub/pull/1416
-ext {
-  def loadModulesCommand = mlAppDeployer.getCommand("LoadModulesCommand")
-  mlAppDeployer.getCommand("LoadHubModulesCommand").setExecuteSortOrder(loadModulesCommand.getExecuteSortOrder() - 1)
-}
-
-// Bugfix for DHF4
-task deleteModuleTimestampsFile(type: Delete) {
-  description = "Use this as mlDeleteModuleTimestampsFile doesn't seem to work with DHF4"
-  delete "build/ml-javaclient-util/module-timestamps.properties"
-}
-mlReloadModules.dependsOn deleteModuleTimestampsFile
-mlDeploy.dependsOn deleteModuleTimestampsFile
 
 // this task runs MLCP to ingest the CRM data
 // note that we have pre-processed this data for you
@@ -234,22 +220,3 @@ task resetExample {
   dependsOn clearFinalDatabase
   dependsOn clearJobDatabase
 }
-
-
-//////////////////////////////////////////////////////////////
-// bug workaround!
-// Use this until bug 910 gets fixed
-// https://github.com/marklogic/marklogic-data-hub/issues/910
-// task mlGradleLoadModules(type: com.marklogic.gradle.task.client.LoadModulesTask) {
-//   dependsOn mlPrepareRestApiDependencies
-//   mustRunAfter mlClearModulesDatabase
-// }
-
-// task mlGradleWatch(type: com.marklogic.gradle.task.client.WatchTask)
-// task mlGradleDeleteModuleTimestampsFile(type: com.marklogic.gradle.task.DeleteModuleTimestampsFileTask)
-
-// mlLoadModules.dependsOn mlGradleLoadModules
-// mlWatch.dependsOn mlGradleWatch
-// mlDeleteModuleTimestampsFile.dependsOn mlGradleDeleteModuleTimestampsFile
-// end bug workaround
-//////////////////////////////////////////////////////////////

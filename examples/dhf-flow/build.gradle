@@ -9,7 +9,7 @@ plugins {
 
   // This gradle plugin extends the ml-gradle plugin with
   // commands that make the Data Hub Framework do its magic
-  id 'com.marklogic.ml-data-hub' version '4.0.1'
+  id 'com.marklogic.ml-data-hub' version '4.0.3'
 }
 
 repositories {
@@ -34,40 +34,6 @@ dependencies {
   // MLCP dependencies
   mlcp "com.marklogic:mlcp:9.0.7"
 }
-
-// Bugfix for DHF4 - see https://github.com/marklogic/marklogic-data-hub/pull/1416
-ext {
-  def loadModulesCommand = mlAppDeployer.getCommand("LoadModulesCommand")
-  mlAppDeployer.getCommand("LoadHubModulesCommand").setExecuteSortOrder(loadModulesCommand.getExecuteSortOrder() - 1)
-}
-
-// Bugfix for DHF4
-task deleteModuleTimestampsFile(type: Delete) {
-  description = "Use this as mlDeleteModuleTimestampsFile doesn't seem to work with DHF4"
-  delete "build/ml-javaclient-util/module-timestamps.properties"
-}
-mlReloadModules.dependsOn deleteModuleTimestampsFile
-mlDeploy.dependsOn deleteModuleTimestampsFile
-
-
-
-//////////////////////////////////////////////////////////////
-// bug workaround!
-// Use this until bug 910 gets fixed
-// https://github.com/marklogic/marklogic-data-hub/issues/910
-// task mlGradleLoadModules(type: com.marklogic.gradle.task.client.LoadModulesTask) {
-//   dependsOn mlPrepareRestApiDependencies
-//   mustRunAfter mlClearModulesDatabase
-// }
-
-// task mlGradleWatch(type: com.marklogic.gradle.task.client.WatchTask)
-// task mlGradleDeleteModuleTimestampsFile(type: com.marklogic.gradle.task.DeleteModuleTimestampsFileTask)
-
-// mlLoadModules.dependsOn mlGradleLoadModules
-// mlWatch.dependsOn mlGradleWatch
-// mlDeleteModuleTimestampsFile.dependsOn mlGradleDeleteModuleTimestampsFile
-// end bug workaround
-//////////////////////////////////////////////////////////////
 
 // this task runs MLCP to ingest the CRM data
 // note that we have pre-processed this data for you
@@ -304,9 +270,8 @@ task runPersonMastering(type: com.marklogic.gradle.task.client.CallResourceTask)
   body = []
   params = [
     'collector-name': 'collect',
-    'collector-name': 'collect',
-    'collector-ns': 'http://marklogic.com/data-hub/plugins',
-    'collector-at': '/entities/MDM/harmonize/SmartMaster/collector.xqy',
+    'collector-ns': 'http://marklogic.com/smart-mastering/collector',
+    'collector-at': '/com.marklogic.smart-mastering/collector.xqy',
     'options': 'mdm-merge-options',
     'query': '<cts:collection-query xmlns:cts=\"http://marklogic.com/cts\"><cts:uri>MDM</cts:uri></cts:collection-query>'
   ]
@@ -331,8 +296,8 @@ task runOrgMastering(type: com.marklogic.gradle.task.client.CallResourceTask) {
   body = []
   params = [
     'collector-name': 'collect',
-    'collector-name': 'collect',
-    'collector-at': '/entities/Organization/harmonize/SmartMaster/collector.sjs',
+    'collector-ns': 'http://marklogic.com/smart-mastering/collector',
+    'collector-at': '/com.marklogic.smart-mastering/collector.xqy',
     'options': 'org-merge-options',
     'query': '<cts:collection-query xmlns:cts=\"http://marklogic.com/cts\"><cts:uri>Organization</cts:uri></cts:collection-query>'
   ]
