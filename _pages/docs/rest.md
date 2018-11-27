@@ -223,7 +223,7 @@ transaction and that the merges are consistent and non-redundant.
 
 ### sm-match-and-merge
 
-- POST: match and merge on a set of documents
+- POST: match and merge on a set of documents. A basic controller is included with the Smart Mastering core and can be referenced with collector-name `collect` and collector-ns `http://marklogic.com/smart-mastering/collector`. The basic collector will return URIs based off of the Smart Mastering content collection and the additional query parameter passed.
   - parameters
     - `rs:uri` -- (repeated parameter) the URIs of the documents to merge
     - `rs:collector-name` -- the local name of a function that will return a 
