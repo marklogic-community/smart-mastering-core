@@ -599,7 +599,7 @@ declare function merge-impl:build-headers(
           $uris ! element sm:document-uri { . }
         }</sm:merges>
         <sm:sources>{
-          $docs/es:envelope/es:headers/sm:sources/sm:source
+          merge-impl:distinct-node-values($docs/es:envelope/es:headers/sm:sources/sm:source)
         }</sm:sources>
         {
           merge-impl:map-to-xml($headers-ns-map, $combined)
@@ -614,11 +614,18 @@ declare function merge-impl:build-headers(
             $uris ! object-node { "document-uri": . }
           }),
           map:entry("sources", array-node {
-            $docs/envelope/headers/sources
+            merge-impl:distinct-node-values($docs/envelope/headers/sources)
           }),
           merge-impl:map-to-json($combined)
         ))
       )/object-node()
+};
+
+declare function merge-impl:distinct-node-values($nodes as node()*)
+{
+  for $node at $pos in $nodes
+  where fn:not(some $n in fn:subsequence($nodes, $pos + 1) satisfies fn:deep-equal($n, $node))
+  return $node
 };
 
 (:~
@@ -931,7 +938,7 @@ declare function merge-impl:build-instance-body-by-final-properties(
               if (
                 fn:empty($other-values-for-props)
                   and
-                fn:boolean($prop => map:get("retainArray")) = fn:true()
+                (($prop => map:get("retainArray"))[. castable as xs:boolean] ! xs:boolean(.)) = fn:true()
               ) then
                 array-node {$prop-values}
               else
