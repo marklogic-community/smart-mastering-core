@@ -37,8 +37,10 @@ function post(
   let $uri1 := map:get($params, "uri1")
   let $uri2 := map:get($params, "uri2")
   return
-    if (fn:exists($uri1) and fn:exists($uri2)) then
-      matcher:block-matches(($uri1, $uri2))
+    if (fn:exists($uri1) and fn:exists($uri2)) then (
+      matcher:block-matches(($uri1, $uri2)),
+      xdmp:to-json(json:object() => map:with("success", fn:true()))
+    )
     else
       fn:error((),"RESTAPI-SRVEXERR",
         (400, "Bad Request",
@@ -54,7 +56,7 @@ declare function delete(
   let $uri2 := map:get($params, "uri2")
   return
     if (fn:exists($uri1) and fn:exists($uri2)) then
-      matcher:allow-match($uri1, $uri2)
+      document { xdmp:to-json(json:object() => map:with("success", matcher:allow-match($uri1, $uri2))) }
     else
       fn:error((),"RESTAPI-SRVEXERR",
         (400, "Bad Request",
