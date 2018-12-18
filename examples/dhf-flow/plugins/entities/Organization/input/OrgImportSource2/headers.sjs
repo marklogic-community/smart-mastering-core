@@ -10,7 +10,7 @@
 function createHeaders(id, content, options) {
   return {
     id: sem.uuidString(),
-    sources: {
+    sources: [
       source: {
         name: id.replace("/([^/]+)/.+", "$1"),
         importId: options.importId,
