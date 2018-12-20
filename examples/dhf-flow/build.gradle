@@ -10,7 +10,7 @@ plugins {
   id "com.marklogic.ml-gradle" version "3.10.0"
   // This gradle plugin extends the ml-gradle plugin with
   // commands that make the Data Hub Framework do its magic
-  id 'com.marklogic.ml-data-hub' version '4.0.3'
+  id 'com.marklogic.ml-data-hub' version '4.1.0'
 }
 
 repositories {
@@ -35,14 +35,6 @@ dependencies {
   // MLCP dependencies
   mlcp "com.marklogic:mlcp:9.0.7"
 }
-
-// Bugfix for DHF4
-task deleteModuleTimestampsFile(type: Delete) {
-  description = "Use this as mlDeleteModuleTimestampsFile doesn't seem to work with DHF4"
-  delete "build/ml-javaclient-util/module-timestamps.properties"
-}
-mlReloadModules.dependsOn deleteModuleTimestampsFile
-mlDeploy.dependsOn deleteModuleTimestampsFile
 
 // this task runs MLCP to ingest the CRM data
 // note that we have pre-processed this data for you
