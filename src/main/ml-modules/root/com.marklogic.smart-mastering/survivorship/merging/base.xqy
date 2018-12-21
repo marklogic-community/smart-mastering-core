@@ -144,12 +144,8 @@ declare function merge-impl:all-merged($uris as xs:string*) as xs:boolean
 {
   let $locks := xdmp:transaction-locks()/host:write/fn:string()
   return
-    fn:fold-left(
-      function($z, $a) {$z and $a},
-      fn:true(),
-      for $uri in $uris
-      return $uri = $locks
-    )
+    every $uri in $uris
+    satisfies $uri = $locks
 };
 
 declare function merge-impl:build-merge-uri($id as xs:string, $source-uris as xs:string+)

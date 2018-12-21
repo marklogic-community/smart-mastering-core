@@ -37,12 +37,14 @@ declare function blocks-impl:get-blocks($uri as xs:string?)
             map:entry("target", sem:iri($uri)),
             map:entry("isBlocked", $const:PRED-MATCH-BLOCK)
           )),
-          "map"
+          "map",
+          cts:or-query((
+            cts:element-value-query(xs:QName("sem:object"), $uri, "exact"),
+            cts:json-property-value-query("object", $uri, "exact")
+          ))
         )
       return
-        if (fn:exists($solution)) then
-          $solution ! fn:string(map:get(., "blocked"))
-        else ()
+        $solution ! fn:string(map:get(., "blocked"))
     else ()
   }
 };
