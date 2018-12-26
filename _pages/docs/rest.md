@@ -139,7 +139,7 @@ when run, the value inside the document at QName will be returned
 in a key/value extractions section under the key "name".  
 <br/>
 example:  
-`body => { "firstName", "PersonFirstName" }`  
+`body => { "firstName": "PersonFirstName" }`  
 <br/>
 this would extract the value in the PersonFirstName field  
 <br/>
