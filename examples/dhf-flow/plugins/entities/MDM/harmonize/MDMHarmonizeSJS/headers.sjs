@@ -8,20 +8,9 @@
  * @return - an object of headers
  */
 function createHeaders(id, content, options) {
-  return {
-    id: sem.uuidString(),
-    sources: [
-      {
-        name: id.replace("/([^/]+)/.+", "$1"),
-        importId: options.importId,
-        user: xdmp.getCurrentUser(),
-        dateTime: fn.currentDateTime()
-      }
-    ]
-  };
+  return options.headers;
 }
 
 module.exports = {
   createHeaders: createHeaders
 };
-

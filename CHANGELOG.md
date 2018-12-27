@@ -1,5 +1,39 @@
 # Change Log
 
+## [v1.2.2](https://github.com/marklogic-community/smart-mastering-core/tree/v1.2.2) (2018-12-27)
+[Full Changelog](https://github.com/marklogic-community/smart-mastering-core/compare/v1.2.1...v1.2.2)
+
+**Implemented enhancements:**
+
+- Enhancement : collection pattern consistency when saving match and merge options [\#213](https://github.com/marklogic-community/smart-mastering-core/issues/213)
+- Add optional tracing to matching and merging operations [\#172](https://github.com/marklogic-community/smart-mastering-core/issues/172)
+
+**Fixed bugs:**
+
+- Documentation typo under sm-notifications [\#264](https://github.com/marklogic-community/smart-mastering-core/issues/264)
+- Error when trying to remove a match block via REST [\#263](https://github.com/marklogic-community/smart-mastering-core/issues/263)
+-  latest document has only duplicate objects in an array, merged document is returning an object but it has to return an array [\#259](https://github.com/marklogic-community/smart-mastering-core/issues/259)
+- Reopening max-sources=1 issue [\#258](https://github.com/marklogic-community/smart-mastering-core/issues/258)
+- Merge issue with empty object in an array [\#254](https://github.com/marklogic-community/smart-mastering-core/issues/254)
+- Not running already merged document through mastering again [\#252](https://github.com/marklogic-community/smart-mastering-core/issues/252)
+- Merged document sources property in headers is changing to object [\#251](https://github.com/marklogic-community/smart-mastering-core/issues/251)
+- Removing empty string properties on merging [\#250](https://github.com/marklogic-community/smart-mastering-core/issues/250)
+- Merging not working as expected with deeply nested JSON Arrays and Objects [\#246](https://github.com/marklogic-community/smart-mastering-core/issues/246)
+- Ensure required security deployed as part of minimal project [\#245](https://github.com/marklogic-community/smart-mastering-core/issues/245)
+- find-document-matches-by-options-name function does not report same result after unmerge [\#233](https://github.com/marklogic-community/smart-mastering-core/issues/233)
+- Merging two documents with max-values=1 changes an array property to object [\#218](https://github.com/marklogic-community/smart-mastering-core/issues/218)
+
+**Closed issues:**
+
+- On default max-values="1" Merged record has to get all objects from the latest document but taking only one object from the latest document [\#253](https://github.com/marklogic-community/smart-mastering-core/issues/253)
+- smart-mastering-core/examples/dhf-flow missing gradle-local.properties [\#247](https://github.com/marklogic-community/smart-mastering-core/issues/247)
+
+**Merged pull requests:**
+
+- Fix documentation typo GH\#264 [\#268](https://github.com/marklogic-community/smart-mastering-core/pull/268) ([ryanjdew](https://github.com/ryanjdew))
+- \#263 return document-nodes from sm-block-match [\#265](https://github.com/marklogic-community/smart-mastering-core/pull/265) ([dmcassel](https://github.com/dmcassel))
+- Minor 1.2.1 related updates [\#257](https://github.com/marklogic-community/smart-mastering-core/pull/257) ([ryanjdew](https://github.com/ryanjdew))
+
 ## [v1.2.1](https://github.com/marklogic-community/smart-mastering-core/tree/v1.2.1) (2018-11-26)
 [Full Changelog](https://github.com/marklogic-community/smart-mastering-core/compare/v1.2.0...v1.2.1)
 
@@ -20,6 +54,7 @@
 
 **Merged pull requests:**
 
+- 1.2.1 release [\#256](https://github.com/marklogic-community/smart-mastering-core/pull/256) ([ryanjdew](https://github.com/ryanjdew))
 - Correct on-no-match description [\#249](https://github.com/marklogic-community/smart-mastering-core/pull/249) ([ryanjdew](https://github.com/ryanjdew))
 - GH \#246 handle deeply nested JSON with merge [\#248](https://github.com/marklogic-community/smart-mastering-core/pull/248) ([ryanjdew](https://github.com/ryanjdew))
 

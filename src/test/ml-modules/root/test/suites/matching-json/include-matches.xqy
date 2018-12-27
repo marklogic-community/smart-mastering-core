@@ -13,7 +13,7 @@ declare option xdmp:mapping "false";
 let $doc := fn:doc($lib:URI2)
 let $expected-scores := map:new((
     map:entry($lib:URI1, 70),
-    map:entry($lib:URI3, 79)
+    map:entry($lib:URI3, 75)
   ))
 let $actual := matcher:find-document-matches-by-options-name($doc, $lib:MATCH-OPTIONS-NAME, fn:true(), cts:true-query())
 return (

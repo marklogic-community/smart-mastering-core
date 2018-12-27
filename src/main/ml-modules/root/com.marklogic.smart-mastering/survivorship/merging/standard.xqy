@@ -2,6 +2,8 @@ xquery version "1.0-ml";
 
 module namespace merging = "http://marklogic.com/smart-mastering/survivorship/merging";
 
+import module namespace merge-impl = "http://marklogic.com/smart-mastering/survivorship/merging"
+  at  "base.xqy";
 import module namespace const = "http://marklogic.com/smart-mastering/constants"
   at "/com.marklogic.smart-mastering/constants.xqy";
 
@@ -147,7 +149,6 @@ declare function merging:merge-complementing-properties(
     let $following-properties := fn:tail($remaining-properties)
     let $is-nested := fn:count(fn:head($current-property-values)/*) eq 1 and fn:exists($current-property-values/*/*)
     let $complementing-properties :=
-      if ($prop-has-values) then
         for $prop at $pos in $following-properties
         let $prop-values := $prop => map:get("values")
         let $sub-values :=
@@ -156,7 +157,11 @@ declare function merging:merge-complementing-properties(
           else
             $prop-values/*
         where
-          ($prop-values ! merging:node-has-values(.)) = fn:true()
+          merge-impl:multi-node-equals($current-property-values, $prop-values)
+          or
+          (($prop-values ! merging:node-has-values(.)) = fn:true()
+          and
+          $prop-has-values
           and
           ((
             fn:empty($sub-values)
@@ -189,13 +194,12 @@ declare function merging:merge-complementing-properties(
                 fn:string($sub-value) eq ""
               )
             )
-          ))
+          )))
         return
           let $_set-index :=
             $complementing-indexes-map => map:put("$indexes", (map:get($complementing-indexes-map, "$indexes"),$pos))
           return
             $prop
-      else ()
     let $merged-properties :=
       if (fn:exists($complementing-properties)) then
         let $all-complementing-values := (
@@ -211,11 +215,11 @@ declare function merging:merge-complementing-properties(
         return (
           $merged-properties,
           map:new((
-            $current-property,
-            $complementing-properties,
+            fn:fold-left(function($a, $b) { $a + $b }, $current-property, $complementing-properties),
             map:entry("sources", (
-              $current-property => map:get("sources"),
-              $complementing-properties ! map:get(., "sources")
+              ($current-property => map:get("sources"))
+                union
+              ($complementing-properties ! map:get(., "sources"))
             )),
             map:entry("values", (
               if ($current-property-values instance of element()+) then
