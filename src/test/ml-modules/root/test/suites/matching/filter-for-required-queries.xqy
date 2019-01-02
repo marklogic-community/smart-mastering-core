@@ -16,24 +16,44 @@ declare variable $STATE-QNAME := xs:QName("state");
 (:
  : Each $actual query should have the same element name and text as the corresponding $expected query
  :)
-declare function local:verify-group($expected as cts:element-value-query*, $actual as cts:element-value-query*)
+declare function local:verify-group($expected as map:map*, $actual as map:map*)
 {
   if (fn:empty($actual)) then ()
   else
   (
-    test:assert-equal(cts:element-value-query-element-name($expected[1]), cts:element-value-query-element-name($actual[1])),
-    test:assert-equal(cts:element-value-query-text($expected[1]), cts:element-value-query-text($actual[1])),
+    test:assert-equal($expected[1] => map:get("qname"), $actual[1] => map:get("qname")),
+    test:assert-equal($expected[1] => map:get("values"), $actual[1] => map:get("values")),
 
     local:verify-group(fn:subsequence($actual, 2), fn:subsequence($expected, 2))
   )
 };
 
-let $given  := cts:element-value-query($GIVEN-QNAME, "LINDSEY", "case-insensitive", 12)
-let $family := cts:element-value-query($FAMILY-QNAME, "JONES", "case-insensitive", 8)
-let $number := cts:element-value-query($NUMBER-QNAME, "45", "case-insensitive", 5)
-let $postal := cts:element-value-query($POSTAL-QNAME, "18505", "case-insensitive", 3)
-let $state  := cts:element-value-query($STATE-QNAME, "PA", "case-insensitive")
-let $remaining-queries := ($given, $family, $number, $postal, $state) ! element q { . }/node()
+let $given  := map:new((
+                map:entry("qname", $GIVEN-QNAME),
+                map:entry("values", "LINDSEY"),
+                map:entry("weight", 12)
+              ))
+let $family  := map:new((
+                map:entry("qname", $FAMILY-QNAME),
+                map:entry("values", "JONES"),
+                map:entry("weight", 8)
+              ))
+let $number  := map:new((
+                map:entry("qname", $NUMBER-QNAME),
+                map:entry("values", "45"),
+                map:entry("weight", 5)
+              ))
+let $postal  := map:new((
+                map:entry("qname", $POSTAL-QNAME),
+                map:entry("values", "18505"),
+                map:entry("weight", 3)
+              ))
+let $state  := map:new((
+                map:entry("qname", $STATE-QNAME),
+                map:entry("values", "PA"),
+                map:entry("weight", 1)
+              ))
+let $remaining-queries := ($given, $family, $number, $postal, $state)
 let $threshold := 15
 let $actual := match-impl:filter-for-required-queries($remaining-queries, 0, $threshold, ())
 
@@ -42,16 +62,16 @@ let $assertions := (
   test:assert-equal(4, fn:count($actual)),
 
   (: Weights for $given + $family = 20 :)
-  local:verify-group(($given, $family), cts:and-query-queries($actual[1])),
+  local:verify-group(($given, $family), $actual[1] => map:get("queries")),
 
   (: Weights for $given + $number = 17 :)
-  local:verify-group(($given, $number), cts:and-query-queries($actual[2])),
+  local:verify-group(($given, $number), $actual[2] => map:get("queries")),
 
   (: Weights for $given + $postal = 15 :)
-  local:verify-group(($given, $postal), cts:and-query-queries($actual[3])),
+  local:verify-group(($given, $postal), $actual[3] => map:get("queries")),
 
   (: Weights for $family + $number + $postal = 16 :)
-  local:verify-group(($family, $number, $postal), cts:and-query-queries($actual[4]))
+  local:verify-group(($family, $number, $postal), $actual[4] => map:get("queries"))
 
 )
 

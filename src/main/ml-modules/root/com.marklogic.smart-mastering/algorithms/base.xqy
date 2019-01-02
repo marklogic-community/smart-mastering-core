@@ -35,6 +35,7 @@ declare function algorithms:default-function-lookup(
   )
 };
 
+declare variable $_cached-algorithms-map as map:map := map:map();
 (:~
  : Build a map from an algorithm's name (see match options) to its
  : xdmp:function.
@@ -44,19 +45,27 @@ declare function algorithms:default-function-lookup(
 declare function algorithms:build-algorithms-map($algorithms-xml as element(matcher:algorithms))
   as map:map
 {
-  map:new((
-    for $algorithm-xml in $algorithms-xml/*:algorithm
-    return
-      map:entry(
-        $algorithm-xml/@name,
-        fun-ext:function-lookup(
-          fn:string($algorithm-xml/@function),
-          fn:string($algorithm-xml/@namespace),
-          fn:string($algorithm-xml/@at),
-          algorithms:default-function-lookup(?, 3)
-        )
-      )
-  ))
+  if (map:contains($_cached-algorithms-map, fn:generate-id($algorithms-xml))) then
+    map:get($_cached-algorithms-map, fn:generate-id($algorithms-xml))
+  else
+    let $algorithms-map as map:map :=
+      map:new((
+        for $algorithm-xml in $algorithms-xml/*:algorithm
+        return
+          map:entry(
+            $algorithm-xml/@name,
+            fun-ext:function-lookup(
+              fn:string($algorithm-xml/@function),
+              fn:string($algorithm-xml/@namespace),
+              fn:string($algorithm-xml/@at),
+              algorithms:default-function-lookup(?, 3)
+            )
+          )
+      ))
+    return (
+      map:put($_cached-algorithms-map, fn:generate-id($algorithms-xml), $algorithms-map),
+      $algorithms-map
+    )
 };
 
 (:~

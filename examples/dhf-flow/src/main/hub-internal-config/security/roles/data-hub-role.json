@@ -30,7 +30,7 @@
     {
       "privilege-name": "xdmp:eval-in",
       "action": "http://marklogic.com/xdmp/privileges/xdmp-eval-in",
-      "kind":"execute"
+      "kind": "execute"
     },
     {
       "privilege-name": "xdmp:invoke",
@@ -83,8 +83,8 @@
       "kind": "execute"
     },
     {
-      "privilege-name": "any-uri",
-      "action": "http://marklogic.com/xdmp/privileges/any-uri",
+      "privilege-name": "unprotected-uri",
+      "action": "http://marklogic.com/xdmp/privileges/unprotected-uri",
       "kind": "execute"
     }
   ]

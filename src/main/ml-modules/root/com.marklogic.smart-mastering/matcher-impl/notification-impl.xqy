@@ -34,6 +34,7 @@ declare namespace sm = "http://marklogic.com/smart-mastering";
 
 declare option xdmp:mapping "false";
 
+declare variable $notification-uris-operated-on as map:map := map:map();
 (:
  : Create a new notification document. If there is already a notification for
  : this combination of label and URIs, that notification will be replaced.
@@ -63,18 +64,22 @@ declare function notify-impl:save-match-notification(
         $doc-uris
       }
     }
-  return (
-    $new-notification,
+  let $notification-uri :=
+    if (fn:exists($existing-notification)) then
+      xdmp:node-uri(fn:head($existing-notification))
+    else
+      "/com.marklogic.smart-mastering/matcher/notifications/" ||
+          sem:uuid-string() || ".xml"
+  let $_database-update :=
     if (fn:exists($existing-notification) and (every $uri in $doc-uris satisfies $uri = $old-doc-uris) and fn:count($doc-uris) eq fn:count($old-doc-uris)) then ()
     else if (fn:exists($existing-notification)) then (
-      xdmp:node-replace(fn:head($existing-notification), $new-notification),
-      for $extra-doc in fn:tail($existing-notification)
+      xdmp:node-replace(fn:head($existing-notification[fn:not(map:contains($notification-uris-operated-on, xdmp:node-uri(.)))]), $new-notification),
+      for $extra-doc in fn:tail($existing-notification[fn:not(map:contains($notification-uris-operated-on, xdmp:node-uri(.)))])
       return
         xdmp:document-delete(xdmp:node-uri($extra-doc))
     ) else
       xdmp:document-insert(
-        "/com.marklogic.smart-mastering/matcher/notifications/" ||
-          sem:uuid-string() || ".xml",
+        $notification-uri,
         $new-notification,
         (
           xdmp:default-permissions(),
@@ -86,6 +91,12 @@ declare function notify-impl:save-match-notification(
           $options/merging:algorithms/merging:collections/merging:on-notification
         )
       )
+  return (
+    $new-notification,
+    let $_track-notification-updates :=
+      for $uri in ($existing-notification ! xdmp:node-uri(.))
+      return map:put($notification-uris-operated-on, $uri, fn:true())
+    return $_track-notification-updates
   )
 };
 
