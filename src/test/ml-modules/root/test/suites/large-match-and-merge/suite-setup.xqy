@@ -26,7 +26,7 @@ let $insert-options := <options xmlns="xdmp:document-insert">
 let $people-csv := test:get-test-file("people.csv")
 let $current-time := fn:current-dateTime()
 let $people-lines := fn:tokenize($people-csv,"[&#10;&#13;]+")
-let $end-of-notifications := $lib:NUMBER-OF-NOTIFICATIONS + $lib:NUMBER-OF-MERGES
+let $end-of-notifications := $lib:NUMBER-OF-NOTIFICATIONS
 for $person at $pos in fn:tail($people-lines)
 let $cols := fn:tokenize($person, ",")
 let $doc := object-node {
@@ -51,7 +51,7 @@ let $doc := object-node {
   }
 }
 let $person := $doc/envelope/instance/person
-let $additional-docs := if ($pos le $lib:NUMBER-OF-MERGES) then (
+let $additional-docs := (if ($pos le $lib:NUMBER-OF-MERGES) then (
     for $i in (1 to $lib:MERGES-PER)
     return
       object-node {
@@ -59,7 +59,7 @@ let $additional-docs := if ($pos le $lib:NUMBER-OF-MERGES) then (
           "headers": object-node {
             "sources": array-node {
               object-node {
-                "name": "A"||$i
+                "name": "A-merge-"||$i
               }
             },
             "ingestDateTime": $current-time + xdmp:elapsed-time()
@@ -75,7 +75,7 @@ let $additional-docs := if ($pos le $lib:NUMBER-OF-MERGES) then (
           }
         }
       }
-  ) else if ($pos le $end-of-notifications) then (
+  ) else (), if ($pos le $end-of-notifications) then (
     for $i in (1 to $lib:NOTIFICATIONS-PER)
     return
       object-node {
@@ -83,7 +83,7 @@ let $additional-docs := if ($pos le $lib:NUMBER-OF-MERGES) then (
           "headers": object-node {
             "sources": array-node {
               object-node {
-                "name": "A"||$i
+                "name": "A-notify-"||$i
               }
             },
             "ingestDateTime": $current-time + xdmp:elapsed-time()
@@ -99,7 +99,7 @@ let $additional-docs := if ($pos le $lib:NUMBER-OF-MERGES) then (
           }
         }
       }
-  ) else ()
+  ) else ())
 return (
     xdmp:document-insert('/person-' || $pos || '.json',
       $doc,
