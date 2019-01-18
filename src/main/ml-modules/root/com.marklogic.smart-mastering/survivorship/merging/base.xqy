@@ -2234,7 +2234,7 @@ declare function merge-impl:get-option-names($format as xs:string)
       )))
     let $option-names := $options ! fn:replace(
       fn:replace(., $MERGING-OPTIONS-DIR, ""),
-      ".xml", ""
+      "\.xml$", ""
     )
     return
       element merging:options {
