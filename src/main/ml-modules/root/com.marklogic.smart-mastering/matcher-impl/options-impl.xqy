@@ -52,7 +52,7 @@ declare function opt-impl:get-option-names-as-xml()
   let $option-names := $options !
     fn:replace(
       fn:replace(., $ALGORITHM-OPTIONS-DIR, ""),
-      ".xml", ""
+      "\.xml$", ""
     )
   return
     element matcher:options {
