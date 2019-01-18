@@ -101,7 +101,7 @@ declare function put(
       fn:error((),"RESTAPI-SRVEXERR",
         (400, "Bad Request",
         "uris parameter is required"))
-    else
+    else (
       for $uri in $uris
       return
         if (fn:doc-available($uri)) then
@@ -109,7 +109,9 @@ declare function put(
         else
           fn:error((),"RESTAPI-SRVEXERR",
             (404, "Not Found",
-            "No notification available at URI " || $uri))
+            "No notification available at URI " || $uri)),
+      xdmp:to-json(json:object() => map:with("success", fn:true()))
+    )
 };
 
 declare function delete(
@@ -117,7 +119,7 @@ declare function delete(
   $params  as map:map
 ) as document-node()?
 {
-  if (map:contains($params, "uri")) then
+  if (map:contains($params, "uri")) then (
     for $uri in map:get($params, "uri")
     return
       if (fn:doc-available($uri)) then
@@ -125,8 +127,9 @@ declare function delete(
       else
         fn:error((),"RESTAPI-SRVEXERR",
           (404, "Not Found",
-          "No notification available at URI " || $uri))
-  else
+          "No notification available at URI " || $uri)),
+    xdmp:to-json(json:object() => map:with("success", fn:true()))
+  ) else
     fn:error((),"RESTAPI-SRVEXERR",
       (400, "Bad Request",
       "uri parameter is required"))
