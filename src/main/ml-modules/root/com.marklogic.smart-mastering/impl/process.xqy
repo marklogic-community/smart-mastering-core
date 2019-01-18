@@ -93,11 +93,11 @@ declare function proc-impl:consolidate-notifies($all-matches as map:map, $consol
   return
     fn:distinct-values(
       for $key in map:keys($all-matches)
-      let $updated-key :=
-        if (map:contains($merged-into, $key)) then
-          merge-impl:build-merge-uri(map:get($merged-into, $key), $key)
+      for $updated-key in
+        (if (map:contains($merged-into, $key)) then
+          map:get($merged-into, $key) ! merge-impl:build-merge-uri(., $key)
         else
-          $key
+          $key)
       let $key-notifications := map:get($all-matches, $key)/result[@action=$const:NOTIFY-ACTION]
       let $key-thresholds := fn:distinct-values($key-notifications/@threshold)
       for $key-threshold in $key-thresholds

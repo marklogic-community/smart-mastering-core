@@ -1799,15 +1799,22 @@ declare function merge-impl:execute-algorithm(
     xdmp:apply($algorithm, $property-name, $properties, $property-spec)
 };
 
+declare variable $documents-archived-in-transaction := map:map();
 declare function merge-impl:archive-document($uri as xs:string, $merge-options as element(merging:options)?)
 {
-  xdmp:document-set-collections(
-    $uri,
-    coll-impl:on-archive(
-      map:entry($uri, xdmp:document-get-collections($uri)),
-      $merge-options/merging:algorithms/merging:collections/merging:on-archive
+  if (map:contains($documents-archived-in-transaction, $uri)) then ()
+  else
+    map:put(
+      $documents-archived-in-transaction,
+      $uri,
+      xdmp:document-set-collections(
+        $uri,
+        coll-impl:on-archive(
+          map:entry($uri, xdmp:document-get-collections($uri)),
+          $merge-options/merging:algorithms/merging:collections/merging:on-archive
+        )
+      )
     )
-  )
 };
 
 (:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
