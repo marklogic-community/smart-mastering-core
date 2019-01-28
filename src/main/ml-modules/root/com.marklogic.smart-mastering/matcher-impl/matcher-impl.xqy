@@ -188,7 +188,7 @@ declare function match-impl:compile-match-options(
  : @return results specify document URIs that matches for provided document
  :)
 declare function match-impl:find-document-matches-by-options(
-  $document,
+  $document as node()?,
   $options as item(),
   $start as xs:integer,
   $page-length as xs:integer,
@@ -198,85 +198,87 @@ declare function match-impl:find-document-matches-by-options(
   $filter-query as cts:query
 ) as element(results)
 {
-  (: increment usage count :)
-  tel:increment(),
-  let $is-json := (xdmp:node-kind($document) = "object" or fn:exists($document/(object-node()|array-node())))
-  let $compiled-options := match-impl:compile-match-options($options, $is-json, $minimum-threshold)
-  let $scoring := $compiled-options => map:get("scoring")
-  let $algorithms := $compiled-options => map:get("algorithms")
-  let $options := $compiled-options => map:get("options")
-  let $values-by-qname := match-impl:values-by-qname($document, $compiled-options)
-  let $cached-queries := map:map()
-  let $boost-query := match-impl:build-boost-query($document, $values-by-qname, $compiled-options, $cached-queries)
-  let $serialized-boost-query := element boost-query {$boost-query}
-  let $minimum-threshold-combinations-query :=
-    cts:or-query(
-      for $query-set in $compiled-options => map:get("minimumThresholdCombinations")
-      let $queries := $query-set => map:get("queries")
-      let $queries-without-weight :=
-          for $query-map in $queries
-          return
-            document {
-              match-impl:query-map-to-query($query-map, $values-by-qname, $cached-queries)
-            }/* ! cts:query(match-impl:strip-query-weights(.))
-      where fn:exists($queries-without-weight)
-      return
-        if (fn:count($queries-without-weight) gt 1) then
-          cts:and-query(
-            $queries-without-weight
-          )
-        else
-          $queries-without-weight
-    )
-  let $match-query :=
-    cts:and-not-query(
-      cts:and-query((
-        $compiled-options => map:get("collectionQuery"),
-        $minimum-threshold-combinations-query
-      )),
-      cts:or-query((
-        if (fn:exists(xdmp:node-uri($document))) then
-          cts:document-query(xdmp:node-uri($document))
-        else (),
-        let $blocks := blocks-impl:get-blocks(fn:base-uri($document))
-        where fn:exists($blocks/node())
+  if (fn:exists($document)) then (
+    (: increment usage count :)
+    tel:increment(),
+    let $is-json := (xdmp:node-kind($document) = "object" or fn:exists($document/(object-node()|array-node())))
+    let $compiled-options := match-impl:compile-match-options($options, $is-json, $minimum-threshold)
+    let $scoring := $compiled-options => map:get("scoring")
+    let $algorithms := $compiled-options => map:get("algorithms")
+    let $options := $compiled-options => map:get("options")
+    let $values-by-qname := match-impl:values-by-qname($document, $compiled-options)
+    let $cached-queries := map:map()
+    let $boost-query := match-impl:build-boost-query($document, $values-by-qname, $compiled-options, $cached-queries)
+    let $serialized-boost-query := element boost-query {$boost-query}
+    let $minimum-threshold-combinations-query :=
+      cts:or-query(
+        for $query-set in $compiled-options => map:get("minimumThresholdCombinations")
+        let $queries := $query-set => map:get("queries")
+        let $queries-without-weight :=
+            for $query-map in $queries
+            return
+              document {
+                match-impl:query-map-to-query($query-map, $values-by-qname, $cached-queries)
+              }/* ! cts:query(match-impl:strip-query-weights(.))
+        where fn:exists($queries-without-weight)
         return
-          cts:document-query($blocks/node())
-      ))
-    )
-  let $serialized-match-query :=
-    element match-query {
-      $minimum-threshold-combinations-query
-    }
-  let $_lock-on-search :=
-    if ($lock-on-search) then
-      match-impl:lock-on-search($serialized-match-query/cts:or-query)
-    else ()
-  let $matches :=
-      match-impl:search(
-        $match-query,
-        $boost-query,
-        $filter-query,
-        $minimum-threshold,
-        $start,
-        $page-length,
-        $scoring,
-        $algorithms,
-        $options,
-        $include-matches,
-        $is-json
+          if (fn:count($queries-without-weight) gt 1) then
+            cts:and-query(
+              $queries-without-weight
+            )
+          else
+            $queries-without-weight
       )
-  return (
-    $_lock-on-search,
-    element results {
-      attribute total { xdmp:estimate(cts:search(fn:collection(), match-impl:instance-query-wrapper($match-query, $is-json), "unfiltered")) },
-      attribute page-length { $page-length },
-      attribute start { $start },
-      element boost-query {$boost-query},
-      $serialized-match-query,
-      $matches
-    }
-  )
+    let $match-query :=
+      cts:and-not-query(
+        cts:and-query((
+          $compiled-options => map:get("collectionQuery"),
+          $minimum-threshold-combinations-query
+        )),
+        cts:or-query((
+          if (fn:exists(xdmp:node-uri($document))) then
+            cts:document-query(xdmp:node-uri($document))
+          else (),
+          let $blocks := blocks-impl:get-blocks(fn:base-uri($document))
+          where fn:exists($blocks/node())
+          return
+            cts:document-query($blocks/node())
+        ))
+      )
+    let $serialized-match-query :=
+      element match-query {
+        $minimum-threshold-combinations-query
+      }
+    let $_lock-on-search :=
+      if ($lock-on-search) then
+        match-impl:lock-on-search($serialized-match-query/cts:or-query)
+      else ()
+    let $matches :=
+        match-impl:search(
+          $match-query,
+          $boost-query,
+          $filter-query,
+          $minimum-threshold,
+          $start,
+          $page-length,
+          $scoring,
+          $algorithms,
+          $options,
+          $include-matches,
+          $is-json
+        )
+    return (
+      $_lock-on-search,
+      element results {
+        attribute total { xdmp:estimate(cts:search(fn:collection(), match-impl:instance-query-wrapper($match-query, $is-json), "unfiltered")) },
+        attribute page-length { $page-length },
+        attribute start { $start },
+        element boost-query {$boost-query},
+        $serialized-match-query,
+        $matches
+      }
+    )
+  ) else ()
 };
 
 (:
