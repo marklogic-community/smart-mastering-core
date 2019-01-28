@@ -2217,7 +2217,7 @@ declare function merge-impl:_options-json-config()
         "at", "property-name", "propertyName", "weight", "above", "label","algorithm-ref", "algorithmRef", "strategy", "default")
     ),
     map:put($config, "camel-case", fn:true()),
-    map:put($config, "whitepsace", "ignore"),
+    map:put($config, "whitespace", "ignore"),
     $config
   )
 };
