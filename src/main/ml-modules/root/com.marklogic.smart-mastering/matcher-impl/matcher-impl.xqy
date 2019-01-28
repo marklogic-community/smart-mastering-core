@@ -200,7 +200,7 @@ declare function match-impl:find-document-matches-by-options(
 {
   (: increment usage count :)
   tel:increment(),
-  let $is-json := fn:exists($document/(object-node()|array-node()))
+  let $is-json := (xdmp:node-kind($document) = "object" or fn:exists($document/(object-node()|array-node())))
   let $compiled-options := match-impl:compile-match-options($options, $is-json, $minimum-threshold)
   let $scoring := $compiled-options => map:get("scoring")
   let $algorithms := $compiled-options => map:get("algorithms")
