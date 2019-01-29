@@ -27,4 +27,14 @@ return
     $doc,
     xdmp:default-permissions(),
     $const:CONTENT-COLL
+  ),
+
+for $uri in map:keys($lib:UNSOURCED-DATA)
+let $doc := test:get-test-file(map:get($lib:UNSOURCED-DATA, $uri))
+return
+  xdmp:document-insert(
+    $uri,
+    $doc,
+    xdmp:default-permissions(),
+    $const:CONTENT-COLL
   )

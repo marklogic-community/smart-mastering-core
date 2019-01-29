@@ -1125,11 +1125,12 @@ declare function merge-impl:get-sources(
     if (fn:exists($ns-path)) then
       merge-impl:build-prefix-map($ns-path)
     else ()
-  for $source in
-    $docs/(es:envelope|object-node("envelope"))
-    /(es:headers|object-node("headers"))
-    /(sm:sources|array-node("sources"))
-    /(sm:source|object-node())
+  for $doc in $docs
+  let $sources := $doc/(es:envelope|object-node("envelope"))
+      /(es:headers|object-node("headers"))
+      /(sm:sources/sm:source|array-node("sources")/object-node("sources")|object-node("sources"))
+  let $sources := if (fn:empty($sources)) then object-node { "name": xdmp:node-uri($doc) } else $sources
+  for $source in $sources
   let $last-updated :=
     if (fn:string-length($ts-path) > 0) then
       fn:head(xdmp:unpath($ts-path, $ns-map, $source)[. castable as xs:dateTime] ! xs:dateTime(.))
@@ -1139,7 +1140,7 @@ declare function merge-impl:get-sources(
     object-node {
       "name": fn:string($source/*:name),
       "dateTime": fn:string($last-updated),
-      "documentUri": xdmp:node-uri($source)
+      "documentUri": xdmp:node-uri($doc)
     }
 
 };

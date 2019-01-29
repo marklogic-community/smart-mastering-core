@@ -19,6 +19,12 @@ declare variable $NESTED-DATA :=
     map:entry("/nested/doc2.json", "nested2.json")
   ));
 
+declare variable $UNSOURCED-DATA :=
+  map:new((
+    map:entry("/unsourced/doc1.json", "unsourced-doc-1.json"),
+    map:entry("/unsourced/doc2.json", "unsourced-doc-2.json")
+  ));
+
 declare variable $OPTIONS-NAME := "test-options";
 declare variable $OPTIONS-NAME-STRATEGIES := "test-options-with-strategies";
 declare variable $OPTIONS-NAME-COMPLETE := "test-options-stock";
