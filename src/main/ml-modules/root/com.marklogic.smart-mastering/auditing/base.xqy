@@ -394,7 +394,7 @@ declare function auditing:build-semantic-info($prov-xml as element(prov:document
   let $agent-iri := sem:iri(fn:string($agent/@prov:id))
   let $username := fn:string($agent/foaf:accountName)
   let $activity := $prov-xml/prov:activity
-  let $entities := $prov-xml//(prov:collection|prov:entity|prov:bundle)[fn:exists(@prov:id)]
+  let $entities := $prov-xml/(prov:collection|prov:entity|prov:bundle)[fn:exists(@prov:id)]
   let $auditing-managed-triples := (
     _build-agent-triples($agent-iri, $username, $prov-xml/prov:softwareAgent),
     for $entity in $entities
