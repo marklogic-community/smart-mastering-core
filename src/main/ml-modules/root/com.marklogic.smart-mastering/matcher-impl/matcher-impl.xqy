@@ -458,8 +458,9 @@ declare function match-impl:search(
       attribute score {$score},
       let $selected-threshold := (
         for $threshold in $thresholds/matcher:threshold
-        where $score ge fn:number($threshold/@above)
-        order by fn:number($threshold/@above) descending
+        let $threshold-score as xs:decimal? := $threshold/@above
+        where $score ge $threshold-score
+        order by $threshold-score descending
         return $threshold
       )[1]
       return (
