@@ -240,7 +240,8 @@ declare function merge-impl:save-merge-models-by-uri(
           $merged-document,
           (
             xdmp:permission($const:MDM-ADMIN, "update"),
-            xdmp:permission($const:MDM-USER, "read")
+            xdmp:permission($const:MDM-USER, "read"),
+            fn:map(xdmp:document-get-permissions#1, $uris)
           ),
           coll-impl:on-merge(map:new((
             for $uri in $distinct-uris
