@@ -1,5 +1,27 @@
 # Change Log
 
+## [v1.2.3](https://github.com/marklogic-community/smart-mastering-core/tree/v1.2.3) (2019-01-29)
+[Full Changelog](https://github.com/marklogic-community/smart-mastering-core/compare/v1.2.2...v1.2.3)
+
+**Implemented enhancements:**
+
+- Use variable for DHF version in build.gradle that is set in gradle.properties [\#277](https://github.com/marklogic-community/smart-mastering-core/issues/277)
+- Update example DHF project to 4.1.1 [\#276](https://github.com/marklogic-community/smart-mastering-core/issues/276)
+
+**Fixed bugs:**
+
+- sm-match endpoint tries to match XML docs when POSTing a JSON doc [\#279](https://github.com/marklogic-community/smart-mastering-core/issues/279)
+- Don't require sources in order to merge [\#274](https://github.com/marklogic-community/smart-mastering-core/issues/274)
+- Empty responses for sm-notifications PUT and DELETE [\#272](https://github.com/marklogic-community/smart-mastering-core/issues/272)
+- match-and-merge throws error with mixed match results [\#271](https://github.com/marklogic-community/smart-mastering-core/issues/271)
+- Merge options name is returned truncated \('-xml' removed\) [\#270](https://github.com/marklogic-community/smart-mastering-core/issues/270)
+
+**Merged pull requests:**
+
+- Fixes \#279 [\#280](https://github.com/marklogic-community/smart-mastering-core/pull/280) ([patrickmcelwee](https://github.com/patrickmcelwee))
+- Ryanjdew minimal readme [\#275](https://github.com/marklogic-community/smart-mastering-core/pull/275) ([ryanjdew](https://github.com/ryanjdew))
+- Release v1.2.2 [\#269](https://github.com/marklogic-community/smart-mastering-core/pull/269) ([ryanjdew](https://github.com/ryanjdew))
+
 ## [v1.2.2](https://github.com/marklogic-community/smart-mastering-core/tree/v1.2.2) (2018-12-27)
 [Full Changelog](https://github.com/marklogic-community/smart-mastering-core/compare/v1.2.1...v1.2.2)
 
