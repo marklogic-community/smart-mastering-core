@@ -7,10 +7,10 @@ plugins {
   // gradle -PenvironmentName=x ...
   id 'net.saliman.properties' version '1.4.6'
 
-  id "com.marklogic.ml-gradle" version "3.10.0"
+  id "com.marklogic.ml-gradle"
   // This gradle plugin extends the ml-gradle plugin with
   // commands that make the Data Hub Framework do its magic
-  id 'com.marklogic.ml-data-hub' version '4.1.0'
+  id 'com.marklogic.ml-data-hub'
 }
 
 repositories {
