@@ -158,6 +158,11 @@ declare function match-impl:compile-match-options(
         map:entry("scoring", $scoring),
         map:entry("algorithms", $algorithms),
         map:entry("queries", $queries),
+        map:entry("orderedThresholds",
+          for $threshold in $options/matcher:thresholds/matcher:threshold
+          order by $threshold/@above cast as xs:decimal descending
+          return $threshold
+        ),
         map:entry("minimumThresholdCombinations", $minimum-threshold-combinations),
         map:entry("collectionQuery", match-impl:build-collection-query(coll:content-collections($options)))
       ))
@@ -262,8 +267,7 @@ declare function match-impl:find-document-matches-by-options(
           $start,
           $page-length,
           $scoring,
-          $algorithms,
-          $options,
+          $compiled-options,
           $include-matches,
           $is-json
         )
@@ -278,7 +282,12 @@ declare function match-impl:find-document-matches-by-options(
         $matches
       }
     )
-  ) else ()
+  ) else
+    element results {
+      attribute total { 0 },
+      attribute page-length { $page-length },
+      attribute start { $start }
+    }
 };
 
 (:
@@ -398,8 +407,7 @@ declare function match-impl:search(
   $start as xs:int,
   $page-length as xs:int,
   $scoring as element(matcher:scoring),
-  $algorithms as map:map,
-  $options as element(matcher:options),
+  $compiled-options as map:map,
   $include-matches as xs:boolean,
   $is-json as xs:boolean
 ) {
@@ -426,7 +434,7 @@ declare function match-impl:search(
         $is-json
       )
     else ()
-  let $thresholds := $options/matcher:thresholds
+  let $thresholds := $compiled-options => map:get("orderedThresholds")
   for $result at $pos in cts:search(
     fn:collection(),
     $query,
@@ -456,13 +464,7 @@ declare function match-impl:search(
     element result {
       $result-stub/@*,
       attribute score {$score},
-      let $selected-threshold := (
-        for $threshold in $thresholds/matcher:threshold
-        let $threshold-score as xs:decimal? := $threshold/@above
-        where $score ge $threshold-score
-        order by $threshold-score descending
-        return $threshold
-      )[1]
+      let $selected-threshold := fn:head($thresholds[$score ge @above])
       return (
         attribute threshold { fn:string($selected-threshold/@label) },
         attribute action { fn:string($selected-threshold/(matcher:action|@action)) }
