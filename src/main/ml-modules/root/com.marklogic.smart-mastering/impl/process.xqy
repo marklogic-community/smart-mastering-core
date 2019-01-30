@@ -150,11 +150,11 @@ declare function proc-impl:process-match-and-merge-with-options(
   let $lock-on-query := fn:true()
   let $all-matches :=
     map:new((
-      $uris !
+      cts:search(fn:doc(), cts:document-query($uris), "unfiltered") !
         map:entry(
-          .,
+          xdmp:node-uri(.),
           matcher:find-document-matches-by-options(
-            fn:doc(.),
+            .,
             $matching-options,
             1,
             fn:head((
