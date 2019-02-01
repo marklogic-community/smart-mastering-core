@@ -2,6 +2,8 @@ xquery version "1.0-ml";
 
 module namespace algorithms = "http://marklogic.com/smart-mastering/algorithms";
 
+import module namespace const = "http://marklogic.com/smart-mastering/constants"
+  at "/com.marklogic.smart-mastering/constants.xqy";
 import module namespace thsr = "http://marklogic.com/xdmp/thesaurus"
   at "/MarkLogic/thesaurus.xqy";
 
@@ -35,12 +37,20 @@ declare function algorithms:thesaurus(
     where fn:exists($entries)
     return
       thsr:expand(
-        cts:element-value-query(
-          $qname,
-          fn:lower-case($value),
-          "case-insensitive",
-          $expand-xml/@weight
-        ),
+        if ($options-xml/match:data-format = $const:FORMAT-JSON) then
+          cts:json-property-value-query(
+            fn:string($qname),
+            fn:lower-case($value),
+            "case-insensitive",
+            $expand-xml/@weight
+          )
+        else
+          cts:element-value-query(
+            $qname,
+            fn:lower-case($value),
+            "case-insensitive",
+            $expand-xml/@weight
+          ),
         $entries,
         $expand-xml/@weight,
         (),
