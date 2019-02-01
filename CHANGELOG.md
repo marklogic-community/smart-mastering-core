@@ -1,7 +1,7 @@
 # Change Log
 
-## [v1.2.3](https://github.com/marklogic-community/smart-mastering-core/tree/v1.2.3) (2019-01-29)
-[Full Changelog](https://github.com/marklogic-community/smart-mastering-core/compare/v1.2.2...v1.2.3)
+## [v1.2.4](https://github.com/marklogic-community/smart-mastering-core/tree/v1.2.4) (2019-02-01)
+[Full Changelog](https://github.com/marklogic-community/smart-mastering-core/compare/v1.2.2...v1.2.4)
 
 **Implemented enhancements:**
 
@@ -10,7 +10,9 @@
 
 **Fixed bugs:**
 
+- Thesauri and synonym expansion does not check document format [\#283](https://github.com/marklogic-community/smart-mastering-core/issues/283)
 - sm-match endpoint tries to match XML docs when POSTing a JSON doc [\#279](https://github.com/marklogic-community/smart-mastering-core/issues/279)
+- Merge is pulling in TDE triples for documents on merge [\#278](https://github.com/marklogic-community/smart-mastering-core/issues/278)
 - Don't require sources in order to merge [\#274](https://github.com/marklogic-community/smart-mastering-core/issues/274)
 - Empty responses for sm-notifications PUT and DELETE [\#272](https://github.com/marklogic-community/smart-mastering-core/issues/272)
 - match-and-merge throws error with mixed match results [\#271](https://github.com/marklogic-community/smart-mastering-core/issues/271)
