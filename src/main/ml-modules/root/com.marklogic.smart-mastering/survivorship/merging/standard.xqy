@@ -364,7 +364,11 @@ declare function merging:standard-triples(
   let $uris := $docs ! xdmp:node-uri(.)
   return
     sem:sparql(
-      'construct { ?s ?p ?o } where { ?s ?p ?o }',
+      'construct { ?s ?p ?o } where {
+        ?s ?p ?o.
+        BIND (datatype(?s) AS ?dataType)
+        FILTER (!BOUND(?dataType) || ?dataType != <http://marklogic.com/xdmp/sql#rowID>)
+      }',
       (), "map",
       sem:store((), cts:document-query($uris))
     )
