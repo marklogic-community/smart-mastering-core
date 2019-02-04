@@ -158,7 +158,7 @@ declare function proc-impl:process-match-and-merge-with-options(
             $matching-options,
             1,
             fn:head((
-              $matching-options/matcher:max-scan ! xs:integer(.),
+              $matching-options//*:max-scan ! xs:integer(.),
               500
             )),
             $minimum-threshold,
