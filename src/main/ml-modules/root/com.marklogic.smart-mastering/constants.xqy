@@ -28,10 +28,6 @@ declare variable $MODEL-MAPPER-COLL as xs:string := "mdm-model-mapper";
 declare variable $NOTIFICATION-COLL as xs:string := "mdm-notification";
 declare variable $OPTIONS-COLL as xs:string := "mdm-options";
 
-(: Roles :)
-declare variable $MDM-USER as xs:string := "mdm-user";
-declare variable $MDM-ADMIN as xs:string := "mdm-admin";
-
 (: Actions :)
 declare variable $MERGE-ACTION as xs:string := "merge";
 declare variable $NOTIFY-ACTION as xs:string := "notify";
