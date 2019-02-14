@@ -170,11 +170,7 @@ declare function auditing:audit-trace(
         $prov-xml/node(),
         auditing:build-semantic-info($prov-xml)
       },
-      (
-        xdmp:default-permissions(),
-        xdmp:permission($const:MDM-USER, "read"),
-        xdmp:permission($const:MDM-ADMIN, "update")
-      ),
+      xdmp:default-permissions(),
       $const:AUDITING-COLL
     )
 };
@@ -406,11 +402,7 @@ declare function auditing:build-semantic-info($prov-xml as element(prov:document
       sem:graph-insert(
         sem:iri("mdm-auditing"),
         $auditing-managed-triples,
-        (
-          xdmp:default-permissions(),
-          xdmp:permission($const:MDM-USER, "read"),
-          xdmp:permission($const:MDM-ADMIN, "update")
-        ),
+        xdmp:default-permissions(),
         $const:AUDITING-COLL
       )
     else (),

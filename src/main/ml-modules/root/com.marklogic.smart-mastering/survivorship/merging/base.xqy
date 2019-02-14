@@ -239,8 +239,7 @@ declare function merge-impl:save-merge-models-by-uri(
           $merge-uri,
           $merged-document,
           (
-            xdmp:permission($const:MDM-ADMIN, "update"),
-            xdmp:permission($const:MDM-USER, "read"),
+            xdmp:default-permissions(),
             fn:map(xdmp:document-get-permissions#1, $uris)
           ),
           coll-impl:on-merge(map:new((
@@ -1873,7 +1872,7 @@ declare function merge-impl:save-options(
     xdmp:document-insert(
       $MERGING-OPTIONS-DIR||$name||".xml",
       $options,
-      (xdmp:permission($const:MDM-ADMIN, "update"), xdmp:permission($const:MDM-USER, "read")),
+      xdmp:default-permissions(),
       ($const:OPTIONS-COLL, $const:MERGE-OPTIONS-COLL)
     )
 };

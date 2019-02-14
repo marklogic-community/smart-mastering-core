@@ -81,11 +81,7 @@ declare function notify-impl:save-match-notification(
       xdmp:document-insert(
         $notification-uri,
         $new-notification,
-        (
-          xdmp:default-permissions(),
-          xdmp:permission($const:MDM-USER, "read"),
-          xdmp:permission($const:MDM-USER, "update")
-        ),
+        xdmp:default-permissions(),
         coll-impl:on-notification(
           map:map(),
           $options/merging:algorithms/merging:collections/merging:on-notification
