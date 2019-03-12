@@ -1103,9 +1103,12 @@ declare function merge-impl:build-prefix-map($source)
 declare function merge-impl:get-instances($docs)
 {
   for $doc in $docs
-  let $instance := $doc/(es:envelope|object-node("envelope"))/(es:instance|object-node("instance"))/((*|object-node()) except (es:info|object-node("info")))
+  let $instance-root := $doc/(es:envelope|object-node("envelope"))/(es:instance|object-node("instance"))
+  let $instance := $instance-root/((element()[*]|object-node()) except (es:info|object-node("info")))
   return
-    if ($instance instance of element(MDM)) then
+    if (fn:empty($instance) or fn:count($instance) gt 1) then
+      $instance-root
+    else if ($instance instance of element(MDM)) then
       $instance/*/*
     else if (fn:node-name($instance) eq xs:QName("MDM")) then
       (: Ensure we navigating a array at the instance root :)
