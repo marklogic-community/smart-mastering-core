@@ -33,7 +33,7 @@ dependencies {
   mlRestApi "com.marklogic.community:smart-mastering-core:${smartMasteringVersion}"
 
   // MLCP dependencies
-  mlcp "com.marklogic:mlcp:9.0.7"
+  mlcp "com.marklogic:mlcp:9.0.8.2"
 }
 
 // this task runs MLCP to ingest the CRM data
