@@ -7,16 +7,8 @@ xquery version "1.0-ml";
 
 module namespace auditing = "http://marklogic.com/smart-mastering/auditing";
 
-import module namespace diff = "http://marklogic.com/demo/xml-diff"
-  at "/mlpm_modules/marklogic-xml-diff/diff.xqy";
-import module namespace mem = "http://maxdewpoint.blogspot.com/memory-operations/functional"
-  at "/mlpm_modules/XQuery-XML-Memory-Operations/memory-operations-functional.xqy";
 import module namespace sem = "http://marklogic.com/semantics"
   at "/MarkLogic/semantics.xqy";
-
-
-import module namespace xq3 = "http://maxdewpoint.blogspot.com/xq3-ml-extensions"
-  at "/mlpm_modules/xq3-ml-extensions/xq3.xqy";
 
 import module namespace const = "http://marklogic.com/smart-mastering/constants"
   at "/com.marklogic.smart-mastering/constants.xqy";
@@ -448,44 +440,6 @@ declare function auditing:_build-entity-managed-triples($entity, $prov-xml)
         fn:string($entity/prov:label)
       )
     ) else ()
-};
-
-
-declare function auditing:reverse-change-set($node as node())
-{
-  typeswitch ($node)
-  case element(diff:addition) return
-    element diff:removal {
-      $node/@*,
-      fn:map(auditing:reverse-change-set#1, $node/node())
-    }
-  case element(diff:removal) return
-    element diff:addition {
-      $node/@*,
-      fn:map(auditing:reverse-change-set#1, $node/node())
-    }
-  case element() return
-    element {fn:node-name($node)} {
-      fn:map(auditing:reverse-change-set-attributes#1,$node/@*),
-      fn:map(auditing:reverse-change-set#1, $node/node())
-    }
-  default return
-    $node
-};
-
-declare function auditing:reverse-change-set-attributes($node as attribute())
-{
-  typeswitch ($node)
-  case attribute(diff:addition) return
-    attribute diff:removal {
-      fn:string($node)
-    }
-  case attribute(diff:removal) return
-    attribute diff:addition {
-      fn:string($node)
-    }
-  default return
-    $node
 };
 
 declare function auditing:subject-not-stored($iri-str) as xs:boolean
