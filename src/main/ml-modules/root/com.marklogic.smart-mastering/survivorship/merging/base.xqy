@@ -1806,17 +1806,21 @@ declare function merge-impl:execute-algorithm(
 declare variable $documents-archived-in-transaction := map:map();
 declare function merge-impl:archive-document($uri as xs:string, $merge-options as element(merging:options)?)
 {
+  xdmp:lock-for-update($uri),
   if (map:contains($documents-archived-in-transaction, $uri)) then ()
   else
     map:put(
       $documents-archived-in-transaction,
       $uri,
-      xdmp:document-set-collections(
-        $uri,
-        coll-impl:on-archive(
-          map:entry($uri, xdmp:document-get-collections($uri)),
-          $merge-options/merging:algorithms/merging:collections/merging:on-archive
-        )
+      (
+        xdmp:document-set-collections(
+          $uri,
+          coll-impl:on-archive(
+            map:entry($uri, xdmp:document-get-collections($uri)),
+            $merge-options/merging:algorithms/merging:collections/merging:on-archive
+          )
+        ),
+        fn:true()
       )
     )
 };
