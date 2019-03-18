@@ -39,10 +39,10 @@ let $matches :=
   ))
 let $consolidated-merges :=
   map:new((
-    map:entry("25df72f1-8026-4171-bc87-96a4662ff6b1", ("/source/2/doc2.xml", "/source/3/doc3.xml")),
-    map:entry("0dab6878-6fca-49e3-899d-5e4347316334", ("/source/3/doc4.xml", "/source/2/doc5.xml"))
+    map:entry("/com.marklogic.smart-mastering/merged/25df72f1-8026-4171-bc87-96a4662ff6b1.xml", ("/source/2/doc2.xml", "/source/3/doc3.xml")),
+    map:entry("/com.marklogic.smart-mastering/merged/0dab6878-6fca-49e3-899d-5e4347316334.xml", ("/source/3/doc4.xml", "/source/2/doc5.xml"))
   ))
-let $actual := proc:consolidate-notifies($matches, $consolidated-merges)
+let $actual := proc:consolidate-notifies($matches, -$consolidated-merges)
 let $merged-2-3-uri := "/com.marklogic.smart-mastering/merged/25df72f1-8026-4171-bc87-96a4662ff6b1.xml"
 let $merged-4-5-uri := "/com.marklogic.smart-mastering/merged/0dab6878-6fca-49e3-899d-5e4347316334.xml"
 let $assertions := (

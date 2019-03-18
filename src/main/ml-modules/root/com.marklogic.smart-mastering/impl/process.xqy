@@ -17,6 +17,8 @@ import module namespace fun-ext = "http://marklogic.com/smart-mastering/function
   at "../function-extension/base.xqy";
 import module namespace matcher = "http://marklogic.com/smart-mastering/matcher"
   at "/com.marklogic.smart-mastering/matcher.xqy";
+import module namespace match-opt-impl = "http://marklogic.com/smart-mastering/options-impl"
+  at "/com.marklogic.smart-mastering/matcher-impl/options-impl.xqy";
 import module namespace merging = "http://marklogic.com/smart-mastering/merging"
   at "/com.marklogic.smart-mastering/merging.xqy";
 import module namespace merge-impl = "http://marklogic.com/smart-mastering/survivorship/merging"
@@ -34,9 +36,10 @@ declare function proc-impl:process-match-and-merge($uris as xs:string*)
   let $merging-options := merging:get-options($const:FORMAT-XML)
   return
     if (fn:exists($merging-options)) then
-      for $merging-options in merging:get-options($const:FORMAT-XML)
+      for $merge-options in $merging-options
+      let $match-options := matcher:get-options(fn:string($merge-options/merging:match-options), $const:FORMAT-XML)
       return
-        proc-impl:process-match-and-merge-with-options($uris, $merging-options, cts:true-query())
+        proc-impl:process-match-and-merge-with-options-save($uris, $merge-options, $match-options, cts:true-query())
     else
       fn:error($const:NO-MERGE-OPTIONS-ERROR, "No Merging Options are present. See: https://marklogic-community.github.io/smart-mastering-core/docs/merging-options/")
 };
@@ -47,11 +50,15 @@ declare function proc-impl:process-match-and-merge(
   $filter-query as cts:query)
   as item()*
 {
-  proc-impl:process-match-and-merge-with-options(
-    $uris,
-    merging:get-options($option-name, $const:FORMAT-XML),
-    $filter-query
-  )
+  let $merge-options := merging:get-options($option-name, $const:FORMAT-XML)
+  let $match-options := matcher:get-options(fn:string($merge-options/merging:match-options), $const:FORMAT-XML)
+  return
+    proc-impl:process-match-and-merge-with-options-save(
+      $uris,
+      $merge-options,
+      $match-options,
+      $filter-query
+    )
 };
 
 declare variable $STRING-TOKEN := "##";
@@ -86,38 +93,36 @@ declare function proc-impl:consolidate-merges($matches as map:map) as map:map
   ))
 };
 
-declare function proc-impl:consolidate-notifies($all-matches as map:map, $consolidated-merges as map:map)
+declare function proc-impl:consolidate-notifies($all-matches as map:map, $merged-into as map:map)
   as xs:string*
 {
-  let $merged-into := -$consolidated-merges
-  return
-    fn:distinct-values(
-      for $key in map:keys($all-matches)
-      for $updated-key in
-        (if (map:contains($merged-into, $key)) then
-          map:get($merged-into, $key) ! merge-impl:build-merge-uri(., $key)
+  fn:distinct-values(
+    for $key in map:keys($all-matches)
+    for $updated-key in
+      (if (map:contains($merged-into, $key)) then
+        map:get($merged-into, $key)
+      else
+        $key)
+    let $key-notifications := map:get($all-matches, $key)/result[@action=$const:NOTIFY-ACTION]
+    let $key-thresholds := fn:distinct-values($key-notifications/@threshold)
+    for $key-threshold in $key-thresholds
+    let $updated-notification-uris :=
+      for $key-notification in $key-notifications[@threshold = $key-threshold]
+      let $key-uri as xs:string := $key-notification/@uri
+      let $updated-uri :=
+        if (map:contains($merged-into, $key-uri)) then
+          map:get($merged-into, $key-uri)
         else
-          $key)
-      let $key-notifications := map:get($all-matches, $key)/result[@action=$const:NOTIFY-ACTION]
-      let $key-thresholds := fn:distinct-values($key-notifications/@threshold)
-      for $key-threshold in $key-thresholds
-      let $updated-notification-uris :=
-        for $key-notification in $key-notifications[@threshold = $key-threshold]
-        let $key-uri as xs:string := $key-notification/@uri
-        let $updated-uri :=
-          if (map:contains($merged-into, $key-uri)) then
-            merge-impl:build-merge-uri(map:get($merged-into, $key-uri), $key-uri)
-          else
-            $key-uri
-        return $updated-uri
-      return
-        fn:string-join((
-          $key-threshold,
-          for $uri in fn:distinct-values(($updated-key, $updated-notification-uris))
-          order by $uri
-          return $uri
-        ), $STRING-TOKEN)
-    )
+          $key-uri
+      return $updated-uri
+    return
+      fn:string-join((
+        $key-threshold,
+        for $uri in fn:distinct-values(($updated-key, $updated-notification-uris))
+        order by $uri
+        return $uri
+      ), $STRING-TOKEN)
+  )
 };
 
 (: The following will store URIs of documents merged in transaction :)
@@ -132,14 +137,24 @@ declare variable $no-matches-in-transaction as map:map := map:map();
  :)
 declare function proc-impl:process-match-and-merge-with-options(
   $uris as xs:string*,
-  $options as item(),
-  $filter-query as cts:query)
+  $merge-options as item(),
+  $match-options as item(),
+  $filter-query as cts:query) as map:map*
 {
   (: increment usage count :)
   tel:increment(),
 
   let $_ := xdmp:trace($const:TRACE-MATCH-RESULTS, "processing: " || fn:string-join($uris, ", "))
-  let $matching-options := matcher:get-options(fn:string($options/merging:match-options), $const:FORMAT-XML)
+  let $matching-options :=
+      if ($match-options instance of object-node()) then
+        match-opt-impl:options-from-json($match-options)
+      else
+        $match-options
+  let $merge-options :=
+      if ($merge-options instance of object-node()) then
+        merge-impl:options-from-json($merge-options)
+      else
+        $merge-options
   let $actions := fn:distinct-values(($matching-options/matcher:actions/matcher:action/@name ! fn:string(.), $const:MERGE-ACTION, $const:NOTIFY-ACTION))
   let $thresholds := $matching-options/matcher:thresholds/matcher:threshold[(@action|matcher:action) = $actions]
   let $threshold-labels := $thresholds/@label
@@ -169,23 +184,66 @@ declare function proc-impl:process-match-and-merge-with-options(
         )
     ))
   let $consolidated-merges := proc-impl:consolidate-merges($all-matches)
-  let $consolidated-notifies := proc-impl:consolidate-notifies($all-matches, $consolidated-merges)
   let $merged-uris := map:keys($consolidated-merges)
+  let $merged-into := map:map()
+  let $on-merge-options := $merge-options/merging:algorithms/merging:collections/merging:on-merge
+  let $processed-merges :=
+    (: Process merges :)
+    for $new-uri in $merged-uris
+    where fn:not(map:contains($merges-in-transaction, $new-uri))
+    return (
+      map:put($merges-in-transaction, $new-uri, fn:true()),
+      let $distinct-uris := fn:distinct-values(map:get($consolidated-merges, $new-uri))
+      let $merged-doc := merge-impl:build-merge-models-by-uri($distinct-uris, $merge-options, $new-uri)
+      let $merge-uri := merge-impl:build-merge-uri(
+        $new-uri,
+        if ($merged-doc instance of element() or
+          $merged-doc instance of document-node(element())) then
+          $const:FORMAT-XML
+        else
+          $const:FORMAT-JSON
+      )
+      return (
+        $distinct-uris ! map:put($merged-into, ., $merge-uri),
+        map:new((
+          map:entry("uri", $merge-uri),
+          map:entry("value",
+            $merged-doc
+          ),
+          map:entry("context",
+            map:new((
+              map:entry("collections",
+                coll-impl:on-merge(
+                  map:new((
+                    for $uri in $distinct-uris
+                    return
+                      map:entry(
+                        $uri,
+                        xdmp:document-get-collections($uri)
+                      )
+                  )),
+                  $on-merge-options
+                )
+              ),
+              map:entry("permissions",
+                (
+                  xdmp:default-permissions(),
+                  fn:map(xdmp:document-get-permissions#1, $distinct-uris)
+                )
+              )
+            ))
+          )
+        ))
+      )
+    )
+  let $consolidated-notifies := proc-impl:consolidate-notifies($all-matches, $merged-into)
   return (
     if (xdmp:trace-enabled($const:TRACE-MATCH-RESULTS)) then (
       xdmp:trace($const:TRACE-MATCH-RESULTS, "Consolidated merges: " || xdmp:quote($consolidated-merges)),
       xdmp:trace($const:TRACE-MATCH-RESULTS, "Consolidated notifications: " || xdmp:quote($consolidated-notifies))
     )
     else (),
-
-    (: Process merges :)
-    for $new-uri in $merged-uris
-    where fn:not(map:contains($merges-in-transaction, $new-uri))
-    return (
-      map:put($merges-in-transaction, $new-uri, fn:true()),
-      merge-impl:save-merge-models-by-uri(map:get($consolidated-merges, $new-uri), $options, $new-uri)
-    ),
-
+    $processed-merges,
     (: Process notifications :)
     for $notification in $consolidated-notifies
     let $parts := fn:tokenize($notification, $STRING-TOKEN)
@@ -193,17 +251,18 @@ declare function proc-impl:process-match-and-merge-with-options(
     let $uris := fn:tail($parts)
     where fn:not(map:contains($notifications-in-transaction, $notification))
     return (
-(:      map:put($notifications-in-transaction, $notification, fn:true()),:)
-      matcher:save-match-notification($threshold, $uris, $options)
+      matcher:build-match-notification($threshold, $uris, $merge-options)
     ),
 
     (: Process collections on no matches :)
+    let $on-no-match := $merge-options/merging:algorithms/merging:collections/merging:on-no-match
     for $uri in $uris[fn:not(. = $merged-uris)]
     let $new-collections := coll-impl:on-no-match(
               map:entry($uri, xdmp:document-get-collections($uri)),
-              $options/merging:algorithms/merging:collections/merging:on-no-match
+              $on-no-match
             )
     let $current-collections := xdmp:document-get-collections($uri)
+    let $_lock-for-update := xdmp:lock-for-update($uri)
     where
       fn:not(map:contains($no-matches-in-transaction, $uri))
         and
@@ -212,19 +271,16 @@ declare function proc-impl:process-match-and-merge-with-options(
           and
         (every $col in $new-collections satisfies $col = $current-collections)
       )
-    return (
-      map:put(
-        $no-matches-in-transaction,
-        $uri,
-        xdmp:document-set-collections(
-          $uri,
-          coll-impl:on-no-match(
-            map:entry($uri, xdmp:document-get-collections($uri)),
-            $options/merging:algorithms/merging:collections/merging:on-no-match
-          )
-        )
+    return map:new((
+      map:entry("uri", $uri),
+      map:entry("value", fn:doc($uri)),
+      map:entry("context",
+        map:new((
+          map:entry("collections",$new-collections),
+          map:entry("permissions",xdmp:document-get-permissions($uri))
+        ))
       )
-    ),
+    )),
 
     (: Process custom actions :)
     let $action-map :=
@@ -253,13 +309,48 @@ declare function proc-impl:process-match-and-merge-with-options(
             $action-func,
             $uri,
             proc-impl:matches-to-json($custom-action-match),
-            merge-impl:options-to-json($options)
+            merge-impl:options-to-json($merge-options)
           )
         else
-          xdmp:apply($action-func, $uri, $custom-action-match, $options)
+          xdmp:apply($action-func, $uri, $custom-action-match, $merge-options)
       else
         fn:error(xs:QName("SM-CONFIGURATION"), "Threshold action is not configured or not found", $custom-action-match)
   )
+};
+
+(:
+ : The workhorse function.
+ :)
+declare function proc-impl:process-match-and-merge-with-options-save(
+  $uris as xs:string*,
+  $merge-options as item(),
+  $match-options as item(),
+  $filter-query as cts:query)
+{
+  let $actions as item()* := proc-impl:process-match-and-merge-with-options(
+      $uris,
+      $merge-options,
+      $match-options,
+      $filter-query
+    )
+  for $action in $actions
+  return
+    if ($action instance of map:map) then
+      let $context as map:map? := $action => map:get("context")
+      return (
+        $action => map:get("value"),
+        xdmp:document-insert(
+          $action => map:get("uri"),
+          $action => map:get("value"),
+          map:new((
+            map:entry("collections", $context => map:get("collections")),
+            map:entry("permissions", $context => map:get("permissions")),
+            map:entry("metadata", $context => map:get("metadata"))
+          ))
+        )
+      )
+    else
+      $action
 };
 
 (:

@@ -148,9 +148,9 @@ declare function merge-impl:all-merged($uris as xs:string*) as xs:boolean
     satisfies $uri = $locks
 };
 
-declare function merge-impl:build-merge-uri($id as xs:string, $source-uris as xs:string+)
+declare function merge-impl:build-merge-uri($id as xs:string, $format as xs:string)
 {
-  $MERGED-DIR || $id || (if (fn:ends-with(fn:head($source-uris), ".json")) then ".json" else ".xml")
+  $MERGED-DIR || $id || "." || $format
 };
 
 (:~
@@ -192,7 +192,6 @@ declare function merge-impl:save-merge-models-by-uri(
         merge-impl:options-from-json($merge-options)
       else
         $merge-options
-    let $merge-uri := merge-impl:build-merge-uri($id, $uris)
     let $merged-uris := $uris[xdmp:document-get-collections(.) = $const:MERGED-COLL]
     let $uris :=
       for $uri in $uris
@@ -219,6 +218,14 @@ declare function merge-impl:save-merge-models-by-uri(
         map:get($parsed-properties, "final-triples"),
         map:get($parsed-properties, $PROPKEY-HEADERS-NS-MAP)
       )
+    let $merge-uri := merge-impl:build-merge-uri(
+      $id,
+      if ($merged-document instance of element() or
+        $merged-document instance of document-node(element())) then
+        $const:FORMAT-XML
+      else
+        $const:FORMAT-JSON
+    )
     let $_audit-trail :=
       auditing:audit-trace(
         $const:MERGE-ACTION,
@@ -407,6 +414,21 @@ declare function merge-impl:rollback-merge(
 declare function merge-impl:build-merge-models-by-uri(
   $uris as xs:string*,
   $merge-options as item()?
+) {
+  merge-impl:build-merge-models-by-uri($uris, $merge-options, sem:uuid-string())
+};
+
+(:~
+ : Construct a merged document from the given URIs, but do not update the
+ : database.
+ : @param $uris  URIs of the source documents that will be merged
+ : @param $merge-options  specification of how options are to be merged
+ : @return in-memory copy of the merge result
+ :)
+declare function merge-impl:build-merge-models-by-uri(
+  $uris as xs:string*,
+  $merge-options as item()?,
+  $id as xs:string
 )
 {
   let $merge-options :=
@@ -427,7 +449,7 @@ declare function merge-impl:build-merge-models-by-uri(
   let $wrapper-qnames := map:get($parsed-properties, "wrapper-qnames")
   return
     merge-impl:build-merge-models-by-final-properties(
-      sem:uuid-string(),
+      $id,
       $docs,
       $wrapper-qnames,
       $final-properties,

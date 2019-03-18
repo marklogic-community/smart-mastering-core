@@ -46,7 +46,34 @@ declare function notify-impl:save-match-notification(
   $threshold-label as xs:string,
   $uris as xs:string*,
   $options as element(merging:options)?
-) as element(sm:notification)
+) as element(sm:notification)?
+{
+  for $action in notify-impl:build-match-notification($threshold-label, $uris, $options)
+  let $context := $action => map:get("context")
+  let $_database-update :=
+      xdmp:document-insert(
+        $action => map:get("uri"),
+        $action => map:get("value"),
+        $context => map:get("permissions"),
+        $context => map:get("collections")
+      )
+  return (
+    $action => map:get("value")
+  )
+};
+
+(:
+ : Create a new notification document. If there is already a notification for
+ : this combination of label and URIs, that notification will be replaced.
+ : @param $threshold-label  a human-readable label
+ : @param $uris  sequence of URIs of the documents that might be matches
+ : @return in-memory version of the notification document
+ :)
+declare function notify-impl:build-match-notification(
+  $threshold-label as xs:string,
+  $uris as xs:string*,
+  $options as element(merging:options)?
+) as map:map?
 {
   let $existing-notification :=
     notify-impl:get-existing-match-notification($threshold-label, $uris)
@@ -70,30 +97,20 @@ declare function notify-impl:save-match-notification(
     else
       "/com.marklogic.smart-mastering/matcher/notifications/" ||
           sem:uuid-string() || ".xml"
-  let $_database-update :=
-    if (fn:exists($existing-notification) and (every $uri in $doc-uris satisfies $uri = $old-doc-uris) and fn:count($doc-uris) eq fn:count($old-doc-uris)) then ()
-    else if (fn:exists($existing-notification)) then (
-      xdmp:node-replace(fn:head($existing-notification[fn:not(map:contains($notification-uris-operated-on, xdmp:node-uri(.)))]), $new-notification),
-      for $extra-doc in fn:tail($existing-notification[fn:not(map:contains($notification-uris-operated-on, xdmp:node-uri(.)))])
-      return
-        xdmp:document-delete(xdmp:node-uri($extra-doc))
-    ) else
-      xdmp:document-insert(
-        $notification-uri,
-        $new-notification,
-        xdmp:default-permissions(),
-        coll-impl:on-notification(
+  where fn:not(fn:exists($existing-notification) and (every $uri in $doc-uris satisfies $uri = $old-doc-uris) and fn:count($doc-uris) eq fn:count($old-doc-uris))
+  return map:new((
+    map:entry("uri", $notification-uri),
+    map:entry("value", $new-notification),
+    map:entry("context",
+      map:new((
+        map:entry("permissions", xdmp:default-permissions()),
+        map:entry("collections", coll-impl:on-notification(
           map:map(),
           $options/merging:algorithms/merging:collections/merging:on-notification
-        )
-      )
-  return (
-    $new-notification,
-    let $_track-notification-updates :=
-      for $uri in ($existing-notification ! xdmp:node-uri(.))
-      return map:put($notification-uris-operated-on, $uri, fn:true())
-    return $_track-notification-updates
-  )
+        ))
+      ))
+    )
+  ))
 };
 
 (:
