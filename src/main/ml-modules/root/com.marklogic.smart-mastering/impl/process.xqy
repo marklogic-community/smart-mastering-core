@@ -30,7 +30,7 @@ import module namespace tel = "http://marklogic.com/smart-mastering/telemetry"
 
 declare option xdmp:mapping "false";
 
-declare function proc-impl:process-match-and-merge($uris as xs:string*)
+declare function proc-impl:process-match-and-merge($input as item()*)
   as item()*
 {
   let $merging-options := merging:get-options($const:FORMAT-XML)
@@ -39,13 +39,13 @@ declare function proc-impl:process-match-and-merge($uris as xs:string*)
       for $merge-options in $merging-options
       let $match-options := matcher:get-options(fn:string($merge-options/merging:match-options), $const:FORMAT-XML)
       return
-        proc-impl:process-match-and-merge-with-options-save($uris, $merge-options, $match-options, cts:true-query())
+        proc-impl:process-match-and-merge-with-options-save($input, $merge-options, $match-options, cts:true-query())
     else
       fn:error($const:NO-MERGE-OPTIONS-ERROR, "No Merging Options are present. See: https://marklogic-community.github.io/smart-mastering-core/docs/merging-options/")
 };
 
 declare function proc-impl:process-match-and-merge(
-  $uris as xs:string*,
+  $input as item()*,
   $option-name as xs:string,
   $filter-query as cts:query)
   as item()*
@@ -54,7 +54,7 @@ declare function proc-impl:process-match-and-merge(
   let $match-options := matcher:get-options(fn:string($merge-options/merging:match-options), $const:FORMAT-XML)
   return
     proc-impl:process-match-and-merge-with-options-save(
-      $uris,
+      $input,
       $merge-options,
       $match-options,
       $filter-query
@@ -136,15 +136,22 @@ declare variable $no-matches-in-transaction as map:map := map:map();
  : The workhorse function.
  :)
 declare function proc-impl:process-match-and-merge-with-options(
-  $uris as xs:string*,
+  $input as item()*,
   $merge-options as item(),
   $match-options as item(),
   $filter-query as cts:query) as map:map*
 {
   (: increment usage count :)
   tel:increment(),
-
-  let $_ := xdmp:trace($const:TRACE-MATCH-RESULTS, "processing: " || fn:string-join($uris, ", "))
+  let $uris :=
+    if ($input instance of xs:string*) then
+      $input
+    else if ($input instance of map:map*) then
+      $input ! (. => map:get("uri"))
+    else ()
+  let $_ := if (xdmp:trace-enabled($const:TRACE-MATCH-RESULTS)) then
+        xdmp:trace($const:TRACE-MATCH-RESULTS, "processing: " || fn:string-join($uris, ", "))
+      else ()
   let $matching-options :=
       if ($match-options instance of object-node()) then
         match-opt-impl:options-from-json($match-options)
@@ -163,9 +170,16 @@ declare function proc-impl:process-match-and-merge-with-options(
       $matching-options/matcher:thresholds/matcher:threshold[@label = $threshold-labels]/@above ! fn:number(.)
     )
   let $lock-on-query := fn:true()
+  let $documents :=
+    if ($input instance of xs:string*) then
+      cts:search(fn:doc(), cts:document-query($input), "unfiltered")
+    else if ($input instance of map:map*) then
+      $input ! (. => map:get("value"))
+    else
+      ()
   let $all-matches :=
     map:new((
-      cts:search(fn:doc(), cts:document-query($uris), "unfiltered") !
+      $documents !
         map:entry(
           xdmp:node-uri(.),
           matcher:find-document-matches-by-options(
@@ -257,11 +271,11 @@ declare function proc-impl:process-match-and-merge-with-options(
     (: Process collections on no matches :)
     let $on-no-match := $merge-options/merging:algorithms/merging:collections/merging:on-no-match
     for $uri in $uris[fn:not(. = $merged-uris)]
+    let $current-collections := xdmp:document-get-collections($uri)
     let $new-collections := coll-impl:on-no-match(
-              map:entry($uri, xdmp:document-get-collections($uri)),
+              map:entry($uri, $current-collections),
               $on-no-match
             )
-    let $current-collections := xdmp:document-get-collections($uri)
     let $_lock-for-update := xdmp:lock-for-update($uri)
     where
       fn:not(map:contains($no-matches-in-transaction, $uri))
@@ -322,13 +336,13 @@ declare function proc-impl:process-match-and-merge-with-options(
  : The workhorse function.
  :)
 declare function proc-impl:process-match-and-merge-with-options-save(
-  $uris as xs:string*,
+  $input as item()*,
   $merge-options as item(),
   $match-options as item(),
   $filter-query as cts:query)
 {
   let $actions as item()* := proc-impl:process-match-and-merge-with-options(
-      $uris,
+      $input,
       $merge-options,
       $match-options,
       $filter-query
