@@ -139,7 +139,7 @@ declare function proc-impl:process-match-and-merge-with-options(
   $input as item()*,
   $merge-options as item(),
   $match-options as item(),
-  $filter-query as cts:query) as map:map*
+  $filter-query as cts:query) as json:array
 {
   (: increment usage count :)
   tel:increment(),
@@ -251,39 +251,20 @@ declare function proc-impl:process-match-and-merge-with-options(
       )
     )
   let $consolidated-notifies := proc-impl:consolidate-notifies($all-matches, $merged-into)
-  return (
-    if (xdmp:trace-enabled($const:TRACE-MATCH-RESULTS)) then (
-      xdmp:trace($const:TRACE-MATCH-RESULTS, "Consolidated merges: " || xdmp:quote($consolidated-merges)),
-      xdmp:trace($const:TRACE-MATCH-RESULTS, "Consolidated notifications: " || xdmp:quote($consolidated-notifies))
-    )
-    else (),
-    $processed-merges,
-    (: Process notifications :)
-    for $notification in $consolidated-notifies
-    let $parts := fn:tokenize($notification, $STRING-TOKEN)
-    let $threshold := fn:head($parts)
-    let $uris := fn:tail($parts)
-    where fn:not(map:contains($notifications-in-transaction, $notification))
-    return (
-      matcher:build-match-notification($threshold, $uris, $merge-options)
-    ),
-
+  let $no-matches-updates :=
     (: Process collections on no matches :)
     let $on-no-match := $merge-options/merging:algorithms/merging:collections/merging:on-no-match
     for $uri in $uris[fn:not(. = $merged-uris)]
     let $current-collections := xdmp:document-get-collections($uri)
     let $new-collections := coll-impl:on-no-match(
-              map:entry($uri, $current-collections),
-              $on-no-match
-            )
-    let $_lock-for-update := xdmp:lock-for-update($uri)
+      map:entry($uri, $current-collections),
+      $on-no-match
+    )
     where
-      fn:not(map:contains($no-matches-in-transaction, $uri))
-        and
       fn:not(
         fn:count($new-collections) eq fn:count($current-collections)
           and
-        (every $col in $new-collections satisfies $col = $current-collections)
+          (every $col in $new-collections satisfies $col = $current-collections)
       )
     return map:new((
       map:entry("uri", $uri),
@@ -294,8 +275,27 @@ declare function proc-impl:process-match-and-merge-with-options(
           map:entry("permissions",xdmp:document-get-permissions($uri))
         ))
       )
-    )),
-
+    ))
+  let $processed-notifications :=
+    (: Process notifications :)
+    for $notification in $consolidated-notifies
+    let $parts := fn:tokenize($notification, $STRING-TOKEN)
+    let $threshold := fn:head($parts)
+    let $uris := fn:tail($parts)
+    return
+      matcher:build-match-notification($threshold, $uris, $merge-options)
+  return json:to-array((
+    if (xdmp:trace-enabled($const:TRACE-MATCH-RESULTS)) then (
+      xdmp:trace($const:TRACE-MATCH-RESULTS, "All matches: " || xdmp:describe($all-matches, (),())),
+      xdmp:trace($const:TRACE-MATCH-RESULTS, "Matching options: " || xdmp:describe($matching-options, (),())),
+      xdmp:trace($const:TRACE-MATCH-RESULTS, "Merge options: " || xdmp:describe($merge-options, (),())),
+      xdmp:trace($const:TRACE-MATCH-RESULTS, "Consolidated merges: " || xdmp:quote($consolidated-merges)),
+      xdmp:trace($const:TRACE-MATCH-RESULTS, "Consolidated notifications: " || xdmp:quote($consolidated-notifies))
+    )
+    else (),
+    $processed-merges,
+    $no-matches-updates,
+    $processed-notifications,
     (: Process custom actions :)
     let $action-map :=
       map:new((
@@ -329,7 +329,7 @@ declare function proc-impl:process-match-and-merge-with-options(
           xdmp:apply($action-func, $uri, $custom-action-match, $merge-options)
       else
         fn:error(xs:QName("SM-CONFIGURATION"), "Threshold action is not configured or not found", $custom-action-match)
-  )
+  ))
 };
 
 (:
@@ -341,12 +341,12 @@ declare function proc-impl:process-match-and-merge-with-options-save(
   $match-options as item(),
   $filter-query as cts:query)
 {
-  let $actions as item()* := proc-impl:process-match-and-merge-with-options(
+  let $actions as item()* := json:array-values(proc-impl:process-match-and-merge-with-options(
       $input,
       $merge-options,
       $match-options,
       $filter-query
-    )
+    ))
   for $action in $actions
   return
     if ($action instance of map:map) then
