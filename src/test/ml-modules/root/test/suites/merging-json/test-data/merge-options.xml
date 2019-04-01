@@ -35,6 +35,7 @@
     <merge property-name="address" algorithm-ref="standard" max-values="1">
       <source-weights>
         <source name="SOURCE2" weight="10"></source>
+        <source name="SOURCE1" weight="5"></source>
       </source-weights>
     </merge>
   </merging>

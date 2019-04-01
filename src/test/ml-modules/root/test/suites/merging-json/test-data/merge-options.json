@@ -76,12 +76,17 @@
         "propertyName": "address",
         "algorithmRef": "standard",
         "maxValues": "1",
-        "sourceWeights": {
+        "sourceWeights": [{
           "source": {
             "name": "SOURCE2",
             "weight": "10"
           }
-        }
+        },{
+          "source": {
+            "name": "SOURCE1",
+            "weight": "5"
+          }
+        }]
       }
     ],
     "tripleMerge": {

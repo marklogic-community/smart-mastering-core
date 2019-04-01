@@ -32,42 +32,42 @@
       {
         "propertyName": "main",
         "maxValues": "1",
-        "sourceWeights": {
+        "sourceWeights": [{
           "source": {
             "name": "sample1",
             "weight": "10"
           }
-        }
+        }]
       },
       {
         "propertyName": "entity",
         "maxValues": "1",
-        "sourceWeights": {
+        "sourceWeights": [{
           "source": {
             "name": "sample1",
             "weight": "10"
           }
-        }
+        }]
       },
       {
         "propertyName": "low1",
         "maxValues": "1",
-        "sourceWeights": {
+        "sourceWeights": [{
           "source": {
             "name": "sample2",
             "weight": "10"
           }
-        }
+        }]
       },
       {
         "propertyName": "low3",
         "maxValues": "1",
-        "sourceWeights": {
+        "sourceWeights": [{
           "source": {
             "name": "sample2",
             "weight": "10"
           }
-        }
+        }]
       }
     ]
   }

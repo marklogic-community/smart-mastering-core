@@ -79,8 +79,8 @@ for (let merge of actual.options.merging) {
     assertions.push(
       test.assertEqual('1', merge.maxValues),
       test.assertEqual('standard', merge.algorithmRef),
-      test.assertEqual('SOURCE2', merge.sourceWeights.source.name),
-      test.assertEqual('10', merge.sourceWeights.source.weight)
+      test.assertEqual('SOURCE2', merge.sourceWeights[0].source.name),
+      test.assertEqual('10', merge.sourceWeights[0].source.weight)
     )
   } else {
     test.fail('Unexpected property: ' + merge.propertyName)

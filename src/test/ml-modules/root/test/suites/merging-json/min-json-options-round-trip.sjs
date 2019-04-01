@@ -22,9 +22,11 @@ const small =
             "algorithmRef": "standard",
             "maxValues": "1",
             "maxSources": "1",
-            "sourceWeights": {
+            "sourceWeights": [{
               "source": { "name": "SOURCE2", "weight": "10" }
-            }
+            },{
+              "source": { "name": "SOURCE1", "weight": "5" }
+            }]
           }
         ],
         "propertyDefs": {
@@ -39,7 +41,7 @@ const small =
               "function": "customThing",
               "at": "/custom-merge-xqy.xqy"
             }
-          ],
+          ]
         }
       }
     }
