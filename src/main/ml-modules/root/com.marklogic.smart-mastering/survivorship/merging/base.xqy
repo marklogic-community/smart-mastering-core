@@ -1109,7 +1109,7 @@ declare function merge-impl:find-updates($updates as map:map, $path-properties a
 declare function merge-impl:build-prefix-map($source)
 {
   map:new(
-    for $prefix in fn:in-scope-prefixes($source)
+    for $prefix in ($source ! fn:in-scope-prefixes(.))
     where fn:not($prefix = "")
     return
       map:entry($prefix, fn:namespace-uri-for-prefix($prefix, $source))
