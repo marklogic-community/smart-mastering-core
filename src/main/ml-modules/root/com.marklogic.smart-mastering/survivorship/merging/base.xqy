@@ -200,7 +200,7 @@ declare function merge-impl:save-merge-models-by-uri(
       return
         if ($is-merged) then
           auditing:auditing-receipts-for-doc-uri($uri)
-            /prov:collection/@prov:id[. ne $uri] ! fn:string(.)
+            /auditing:previous-uri[. ne $uri] ! fn:string(.)
         else
           $uri
     let $parsed-properties :=
@@ -244,7 +244,7 @@ declare function merge-impl:save-merge-models-by-uri(
           ),
           coll-impl:on-merge(map:new((
             for $uri in $distinct-uris
-            return map:entry($uri, xdmp:document-get-collections($uri))
+            return map:entry($uri, xdmp:document-get-collections($uri)[fn:not(. = $const:ARCHIVED-COLL)])
           )),$on-merge-options)
         )
 
