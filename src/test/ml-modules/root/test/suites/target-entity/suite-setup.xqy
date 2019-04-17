@@ -11,7 +11,6 @@ import module namespace lib = "http://marklogic.com/smart-mastering/test" at "li
 declare option xdmp:mapping "false";
 
 merging:save-options($lib:BAD-ENTITY-OPTIONS-NAME, test:get-test-file("bad-entity-merge-options.json")),
-merging:save-options($lib:BAD-ENTITY-PROP-OPTIONS-NAME, test:get-test-file("bad-entity-prop-merge-options.json")),
 merging:save-options($lib:OPTIONS-NAME, test:get-test-file("merge-options.json")),
 matcher:save-options($lib:MATCH-OPTIONS-NAME, test:get-test-file("match-options.json")),
 xdmp:document-insert(
