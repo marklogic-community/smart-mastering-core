@@ -379,7 +379,7 @@ declare function merge-impl:rollback-merge(
     auditing:auditing-receipts-for-doc-uri($merged-doc-uri)
   where fn:exists($auditing-receipts-for-doc)
   return (
-    let $uris := $auditing-receipts-for-doc/auditing:previous-uri ! fn:string(.)
+    let $uris := $auditing-receipts-for-doc//*:previous-uri ! fn:string(.)
     let $prevent-auto-match :=
       if ($block-future-merges) then
         matcher:block-matches($uris)
@@ -389,6 +389,7 @@ declare function merge-impl:rollback-merge(
       xdmp:document-get-collections($previous-doc-uri)[fn:not(. = $const:ARCHIVED-COLL)],
       $const:CONTENT-COLL
     )
+    where fn:not(merge-impl:source-of-other-merged-doc($previous-doc-uri, $merged-doc-uri))
     return (
       xdmp:document-set-collections($previous-doc-uri, $new-collections)
     ),
@@ -406,6 +407,22 @@ declare function merge-impl:rollback-merge(
     )
   )
 };
+
+declare function merge-impl:source-of-other-merged-doc($uri, $merge-uri)
+{
+  xdmp:exists(cts:search(fn:collection(),
+    cts:and-query((
+      cts:collection-query($const:ARCHIVED-COLL),
+      cts:collection-query($const:MERGED-COLL),
+      cts:or-query((
+        cts:json-property-value-query("document-uri", $uri, "exact"),
+        cts:element-value-query(xs:QName("sm:document-uri"), $uri, "exact")
+      )),
+      cts:not-query(cts:document-query($merge-uri))
+    ))
+  ))
+};
+
 
 (:~
  : Construct a merged document from the given URIs, but do not update the
@@ -451,15 +468,15 @@ declare function merge-impl:build-merge-models-by-uri(
   let $docs := map:get($parsed-properties, "documents")
   let $wrapper-qnames := map:get($parsed-properties, "wrapper-qnames")
   return
-    merge-impl:build-merge-models-by-final-properties(
-      $id,
-      $docs,
-      $wrapper-qnames,
-      $final-properties,
-      $final-headers,
-      $final-triples,
-      $headers-ns-map
-    )
+      merge-impl:build-merge-models-by-final-properties(
+        $id,
+        $docs,
+        $wrapper-qnames,
+        $final-properties,
+        $final-headers,
+        $final-triples,
+        $headers-ns-map
+      )
 };
 
 (:

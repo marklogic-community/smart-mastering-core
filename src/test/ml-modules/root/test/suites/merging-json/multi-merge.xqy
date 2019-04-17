@@ -243,7 +243,7 @@ let $assertions := (
 )
 
 let $merged-id := $merged-doc/*:envelope/*:headers/*:id
-let $merged-uri := merge-impl:build-merge-uri($merged-id, map:keys($lib:TEST-DATA))
+let $merged-uri := merge-impl:build-merge-uri($merged-id, $const:FORMAT-JSON)
 
 (: At this point, there should be no blocks :)
 let $assertions := ( $assertions, xdmp:eager(
