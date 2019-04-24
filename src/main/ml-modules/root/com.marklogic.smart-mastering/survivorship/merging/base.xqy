@@ -467,16 +467,35 @@ declare function merge-impl:build-merge-models-by-uri(
   let $headers-ns-map := map:get($parsed-properties, $PROPKEY-HEADERS-NS-MAP)
   let $docs := map:get($parsed-properties, "documents")
   let $wrapper-qnames := map:get($parsed-properties, "wrapper-qnames")
+  let $format := if ($docs instance of document-node(element())+) then
+                  $const:FORMAT-XML
+                else
+                  $const:FORMAT-JSON
+  let $merge-uri := merge-impl:build-merge-uri($id, $format)
   return
-      merge-impl:build-merge-models-by-final-properties(
-        $id,
-        $docs,
-        $wrapper-qnames,
-        $final-properties,
-        $final-headers,
-        $final-triples,
-        $headers-ns-map
-      )
+    map:map()
+      => map:with("audit-trace",
+          auditing:build-audit-trace(
+            $const:MERGE-ACTION,
+            $uris,
+            $merge-uri,
+            merge-impl:generate-audit-attachments(
+              $merge-uri,
+              $final-properties
+            )
+          )
+        )
+      => map:with("value",
+          merge-impl:build-merge-models-by-final-properties(
+            $id,
+            $docs,
+            $wrapper-qnames,
+            $final-properties,
+            $final-headers,
+            $final-triples,
+            $headers-ns-map
+          )
+        )
 };
 
 (:

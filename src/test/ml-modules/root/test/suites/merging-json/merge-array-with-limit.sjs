@@ -15,7 +15,7 @@ let options = test.getTestFile("merge-options-with-array-limit.xml").root;
 let mergedDoc = merging.buildMergeModelsByUri(
   ['/source/1/doc1.json','/source/2/doc2.json'],
   options
-);
+).value;
 
 let array = mergedDoc.toObject().envelope.instance.MDM.Person.PersonType.ArrayOfVariousThings;
 [
