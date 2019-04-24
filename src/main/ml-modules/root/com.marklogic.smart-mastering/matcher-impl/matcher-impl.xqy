@@ -163,16 +163,22 @@ declare function match-impl:compile-match-options(
               if (fn:exists($property-details)) then
                 if ($is-json) then
                   function($val) {
+                    let $query := $base-values-query($val)
+                    where fn:exists($query)
+                    return
                     cts:json-property-scope-query(
                       fn:local-name-from-QName($property-entity-qname),
-                      $base-values-query($val)
+                      $query
                     )
                   }
                 else
                   function($val) {
+                    let $query := $base-values-query($val)
+                    where fn:exists($query)
+                    return
                     cts:element-query(
                       $property-entity-qname,
-                      $base-values-query($val)
+                      $query
                     )
                   }
               else

@@ -395,7 +395,13 @@ declare function proc-impl:process-match-and-merge-with-options-save(
           $action => map:get("value"),
           map:new((
             map:entry("collections", $context => map:get("collections")),
-            map:entry("permissions", $context => map:get("permissions")),
+            map:entry("permissions",
+              for $permission in ($context => map:get("permissions"))
+              return if ($permission instance of element()) then
+                  xdmp:permission(xdmp:role-name($permission/*:role-id), $permission/*:capability, "object")
+                else
+                  $permission
+            ),
             map:entry("metadata", $context => map:get("metadata"))
           ))
         )
