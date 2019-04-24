@@ -1,5 +1,5 @@
 plugins {
-  id "com.marklogic.ml-gradle" version "3.10.0"
+  id "com.marklogic.ml-gradle" version "3.13.0"
 }
 
 repositories {

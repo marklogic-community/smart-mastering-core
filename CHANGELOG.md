@@ -1,5 +1,27 @@
 # Change Log
 
+## [v1.3.0](https://github.com/marklogic-community/smart-mastering-core/tree/v1.3.0) (2019-04-24)
+[Full Changelog](https://github.com/marklogic-community/smart-mastering-core/compare/v1.2.4...v1.3.0)
+
+**Fixed bugs:**
+
+- Error with merge JSON example [\#304](https://github.com/marklogic-community/smart-mastering-core/issues/304)
+- merge option property definition \(path based\) for json documents causes error [\#303](https://github.com/marklogic-community/smart-mastering-core/issues/303)
+- Extension for merged documents are set based off of URI extension, instead of document contents [\#301](https://github.com/marklogic-community/smart-mastering-core/issues/301)
+- max-scan option is not used properly [\#284](https://github.com/marklogic-community/smart-mastering-core/issues/284)
+
+**Closed issues:**
+
+- Validate Match Options and Return Issues [\#292](https://github.com/marklogic-community/smart-mastering-core/issues/292)
+
+**Merged pull requests:**
+
+- Rollback only most recent merge [\#309](https://github.com/marklogic-community/smart-mastering-core/pull/309) ([ryanjdew](https://github.com/ryanjdew))
+- fixing merging docs with already merged docs [\#306](https://github.com/marklogic-community/smart-mastering-core/pull/306) ([paxtonhare](https://github.com/paxtonhare))
+- this checkin removes a dependency on a private library from DHF. This… [\#289](https://github.com/marklogic-community/smart-mastering-core/pull/289) ([paxtonhare](https://github.com/paxtonhare))
+- Remove roles [\#288](https://github.com/marklogic-community/smart-mastering-core/pull/288) ([paxtonhare](https://github.com/paxtonhare))
+- making max-scan consistent for all uses.  [\#285](https://github.com/marklogic-community/smart-mastering-core/pull/285) ([paxtonhare](https://github.com/paxtonhare))
+
 ## [v1.2.4](https://github.com/marklogic-community/smart-mastering-core/tree/v1.2.4) (2019-02-01)
 [Full Changelog](https://github.com/marklogic-community/smart-mastering-core/compare/v1.2.2...v1.2.4)
 
@@ -20,6 +42,7 @@
 
 **Merged pull requests:**
 
+- v1.2.3 release [\#281](https://github.com/marklogic-community/smart-mastering-core/pull/281) ([ryanjdew](https://github.com/ryanjdew))
 - Fixes \#279 [\#280](https://github.com/marklogic-community/smart-mastering-core/pull/280) ([patrickmcelwee](https://github.com/patrickmcelwee))
 - Ryanjdew minimal readme [\#275](https://github.com/marklogic-community/smart-mastering-core/pull/275) ([ryanjdew](https://github.com/ryanjdew))
 - Release v1.2.2 [\#269](https://github.com/marklogic-community/smart-mastering-core/pull/269) ([ryanjdew](https://github.com/ryanjdew))
