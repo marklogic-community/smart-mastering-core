@@ -20,10 +20,9 @@ From this point, you have a couple of choices about how to run mastering.
 
 ### Mastering with Data Hub Framework
 
-If you're using the MarkLogic Data Hub Framework, you can run mastering as a
-flow. See the [smart-mastering-core example][sm-demo-flow]. The key part
-is in the [writer][sm-demo-flow-writer], which calls
-[`process:process-match-and-merge()`][match-and-merge].
+If you're using the MarkLogic Data Hub Framework, you can call the [match and merge REST extension][match-and-merge-rest]. See the [smart-mastering-core example][sm-demo-flow]. 
+
+The key part is in the runMastering tasks of [build.gradle][sm-demo-build-gradle], which calls the REST extension.
 
 ### Mastering with a Trigger
 
@@ -61,9 +60,10 @@ this collection.
 
 [minproject]: https://github.com/marklogic-community/smart-mastering-core/tree/master/examples/minimal-project
 [sm-demo-flow]: https://github.com/marklogic-community/smart-mastering-core/tree/master/examples/dhf-flow/plugins/entities/MDM/harmonize/SmartMaster
-[sm-demo-flow-writer]: https://github.com/marklogic-community/smart-mastering-core/blob/master/examples/dhf-flow/plugins/entities/MDM/harmonize/SmartMaster/writer.xqy
+[sm-demo-flow-writer]: https://github.com/marklogic-community/smart-mastering-core/blob/master/examples/dhf-flow/build.gradle#L256
 [match-and-merge]: https://github.com/marklogic-community/smart-mastering-core/blob/master/src/main/ml-modules/root/com.marklogic.smart-mastering/process-records.xqy
 [trigger]: https://github.com/marklogic-community/smart-mastering-core/blob/master/src/main/ml-modules/root/com.marklogic.smart-mastering/match-and-merge-trigger.xqy
 [trigger-doc]: http://docs.marklogic.com/guide/app-dev/triggers#chapter
 [ml-gradle-trigger]: https://github.com/marklogic-community/ml-gradle/tree/master/examples/triggers-project
 [constants]: https://github.com/marklogic-community/smart-mastering-core/blob/master/src/main/ml-modules/root/com.marklogic.smart-mastering/constants.xqy
+[match-and-merge-rest]: ../docs/rest/#sm-match-and-merge
