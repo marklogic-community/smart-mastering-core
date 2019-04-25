@@ -260,13 +260,13 @@ retrieved as either XML or JSON.
       "name": "crm-source-weight",
       "algorithmRef": "standard",
       "sourceWeights":
-      {
+      [{
         "source":
         {
           "name": "CRM",
           "weight": "10"
         }
-      }
+      }]
     },
     {
       "name": "length-weight",
@@ -305,13 +305,13 @@ retrieved as either XML or JSON.
       "propertyName": "dob",
       "algorithmRef": "standard",
       "sourceWeights":
-      {
+      [{
         "source":
         {
           "name": "Oracle",
           "weight": "10"
         }
-      },
+      }],
       "maxValues": "1"
     },
     {
