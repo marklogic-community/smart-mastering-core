@@ -109,6 +109,9 @@ let $assertions := xdmp:eager(
           <sm:two-first>2018-04-26T16:40:02.1386Z</sm:two-first>
         </sm:source>
       </sm:sources>
+      <sm:merge-options xml:lang="zxx">
+        <sm:value>/com.marklogic.smart-mastering/options/merging/{$lib:OPTIONS-NAME}.xml</sm:value>
+      </sm:merge-options>
       <shallow>shallow value 1</shallow>
       <shallow>shallow value 2</shallow>
       <shallow>shallow value 3</shallow>
@@ -133,6 +136,10 @@ let $assertions := xdmp:eager(
     </es:headers>
   let $expected-instance :=
     <es:instance>
+      <es:info>
+        <es:title>MDM</es:title>
+        <es:version>1.0.0</es:version>
+      </es:info>
       <MDM>
         <Person>
           <PersonType>
@@ -209,11 +216,9 @@ let $assertions := xdmp:eager(
       </sem:triple>
     </es:triples>
   let $expected := <es:envelope xmlns:es="http://marklogic.com/entity-services">{$expected-headers}{$expected-triples}{$expected-instance}</es:envelope>
-  let $_ := xdmp:log(("expected", $expected, "actual", $merged-doc))
   return (
     test:assert-equal-xml($expected-headers, $merged-doc/es:headers),
     test:assert-equal-xml($expected-triples, $merged-doc/es:triples),
-    xdmp:log(xdmp:describe($merged-doc/es:instance,(),())),
     test:assert-equal-xml($expected-instance, $merged-doc/es:instance)
   )
 )

@@ -60,6 +60,9 @@ let $assertions := xdmp:eager(
           <sm:dateTime>{$s1-dt}</sm:dateTime>
         </sm:source>
       </sm:sources>
+      <sm:merge-options xml:lang="zxx">
+        <sm:value>/com.marklogic.smart-mastering/options/merging/{$lib:OPTIONS-NAME}.xml</sm:value>
+      </sm:merge-options>
     </es:headers>
   let $expected-instance :=
     <es:instance>

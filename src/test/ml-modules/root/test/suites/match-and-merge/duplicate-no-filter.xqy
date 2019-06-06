@@ -28,10 +28,11 @@ let $actual :=
     },
     $lib:INVOKE_OPTIONS
   )
-
+let $merges := $actual[self::es:envelope]
+let $notifications := $actual[self::sm:notification]
 return (
   test:assert-equal(2, fn:count($actual)),
-  test:assert-equal(xs:QName("es:envelope"), fn:node-name($actual[1])),
-  test:assert-equal(xs:QName("sm:notification"), fn:node-name($actual[2])),
-  test:assert-equal(3, fn:count($actual[2]/sm:document-uris/sm:document-uri))
+  test:assert-equal(1, fn:count($merges)),
+  test:assert-equal(1, fn:count($notifications)),
+  test:assert-equal(3, fn:count($notifications/sm:document-uris/sm:document-uri))
 )

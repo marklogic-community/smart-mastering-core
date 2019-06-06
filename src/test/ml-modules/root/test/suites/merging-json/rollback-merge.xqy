@@ -92,7 +92,11 @@ let $assertions := (
         object-node {"document-uri":"/source/1/doc1.json"},
         object-node {"document-uri":"/source/2/doc2.json"}
       },
-      "id": $smid
+      "id": $smid,
+      "merge-options": object-node {
+          "language": "zxx",
+          "value": "/com.marklogic.smart-mastering/options/merging/test-options.xml"
+      }
     }
   let $expected-triples :=
     array-node {
@@ -124,6 +128,10 @@ let $assertions := (
     }
   let $expected-instance :=
     object-node {
+      "info": object-node {
+        "title": "Example",
+        "version": "1.0.0"
+      },
       "MDM": object-node {
         "Person": object-node {
           "PersonType": object-node {
