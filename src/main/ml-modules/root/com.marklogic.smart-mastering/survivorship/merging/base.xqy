@@ -1744,7 +1744,7 @@ declare function merge-impl:build-final-properties(
     if (fn:exists($entity-definition)) then
       for $prop in $entity-definition/properties
       return
-        fn:QName($entity-def-namespace, xdmp:encode-for-NCName($prop/title))
+        fn:QName($entity-def-namespace, merge-impl:NCName-compatible($prop/title))
     else
       fn:distinct-values($instances/* ! fn:node-name(.))
   let $property-defs := $merge-options/merging:property-defs[fn:exists(merging:property/@localname)]
@@ -1828,7 +1828,7 @@ declare function merge-impl:build-final-properties(
       if (xdmp:trace-enabled($const:TRACE-MERGE-RESULTS)) then
         xdmp:trace($const:TRACE-MERGE-RESULTS, xdmp:describe(('Processing top level property',$prop),(),()))
       else ()
-    let $property-title := xdmp:decode-from-NCName(fn:local-name-from-QName($prop))
+    let $property-title := merge-impl:NCName-compatible-reverse(fn:local-name-from-QName($prop))
     let $property-details := es-helper:get-entity-def-property($entity-definition, $property-title)
     let $prop-entity-ref := fn:head($property-details/(itemsRef|ref)[. ne ''])
     let $instance-props :=
@@ -1844,7 +1844,7 @@ declare function merge-impl:build-final-properties(
       if (fn:exists($prop-entity-ref) and fn:empty($merge-spec[fn:ends-with(@property-name, $property-title)])) then
         let $prop-entity-def := es-helper:get-entity-def($prop-entity-ref)
         let $prop-entity-title := $prop-entity-def/entityTitle
-        let $prop-entity-local-name := xdmp:encode-for-NCName($prop-entity-title)
+        let $prop-entity-local-name := merge-impl:NCName-compatible($prop-entity-title)
         let $prop-entity-instances :=
           if ($is-json) then
             for $instance-prop in $instance-props/*[fn:string(fn:node-name(.)) eq $prop-entity-local-name]
@@ -1873,7 +1873,7 @@ declare function merge-impl:build-final-properties(
         let $prop-entity-primary-key := $prop-entity-def/primaryKey[fn:string(.) ne '']
         let $primary-key-local-name :=
               if (fn:exists($prop-entity-primary-key)) then
-                xdmp:encode-for-NCName($prop-entity-primary-key)
+                merge-impl:NCName-compatible($prop-entity-primary-key)
               else ()
         let $distinct-primary-key-values :=
               if (fn:exists($prop-entity-primary-key)) then
@@ -2719,4 +2719,26 @@ declare function merge-impl:propertyspec-to-json($property-spec as element()) as
     => map:with("ignore-element-names", xs:QName("merging:merge"))
   return
     json:transform-to-json($transformed-xml, $config)/*
+};
+
+declare function merge-impl:NCName-compatible($value as xs:string)
+{
+  if ($value castable as xs:NCName) then
+    $value
+  else
+    xdmp:encode-for-NCName($value)
+};
+
+declare variable $_to-decoded-NCName as map:map := map:map();
+
+declare function merge-impl:NCName-compatible-reverse($value as xs:string)
+{
+  if (map:contains($_to-decoded-NCName, $value)) then
+    map:get($_to-decoded-NCName, $value)
+  else
+    let $decoded-value := fn:head((try {xdmp:decode-from-NCName($value)} catch * {()}, $value))
+    return (
+      map:put($_to-decoded-NCName, $value, $decoded-value),
+      $decoded-value
+    )
 };

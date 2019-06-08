@@ -529,10 +529,6 @@ declare function match-impl:search(
         return
           document{$query}//schema-element(cts:query)[fn:empty(self::element(cts:and-query)|self::element(cts:or-query)|self::element(cts:and-not-query)|self::element(cts:boost-query)|self::element(cts:not-in-query)|self::element(cts:before-query)|self::element(cts:after-query)|self::element(cts:true-query)|self::element(cts:false-query)|self::element(cts:period-range-query)|self::element(cts:period-compare-query)|self::element(cts:element-query)|self::element(cts:json-property-scope-query)|self::element(cts:document-fragment-query)|self::element(cts:properties-fragment-query)|self::element(cts:locks-fragment-query)|self::element(cts:document-query)|self::element(cts:collection-query)|self::element(cts:directory-query))]/@weight ! fn:number(.)
       )
-      (:fn:head((
-        cts:search(fn:doc($uri), $boosting-query,("unfiltered", "score-simple"),0) ! match-impl:simple-score(.),
-        0
-      )):)
     else
       $score
   let $result-stub :=
