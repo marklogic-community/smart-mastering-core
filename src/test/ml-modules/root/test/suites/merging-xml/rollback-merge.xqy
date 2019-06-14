@@ -47,8 +47,8 @@ let $assertions := xdmp:eager(
     <es:headers>
       <sm:id xmlns:sm="http://marklogic.com/smart-mastering">{$smid}</sm:id>
       <sm:merges xmlns:sm="http://marklogic.com/smart-mastering">
-        <sm:document-uri>/source/2/doc2.xml</sm:document-uri>
-        <sm:document-uri>/source/1/doc1.xml</sm:document-uri>
+        <sm:document-uri last-merge="true">/source/1/doc1.xml</sm:document-uri>
+        <sm:document-uri last-merge="true">/source/2/doc2.xml</sm:document-uri>
       </sm:merges>
       <sm:sources xmlns:sm="http://marklogic.com/smart-mastering">
         <sm:source>

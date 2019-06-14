@@ -57,12 +57,13 @@ let $_ :=
   )
 
 let $merged-uri := (cts:uris((), (), cts:collection-query($const:MERGED-COLL)))[1]
+let $second-merge-uris := ("/source/3/doc3.xml", $merged-uri)
 let $merged-doc :=
   xdmp:invoke-function(
     function() {
       document {
         merging:save-merge-models-by-uri(
-          ("/source/3/doc3.xml", $merged-uri),
+          $second-merge-uris,
           merging:get-options($lib:OPTIONS-NAME, $const:FORMAT-XML)
         )
       }
@@ -78,9 +79,10 @@ let $assertions := xdmp:eager(
     <es:headers>
       <sm:id xmlns:sm="http://marklogic.com/smart-mastering">{$smid}</sm:id>
       <sm:merges xmlns:sm="http://marklogic.com/smart-mastering">
-        <sm:document-uri>/source/3/doc3.xml</sm:document-uri>
-        <sm:document-uri>/source/2/doc2.xml</sm:document-uri>
-        <sm:document-uri>/source/1/doc1.xml</sm:document-uri>
+        <sm:document-uri last-merge="true">{$merged-uri}</sm:document-uri>
+        <sm:document-uri last-merge="false">/source/1/doc1.xml</sm:document-uri>
+        <sm:document-uri last-merge="false">/source/2/doc2.xml</sm:document-uri>
+        <sm:document-uri last-merge="true">/source/3/doc3.xml</sm:document-uri>
       </sm:merges>
       <sm:sources xmlns:sm="http://marklogic.com/smart-mastering">
         <sm:source>
@@ -241,10 +243,11 @@ let $unmerge :=
 (: And now there should be blocks :)
 let $assertions := (
   $assertions,
-  map:keys($lib:TEST-DATA) ! test:assert-exists(matcher:get-blocks(.)/node()),
+  $second-merge-uris ! test:assert-exists(matcher:get-blocks(.)/node()),
   xdmp:invoke-function(
     function() {
-      test:assert-equal($telemetry-count + 2, tel:get-usage-count())
+      (: 2 merges + rollback will reconstruct merged record :)
+      test:assert-equal($telemetry-count + 3, tel:get-usage-count())
     }
   )
 )

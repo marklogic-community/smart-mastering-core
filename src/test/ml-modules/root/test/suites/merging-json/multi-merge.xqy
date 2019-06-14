@@ -53,12 +53,13 @@ let $_ :=
   )
 
 let $merged-uri := (cts:uris((), (), cts:collection-query($const:MERGED-COLL)))[1]
+let $second-merge-uris := ("/source/3/doc3.json", $merged-uri)
 let $merged-doc :=
   xdmp:invoke-function(
     function() {
       document {
         merging:save-merge-models-by-uri(
-          ("/source/3/doc3.json", $merged-uri),
+          $second-merge-uris,
           merging:get-options($lib:OPTIONS-NAME, $const:FORMAT-XML)
         )
       }
@@ -138,9 +139,10 @@ let $assertions := (
         "unconfigured value 1a"
       },
       "merges": array-node {
-        object-node {"document-uri":"/source/3/doc3.json"},
-        object-node {"document-uri":"/source/1/doc1.json"},
-        object-node {"document-uri":"/source/2/doc2.json"}
+        object-node {"document-uri":$merged-uri, "last-merge": fn:true()},
+        object-node {"document-uri":"/source/1/doc1.json", "last-merge": fn:false()},
+        object-node {"document-uri":"/source/2/doc2.json", "last-merge": fn:false()},
+        object-node {"document-uri":"/source/3/doc3.json", "last-merge": fn:true()}
       },
       "id": $smid,
       "merge-options": object-node {
@@ -267,6 +269,6 @@ let $unmerge :=
 (: And now there should be blocks :)
 let $assertions := (
   $assertions,
-  map:keys($lib:TEST-DATA) ! test:assert-exists(matcher:get-blocks(.)/node())
+  $second-merge-uris ! test:assert-exists(matcher:get-blocks(.)/node())
 )
 return $assertions

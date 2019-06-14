@@ -89,8 +89,8 @@ let $assertions := (
         "unconfigured value 1a"
       },
       "merges": array-node {
-        object-node {"document-uri":"/source/1/doc1.json"},
-        object-node {"document-uri":"/source/2/doc2.json"}
+        object-node {"document-uri":"/source/1/doc1.json", "last-merge": fn:true()},
+        object-node {"document-uri":"/source/2/doc2.json", "last-merge": fn:true()}
       },
       "id": $smid,
       "merge-options": object-node {
