@@ -53,7 +53,7 @@
             "name": "default-standard",
             "algorithmRef": "standard",
             "maxValues": "1",
-            "sourceWeights":
+            "sourceWeights":[
             {
                 "source":
                 {
@@ -61,6 +61,7 @@
                     "weight": "10"
                 }
             }
+          ]
         }],
         "algorithms":
         {

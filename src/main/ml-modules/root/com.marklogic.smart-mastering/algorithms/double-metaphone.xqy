@@ -103,7 +103,7 @@ declare function algorithms:setup-double-metaphone($expand-xml, $options-xml, $o
               xdmp:log("Caught an error while generating double-metaphone dictionary: " || xdmp:quote($e), "error")
             }
           ),
-          (xdmp:permission($const:MDM-ADMIN, "update"), xdmp:permission($const:MDM-USER, "read")),
+          xdmp:default-permissions(),
           ($const:OPTIONS-COLL, $const:DICTIONARY-COLL)
         )
       },

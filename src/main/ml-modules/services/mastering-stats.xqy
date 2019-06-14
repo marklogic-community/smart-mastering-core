@@ -20,9 +20,6 @@ module namespace service = "http://marklogic.com/rest-api/resource/mastering-sta
 import module namespace const = "http://marklogic.com/smart-mastering/constants"
 at "/com.marklogic.smart-mastering/constants.xqy";
 
-import module namespace debug = "http://marklogic.com/data-hub/debug"
-  at "/MarkLogic/data-hub-framework/impl/debug-lib.xqy";
-
 declare namespace rapi = "http://marklogic.com/rest-api";
 
 declare option xdmp:mapping "false";
@@ -32,7 +29,6 @@ declare function get(
   $params  as map:map
   ) as document-node()*
 {
-  debug:dump-env(),
   let $json := json:object()
   let $m := cts:values(cts:collection-reference(), (), ("item-frequency", "map"))
   let $_ := for $key in map:keys($m) return map:put($m, $key, cts:frequency(map:get($m, $key)))
@@ -52,6 +48,5 @@ declare %rapi:transaction-mode("update") function post(
   $input   as document-node()*
   ) as document-node()*
 {
-  debug:dump-env(),
   document { () }
 };

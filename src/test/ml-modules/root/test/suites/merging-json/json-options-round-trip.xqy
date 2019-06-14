@@ -38,11 +38,11 @@ declare variable $strategy-options := test:get-test-file("merge-options-with-str
  : JSON.
  :)
 let $actual := merging:get-options("json-options", $const:FORMAT-JSON)
-return test:assert-equal-json($options, $actual),
+return test:assert-true(fn:deep-equal($options, $actual)),
 
 let $expected := test:get-test-file("merge-options.json")/node()
 let $actual := merging:get-options($lib:OPTIONS-NAME-COMPLETE, $const:FORMAT-JSON)
-return test:assert-equal-json($expected, $actual),
+return test:assert-true(fn:deep-equal($options, $actual)),
 
 (: For some reason, the below test needed to convert the JSON to string to determine
  : that they are equal. See https://github.com/marklogic-community/marklogic-unit-test/issues/44

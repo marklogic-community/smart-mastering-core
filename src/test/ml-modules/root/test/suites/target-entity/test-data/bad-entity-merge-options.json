@@ -1,0 +1,56 @@
+{
+  "options": {
+    "matchOptions": "basic",
+    "targetEntity": "EntityDoesNotExist",
+    "propertyDefs": {
+      "properties": [],
+      "namespaces": {
+        "es": "http://marklogic.com/entity-services",
+        "sm": "http://marklogic.com/smart-mastering",
+        "has": "has"
+      }
+    },
+    "algorithms": {
+      "custom": [],
+      "stdAlgorithm": {
+        "namespaces": {
+          "es": "http://marklogic.com/entity-services",
+          "sm": "http://marklogic.com/smart-mastering"
+        },
+        "timestamp": {
+          "path": "/es:envelope/es:headers/sm:sources/sm:source/sm:dateTime"
+        }
+      }
+    },
+    "merging": [
+      {
+        "propertyName": "PersonNameType.PersonGivenName",
+        "maxValues": "1",
+        "doubleMetaphone": {
+          "distanceThreshold": "50"
+        },
+        "synonymsSupport": "true",
+        "thesaurus": "/mdm/config/thesauri/first-name-synonyms.xml",
+        "length": {
+          "weight": "8"
+        }
+      },
+      {
+        "propertyName": "Address",
+        "algorithmRef": "standard",
+        "maxValues": "1",
+        "sourceWeights": [{
+          "source": {
+            "name": "SOURCE2",
+            "weight": "10"
+          }
+        },{
+          "source": {
+            "name": "SOURCE1",
+            "weight": "5"
+          }
+        }]
+      }
+    ]
+  }
+}

@@ -2,7 +2,11 @@
 
 This document describes steps needed when upgrading Smart Mastering Core from one version to another. 
 
-## v1.2.0 to v1.2.3
+## v1.2.4 to v1.3.0
+
+No known incompatibilities. 
+
+## v1.2.1 to v1.2.4
 
 No known incompatibilities. 
 

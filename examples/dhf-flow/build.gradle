@@ -16,6 +16,7 @@ plugins {
 repositories {
   jcenter()
   mavenCentral()
+  mavenLocal()
 
   // needed for the mlcp dependencies
   maven {
@@ -30,10 +31,10 @@ configurations {
 dependencies {
   // this magical line will include the Smart Mastering
   // libraries and deploy them alongside your code
-  mlRestApi "com.marklogic.community:smart-mastering-core:${smartMasteringVersion}"
+  mlBundle "com.marklogic.community:smart-mastering-core:${smartMasteringVersion}"
 
   // MLCP dependencies
-  mlcp "com.marklogic:mlcp:9.0.7"
+  mlcp "com.marklogic:mlcp:9.0.9"
 }
 
 // this task runs MLCP to ingest the CRM data

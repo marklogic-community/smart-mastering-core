@@ -126,7 +126,7 @@ declare function opt-impl:save-options(
     xdmp:document-insert(
       $ALGORITHM-OPTIONS-DIR||$name||".xml",
       $options,
-      (xdmp:permission($const:MDM-ADMIN, "update"), xdmp:permission($const:MDM-USER, "read")),
+      xdmp:default-permissions(),
       ($const:OPTIONS-COLL, $const:MATCH-OPTIONS-COLL, $const:ALGORITHM-COLL)
     )
   )

@@ -1,0 +1,29 @@
+{
+  "options": {
+    "targetEntity": "PersonType",
+    "dataFormat": "json",
+    "propertyDefs": {
+      "property": []
+    },
+    "algorithms": {
+      "algorithm": []
+    },
+    "scoring": {
+      "add": [
+        { "propertyName": "PersonSSNIdentificationType.IdentificationID", "weight": "50" },
+        { "propertyName": "PersonNameType.PersonSurName", "weight": "12" },
+        { "propertyName": "PersonNameType.PersonGivenName", "weight": "6" },
+        { "propertyName": "PersonSex", "weight": "3" }
+      ],
+      "expand": [],
+      "reduce": []
+    },
+    "thresholds": {
+      "threshold": [
+        { "above": "30", "label": "Possible Match" },
+        { "above": "50", "label": "Likely Match", "action": "notify" },
+        { "above": "68", "label": "Definitive Match", "action": "merge" }
+      ]
+    }
+  }
+}

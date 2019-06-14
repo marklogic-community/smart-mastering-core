@@ -41,7 +41,7 @@ function post(
       else ()
     let $merge-fun :=
       if (map:get($params, "preview") = "true") then
-        merging:build-merge-models-by-uri#2
+        function($uris, $options) { merging:build-merge-models-by-uri($uris, $options) => map:get("value") }
       else
         merging:save-merge-models-by-uri#2
     return

@@ -1,0 +1,188 @@
+{
+  "info": {
+    "title": "PersonType",
+    "version": "0.0.1"
+  },
+  "definitions": {
+    "PersonType": {
+      "primaryKey": "ID",
+      "description": "A data type for a human being.",
+      "required": [],
+      "rangeIndex": [],
+      "wordLexicon": [],
+      "properties": {
+        "ID": {
+          "datatype": "string"
+        },
+        "PersonName": {
+          "datatype": "array",
+          "items": {
+            "$ref": "#/definitions/PersonNameType"
+          }
+        },
+        "PersonBirthDate": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "PersonSex": {
+          "datatype": "string"
+        },
+        "PersonSSNIdentification": {
+          "datatype": "array",
+          "items": {
+            "$ref": "#/definitions/PersonSSNIdentificationType"
+          }
+        },
+        "IncidentCategoryCodeDate": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "CaseStartDate": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "CaseAmount": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "Revenue": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "Address": {
+          "datatype": "array",
+          "items": {
+            "$ref": "#/definitions/AddressType"
+          }
+        }
+      }
+    },
+    "AddressType": {
+      "required": [],
+      "rangeIndex": [],
+      "wordLexicon": [],
+      "properties": {
+        "AddressFullText": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "AddressPrivateMailboxText": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "AddressSecondaryUnitText": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "AddressDeliveryPoint": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "AddressRecipientName": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "LocationCityName": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "LocationCounty": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "LocationState": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "LocationCountry": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "LocationPostalCode": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "LocationPostalExtensionCode": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "AddressUrbanizationName": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        }
+      }
+    },
+    "PersonSSNIdentificationType": {
+      "required": [],
+      "rangeIndex": [],
+      "wordLexicon": [],
+      "properties": {
+        "IdentificationID": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        }
+      }
+    },
+    "PersonNameType": {
+      "required": [],
+      "rangeIndex": [],
+      "wordLexicon": [],
+      "properties": {
+        "PersonGivenName": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "PersonMiddleName": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        },
+        "PersonSurName": {
+          "datatype": "array",
+          "items": {
+            "datatype": "string"
+          }
+        }
+      }
+    }
+  }
+}

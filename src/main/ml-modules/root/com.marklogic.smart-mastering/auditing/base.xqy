@@ -7,16 +7,8 @@ xquery version "1.0-ml";
 
 module namespace auditing = "http://marklogic.com/smart-mastering/auditing";
 
-import module namespace diff = "http://marklogic.com/demo/xml-diff"
-  at "/mlpm_modules/marklogic-xml-diff/diff.xqy";
-import module namespace mem = "http://maxdewpoint.blogspot.com/memory-operations/functional"
-  at "/mlpm_modules/XQuery-XML-Memory-Operations/memory-operations-functional.xqy";
 import module namespace sem = "http://marklogic.com/semantics"
   at "/MarkLogic/semantics.xqy";
-
-
-import module namespace xq3 = "http://maxdewpoint.blogspot.com/xq3-ml-extensions"
-  at "/mlpm_modules/xq3-ml-extensions/xq3.xqy";
 
 import module namespace const = "http://marklogic.com/smart-mastering/constants"
   at "/com.marklogic.smart-mastering/constants.xqy";
@@ -39,6 +31,9 @@ declare variable $rdfs-prefix := fn:namespace-uri-from-QName(xs:QName("rdfs:docu
 declare variable $RDF-TYPE-IRI := sem:iri($rdf-prefix || "type");
 declare variable $RDFS-LABEL-IRI := sem:iri($rdfs-prefix || "label");
 
+declare private variable $ps-collection as xs:string :=
+ "http://marklogic.com/provenance-services/record";
+
 (:
  : Generate and record PROV-XML regarding a merge or unmerge action.
  :
@@ -50,6 +45,33 @@ declare function auditing:audit-trace(
   $new-uri as xs:string,
   $attachments as item()*
 ) as empty-sequence()
+{
+  let $audit-trace-def := auditing:build-audit-trace(
+        $action,
+        $previous-uris,
+        $new-uri,
+        $attachments
+      )
+  return
+    xdmp:document-insert(
+      $audit-trace-def => map:get("uri"),
+      $audit-trace-def => map:get("value"),
+      xdmp:default-permissions(),
+      $audit-trace-def => map:get("context") => map:get("collections")
+    )
+};
+
+(:
+ : Generate and record PROV-XML regarding a merge or unmerge action.
+ :
+ : @param $action  $const:MERGE-ACTION or $auditing:ROLLBACK-ACTION
+ :)
+declare function auditing:build-audit-trace(
+  $action as xs:string,
+  $previous-uris as xs:string*,
+  $new-uri as xs:string,
+  $attachments as item()*
+) as map:map
 {
   let $dateTime := fn:current-dateTime()
   let $username := xdmp:get-current-user()
@@ -164,19 +186,10 @@ declare function auditing:audit-trace(
       $attachments
     }
   return
-    xdmp:document-insert(
-      "/com.marklogic.smart-mastering/auditing/"|| $action ||"/"||sem:uuid-string()||".xml",
-      element {fn:QName($prov-prefix, "document")} {
-        $prov-xml/node(),
-        auditing:build-semantic-info($prov-xml)
-      },
-      (
-        xdmp:default-permissions(),
-        xdmp:permission($const:MDM-USER, "read"),
-        xdmp:permission($const:MDM-ADMIN, "update")
-      ),
-      $const:AUDITING-COLL
-    )
+    map:map()
+      => map:with("uri", "/com.marklogic.smart-mastering/auditing/"|| $action ||"/"||sem:uuid-string()||".xml")
+      => map:with("value", $prov-xml)
+      => map:with("context", map:entry("collections",$const:AUDITING-COLL))
 };
 
 (:
@@ -184,9 +197,9 @@ declare function auditing:audit-trace(
  :)
 declare function auditing:auditing-receipts-for-doc-uri($doc-uri as xs:string)
 {
-  cts:search(fn:collection($const:AUDITING-COLL)/prov:document,
+  cts:search(fn:collection(($const:AUDITING-COLL,$ps-collection))/prov:document,
     cts:element-value-query(
-      xs:QName("auditing:new-uri"),
+      (xs:QName("auditing:new-uri"),xs:QName("new-uri")),
       $doc-uri,
       "exact"
     )
@@ -212,7 +225,9 @@ declare function auditing:auditing-receipts-for-doc-history($doc-uris as xs:stri
         cts:element-value-query(
           (
             xs:QName("auditing:previous-uri"),
-            xs:QName("auditing:new-uri")
+            xs:QName("auditing:new-uri"),
+            xs:QName("previous-uri"),
+            xs:QName("new-uri")
           ),
           $doc-uris,
           "exact"
@@ -228,12 +243,12 @@ declare function auditing:audit-trace-rollback($prov-xml)
 {
   let $merged-uri :=
     fn:string(
-      $prov-xml/prov:collection[fn:starts-with(prov:type, "result of record ")]/prov:label
+      $prov-xml/(prov:collection|prov:entity)[fn:starts-with(prov:type, "result of record ")]/prov:label
     )
-  for $entity in $prov-xml/prov:collection[fn:starts-with(prov:type, "contributing record for ")]
+  for $entity in $prov-xml/(prov:collection|prov:entity)[fn:starts-with(prov:type, "contributing record for ")]
   let $orig-uri :=
     fn:string(
-      $entity/prov:label
+      $entity/*:label
     )
   return
     auditing:audit-trace(
@@ -406,11 +421,7 @@ declare function auditing:build-semantic-info($prov-xml as element(prov:document
       sem:graph-insert(
         sem:iri("mdm-auditing"),
         $auditing-managed-triples,
-        (
-          xdmp:default-permissions(),
-          xdmp:permission($const:MDM-USER, "read"),
-          xdmp:permission($const:MDM-ADMIN, "update")
-        ),
+        xdmp:default-permissions(),
         $const:AUDITING-COLL
       )
     else (),
@@ -456,44 +467,6 @@ declare function auditing:_build-entity-managed-triples($entity, $prov-xml)
         fn:string($entity/prov:label)
       )
     ) else ()
-};
-
-
-declare function auditing:reverse-change-set($node as node())
-{
-  typeswitch ($node)
-  case element(diff:addition) return
-    element diff:removal {
-      $node/@*,
-      fn:map(auditing:reverse-change-set#1, $node/node())
-    }
-  case element(diff:removal) return
-    element diff:addition {
-      $node/@*,
-      fn:map(auditing:reverse-change-set#1, $node/node())
-    }
-  case element() return
-    element {fn:node-name($node)} {
-      fn:map(auditing:reverse-change-set-attributes#1,$node/@*),
-      fn:map(auditing:reverse-change-set#1, $node/node())
-    }
-  default return
-    $node
-};
-
-declare function auditing:reverse-change-set-attributes($node as attribute())
-{
-  typeswitch ($node)
-  case attribute(diff:addition) return
-    attribute diff:removal {
-      fn:string($node)
-    }
-  case attribute(diff:removal) return
-    attribute diff:addition {
-      fn:string($node)
-    }
-  default return
-    $node
 };
 
 declare function auditing:subject-not-stored($iri-str) as xs:boolean
