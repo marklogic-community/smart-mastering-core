@@ -1,0 +1,25 @@
+<envelope xmlns="http://marklogic.com/entity-services">
+  <headers>
+    <smart-mastering:id xmlns:smart-mastering="http://marklogic.com/smart-mastering">bbc806e4-ff00-4585-9d46-877edbc3248e</smart-mastering:id>
+    <smart-mastering:sources xmlns:smart-mastering="http://marklogic.com/smart-mastering">
+      <smart-mastering:source>
+        <smart-mastering:name>SOURCE1</smart-mastering:name>
+        <smart-mastering:import-id>mdm-import-8cf89514-fb1d-45f1-b95f-8b69f3126f04</smart-mastering:import-id>
+        <smart-mastering:user>admin</smart-mastering:user>
+        <smart-mastering:dateTime>2018-04-26T16:40:02.1386Z</smart-mastering:dateTime>
+      </smart-mastering:source>
+    </smart-mastering:sources>
+  </headers>
+  <triples/>
+  <instance>
+    <info>
+      <title>test</title>
+      <version>1.0.0</version>
+    </info>
+    <test xmlns="">
+      <id1>2</id1>
+      <id2>A</id2>
+    </test>
+  </instance>
+  <attachments/>
+</envelope>
