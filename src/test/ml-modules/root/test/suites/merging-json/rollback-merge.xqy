@@ -38,6 +38,8 @@ let $merged-doc :=
   )
 let $assertions := (
   let $smid := $merged-doc/*:envelope/*:headers/*:id/fn:string()
+  let $s1-merged-dt := $merged-doc//document-uri[. = "/source/1/doc1.json"]/../last-merge/fn:string()
+  let $s2-merged-dt := $merged-doc//document-uri[. = "/source/2/doc2.json"]/../last-merge/fn:string()
   let $expected-headers :=
     object-node {
       "custom": array-node {
@@ -89,8 +91,8 @@ let $assertions := (
         "unconfigured value 1a"
       },
       "merges": array-node {
-        object-node {"document-uri":"/source/1/doc1.json", "last-merge": fn:true()},
-        object-node {"document-uri":"/source/2/doc2.json", "last-merge": fn:true()}
+        object-node {"document-uri":"/source/1/doc1.json", "last-merge": $s1-merged-dt },
+        object-node {"document-uri":"/source/2/doc2.json", "last-merge": $s2-merged-dt }
       },
       "id": $smid,
       "merge-options": object-node {

@@ -75,14 +75,18 @@ let $assertions := xdmp:eager(
   let $s1-dt := $merged-doc//sm:source[sm:name = "SOURCE1"]/sm:dateTime/fn:string()
   let $s2-dt := $merged-doc//sm:source[sm:name = "SOURCE2"]/sm:dateTime/fn:string()
   let $s3-dt := $merged-doc//sm:source[sm:name = "SOURCE3"]/sm:dateTime/fn:string()
+  let $merged-merged-dt := $merged-doc//sm:document-uri[. = $merged-uri]/@last-merge/fn:string()
+  let $s1-merged-dt := $merged-doc//sm:document-uri[. = "/source/1/doc1.xml"]/@last-merge/fn:string()
+  let $s2-merged-dt := $merged-doc//sm:document-uri[. = "/source/2/doc2.xml"]/@last-merge/fn:string()
+  let $s3-merged-dt := $merged-doc//sm:document-uri[. = "/source/3/doc3.xml"]/@last-merge/fn:string()
   let $expected-headers :=
     <es:headers>
       <sm:id xmlns:sm="http://marklogic.com/smart-mastering">{$smid}</sm:id>
       <sm:merges xmlns:sm="http://marklogic.com/smart-mastering">
-        <sm:document-uri last-merge="true">{$merged-uri}</sm:document-uri>
-        <sm:document-uri last-merge="false">/source/1/doc1.xml</sm:document-uri>
-        <sm:document-uri last-merge="false">/source/2/doc2.xml</sm:document-uri>
-        <sm:document-uri last-merge="true">/source/3/doc3.xml</sm:document-uri>
+        <sm:document-uri last-merge="{$merged-merged-dt}">{$merged-uri}</sm:document-uri>
+        <sm:document-uri last-merge="{$s1-merged-dt}">/source/1/doc1.xml</sm:document-uri>
+        <sm:document-uri last-merge="{$s2-merged-dt}">/source/2/doc2.xml</sm:document-uri>
+        <sm:document-uri last-merge="{$s3-merged-dt}">/source/3/doc3.xml</sm:document-uri>
       </sm:merges>
       <sm:sources xmlns:sm="http://marklogic.com/smart-mastering">
         <sm:source>
@@ -246,8 +250,8 @@ let $assertions := (
   $second-merge-uris ! test:assert-exists(matcher:get-blocks(.)/node()),
   xdmp:invoke-function(
     function() {
-      (: 2 merges + rollback will reconstruct merged record :)
-      test:assert-equal($telemetry-count + 3, tel:get-usage-count())
+      (: 2 merges :)
+      test:assert-equal($telemetry-count + 2, tel:get-usage-count())
     }
   )
 )
