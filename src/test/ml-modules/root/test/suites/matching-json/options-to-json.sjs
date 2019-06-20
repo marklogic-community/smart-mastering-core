@@ -14,8 +14,8 @@ let assertions = [];
 
 assertions.push(
   test.assertEqual("200", actual.options.tuning.maxScan.toString()),
-  test.assertEqual(7, actual.options.propertyDefs.property.length),
-  test.assertEqual(2, actual.options.algorithms.algorithm.length),
+  test.assertEqual(7, actual.options.propertyDefs.properties.length),
+  test.assertEqual(2, actual.options.algorithms.length),
   test.assertEqual(7, actual.options.scoring.add.length),
   test.assertEqual(2, actual.options.scoring.expand.length)
 );

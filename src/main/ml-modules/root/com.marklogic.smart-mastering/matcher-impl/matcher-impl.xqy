@@ -27,6 +27,8 @@ import module namespace blocks-impl = "http://marklogic.com/smart-mastering/bloc
 import module namespace const = "http://marklogic.com/smart-mastering/constants"
   at "/com.marklogic.smart-mastering/constants.xqy";
 import module namespace es-helper = "http://marklogic.com/smart-mastering/entity-services" at "/com.marklogic.smart-mastering/sm-entity-services.xqy";
+import module namespace helper-impl = "http://marklogic.com/smart-mastering/helper-impl"
+  at "/com.marklogic.smart-mastering/matcher-impl/helper-impl.xqy";
 import module namespace json="http://marklogic.com/xdmp/json"
   at "/MarkLogic/json/json.xqy";
 import module namespace notify-impl = "http://marklogic.com/smart-mastering/notification-impl"
@@ -80,7 +82,6 @@ declare function match-impl:compile-match-options(
             }
           else
             $options
-    let $is-json := $options/matcher:data-format = $const:FORMAT-JSON
     let $scoring := $options/matcher:scoring
     let $max-property-score := fn:max(($scoring/@weight ! fn:number(.)))
     let $score-ratio :=
@@ -89,64 +90,20 @@ declare function match-impl:compile-match-options(
         else
           (64 idiv $max-property-score)
     let $algorithms := algorithms:build-algorithms-map($options/matcher:algorithms)
-    let $property-defs := $options/matcher:property-defs
     let $target-entity-def := es-helper:get-entity-def($options/matcher:target-entity)
     let $queries := (
         for $score in $scoring/(matcher:add|matcher:expand)
         let $type := fn:local-name($score)
         let $weight := fn:number($score/@weight)
         let $full-property-name := $score/@property-name
-        let $property-name :=
-          if (fn:contains($full-property-name, ".")) then
-            fn:substring-after($full-property-name, ".")
-          else
-            $full-property-name
-        let $property-details :=
-          if (fn:exists($target-entity-def)) then
-            let $prop-entity-def :=
-              if (fn:contains($full-property-name, ".")) then
-                es-helper:get-entity-def(fn:substring-before($full-property-name, "."))
-              else
-                $target-entity-def
-            return
-              es-helper:get-entity-def-property(
-                $prop-entity-def,
-                $property-name
-              )
-          else ()
-        let $prop-entity-def := $property-details/../..
-        let $property-entity-qname := $prop-entity-def ! fn:QName(./namespaceUri, xdmp:encode-for-NCName(./entityTitle))
-        let $property-def := $property-defs/matcher:property[@name = $full-property-name]
-        where fn:exists($property-def) or fn:exists($property-details)
+        let $helper-query := helper-impl:property-name-to-query($options, $full-property-name)
+        where fn:exists($helper-query)
         order by $weight descending
         return
-          let $qname :=
-            if (fn:exists($property-def)) then
-              fn:QName($property-def/@namespace, $property-def/@localname)
-            else
-              fn:QName($prop-entity-def/namespaceUri, xdmp:encode-for-NCName($property-name))
+          let $qname := helper-impl:property-name-to-qname($options, $full-property-name)
           let $base-values-query :=
               if ($type eq "add") then
-                if ($is-json) then
-                  function($val) {
-                    cts:json-property-value-query(
-                      fn:string($qname),
-                      (
-                        $val,
-                        $val ! fn:number(.)[fn:string(.) ne "NaN"],
-                        $val[. castable as xs:boolean] ! xs:boolean(.)
-                      ),
-                      ("case-insensitive"),
-                      $weight
-                    )
-                  }
-                else
-                  cts:element-value-query(
-                    $qname,
-                    ?,
-                    ("case-insensitive"),
-                    $weight
-                  )
+                $helper-query(?, $weight)
               else if ($type eq "expand") then
                 let $algorithm := map:get($algorithms, $score/@algorithm-ref)
                 where fn:exists($algorithm)
@@ -154,35 +111,13 @@ declare function match-impl:compile-match-options(
               else ()
           return map:new((
             map:entry("queryID", sem:uuid-string()),
-            map:entry("propertyName",$property-name),
+            map:entry("propertyName",$full-property-name),
             map:entry("type",$type),
             map:entry("weight",$weight),
             map:entry("qname", $qname),
             map:entry(
               "valuesToQueryFunction",
-              if (fn:exists($property-details)) then
-                if ($is-json) then
-                  function($val) {
-                    let $query := $base-values-query($val)
-                    where fn:exists($query)
-                    return
-                      cts:json-property-scope-query(
-                        fn:local-name-from-QName($property-entity-qname),
-                        $query
-                      )
-                  }
-                else
-                  function($val) {
-                    let $query := $base-values-query($val)
-                    where fn:exists($query)
-                    return
-                      cts:element-query(
-                        $property-entity-qname,
-                        $query
-                      )
-                  }
-              else
-                $base-values-query
+              $base-values-query
             )
           )),
         for $score in $scoring/matcher:reduce
@@ -520,17 +455,18 @@ declare function match-impl:search(
     0
   )[fn:position() = $range]
   let $uri := xdmp:node-uri($result)
-  let $score := match-impl:simple-score($result)
+  let $matching-queries := cts:or-query-queries($boosting-query)[cts:contains($result, .)]
   let $score :=
-    if ($score eq 0) then
       fn:sum(
-        for $query in cts:or-query-queries($boosting-query)
-        where cts:contains($result, $query)
+        for $query in $matching-queries
         return
-          document{$query}//schema-element(cts:query)[fn:empty(self::element(cts:and-query)|self::element(cts:or-query)|self::element(cts:and-not-query)|self::element(cts:boost-query)|self::element(cts:not-in-query)|self::element(cts:before-query)|self::element(cts:after-query)|self::element(cts:true-query)|self::element(cts:false-query)|self::element(cts:period-range-query)|self::element(cts:period-compare-query)|self::element(cts:element-query)|self::element(cts:json-property-scope-query)|self::element(cts:document-fragment-query)|self::element(cts:properties-fragment-query)|self::element(cts:locks-fragment-query)|self::element(cts:document-query)|self::element(cts:collection-query)|self::element(cts:directory-query))]/@weight ! fn:number(.)
+          document{$query}//schema-element(cts:query)
+            [fn:empty(self::element(cts:and-query)|self::element(cts:or-query)|self::element(cts:and-not-query)|self::element(cts:boost-query)|self::element(cts:not-in-query)|
+                self::element(cts:before-query)|self::element(cts:after-query)|self::element(cts:true-query)|self::element(cts:false-query)|self::element(cts:period-range-query)|
+                self::element(cts:period-compare-query)|self::element(cts:element-query)|self::element(cts:json-property-scope-query)|self::element(cts:document-fragment-query)|
+                self::element(cts:properties-fragment-query)|self::element(cts:locks-fragment-query)|self::element(cts:document-query)|self::element(cts:collection-query)|
+                self::element(cts:directory-query))] ! fn:number(fn:head((./@weight,1)))
       )
-    else
-      $score
   let $result-stub :=
     element result {
       attribute uri {$uri},

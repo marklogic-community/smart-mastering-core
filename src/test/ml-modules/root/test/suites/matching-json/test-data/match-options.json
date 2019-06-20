@@ -2,23 +2,23 @@
   "options": {
     "dataFormat": "json",
     "propertyDefs": {
-      "property": [
+      "properties": [
         { "namespace": "", "localname": "IdentificationID", "name": "ssn" },
-        { "namespace": "", "localname": "PersonGivenName", "name": "first-name" },
-        { "namespace": "", "localname": "PersonSurName", "name": "last-name" },
+        { "namespace": "", "localname": "PersonGivenName", "name": "first-name",
+          "indexReferences":[{"jsonPropertyReference":{"property":"PersonGivenName", "scalarType":"string", "collation":"http://marklogic.com/collation//S1", "nullable":false}}]},
+        { "namespace": "", "localname": "PersonSurName", "name": "last-name",
+          "indexReferences":[{"jsonPropertyReference":{"property":"PersonSurName", "scalarType":"string", "collation":"http://marklogic.com/collation//S1", "nullable":false}}]},
         { "namespace": "", "localname": "AddressPrivateMailboxText", "name": "addr1" },
         { "namespace": "", "localname": "LocationCity", "name": "city" },
         { "namespace": "", "localname": "LocationState", "name": "state" },
         { "namespace": "", "localname": "LocationPostalCode", "name": "zip" }
       ]
     },
-    "algorithms": {
-      "algorithm": [
+    "algorithms": [
         { "name": "std-reduce", "function": "standard-reduction" },
         { "name": "dbl-metaphone", "function": "double-metaphone" },
         { "name": "thesaurus", "function": "thesaurus" }
-      ]
-    },
+      ],
     "scoring": {
       "add": [
         { "propertyName": "ssn", "weight": "50" },
@@ -52,22 +52,19 @@
         }
       ]
     },
-    "actions": {
-      "action": {
+    "actions": [{
         "name": "my-custom-action",
         "function": "custom-action",
         "namespace": "http://marklogic.com/smart-mastering/action",
         "at": "/custom-action.xqy"
       }
-    },
-    "thresholds": {
-      "threshold": [
+    ],
+    "thresholds": [
         { "above": "30", "label": "Possible Match" },
         { "above": "50", "label": "Likely Match", "action": "notify" },
         { "above": "68", "label": "Definitive Match", "action": "merge" },
         { "above": "75", "label": "Custom Match", "action": "my-custom-action" }
-      ]
-    },
+      ],
     "tuning": { "maxScan": "200" }
   }
 }
