@@ -50,6 +50,12 @@
         "timestamp": {
           "path": "/es:envelope/es:headers/sm:sources/sm:source/sm:dateTime"
         }
+      },
+      "collections": {
+        "onMerge": "",
+        "onNoMatch": "",
+        "onArchive": "",
+        "onNotification": ""
       }
     },
     "merging": [

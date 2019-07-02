@@ -41,7 +41,13 @@ const small =
               "function": "customThing",
               "at": "/custom-merge-xqy.xqy"
             }
-          ]
+          ],
+          "collections": {
+            "onMerge": "",
+            "onNoMatch": "",
+            "onArchive": "",
+            "onNotification": ""
+          }
         }
       }
     }
@@ -59,6 +65,15 @@ const minimal =
           "properties": [
             { "namespace": "", "localname": "Address", "name": "address" }
           ]
+        },
+        "algorithms": {
+          "collections": {
+            "onMerge": "",
+            "onNoMatch": "",
+            "onArchive": "",
+            "onNotification": ""
+          },
+          "custom": []
         }
       }
     }
