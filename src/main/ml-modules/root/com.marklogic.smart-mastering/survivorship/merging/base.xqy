@@ -2157,10 +2157,56 @@ declare function merge-impl:execute-algorithm(
   if (fn:ends-with(xdmp:function-module($algorithm), "sjs")) then
     let $properties := json:to-array($properties)
     let $property-spec := merge-impl:propertyspec-to-json($property-spec)
+    let $results := xdmp:apply($algorithm, $property-name, $properties, $property-spec)
     return
-      xdmp:apply($algorithm, $property-name, $properties, $property-spec)
+      merge-impl:normalize-javascript-results(
+        $results
+      )
   else
     xdmp:apply($algorithm, $property-name, $properties, $property-spec)
+};
+
+(:
+ : Normalize the results of JavaScript merge function.
+ : @param $results  output of a merge JavaScript function
+ :)
+declare function merge-impl:normalize-javascript-results(
+  $results as item()*
+) {
+  let $results-sequence :=
+    if ($results instance of json:array) then
+      json:array-values($results)
+    else
+      $results
+  for $result in $results-sequence
+  let $values := map:get($result, "values")
+  return
+    if (fn:exists($values[fn:not(. instance of node())])) then
+      map:new((
+        $result,
+        map:entry("values", merge-impl:normalize-json-to-nodes(map:get($result, "name"), $values))
+      ))
+    else
+      $result
+
+};
+
+(:
+ : Normalize the values to nodes of JavaScript merge function.
+ : @param $results  output of a merge JavaScript function
+ :)
+declare function merge-impl:normalize-json-to-nodes(
+  $prop-name as xs:QName,
+  $values as item()*
+) {
+  for $value in $values
+  return
+    if ($value instance of node()) then
+      $value
+    else if ($value instance of json:array or $value instance of json:object) then
+      xdmp:to-json($value)/node()
+    else
+      object-node { $prop-name: $value }/node()
 };
 
 declare variable $documents-archived-in-transaction := map:map();

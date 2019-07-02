@@ -1,7 +1,10 @@
 'use strict'
 
 function orderedMerge(propertyName, properties, propertySpec) {
-  const sortedProperties = properties.sort((a, b) => {
+  const sortedProperties = properties.map((property) => {
+      return Object.assign({}, property, { values: fn.string(property.values) });
+    })
+  .sort((a, b) => {
     if (propertySpec.goHigh) {
       if (a.values > b.values) return -1;
       if (a.values < b.values) return 1;
@@ -13,7 +16,7 @@ function orderedMerge(propertyName, properties, propertySpec) {
     return 0;
   });
   const maxValues = propertySpec.maxValues || 99;
-  return fn.subsequence(xdmp.arrayValues(sortedProperties), 1, maxValues);
+  return sortedProperties.slice(0,maxValues);
 }
 
 exports.customThing = orderedMerge;
