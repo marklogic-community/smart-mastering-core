@@ -1323,13 +1323,6 @@ declare function merge-impl:parse-final-properties-for-merge(
       $first-doc/(es:envelope|object-node("envelope"))/(es:instance|object-node("instance"))/ancestor-or-self::*)
       ! fn:node-name(.)
     )
-  let $prop-history-info := ()
-      (:for $doc-uri in fn:distinct-values($docs/(es:envelope|object-node("envelope"))
-            /(es:headers|object-node("headers"))
-            /(sm:merges|array-node("merges"))
-            /(sm:document-uri|documentUri))
-      return
-        history:property-history($doc-uri, ()) ! xdmp:to-json(.)/object-node():)
   let $sources := merge-impl:get-sources($docs, $merge-options)
   let $final-properties := merge-impl:build-final-properties(
     $merge-options,
@@ -1772,28 +1765,9 @@ declare function merge-impl:build-final-properties(
       for $doc at $pos in $docs
       let $props-for-instance :=
         for $prop-val in $instance-props[fn:root(.) is $doc]
-        return
-          (: Properly extract values from arrays :)
-          (: TODO: consider array case
-          if ($prop-val instance of array-node()) then
-            let $children := $prop-val/node()
-            return
-              if (fn:exists($children/*[fn:node-name(.) eq $prop])) then
-                $children/*[fn:node-name(.) eq $prop]
-              else
-                $children
-          else
-          :)
-            $prop-val
+        return $prop-val
       for $prop-value in $props-for-instance
-      (:let $normalized-value := history:normalize-value-for-tracing($prop-value)
-        let $source-details := $prop-history-info//object-node(fn:string($prop))/object-node($normalized-value)/sourceDetails
-        :)
-      let $lineage-uris :=
-        (:if (fn:exists($source-details)) then
-            $source-details/sourceLocation
-          else:)
-        merge-impl:node-uri($doc)
+      let $lineage-uris := merge-impl:node-uri($doc)
       let $prop-sources := $lineage-uris ! map:get($sources-by-document-uri, .)
       where fn:exists($props-for-instance)
       return
@@ -1881,6 +1855,7 @@ declare function merge-impl:build-final-properties(
             if (xdmp:trace-enabled($const:TRACE-MERGE-RESULTS)) then
               xdmp:trace($const:TRACE-MERGE-RESULTS, xdmp:describe(('Property Entity Definition Found: ' || $prop-entity-title, 'Property Entity Instances Found: ', $prop-entity-instances),(),()))
             else ()
+        where fn:exists($prop-entity-instances)
         return
           if (fn:exists($distinct-primary-key-values)) then
             for $primary-key-value in $distinct-primary-key-values
@@ -1970,14 +1945,7 @@ declare function merge-impl:build-final-properties(
               else
                 $prop-val
           for $prop-value in $props-for-instance
-          (:let $normalized-value := history:normalize-value-for-tracing($prop-value)
-            let $source-details := $prop-history-info//object-node(fn:string($prop))/object-node($normalized-value)/sourceDetails
-            :)
-          let $lineage-uris :=
-            (:if (fn:exists($source-details)) then
-                $source-details/sourceLocation
-              else:)
-            merge-impl:node-uri($doc)
+          let $lineage-uris := merge-impl:node-uri($doc)
           let $prop-sources := $lineage-uris ! map:get($sources-by-document-uri, .)
           let $_trace :=
             if (xdmp:trace-enabled($const:TRACE-MERGE-RESULTS)) then

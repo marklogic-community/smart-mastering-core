@@ -176,7 +176,7 @@ declare function collection-impl:default-collection-handler(
         $event-options/merging:remove/merging:collection ! fn:string(.),
         switch ($event-name)
           case $const:ON-ARCHIVE-EVENT return
-            coll:content-collections($match-options)
+            coll:content-collections($content-collection-options)
           default return
             ()
       ))
@@ -184,7 +184,7 @@ declare function collection-impl:default-collection-handler(
       (
         $all-collections[fn:not(. = $remove-collections)],
         $event-options/merging:add/merging:collection ! fn:string(.)
-      )[. ne '']
+      )[fn:not(fn:normalize-space(.) = '')]
   )
 };
 
