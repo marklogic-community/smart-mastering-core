@@ -520,7 +520,7 @@ declare function match-impl:_results-json-config()
 {
   let $config := json:config("custom")
   return (
-    map:put($config, "array-element-names", ("result","matches",xs:QName("cts:option"),xs:QName("cts:text"),xs:QName("cts:element"))),
+    map:put($config, "array-element-names", ("result","match",xs:QName("cts:option"),xs:QName("cts:text"),xs:QName("cts:element"))),
     map:put($config, "full-element-names",
       (xs:QName("cts:query"),
       xs:QName("cts:and-query"),

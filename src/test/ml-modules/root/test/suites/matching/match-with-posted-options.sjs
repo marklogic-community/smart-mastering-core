@@ -19,13 +19,13 @@ let assertions = [
 
 // Test includesMatches option
 actual.results.result.forEach((result) => {
-  assertions.push(test.assertTrue(result.matches.length > 0));
+  assertions.push(test.assertTrue(result.matches.match.length > 0));
 });
 
 postWithOptionsResponse = test.httpPost(`v1/resources/sm-match?rs:uri=${xdmp.urlEncode(lib.URI1)}&rs:pageLength=6&rs:includeMatches=false`, httpOptions, options);
 actual = fn.head(fn.tail(postWithOptionsResponse)).toObject();
 actual.results.result.forEach((result) => {
-  assertions.push(test.assertFalse(result.matches && result.matches.length > 0));
+  assertions.push(test.assertFalse(result.matches && result.matches.match.length > 0));
 });
 
 assertions;
