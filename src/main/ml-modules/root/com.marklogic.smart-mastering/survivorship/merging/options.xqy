@@ -51,7 +51,15 @@ declare function merge-impl:get-options($format as xs:string)
 
 declare function merge-impl:get-options($options-name, $format as xs:string)
 {
-  let $options := fn:doc($MERGING-OPTIONS-DIR||$options-name||".xml")/merging:options
+  let $opt-uri := $MERGING-OPTIONS-DIR||$options-name||".xml"
+  let $options-doc := fn:doc($opt-uri)
+  let $options := $options-doc/merging:options
+  let $check :=
+    if (empty($options-doc)) then
+      fn:error(xs:QName("SM-MISSING-CONFIG"), "no options doc found at URI '" || $opt-uri || "' in database: " || xdmp:database-name(xdmp:database()))
+    else if (empty($options)) then
+      fn:error(xs:QName("SM-MISSING-CONFIG"), "no merging:options node found at root of doc(" || $opt-uri || ") in database: " || xdmp:database-name(xdmp:database()))
+    else ()
   return
     if ($format eq $const:FORMAT-XML) then
       $options
