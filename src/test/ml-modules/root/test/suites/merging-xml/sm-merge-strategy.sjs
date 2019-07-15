@@ -11,7 +11,7 @@ let httpOptions = {
   "headers": { "Content-Type": "application/json", "Accept": "application/json"}
 };
 
-let uris = Object.keys(lib["TEST-DATA"]);
+let uris = Object.keys(lib["TEST-DATA"]).sort();
 let uriParam = fn.stringJoin(uris.map((uri) => `rs:uri=${xdmp.urlEncode(uri)}`), "&");
 let optParam = `rs:options=${lib["OPTIONS-NAME-WITH-DEFAULT-1"]}`;
 let previewParam = "rs:preview=true";

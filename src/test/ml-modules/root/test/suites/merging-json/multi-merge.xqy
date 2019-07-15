@@ -53,12 +53,13 @@ let $_ :=
   )
 
 let $merged-uri := (cts:uris((), (), cts:collection-query($const:MERGED-COLL)))[1]
+let $second-merge-uris := ("/source/3/doc3.json", $merged-uri)
 let $merged-doc :=
   xdmp:invoke-function(
     function() {
       document {
         merging:save-merge-models-by-uri(
-          ("/source/3/doc3.json", $merged-uri),
+          $second-merge-uris,
           merging:get-options($lib:OPTIONS-NAME, $const:FORMAT-XML)
         )
       }
@@ -67,6 +68,10 @@ let $merged-doc :=
   )
 let $assertions := (
   let $smid := $merged-doc/*:envelope/*:headers/*:id/fn:string()
+  let $merged-merged-dt := $merged-doc//document-uri[. = $merged-uri]/../last-merge/fn:string()
+  let $s1-merged-dt := $merged-doc//document-uri[. = "/source/1/doc1.json"]/../last-merge/fn:string()
+  let $s2-merged-dt := $merged-doc//document-uri[. = "/source/2/doc2.json"]/../last-merge/fn:string()
+  let $s3-merged-dt := $merged-doc//document-uri[. = "/source/3/doc3.json"]/../last-merge/fn:string()
   let $expected-headers :=
     object-node {
       "custom": array-node {
@@ -138,11 +143,16 @@ let $assertions := (
         "unconfigured value 1a"
       },
       "merges": array-node {
-        object-node {"document-uri":"/source/3/doc3.json"},
-        object-node {"document-uri":"/source/1/doc1.json"},
-        object-node {"document-uri":"/source/2/doc2.json"}
+        object-node {"document-uri":$merged-uri, "last-merge": $merged-merged-dt },
+        object-node {"document-uri":"/source/1/doc1.json", "last-merge": $s1-merged-dt },
+        object-node {"document-uri":"/source/2/doc2.json", "last-merge": $s2-merged-dt },
+        object-node {"document-uri":"/source/3/doc3.json", "last-merge": $s3-merged-dt }
       },
-      "id": $smid
+      "id": $smid,
+      "merge-options": object-node {
+          "language": "zxx",
+          "value": "/com.marklogic.smart-mastering/options/merging/test-options.xml"
+      }
     }
   let $expected-triples :=
     array-node {
@@ -174,6 +184,10 @@ let $assertions := (
     }
   let $expected-instance :=
     object-node {
+      "info": object-node {
+        "title": "Example",
+        "version": "1.0.0"
+      },
       "MDM": object-node {
         "Person": object-node {
           "PersonType": object-node {
@@ -232,8 +246,6 @@ let $assertions := (
           }
         }
       }
-    let $_ := xdmp:log(("expected", $expected))
-    let $_ := xdmp:log(("merged", $merged-doc))
   return (
     if (fn:deep-equal($expected, $merged-doc)) then
       test:success()
@@ -261,6 +273,6 @@ let $unmerge :=
 (: And now there should be blocks :)
 let $assertions := (
   $assertions,
-  map:keys($lib:TEST-DATA) ! test:assert-exists(matcher:get-blocks(.)/node())
+  $second-merge-uris ! test:assert-exists(matcher:get-blocks(.)/node())
 )
 return $assertions

@@ -1,5 +1,8 @@
 xquery version "1.0-ml";
 
+xdmp:sleep(100);
+xquery version "1.0-ml";
+
 import module namespace matcher = "http://marklogic.com/smart-mastering/matcher"
   at "/com.marklogic.smart-mastering/matcher.xqy";
 import module namespace const = "http://marklogic.com/smart-mastering/constants"

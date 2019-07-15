@@ -1,0 +1,13 @@
+<options xmlns="http://marklogic.com/smart-mastering/merging">
+  <match-options>cross-match-options</match-options>
+  <property-defs>
+    <property namespace="" localname="id1" name="id1"/>
+    <property namespace="" localname="id2" name="id2"/>
+  </property-defs>
+  <merging>
+    <merge property-name="id1"  max-values="1">
+    </merge>
+    <merge property-name="id2" max-values="1">
+    </merge>
+  </merging>
+</options>

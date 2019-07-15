@@ -54,7 +54,7 @@ return (
   ),
   let $actual2 := $actual[2]
   return (
-    test:assert-equal(<name>AA</name>, map:get($actual2, "values")),
-    test:assert-equal-json($source2, map:get($actual2, "sources"))
+    test:assert-equal(<name>A</name>, map:get($actual2, "values")),
+    test:assert-equal-json($source1, map:get($actual2, "sources"))
   )
 )

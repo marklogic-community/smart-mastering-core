@@ -1,6 +1,17 @@
 
 # Smart Mastering Core
 
+## Integration into MarkLogic Data Hub 5
+
+1.3.1 is our final feature release of Smart Mastering in the Smart Mastering Core repository. As of Data Hub 5.0.0, Smart Mastering is fully integrated into [MarkLogic Data Hub](https://github.com/marklogic/marklogic-data-hub) as a built-in capability, and the recommended way to use the Smart Mastering capability is by [configuring a mastering step](https://docs.marklogic.com/datahub/flows/configure-mastering-step-using-quickstart.html) in Data Hub. Existing users should migrate their Smart Mastering configuration to MarkLogic Data Hub (see [Import Your Smart Mastering Core Projects](https://docs.marklogic.com/datahub/misc/import-smart-mastering-core-projects.html) for instructions). The integration of Smart Mastering into Data Hub offers a variety of benefits, including:
+
+ - Built-in support for orchestrating matching and merging across documents.
+ - QuickStart UI for configuration of matching and merging
+
+MarkLogic will continue to invest in Smart Mastering as a built-in capability of Data Hub.
+
+## Smart Mastering Core details
+
 This repo contains the libraries and services for a Smart Mastering capability
 built on top of MarkLogic. Smart Mastering consists of matching entities in an
 operational data hub, then auto-merging for high-scoring matches and recording 

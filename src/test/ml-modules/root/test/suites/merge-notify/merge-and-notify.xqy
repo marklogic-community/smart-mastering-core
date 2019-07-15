@@ -33,8 +33,8 @@ let $actual :=
     $lib:INVOKE_OPTIONS
   )
 
-let $merged := $actual[1]
-let $notify := $actual[2]
+let $merged := $actual[self::es:envelope]
+let $notify := $actual[self::sm:notification]
 
 let $merged-uri := cts:uris((), (), cts:element-value-query(xs:QName("sm:id"), $merged/es:headers/sm:id/fn:string()))
 

@@ -49,7 +49,7 @@ return test:assert-true(fn:deep-equal($options, $actual)),
  :)
 let $expected := test:get-test-file("merge-options-with-strategies.json")/node()
 let $actual := merging:get-options($lib:OPTIONS-NAME-STRATEGIES, $const:FORMAT-JSON)
-return test:assert-equal(xdmp:to-json-string($expected), xdmp:to-json-string($actual)),
+return test:assert-equal($expected, $actual),
 
 xdmp:document-delete('/com.marklogic.smart-mastering/options/merging/json-options.xml'),
 xdmp:document-delete('/com.marklogic.smart-mastering/options/merging/json-options-with-strategy.xml')

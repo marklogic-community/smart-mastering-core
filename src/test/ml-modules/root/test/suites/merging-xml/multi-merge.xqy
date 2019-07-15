@@ -57,12 +57,13 @@ let $_ :=
   )
 
 let $merged-uri := (cts:uris((), (), cts:collection-query($const:MERGED-COLL)))[1]
+let $second-merge-uris := ("/source/3/doc3.xml", $merged-uri)
 let $merged-doc :=
   xdmp:invoke-function(
     function() {
       document {
         merging:save-merge-models-by-uri(
-          ("/source/3/doc3.xml", $merged-uri),
+          $second-merge-uris,
           merging:get-options($lib:OPTIONS-NAME, $const:FORMAT-XML)
         )
       }
@@ -74,13 +75,18 @@ let $assertions := xdmp:eager(
   let $s1-dt := $merged-doc//sm:source[sm:name = "SOURCE1"]/sm:dateTime/fn:string()
   let $s2-dt := $merged-doc//sm:source[sm:name = "SOURCE2"]/sm:dateTime/fn:string()
   let $s3-dt := $merged-doc//sm:source[sm:name = "SOURCE3"]/sm:dateTime/fn:string()
+  let $merged-merged-dt := $merged-doc//sm:document-uri[. = $merged-uri]/@last-merge/fn:string()
+  let $s1-merged-dt := $merged-doc//sm:document-uri[. = "/source/1/doc1.xml"]/@last-merge/fn:string()
+  let $s2-merged-dt := $merged-doc//sm:document-uri[. = "/source/2/doc2.xml"]/@last-merge/fn:string()
+  let $s3-merged-dt := $merged-doc//sm:document-uri[. = "/source/3/doc3.xml"]/@last-merge/fn:string()
   let $expected-headers :=
     <es:headers>
       <sm:id xmlns:sm="http://marklogic.com/smart-mastering">{$smid}</sm:id>
       <sm:merges xmlns:sm="http://marklogic.com/smart-mastering">
-        <sm:document-uri>/source/3/doc3.xml</sm:document-uri>
-        <sm:document-uri>/source/2/doc2.xml</sm:document-uri>
-        <sm:document-uri>/source/1/doc1.xml</sm:document-uri>
+        <sm:document-uri last-merge="{$merged-merged-dt}">{$merged-uri}</sm:document-uri>
+        <sm:document-uri last-merge="{$s1-merged-dt}">/source/1/doc1.xml</sm:document-uri>
+        <sm:document-uri last-merge="{$s2-merged-dt}">/source/2/doc2.xml</sm:document-uri>
+        <sm:document-uri last-merge="{$s3-merged-dt}">/source/3/doc3.xml</sm:document-uri>
       </sm:merges>
       <sm:sources xmlns:sm="http://marklogic.com/smart-mastering">
         <sm:source>
@@ -109,6 +115,9 @@ let $assertions := xdmp:eager(
           <sm:two-first>2018-04-26T16:40:02.1386Z</sm:two-first>
         </sm:source>
       </sm:sources>
+      <sm:merge-options xml:lang="zxx">
+        <sm:value>/com.marklogic.smart-mastering/options/merging/{$lib:OPTIONS-NAME}.xml</sm:value>
+      </sm:merge-options>
       <shallow>shallow value 1</shallow>
       <shallow>shallow value 2</shallow>
       <shallow>shallow value 3</shallow>
@@ -133,6 +142,10 @@ let $assertions := xdmp:eager(
     </es:headers>
   let $expected-instance :=
     <es:instance>
+      <es:info>
+        <es:title>MDM</es:title>
+        <es:version>1.0.0</es:version>
+      </es:info>
       <MDM>
         <Person>
           <PersonType>
@@ -209,11 +222,9 @@ let $assertions := xdmp:eager(
       </sem:triple>
     </es:triples>
   let $expected := <es:envelope xmlns:es="http://marklogic.com/entity-services">{$expected-headers}{$expected-triples}{$expected-instance}</es:envelope>
-  let $_ := xdmp:log(("expected", $expected, "actual", $merged-doc))
   return (
     test:assert-equal-xml($expected-headers, $merged-doc/es:headers),
     test:assert-equal-xml($expected-triples, $merged-doc/es:triples),
-    xdmp:log(xdmp:describe($merged-doc/es:instance,(),())),
     test:assert-equal-xml($expected-instance, $merged-doc/es:instance)
   )
 )
@@ -236,9 +247,10 @@ let $unmerge :=
 (: And now there should be blocks :)
 let $assertions := (
   $assertions,
-  map:keys($lib:TEST-DATA) ! test:assert-exists(matcher:get-blocks(.)/node()),
+  $second-merge-uris ! test:assert-exists(matcher:get-blocks(.)/node()),
   xdmp:invoke-function(
     function() {
+      (: 2 merges :)
       test:assert-equal($telemetry-count + 2, tel:get-usage-count())
     }
   )

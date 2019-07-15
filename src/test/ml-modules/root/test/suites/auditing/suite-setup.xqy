@@ -10,14 +10,4 @@ import module namespace lib = "http://marklogic.com/smart-mastering/test" at "li
 
 declare option xdmp:mapping "false";
 
-merging:save-options($lib:OPTIONS-NAME, test:get-test-file("merge-options.xml")),
-
-for $uri in map:keys($lib:TEST-DATA)
-let $doc := test:get-test-file(map:get($lib:TEST-DATA, $uri))
-return
-  xdmp:document-insert(
-    $uri,
-    $doc,
-    xdmp:default-permissions(),
-    $const:CONTENT-COLL
-  )
+merging:save-options($lib:OPTIONS-NAME, test:get-test-file("merge-options.xml"))

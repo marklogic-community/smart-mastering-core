@@ -47,7 +47,7 @@
             "datatype": "string"
           }
         },
-        "CaseAmount": {
+        "Case_Amount": {
           "datatype": "array",
           "items": {
             "datatype": "string"

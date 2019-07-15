@@ -43,12 +43,14 @@ let $assertions := xdmp:eager(
   let $smid := $merged-doc/es:headers/sm:id/fn:string()
   let $s1-dt := $merged-doc//sm:source[sm:name = "SOURCE1"]/sm:dateTime/fn:string()
   let $s2-dt := $merged-doc//sm:source[sm:name = "SOURCE2"]/sm:dateTime/fn:string()
+  let $s1-merged-dt := $merged-doc//sm:document-uri[. = "/source/1/doc1.xml"]/@last-merge/fn:string()
+  let $s2-merged-dt := $merged-doc//sm:document-uri[. = "/source/2/doc2.xml"]/@last-merge/fn:string()
   let $expected-headers :=
     <es:headers>
       <sm:id xmlns:sm="http://marklogic.com/smart-mastering">{$smid}</sm:id>
       <sm:merges xmlns:sm="http://marklogic.com/smart-mastering">
-        <sm:document-uri>/source/2/doc2.xml</sm:document-uri>
-        <sm:document-uri>/source/1/doc1.xml</sm:document-uri>
+        <sm:document-uri last-merge="{$s1-merged-dt}">/source/1/doc1.xml</sm:document-uri>
+        <sm:document-uri last-merge="{$s2-merged-dt}">/source/2/doc2.xml</sm:document-uri>
       </sm:merges>
       <sm:sources xmlns:sm="http://marklogic.com/smart-mastering">
         <sm:source>
@@ -69,6 +71,9 @@ let $assertions := xdmp:eager(
           <sm:two-first>2017-04-26T16:40:02.1386Z</sm:two-first>
         </sm:source>
       </sm:sources>
+      <sm:merge-options xml:lang="zxx">
+        <sm:value>/com.marklogic.smart-mastering/options/merging/{$lib:OPTIONS-NAME}.xml</sm:value>
+      </sm:merge-options>
       <shallow>shallow value 1</shallow>
       <shallow>shallow value 2</shallow>
       <es:unconfigured>unconfigured value 1a</es:unconfigured>
@@ -86,6 +91,10 @@ let $assertions := xdmp:eager(
     </es:headers>
   let $expected-instance :=
     <es:instance>
+      <es:info>
+        <es:title>MDM</es:title>
+        <es:version>1.0.0</es:version>
+      </es:info>
       <MDM>
         <Person>
           <PersonType>
@@ -162,7 +171,6 @@ let $assertions := xdmp:eager(
   return (
     test:assert-equal-xml($expected-headers, $merged-doc/es:headers),
     test:assert-equal-xml($expected-triples, $merged-doc/es:triples),
-    xdmp:log(xdmp:describe($merged-doc/es:instance,(),())),
     test:assert-equal-xml($expected-instance, $merged-doc/es:instance)
   )
 )

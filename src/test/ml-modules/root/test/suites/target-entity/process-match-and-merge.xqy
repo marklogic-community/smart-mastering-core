@@ -23,7 +23,9 @@ import module namespace const = "http://marklogic.com/smart-mastering/constants"
 test:assert-equal(xdmp:estimate(fn:collection($const:MERGED-COLL)), 1),
 let $merged-doc-instance := fn:collection($const:MERGED-COLL)/envelope/instance
 let $name-instance := $merged-doc-instance/PersonType/PersonName/PersonNameType
+let $entity-description := xdmp:describe(document {$merged-doc-instance},(),())
 return (
-  test:assert-equal(fn:string($name-instance/PersonSurName), "JONES"),
-  test:assert-equal(fn:string($name-instance/PersonGivenName), "LINDSEY")
+  test:assert-equal("JONES", fn:string($name-instance/PersonSurName), "Expected 'JONES' as PersonSurName from instance: " || $entity-description),
+  test:assert-equal("LINDSEY", fn:string($name-instance/PersonGivenName), "Expected 'LINDSEY' as PersonGivenName from instance: " || $entity-description),
+  test:assert-equal("1287.9", fn:string($merged-doc-instance/PersonType/Case_Amount), "Expected '1287.9' as Case_Amount from instance: " || $entity-description)
 )

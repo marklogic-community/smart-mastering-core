@@ -72,7 +72,6 @@ return (
     test:assert-equal-xml($expected, map:get($personsex-map, "values")),
 
   test:assert-equal(2, fn:count($revenue-maps)),
-  xdmp:log(xdmp:describe($revenue-maps, (),())),
   test:assert-true(
     let $map := $revenue-maps[1]
     let $truths := (

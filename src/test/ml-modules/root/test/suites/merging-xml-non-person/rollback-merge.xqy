@@ -39,12 +39,14 @@ let $assertions := xdmp:eager(
   let $smid := $merged-doc/es:headers/sm:id/fn:string()
   let $s1-dt := $merged-doc//sm:source[sm:name = "SOURCE1"]/sm:dateTime/fn:string()
   let $s2-dt := $merged-doc//sm:source[sm:name = "SOURCE2"]/sm:dateTime/fn:string()
+  let $s1-merged-dt := $merged-doc//sm:document-uri[. = "/source/1/doc1.xml"]/@last-merge/fn:string()
+  let $s2-merged-dt := $merged-doc//sm:document-uri[. = "/source/2/doc2.xml"]/@last-merge/fn:string()
   let $expected-headers :=
     <es:headers>
       <sm:id xmlns:sm="http://marklogic.com/smart-mastering">{$smid}</sm:id>
       <sm:merges xmlns:sm="http://marklogic.com/smart-mastering">
-        <sm:document-uri>/source/2/doc2.xml</sm:document-uri>
-        <sm:document-uri>/source/1/doc1.xml</sm:document-uri>
+        <sm:document-uri last-merge="{$s1-merged-dt}">/source/1/doc1.xml</sm:document-uri>
+        <sm:document-uri last-merge="{$s2-merged-dt}">/source/2/doc2.xml</sm:document-uri>
       </sm:merges>
       <sm:sources xmlns:sm="http://marklogic.com/smart-mastering">
         <sm:source>
@@ -60,6 +62,9 @@ let $assertions := xdmp:eager(
           <sm:dateTime>{$s1-dt}</sm:dateTime>
         </sm:source>
       </sm:sources>
+      <sm:merge-options xml:lang="zxx">
+        <sm:value>/com.marklogic.smart-mastering/options/merging/{$lib:OPTIONS-NAME}.xml</sm:value>
+      </sm:merge-options>
     </es:headers>
   let $expected-instance :=
     <es:instance>

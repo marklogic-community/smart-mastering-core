@@ -15,24 +15,17 @@ declare option xdmp:update "true";
 
 declare option xdmp:mapping "false";
 
-(:
- : We're batching calls to process-match-and-merge. URI2 and URI3 should get merged. We should then get a notification
- : about the merged document + URI1 + URI4.
- :)
-
-(: test w/o filtering query :)
 let $actual :=
   xdmp:invoke-function(
     function() {
-      process:process-match-and-merge(($lib:URI2, $lib:URI3), $lib:MERGE-OPTIONS-NAME)
+      process:process-match-and-merge(cts:uris((), (), cts:collection-query($constants:CONTENT-COLL)), $lib:CROSS-MERGE-OPTIONS-NAME)
     },
     $lib:INVOKE_OPTIONS
   )
-let $merges := $actual[self::es:envelope]
-let $notifications := $actual[self::sm:notification]
+
+let $merged-uri := cts:uris((), "limit=1", cts:collection-query($constants:MERGED-COLL))
+let $merged-doc := fn:doc($merged-uri)
+
 return (
-  test:assert-equal(2, fn:count($actual)),
-  test:assert-equal(1, fn:count($merges)),
-  test:assert-equal(1, fn:count($notifications)),
-  test:assert-equal(3, fn:count($notifications/sm:document-uris/sm:document-uri))
+  test:assert-same-values(($lib:CROSS-URI1, $lib:CROSS-URI2, $lib:CROSS-URI3), $merged-doc/es:envelope/es:headers/sm:merges/sm:document-uri/fn:string())
 )

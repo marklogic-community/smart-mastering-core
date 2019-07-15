@@ -60,15 +60,16 @@ declare %rapi:transaction-mode("update") function delete(
 ) as document-node()?
 {
   if (map:contains($params, "mergedUri")) then (
-    merging:rollback-merge(
+    let $_ := merging:rollback-merge(
       map:get($params, "mergedUri"),
       fn:not(map:get($params, "retainAuditTrail") = "false")
-    ),
-    document {
-      object-node {
-        "success": fn:true()
+    )
+    return
+      document {
+        object-node {
+          "success": fn:true()
+        }
       }
-    }
   ) else
     fn:error((),"RESTAPI-SRVEXERR",
       (400, "Bad Request",

@@ -56,7 +56,7 @@ declare function auditing:audit-trace(
     xdmp:document-insert(
       $audit-trace-def => map:get("uri"),
       $audit-trace-def => map:get("value"),
-      xdmp:default-permissions(),
+      $audit-trace-def => map:get("context") => map:get("permissions"),
       $audit-trace-def => map:get("context") => map:get("collections")
     )
 };
@@ -189,7 +189,11 @@ declare function auditing:build-audit-trace(
     map:map()
       => map:with("uri", "/com.marklogic.smart-mastering/auditing/"|| $action ||"/"||sem:uuid-string()||".xml")
       => map:with("value", $prov-xml)
-      => map:with("context", map:entry("collections",$const:AUDITING-COLL))
+      => map:with("context",
+            map:map()
+              => map:with("collections",$const:AUDITING-COLL)
+              => map:with("permissions",xdmp:default-permissions())
+          )
 };
 
 (:
@@ -250,6 +254,7 @@ declare function auditing:audit-trace-rollback($prov-xml)
     fn:string(
       $entity/*:label
     )
+  where fn:not($merged-uri = $orig-uri)
   return
     auditing:audit-trace(
       $auditing:ROLLBACK-ACTION,

@@ -9,4 +9,6 @@ declare option xdmp:mapping "false";
 
 xdmp:collection-delete($const:AUDITING-COLL),
 xdmp:collection-delete($const:MERGED-COLL),
-sem:graph-delete(sem:iri("http://marklogic.com/semantics#default-graph"))
+sem:graph-delete(sem:iri("http://marklogic.com/semantics#default-graph")),
+xdmp:collection-delete($const:CONTENT-COLL),
+xdmp:collection-delete($const:ARCHIVED-COLL)

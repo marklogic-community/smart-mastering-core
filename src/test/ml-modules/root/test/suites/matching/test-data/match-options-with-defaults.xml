@@ -1,8 +1,22 @@
 <options xmlns="http://marklogic.com/smart-mastering/matcher">
   <property-defs>
     <property namespace="" localname="IdentificationID" name="ssn"/>
-    <property namespace="" localname="PersonGivenName" name="first-name"/>
-    <property namespace="" localname="PersonSurName" name="last-name"/>
+    <property namespace="" localname="PersonGivenName" name="first-name">
+      <cts:element-reference xmlns:cts="http://marklogic.com/cts">
+        <cts:namespace-uri/>
+        <cts:localname>PersonGivenName</cts:localname>
+        <cts:scalar-type>string</cts:scalar-type>
+        <cts:collation>http://marklogic.com/collation//S1</cts:collation>
+      </cts:element-reference>
+    </property>
+    <property namespace="" localname="PersonSurName" name="last-name">
+      <cts:element-reference xmlns:cts="http://marklogic.com/cts">
+        <cts:namespace-uri/>
+        <cts:localname>PersonSurName</cts:localname>
+        <cts:scalar-type>string</cts:scalar-type>
+        <cts:collation>http://marklogic.com/collation//S1</cts:collation>
+      </cts:element-reference>
+    </property>
     <property namespace="" localname="AddressPrivateMailboxText" name="addr1"/>
     <property namespace="" localname="LocationCity" name="city"/>
     <property namespace="" localname="LocationState" name="state"/>

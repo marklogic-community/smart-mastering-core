@@ -52,11 +52,13 @@ declare variable $FORMAT-XML  as xs:string := "xml";
 (: Trace Events :)
 declare variable $TRACE-MATCH-RESULTS := "SM-MATCH";
 declare variable $TRACE-MERGE-RESULTS := "SM-MERGE";
+declare variable $TRACE-PERFORMANCE := "SM-PERFORMANCE";
 
 (: ERRORS :)
 declare variable $NO-MERGE-OPTIONS-ERROR := xs:QName("SM-NO-MERGING-OPTIONS");
 declare variable $ENTITY-NOT-FOUND-ERROR := xs:QName("SM-ENTITY-NOT-FOUND");
 declare variable $ENTITY-PROPERTY-NOT-FOUND-ERROR := xs:QName("SM-ENTITY-PROPERTY-NOT-FOUND");
+declare variable $NO-THRESHOLD-ACTION-FOUND := xs:QName("SM-NO-THRESHOLD-ACTION-FOUND");
 
 (: Scope for instance bodies :)
 declare variable $JSON-INSTANCE as xs:string? := "instance";

@@ -1,6 +1,23 @@
 # Change Log
 
-## [v1.3.0](https://github.com/marklogic-community/smart-mastering-core/tree/v1.3.0) (2019-04-24)
+## [v1.3.1](https://github.com/marklogic-community/smart-mastering-core/tree/v1.3.1) (2019-07-11)
+[Full Changelog](https://github.com/marklogic-community/smart-mastering-core/compare/v1.3.0...v1.3.1)
+
+**Implemented enhancements:**
+
+- Matching needs path support [\#320](https://github.com/marklogic-community/smart-mastering-core/issues/320)
+
+**Closed issues:**
+
+- Missing permissions on audit records  [\#324](https://github.com/marklogic-community/smart-mastering-core/issues/324)
+- Fuzzy matching \(e.g. double-metaphone\) should dynamically generate dictionaries [\#321](https://github.com/marklogic-community/smart-mastering-core/issues/321)
+- Non-deterministic  conflicting update bug when saving a merged document [\#318](https://github.com/marklogic-community/smart-mastering-core/issues/318)
+- Matching is too slow for 100K+ documents [\#317](https://github.com/marklogic-community/smart-mastering-core/issues/317)
+- Mastered documents are missing their "Info" section [\#315](https://github.com/marklogic-community/smart-mastering-core/issues/315)
+- Hard to figure out when options are missing [\#313](https://github.com/marklogic-community/smart-mastering-core/issues/313)
+- resultsToJson losing match results [\#307](https://github.com/marklogic-community/smart-mastering-core/issues/307)
+
+## [v1.3.0](https://github.com/marklogic-community/smart-mastering-core/tree/v1.3.0) (2019-06-14)
 [Full Changelog](https://github.com/marklogic-community/smart-mastering-core/compare/v1.2.4...v1.3.0)
 
 **Fixed bugs:**
@@ -16,6 +33,8 @@
 
 **Merged pull requests:**
 
+- Documentation updates [\#311](https://github.com/marklogic-community/smart-mastering-core/pull/311) ([ryanjdew](https://github.com/ryanjdew))
+- v1.3.0 release [\#310](https://github.com/marklogic-community/smart-mastering-core/pull/310) ([ryanjdew](https://github.com/ryanjdew))
 - Rollback only most recent merge [\#309](https://github.com/marklogic-community/smart-mastering-core/pull/309) ([ryanjdew](https://github.com/ryanjdew))
 - fixing merging docs with already merged docs [\#306](https://github.com/marklogic-community/smart-mastering-core/pull/306) ([paxtonhare](https://github.com/paxtonhare))
 - this checkin removes a dependency on a private library from DHF. This… [\#289](https://github.com/marklogic-community/smart-mastering-core/pull/289) ([paxtonhare](https://github.com/paxtonhare))

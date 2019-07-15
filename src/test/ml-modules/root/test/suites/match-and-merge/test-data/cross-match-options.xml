@@ -1,0 +1,18 @@
+<options xmlns="http://marklogic.com/smart-mastering/matcher">
+  <property-defs>
+    <property namespace="" localname="id1" name="id1"/>
+    <property namespace="" localname="id2" name="id2"/>
+  </property-defs>
+  <algorithms>
+  </algorithms>
+  <scoring>
+    <add property-name="id1" weight="50"/>
+    <add property-name="id2" weight="50"/>
+  </scoring>
+  <thresholds>
+    <threshold above="50" label="Definitive Match" action="merge"/>
+  </thresholds>
+  <tuning>
+    <max-scan>200</max-scan>  <!-- never look at more than 200 -->
+  </tuning>
+</options>

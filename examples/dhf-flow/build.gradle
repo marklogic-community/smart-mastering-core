@@ -247,8 +247,6 @@ task loadCode {
 // for you completely
 task setupExample {
   dependsOn mlDeploy
-  mustRunAfter mlDeploySecurity
-  dependsOn mlDeploySecurity
   dependsOn loadCode
 }
 
