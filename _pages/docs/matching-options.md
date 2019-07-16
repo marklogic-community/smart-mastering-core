@@ -119,14 +119,14 @@ And here are the same options in JSON format:
           "propertyName": "first-name",
           "algorithmRef": "thesaurus",
           "weight": "6",
-          "thesaurus": "/mdm/config/thesauri/first-name-synonyms.xml",
-          "distanceThreshold": "50"
+          "thesaurus": "/mdm/config/thesauri/first-name-synonyms.xml"
         },
         {
           "propertyName": "last-name",
           "algorithmRef": "dbl-metaphone",
           "weight": "8",
-          "dictionary": "name-dictionary.xml"
+          "dictionary": "name-dictionary.xml",
+          "distanceThreshold": "100"
         }
       ],
       "reduce": [
@@ -309,34 +309,34 @@ the weight attributes.
     "scoring": [
       {
         "add": [
-          { "property-name": "ssn", "weight": "50" },
-          { "property-name": "last-name", "weight": "8" },
-          { "property-name": "first-name", "weight": "12" },
-          { "property-name": "addr1", "weight": "5" },
-          { "property-name": "city", "weight": "3" },
-          { "property-name": "state", "weight": "1" },
-          { "property-name": "zip", "weight": "3" }
+          { "propertyName": "ssn", "weight": "50" },
+          { "propertyName": "last-name", "weight": "8" },
+          { "propertyName": "first-name", "weight": "12" },
+          { "propertyName": "addr1", "weight": "5" },
+          { "propertyName": "city", "weight": "3" },
+          { "propertyName": "state", "weight": "1" },
+          { "propertyName": "zip", "weight": "3" }
         ],
         "expand": [
           {
-            "property-name": "first-name",
-            "algorithm-ref": "thesaurus",
+            "propertyName": "first-name",
+            "algorithmRef": "thesaurus",
             "weight": "6",
             "thesaurus": "/mdm/config/thesauri/first-name-synonyms.xml",
-            "distance-threshold": "50"
+            "distanceThreshold": "50"
           },
           {
-            "property-name": "last-name",
-            "algorithm-ref": "dbl-metaphone",
+            "propertyName": "last-name",
+            "algorithmRef": "dbl-metaphone",
             "weight": "8",
             "dictionary": "name-dictionary.xml"
           }
         ],
         "reduce": [
           {
-            "algorithm-ref": "std-reduce",
+            "algorithmRef": "std-reduce",
             "weight": "4",
-            "all-match": { "property": ["last-name", "addr1"] }
+            "allMatch": { "property": ["last-name", "addr1"] }
           }
         ]
       }

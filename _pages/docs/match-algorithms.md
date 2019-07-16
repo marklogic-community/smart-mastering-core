@@ -98,7 +98,7 @@ configured a property named "last-name". Change the weights to work with your ot
          "algorithmRef": "dbl-metaphone",
          "weight": "8",
          "dictionary": "/dictionaries/last-names.xml",
-         "distance-threshold": 20,
+         "distanceThreshold": 20,
          "collation": "http://marklogic.com/collation/codepoint"
        }
      ]
