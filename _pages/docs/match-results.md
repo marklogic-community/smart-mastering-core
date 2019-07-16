@@ -90,19 +90,19 @@ Returns:
     </match-query>
     <result uri="/source/3/doc3.xml" index="3" score="75" threshold="Definitive Match" action="merge">
       <matches>
-        <PersonSurName>JONES</PersonSurName>
-        <PersonGivenName>LINDSEY</PersonGivenName>
-        <LocationState>PA</LocationState>
-        <AddressPrivateMailboxText>45</AddressPrivateMailboxText>
-        <LocationPostalCode>18505</LocationPostalCode>
-        <IdentificationID>393225353</IdentificationID>
+        <match>fn:doc("/source/3/doc3.xml")/envelope/instance/text("PersonSurName")</match>
+        <match>fn:doc("/source/3/doc3.xml")/envelope/instance/text("PersonGivenName")</match>
+        <match>fn:doc("/source/3/doc3.xml")/envelope/instance/text("IdentificationID")</match>
+        <match>fn:doc("/source/3/doc3.xml")/envelope/instance/text("LocationState")</match>
+        <match>fn:doc("/source/3/doc3.xml")/envelope/instance/text("AddressPrivateMailboxText")</match>
+        <match>fn:doc("/source/3/doc3.xml")/envelope/instance/text("LocationPostalCode")</match>
       </matches>
     </result>
     <result uri="/source/1/doc1.xml" index="5" score="70" threshold="Likely Match" action="notify">
       <matches>
-        <PersonSurName>JONES</PersonSurName>
-        <PersonGivenName>LINDSEY</PersonGivenName>
-        <IdentificationID>393225353</IdentificationID>
+        <match>fn:doc("/source/1/doc1.xml")/envelope/instance/text("PersonSurName")</match>
+        <match>fn:doc("/source/1/doc1.xml")/envelope/instance/text("PersonGivenName")</match>
+        <match>fn:doc("/source/1/doc1.xml")/envelope/instance/text("IdentificationID")</match>
       </matches>
     </result>
   </results>
@@ -216,35 +216,35 @@ The JSON result looks like this:
     },
     "result": [
       {
-        "uri": "/source/3/doc3.xml",
+        "uri": "/source/3/doc3.json",
         "index": "3",
         "score": "75",
         "threshold": "Definitive Match",
         "action": "merge",
-        "matches": [
-          {
-            "PersonSurName": "JONES",
-            "PersonGivenName": "LINDSEY",
-            "LocationState": "PA",
-            "AddressPrivateMailboxText": "45",
-            "LocationPostalCode": "18505",
-            "IdentificationID": "393225353"
-          }
-        ]
+        "matches": {
+          "match":[
+            "fn:doc(\"/source/3/doc3.json\")/envelope/instance/text(\"PersonSurName\")",
+            "fn:doc(\"/source/3/doc3.json\")/envelope/instance/text(\"PersonGivenName\")",
+            "fn:doc(\"/source/3/doc3.json\")/envelope/instance/text(\"IdentificationID\")",
+            "fn:doc(\"/source/3/doc3.json\")/envelope/instance/text(\"LocationState\")",
+            "fn:doc(\"/source/3/doc3.json\")/envelope/instance/text(\"AddressPrivateMailboxText\")",
+            "fn:doc(\"/source/3/doc3.json\")/envelope/instance/text(\"LocationPostalCode\")"
+          ]
+        }
       },
       {
-        "uri": "/source/1/doc1.xml",
+        "uri": "/source/1/doc1.json",
         "index": "5",
         "score": "70",
         "threshold": "Likely Match",
         "action": "notify",
-        "matches": [
-          {
-            "PersonSurName": "JONES",
-            "PersonGivenName": "LINDSEY",
-            "IdentificationID": "393225353"
-          }
-        ]
+        "matches": {
+          "match":[
+            "fn:doc(\"/source/1/doc1.json\")/envelope/instance/text(\"PersonSurName\")",
+            "fn:doc(\"/source/1/doc1.json\")/envelope/instance/text(\"PersonGivenName\")",
+            "fn:doc(\"/source/1/doc1.json\")/envelope/instance/text(\"IdentificationID\")"
+          ]
+        }
       }
     ]
   }

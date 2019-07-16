@@ -7,6 +7,17 @@ permalink: /how-to-use/
 
 # How Do I Use It?
 
+## Integration into MarkLogic Data Hub 5
+
+1.3.1 is our final feature release of Smart Mastering in the Smart Mastering Core repository. As of Data Hub 5.0.0, Smart Mastering is fully integrated into [MarkLogic Data Hub](https://github.com/marklogic/marklogic-data-hub) as a built-in capability, and the recommended way to use the Smart Mastering capability is by [configuring a mastering step](https://docs.marklogic.com/datahub/flows/configure-mastering-step-using-quickstart.html) in Data Hub. Existing users should migrate their Smart Mastering configuration to MarkLogic Data Hub (see [Import Your Smart Mastering Core Projects](https://docs.marklogic.com/datahub/misc/import-smart-mastering-core-projects.html) for instructions). The integration of Smart Mastering into Data Hub offers a variety of benefits, including:
+
+ - Built-in support for orchestrating matching and merging across documents.
+ - QuickStart UI for configuration of matching and merging
+
+MarkLogic will continue to invest in Smart Mastering as a built-in capability of Data Hub.
+
+## Deprecated approach with Smart Mastering Community project
+
 To use Smart Mastering in your project, start by adding it to your project as
 shown in the [minimal-project example][minproject].
 
@@ -18,9 +29,9 @@ From this point, you have a couple of choices about how to run mastering.
 
 ## Mastering Your Content
 
-### Mastering with Data Hub Framework
+### Mastering with Data Hub Framework 4
 
-If you're using the MarkLogic Data Hub Framework, you can call the [match and merge REST extension][match-and-merge-rest]. See the [smart-mastering-core example][sm-demo-flow]. 
+If you're using the MarkLogic Data Hub Framework, you can call the [match and merge REST extension][match-and-merge-rest]. See the [smart-mastering-core example mastering task][sm-demo-flow]. 
 
 The key part is in the runMastering tasks of [build.gradle][sm-demo-build-gradle], which calls the REST extension.
 
@@ -59,7 +70,7 @@ this collection.
 
 
 [minproject]: https://github.com/marklogic-community/smart-mastering-core/tree/master/examples/minimal-project
-[sm-demo-flow]: https://github.com/marklogic-community/smart-mastering-core/tree/master/examples/dhf-flow/plugins/entities/MDM/harmonize/SmartMaster
+[sm-demo-flow]: https://github.com/marklogic-community/smart-mastering-core/blob/master/examples/dhf-flow/build.gradle#L255
 [sm-demo-flow-writer]: https://github.com/marklogic-community/smart-mastering-core/blob/master/examples/dhf-flow/build.gradle#L256
 [match-and-merge]: https://github.com/marklogic-community/smart-mastering-core/blob/master/src/main/ml-modules/root/com.marklogic.smart-mastering/process-records.xqy
 [trigger]: https://github.com/marklogic-community/smart-mastering-core/blob/master/src/main/ml-modules/root/com.marklogic.smart-mastering/match-and-merge-trigger.xqy
