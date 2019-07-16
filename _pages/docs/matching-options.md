@@ -24,7 +24,14 @@ Here's an example of XML match configuration options.
   <property-defs>
     <property namespace="" localname="IdentificationID" name="ssn"/>
     <property namespace="" localname="PersonGivenName" name="first-name"/>
-    <property namespace="" localname="PersonSurName" name="last-name"/>
+    <property namespace="" localname="PersonSurName" name="last-name">
+      <cts:element-reference xmlns:cts="http://marklogic.com/cts">
+        <cts:namespace-uri/>
+        <cts:localname>PersonSurName</cts:localname>
+        <cts:scalar-type>string</cts:scalar-type>
+        <cts:collation>http://marklogic.com/collation//S1</cts:collation>
+      </cts:element-reference>
+    </property>
     <property namespace="" localname="AddressPrivateMailboxText" name="addr1"/>
     <property namespace="" localname="LocationCity" name="city"/>
     <property namespace="" localname="LocationState" name="state"/>
@@ -87,7 +94,9 @@ And here are the same options in JSON format:
       "property": [
         { "namespace": "", "localname": "IdentificationID", "name": "ssn" },
         { "namespace": "", "localname": "PersonGivenName", "name": "first-name" },
-        { "namespace": "", "localname": "PersonSurName", "name": "last-name" },
+        { "namespace": "", "localname": "PersonSurName", "name": "last-name",
+          "indexReferences":[{"jsonPropertyReference":{"property":"PersonSurName", "scalarType":"string", "collation":"http://marklogic.com/collation//S1", "nullable":false}}]
+        },
         { "namespace": "", "localname": "AddressPrivateMailboxText", "name": "addr1" },
         { "namespace": "", "localname": "LocationCity", "name": "city" },
         { "namespace": "", "localname": "LocationState", "name": "state" },
@@ -164,6 +173,8 @@ The `property-defs/property` elements identify the elements that will be used to
 find matches for a document. Use the `namespace` and `localname` attributes to
 specify an XML element or JSON property. The `name` attribute acts as a nickname
 for this property in the rest of the configuration.
+
+As of version 1.3.1, index references can be associated with properties by adding XML serialized cts:references under the `property` element or adding an array of JSON serialized cts:references as a `indexReferences` property of the `property` JSON object.
 
 ### Algorithms
 
