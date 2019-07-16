@@ -33,3 +33,9 @@ match isn't included in the results, it could be that it scored lower than
 expected. Consider lowering the threshold in the match options and reloading 
 the options. 
 
+## Traces available for debugging
+
+The following traces can be enabled to aid with debugging:
+  - `SM-MATCH`
+  - `SM-MERGE`
+  - `SM-PERFORMANCE`

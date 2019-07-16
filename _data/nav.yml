@@ -1,3 +1,4 @@
 main:
     - { url: '/', text: 'Getting Started' }
+    - { absurl: 'https://docs.marklogic.com/datahub/', text: 'Data Hub 5' }
     - { absurl: 'https://github.com/marklogic-community/smart-mastering-core', text: 'GitHub' }
