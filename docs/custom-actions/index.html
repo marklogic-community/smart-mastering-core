@@ -1,0 +1,383 @@
+<!doctype html>
+<!--[if lt IE 7 ]><html itemscope itemtype="http://schema.org/Organization" id="ie6" class="ie ie-old" lang="en-US"><![endif]-->
+<!--[if IE 7 ]>   <html itemscope itemtype="http://schema.org/Organization" id="ie7" class="ie ie-old" lang="en-US"><![endif]-->
+<!--[if IE 8 ]>   <html itemscope itemtype="http://schema.org/Organization" id="ie8" class="ie ie-old" lang="en-US"><![endif]-->
+<!--[if IE 9 ]>   <html itemscope itemtype="http://schema.org/Organization" id="ie9" class="ie" lang="en-US"><![endif]-->
+<!--[if gt IE 9]><!--><html itemscope itemtype="http://schema.org/Organization" lang="en-US"><!--<![endif]-->
+<head>
+
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <title>Custom Match Actions - Smart Mastering</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- Favicons -->
+    <link rel="shortcut icon" sizes="16x16 24x24 32x32 48x48 64x64 96x96" href="/smart-mastering-core/favicon.ico">
+    <meta name="application-name" content="Smart Mastering - A Smart Mastering framework for MarkLogic">
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-6638631-15', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+
+    <!-- Facebook Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1879746318909687'); // Insert your pixel ID here.
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1879746318909687&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- DO NOT MODIFY -->
+    <!-- End Facebook Pixel Code -->
+    <link type="text/css" rel="stylesheet" href="/smart-mastering-core/assets/bundle.css">
+</head>
+<body class="">
+
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/smart-mastering-core">
+                  <span class="logo">
+                    <img src="/smart-mastering-core/images/logo-marklogic.svg" width="180px" height="38px" alt="MarkLogic" title="MarkLogic" scale="0">
+                  </span>
+                  Smart Mastering
+                  <img src="/smart-mastering-core/images/smart-mastering.svg" width="36x" height="36px">
+                </a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    
+                        <li  >
+                            
+                            <a href="/smart-mastering-core/">Getting Started</a>
+                            
+                        </li>
+                    
+                        <li  >
+                            
+                            <a href="https://docs.marklogic.com/datahub/">Data Hub 5</a>
+                            
+                        </li>
+                    
+                        <li  >
+                            
+                            <a href="https://github.com/marklogic-community/smart-mastering-core">GitHub</a>
+                            
+                        </li>
+                    
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+
+
+  <article>
+    <div class="container">
+      <div class="row">
+        <div class="side-nav col-md-3 hide-small">
+          <div class="panel panel-default">
+  <div class="panel-heading">Navigation</div>
+  <ul class="list-group">
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/">Getting Started</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/how-does-it-work/">How Does it Work?</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/how-to-use/">How do I Use it?</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/">Docs</a>
+    
+    
+      <ul class="list-group">
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/rest/">REST API</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/libraries/">Libraries</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/matching-options/">Matching Options</a>
+    
+    
+      <ul class="list-group">
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/match-algorithms/">Included Matching Algorithms</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/custom-match-algorithms/">Custom Matching Algorithms</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/actions/">Included Actions</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item active"  >
+    
+    <a href="/smart-mastering-core/docs/custom-actions/">Custom Actions</a>
+    
+    
+  </li>
+  
+</ul>
+
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/merging-options/">Merging Options</a>
+    
+    
+      <ul class="list-group">
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/merge-algorithms/">Included Merging Algorithms</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/custom-merge-algorithms/">Custom Merging Algorithms</a>
+    
+    
+  </li>
+  
+</ul>
+
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/managing-code/">Managing Custom Code</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/security/">Security</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/error-codes/">Error Codes</a>
+    
+    
+  </li>
+  
+</ul>
+
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/faqs/">FAQs</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/troubleshooting/">Troubleshooting</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="https://github.com/marklogic-community/smart-mastering-core">Smart Mastering on GitHub</a>
+    
+    
+  </li>
+  
+</ul>
+
+</div>
+
+        </div>
+        <div class="col-md-9">
+          <h1 id="custom-match-actions">Custom Match Actions</h1>
+
+<p>Smart Mastering provides two out-of-the-box matching actions, merge and notify. The merge process combines two or more
+documents and archives the originals; the notify action creates a notification document listing the matching documents.</p>
+
+<p>If you want to create a custom action, to do something other than merging or notifying, you can do so by implementing your own action in a function.</p>
+
+<h3 id="javascript">JavaScript</h3>
+
+<p>To implement your own algorithm in Javascript, create a function with this 
+signature:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">yourFunctionName</span><span class="p">(</span><span class="nx">uri</span><span class="p">,</span> <span class="nx">matches</span><span class="p">,</span> <span class="nx">mergeOptions</span><span class="p">)</span> <span class="p">{}</span>
+</code></pre></div></div>
+
+<p>The <code class="highlighter-rouge">uri</code> parameter contains the uri of the document used in the matching phase. The <code class="highlighter-rouge">matches</code> parameter is an array of documents that match <code class="highlighter-rouge">uri</code>. The <code class="highlighter-rouge">mergeOptions</code> is the complete merge options as a JSON object.</p>
+
+<p>The <code class="highlighter-rouge">matches</code> values will look like this:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"uri"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/source/2/doc2.xml"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"score"</span><span class="p">:</span><span class="w"> </span><span class="mi">70</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"threshold"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Kinda Match"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">]</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Your function should not return anything. If it does, the returned value will be ignored.</p>
+
+<h3 id="xquery">XQuery</h3>
+
+<p>To implement your own algorithm in XQuery, create a function with this 
+signature:</p>
+
+<div class="language-xquery highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">declare</span> <span class="kd">function</span> <span class="nf">your-namespace:your-custom-function-name</span><span class="p">(</span>
+  <span class="nv">$</span><span class="n">uri</span> <span class="k">as</span> <span class="kt">xs:string</span><span class="p">,</span>
+  <span class="nv">$</span><span class="n">matches</span> <span class="k">as</span> <span class="nt">item</span><span class="p">()*,</span>
+  <span class="nv">$</span><span class="n">merge-options</span> <span class="k">as</span> <span class="nt">element</span><span class="p">(</span><span class="n">merging:options</span><span class="p">)</span>
+<span class="p">)</span> <span class="k">as</span> <span class="nt">empty-sequence</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>The <code class="highlighter-rouge">$uri</code> parameter contains the uri of the document used in the matching phase. The <code class="highlighter-rouge">$matches</code> parameter is a sequence of  elements identifying documents that match <code class="highlighter-rouge">$uri</code>. The <code class="highlighter-rouge">$merge-options</code> is the complete merge options as an XML element(merging:options).</p>
+
+<p>The <code class="highlighter-rouge">$matches</code> will be a sequence of <code class="highlighter-rouge">result</code> elements that look like this:</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;result</span> <span class="na">uri=</span><span class="s">"/source/3/doc3.json"</span> <span class="na">index=</span><span class="s">"1"</span> <span class="na">score=</span><span class="s">"79"</span> <span class="na">threshold=</span><span class="s">"Definitive Match"</span> <span class="na">action=</span><span class="s">"my-action"</span><span class="nt">/&gt;</span>
+</code></pre></div></div>
+
+<h2 id="configuring-options-to-use-custom-action-functions">Configuring Options to Use Custom Action Functions</h2>
+
+<p>To use your custom action functions, add them to the <code class="highlighter-rouge">actions</code> section of your match options. The 
+<code class="highlighter-rouge">action</code> used for the <code class="highlighter-rouge">threshold</code> definitions refers to the name you assign in the <code class="highlighter-rouge">actions</code> section.</p>
+
+<p>The <code class="highlighter-rouge">action</code> needs <code class="highlighter-rouge">name</code>, <code class="highlighter-rouge">at</code>, <code class="highlighter-rouge">function</code>, and for XQuery functions, <code class="highlighter-rouge">ns</code> in order to find your custom code. The <code class="highlighter-rouge">at</code> 
+property is the absolute path the library module in the modules database that holds your function. <code class="highlighter-rouge">ns</code> is the 
+namespace in an XQuery library module. <code class="highlighter-rouge">function</code> is the actual name of the function (not including the namespace or 
+prefix for XQuery code). Note that while the attributes repeat the same name in the examples below, this is not 
+required.</p>
+
+<h3 id="xml-options">XML Options</h3>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nt">&lt;actions&gt;</span>
+    <span class="nt">&lt;action</span> 
+      <span class="na">name=</span><span class="s">"send-alert"</span> 
+      <span class="na">at=</span><span class="s">"/smart-mastering/action/send-alert.xqy"</span>
+      <span class="na">namespace=</span><span class="s">"http://marklogic.com/smart-mastering/action/send-alert"</span> 
+      <span class="na">function=</span><span class="s">"send-alert"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/actions&gt;</span>
+</code></pre></div></div>
+
+<h3 id="json-options">JSON Options</h3>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="s2">"actions"</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">"action"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"sendAlert"</span><span class="p">,</span>
+        <span class="s2">"at"</span><span class="p">:</span> <span class="s2">"/smart-mastering/action/send-alert.sjs"</span><span class="p">,</span>
+        <span class="s2">"function"</span><span class="p">:</span> <span class="s2">"sendAlert"</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+</code></pre></div></div>
+
+        </div>
+      </div>
+    </div>
+  </article>
+
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <p>
+                    Copyright © 2016-2019 MarkLogic Corporation. All Rights Reserved. MARKLOGIC® is a registered trademark of MarkLogic Corporation.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    <!--[if lt IE 9]>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="/smart-mastering-core/js/respond.min.js"></script>
+    <![endif]-->
+
+    <script type="text/javascript" src="/smart-mastering-core/assets/bundle.js" id="1"></script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-79716597-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
+

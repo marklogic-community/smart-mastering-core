@@ -1,0 +1,982 @@
+<!doctype html>
+<!--[if lt IE 7 ]><html itemscope itemtype="http://schema.org/Organization" id="ie6" class="ie ie-old" lang="en-US"><![endif]-->
+<!--[if IE 7 ]>   <html itemscope itemtype="http://schema.org/Organization" id="ie7" class="ie ie-old" lang="en-US"><![endif]-->
+<!--[if IE 8 ]>   <html itemscope itemtype="http://schema.org/Organization" id="ie8" class="ie ie-old" lang="en-US"><![endif]-->
+<!--[if IE 9 ]>   <html itemscope itemtype="http://schema.org/Organization" id="ie9" class="ie" lang="en-US"><![endif]-->
+<!--[if gt IE 9]><!--><html itemscope itemtype="http://schema.org/Organization" lang="en-US"><!--<![endif]-->
+<head>
+
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <title>Merging Options - Smart Mastering</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- Favicons -->
+    <link rel="shortcut icon" sizes="16x16 24x24 32x32 48x48 64x64 96x96" href="/smart-mastering-core/favicon.ico">
+    <meta name="application-name" content="Smart Mastering - A Smart Mastering framework for MarkLogic">
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-6638631-15', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+
+    <!-- Facebook Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1879746318909687'); // Insert your pixel ID here.
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1879746318909687&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- DO NOT MODIFY -->
+    <!-- End Facebook Pixel Code -->
+    <link type="text/css" rel="stylesheet" href="/smart-mastering-core/assets/bundle.css">
+</head>
+<body class="">
+
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/smart-mastering-core">
+                  <span class="logo">
+                    <img src="/smart-mastering-core/images/logo-marklogic.svg" width="180px" height="38px" alt="MarkLogic" title="MarkLogic" scale="0">
+                  </span>
+                  Smart Mastering
+                  <img src="/smart-mastering-core/images/smart-mastering.svg" width="36x" height="36px">
+                </a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    
+                        <li  >
+                            
+                            <a href="/smart-mastering-core/">Getting Started</a>
+                            
+                        </li>
+                    
+                        <li  >
+                            
+                            <a href="https://docs.marklogic.com/datahub/">Data Hub 5</a>
+                            
+                        </li>
+                    
+                        <li  >
+                            
+                            <a href="https://github.com/marklogic-community/smart-mastering-core">GitHub</a>
+                            
+                        </li>
+                    
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+
+
+  <article>
+    <div class="container">
+      <div class="row">
+        <div class="side-nav col-md-3 hide-small">
+          <div class="panel panel-default">
+  <div class="panel-heading">Navigation</div>
+  <ul class="list-group">
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/">Getting Started</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/how-does-it-work/">How Does it Work?</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/how-to-use/">How do I Use it?</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/">Docs</a>
+    
+    
+      <ul class="list-group">
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/rest/">REST API</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/libraries/">Libraries</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/matching-options/">Matching Options</a>
+    
+    
+      <ul class="list-group">
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/match-algorithms/">Included Matching Algorithms</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/custom-match-algorithms/">Custom Matching Algorithms</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/actions/">Included Actions</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/custom-actions/">Custom Actions</a>
+    
+    
+  </li>
+  
+</ul>
+
+    
+  </li>
+  
+  <li  class="list-group-item active"  >
+    
+    <a href="/smart-mastering-core/docs/merging-options/">Merging Options</a>
+    
+    
+      <ul class="list-group">
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/merge-algorithms/">Included Merging Algorithms</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/custom-merge-algorithms/">Custom Merging Algorithms</a>
+    
+    
+  </li>
+  
+</ul>
+
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/managing-code/">Managing Custom Code</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/security/">Security</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/error-codes/">Error Codes</a>
+    
+    
+  </li>
+  
+</ul>
+
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/faqs/">FAQs</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/troubleshooting/">Troubleshooting</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="https://github.com/marklogic-community/smart-mastering-core">Smart Mastering on GitHub</a>
+    
+    
+  </li>
+  
+</ul>
+
+</div>
+
+        </div>
+        <div class="col-md-9">
+          <h1 id="merging-options">Merging Options</h1>
+
+<p>Smart Mastering Core offers a configuration-driven merge capability. Merging
+takes two or more documents in the <code class="highlighter-rouge">mdm-content</code> collection (which holds the
+data that is available for search), moves them to an <code class="highlighter-rouge">mdm-archive</code> collection,
+and creates a new document combining the original two. The new combined document
+will be in the <code class="highlighter-rouge">mdm-content</code> collection. Merge configuration includes the
+properties to merge and how to combine them.</p>
+
+<h1 id="configuring-options">Configuring Options</h1>
+
+<p>Here’s an example of merge configuration options. Options may be uploaded and 
+retrieved as either XML or JSON.</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;options</span> <span class="na">xmlns=</span><span class="s">"http://marklogic.com/smart-mastering/merging"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;match-options&gt;</span>mlw-match<span class="nt">&lt;/match-options&gt;</span>
+  <span class="nt">&lt;m:property-defs</span>
+    <span class="na">xmlns:es=</span><span class="s">"http://marklogic.com/entity-services"</span>
+    <span class="na">xmlns:m=</span><span class="s">"http://marklogic.com/smart-mastering/merging"</span>
+    <span class="na">xmlns:has=</span><span class="s">"has"</span>
+    <span class="na">xmlns=</span><span class="s">""</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;m:property</span> <span class="na">namespace=</span><span class="s">""</span> <span class="na">localname=</span><span class="s">"IdentificationID"</span> <span class="na">name=</span><span class="s">"ssn"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;m:property</span> <span class="na">namespace=</span><span class="s">""</span> <span class="na">localname=</span><span class="s">"PersonName"</span> <span class="na">name=</span><span class="s">"name"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;m:property</span> <span class="na">namespace=</span><span class="s">""</span> <span class="na">localname=</span><span class="s">"Address"</span> <span class="na">name=</span><span class="s">"address"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;m:property</span> <span class="na">namespace=</span><span class="s">""</span> <span class="na">localname=</span><span class="s">"PersonBirthDate"</span> <span class="na">name=</span><span class="s">"dob"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;m:property</span> <span class="na">namespace=</span><span class="s">""</span> <span class="na">localname=</span><span class="s">"CaseStartDate"</span> <span class="na">name=</span><span class="s">"caseStartDate"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;m:property</span> <span class="na">namespace=</span><span class="s">""</span> <span class="na">localname=</span><span class="s">"IncidentCategoryCodeDate"</span> <span class="na">name=</span><span class="s">"incidentDate"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;m:property</span> <span class="na">namespace=</span><span class="s">""</span> <span class="na">localname=</span><span class="s">"PersonSex"</span> <span class="na">name=</span><span class="s">"sex"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;m:property</span> <span class="na">path=</span><span class="s">"/es:envelope/es:headers/shallow"</span> <span class="na">name=</span><span class="s">"shallow"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;m:property</span> <span class="na">path=</span><span class="s">"/es:envelope/es:headers/custom/this/has:a/deep/path"</span> <span class="na">name=</span><span class="s">"deep"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;m:property</span> <span class="na">path=</span><span class="s">"/es:envelope/es:instance/Another/Deep/path"</span> <span class="na">name=</span><span class="s">"nested"</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;/m:property-defs&gt;</span>
+  <span class="nt">&lt;algorithms&gt;</span>
+    <span class="c">&lt;!-- config for standard algorithm --&gt;</span>
+    <span class="c">&lt;!-- any needed namespaces get defined on the std-algorithm element --&gt;</span>
+    <span class="nt">&lt;std-algorithm</span> <span class="na">xmlns:es=</span><span class="s">"http://marklogic.com/entity-services"</span> <span class="na">xmlns:sm=</span><span class="s">"http://marklogic.com/smart-mastering"</span><span class="nt">&gt;</span>
+      <span class="c">&lt;!-- provide the path to the timestamp element to use for sorting --&gt;</span>
+      <span class="c">&lt;!-- when merging the values are sorted in recency order from newest
+           to oldest based on this timestamp. If the timestamp is not
+           provided then there is no recency sort --&gt;</span>
+      <span class="nt">&lt;timestamp</span> <span class="na">path=</span><span class="s">"/es:envelope/es:headers/sm:sources/sm:source/sm:dateTime"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/std-algorithm&gt;</span>
+    <span class="c">&lt;!-- Optionally override how collections are applied to documents during different events --&gt;</span>
+    <span class="nt">&lt;collections&gt;</span>
+      <span class="c">&lt;!-- Reference an XQuery function that takes 3 parameters
+        1. event name string
+        2. map:map of collections stored by document URI
+        3. options element for event (e.g., on-merge element)
+       --&gt;</span>
+      <span class="nt">&lt;on-merge</span>
+        <span class="na">function=</span><span class="s">"collections"</span>
+        <span class="na">namespace=</span><span class="s">"test/merge-collection-algorithm"</span>
+        <span class="na">at=</span><span class="s">"/test/suites/customizing-collections/lib/merged-collections.xqy"</span>
+        <span class="nt">/&gt;</span>
+      <span class="c">&lt;!-- 
+        Make adjustments to the standard set of collections with add and remove collection elements.
+       --&gt;</span>
+      <span class="nt">&lt;on-archive&gt;</span>
+        <span class="nt">&lt;remove&gt;</span>
+          <span class="nt">&lt;collection&gt;</span>Entity<span class="nt">&lt;/collection&gt;</span>
+        <span class="nt">&lt;/remove&gt;</span>
+        <span class="nt">&lt;add&gt;</span>
+          <span class="nt">&lt;collection&gt;</span>custom-archived<span class="nt">&lt;/collection&gt;</span>
+        <span class="nt">&lt;/add&gt;</span>
+      <span class="nt">&lt;/on-archive&gt;</span>
+      <span class="c">&lt;!-- Reference a JavaScript function that takes 3 parameters
+        1. event name string
+        2. JSON Object of collections stored by document URI
+        3. JSON representation of options element for event (e.g., Object with onMerge property)
+       --&gt;</span>
+      <span class="nt">&lt;on-no-match</span>
+        <span class="na">function=</span><span class="s">"noMatchCollections"</span>
+        <span class="na">at=</span><span class="s">"/test/suites/customizing-collections/lib/noMatchCollections.sjs"</span>
+        <span class="nt">/&gt;</span>
+      <span class="c">&lt;!-- 
+        Define the full of collections that should be set on a document with set collection elements.
+       --&gt;</span>
+      <span class="nt">&lt;on-notification&gt;</span>
+        <span class="nt">&lt;set&gt;</span>
+          <span class="nt">&lt;collection&gt;</span>notification<span class="nt">&lt;/collection&gt;</span>
+        <span class="nt">&lt;/set&gt;</span>
+      <span class="nt">&lt;/on-notification&gt;</span>
+    <span class="nt">&lt;/collections&gt;</span>
+  <span class="nt">&lt;/algorithms&gt;</span>
+  <span class="c">&lt;!-- Optionally override the standard collection names --&gt;</span>
+  <span class="nt">&lt;collections&gt;</span>
+    <span class="nt">&lt;merged&gt;</span>mdm-merged<span class="nt">&lt;/merged&gt;</span>
+    <span class="nt">&lt;notification&gt;</span>mdm-notification<span class="nt">&lt;/notification&gt;</span>
+    <span class="nt">&lt;archived&gt;</span>mdm-archived<span class="nt">&lt;/archived&gt;</span>
+    <span class="nt">&lt;auditing&gt;</span>mdm-auditing<span class="nt">&lt;/auditing&gt;</span>
+  <span class="nt">&lt;/collections&gt;</span>
+  <span class="nt">&lt;merging&gt;</span>
+    <span class="c">&lt;!-- Define merging strategies that can be referenced by
+      merge specifications below. This can cut down on configuration for repeated patterns   --&gt;</span>
+    <span class="nt">&lt;merge-strategy</span> <span class="na">name=</span><span class="s">"crm-source-weight"</span> <span class="na">algorithm-ref=</span><span class="s">"standard"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;source-weights&gt;</span>
+        <span class="nt">&lt;source</span> <span class="na">name=</span><span class="s">"CRM"</span> <span class="na">weight=</span><span class="s">"10"</span><span class="nt">&gt;&lt;/source&gt;</span>
+      <span class="nt">&lt;/source-weights&gt;</span>
+    <span class="nt">&lt;/merge-strategy&gt;</span>
+    <span class="nt">&lt;merge-strategy</span> <span class="na">name=</span><span class="s">"length-weight"</span> <span class="na">algorithm-ref=</span><span class="s">"standard"</span> <span class="na">max-values=</span><span class="s">"1"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;length</span> <span class="na">weight=</span><span class="s">"10"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/merge-strategy&gt;</span>
+    <span class="nt">&lt;merge</span> <span class="na">property-name=</span><span class="s">"ssn"</span> <span class="na">strategy=</span><span class="s">"crm-source-weight"</span><span class="nt">&gt;&lt;/merge&gt;</span>
+    <span class="c">&lt;!-- A strategy reference is not required. --&gt;</span>
+    <span class="nt">&lt;merge</span> <span class="na">property-name=</span><span class="s">"name"</span> <span class="na">max-values=</span><span class="s">"1"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;double-metaphone&gt;</span>
+        <span class="nt">&lt;distance-threshold&gt;</span>50<span class="nt">&lt;/distance-threshold&gt;</span>
+      <span class="nt">&lt;/double-metaphone&gt;</span>
+      <span class="nt">&lt;synonyms-support&gt;</span>true<span class="nt">&lt;/synonyms-support&gt;</span>
+      <span class="nt">&lt;thesaurus&gt;</span>/mdm/config/thesauri/first-name-synonyms.xml<span class="nt">&lt;/thesaurus&gt;</span>
+      <span class="nt">&lt;length</span> <span class="na">weight=</span><span class="s">"8"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/merge&gt;</span>
+    <span class="nt">&lt;merge</span> <span class="na">property-name=</span><span class="s">"address"</span> <span class="na">strategy=</span><span class="s">"crm-source-weight"</span> <span class="na">max-values=</span><span class="s">"1"</span><span class="nt">&gt;&lt;/merge&gt;</span>
+    <span class="nt">&lt;merge</span> <span class="na">property-name=</span><span class="s">"dob"</span> <span class="na">max-values=</span><span class="s">"1"</span> <span class="na">algorithm-ref=</span><span class="s">"standard"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;source-weights&gt;</span>
+        <span class="nt">&lt;source</span> <span class="na">name=</span><span class="s">"Oracle"</span> <span class="na">weight=</span><span class="s">"10"</span><span class="nt">&gt;&lt;/source&gt;</span>
+      <span class="nt">&lt;/source-weights&gt;</span>
+    <span class="nt">&lt;/merge&gt;</span>
+    <span class="nt">&lt;merge</span> <span class="na">property-name=</span><span class="s">"caseStartDate"</span> <span class="na">strategy=</span><span class="s">"crm-source-weight"</span> <span class="na">max-values=</span><span class="s">"1"</span><span class="nt">&gt;&lt;/merge&gt;</span>
+    <span class="nt">&lt;merge</span> <span class="na">property-name=</span><span class="s">"incidentDate"</span> <span class="na">strategy=</span><span class="s">"length-weight"</span><span class="nt">&gt;&lt;/merge&gt;</span>
+    <span class="nt">&lt;merge</span> <span class="na">property-name=</span><span class="s">"sex"</span> <span class="na">strategy=</span><span class="s">"length-weight"</span><span class="nt">&gt;&lt;/merge&gt;</span>
+    <span class="c">&lt;!-- Define a default merge specification to apply to
+    properties that haven't been assigned a merge
+    specification. --&gt;</span>
+    <span class="nt">&lt;merge</span> <span class="na">default=</span><span class="s">"true"</span> <span class="na">strategy=</span><span class="s">"crm-source-weight"</span><span class="nt">&gt;&lt;/merge&gt;</span>
+  <span class="nt">&lt;/merging&gt;</span>
+  
+  <span class="c">&lt;!-- 
+    Define a custom xqy triple merge function
+    Note that this approach differs from how you define
+    property merge algorithms. This is due to the fact that
+    there is only 1 triple merge function vs many algorithms
+    that may need to be reusable.
+   --&gt;</span>
+  <span class="nt">&lt;triple-merge</span>
+    <span class="na">function=</span><span class="s">"custom-trips"</span>
+    <span class="na">namespace=</span><span class="s">"http://marklogic.com/smart-mastering/merging"</span>
+    <span class="na">at=</span><span class="s">"/custom-triple-merge.xqy"</span><span class="nt">&gt;</span>
+
+    <span class="c">&lt;!--
+      you can provide additional elements that are available to
+      your function. Use these to pass in extra parameters to your function.
+    --&gt;</span>
+    <span class="nt">&lt;some-param&gt;</span>3<span class="nt">&lt;/some-param&gt;</span>
+  <span class="nt">&lt;/triple-merge&gt;</span>
+<span class="nt">&lt;/options&gt;</span>
+</code></pre></div></div>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"options"</span><span class="p">:</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"matchOptions"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mlw-match"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"propertyDefs"</span><span class="p">:</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"namespace"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"localname"</span><span class="p">:</span><span class="w"> </span><span class="s2">"IdentificationID"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ssn"</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"namespace"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"localname"</span><span class="p">:</span><span class="w"> </span><span class="s2">"PersonName"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"name"</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"namespace"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"localname"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Address"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"address"</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"namespace"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"localname"</span><span class="p">:</span><span class="w"> </span><span class="s2">"PersonBirthDate"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dob"</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"namespace"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"localname"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CaseStartDate"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"caseStartDate"</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"namespace"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"localname"</span><span class="p">:</span><span class="w"> </span><span class="s2">"IncidentCategoryCodeDate"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"incidentDate"</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"namespace"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"localname"</span><span class="p">:</span><span class="w"> </span><span class="s2">"PersonSex"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"sex"</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/es:envelope/es:headers/shallow"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"shallow"</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/es:envelope/es:headers/custom/this/has:a/deep/path"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"deep"</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/es:envelope/es:instance/Another/Deep/path"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"nested"</span><span class="w">
+      </span><span class="p">}],</span><span class="w">
+      </span><span class="s2">"namespaces"</span><span class="p">:</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"has"</span><span class="p">:</span><span class="w"> </span><span class="s2">"has"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"m"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://marklogic.com/smart-mastering/merging"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"es"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://marklogic.com/entity-services"</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"algorithms"</span><span class="p">:</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"stdAlgorithm"</span><span class="p">:</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"namespaces"</span><span class="p">:</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+          </span><span class="s2">"sm"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://marklogic.com/smart-mastering"</span><span class="p">,</span><span class="w">
+          </span><span class="s2">"es"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://marklogic.com/entity-services"</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="s2">"timestamp"</span><span class="p">:</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+          </span><span class="s2">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/es:envelope/es:headers/sm:sources/sm:source/sm:dateTime"</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="s2">"custom"</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span><span class="w">
+      </span><span class="s2">"collections"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"onMerge"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="s2">"function"</span><span class="p">:</span><span class="w"> </span><span class="s2">"collections"</span><span class="p">,</span><span class="w">
+          </span><span class="s2">"namespace"</span><span class="p">:</span><span class="w"> </span><span class="s2">"test/merge-collection-algorithm"</span><span class="p">,</span><span class="w">
+          </span><span class="s2">"at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/test/suites/customizing-collections/lib/merged-collections.xqy"</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="s2">"onArchive"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="s2">"remove"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"collection"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"Entity"</span><span class="p">]</span><span class="w">
+          </span><span class="p">},</span><span class="w">
+          </span><span class="s2">"add"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"collection"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"custom-archived"</span><span class="p">]</span><span class="w">
+          </span><span class="p">}</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="s2">"onNoMatch"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="s2">"function"</span><span class="p">:</span><span class="w"> </span><span class="s2">"noMatchCollections"</span><span class="p">,</span><span class="w">
+          </span><span class="s2">"at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/test/suites/customizing-collections/lib/noMatchCollections.sjs"</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="s2">"onNotification"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="s2">"set"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"collection"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"notification"</span><span class="p">]</span><span class="w">
+          </span><span class="p">}</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"mergeStrategies"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"crm-source-weight"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"algorithmRef"</span><span class="p">:</span><span class="w"> </span><span class="s2">"standard"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"sourceWeights"</span><span class="p">:</span><span class="w">
+      </span><span class="p">[{</span><span class="w">
+        </span><span class="s2">"source"</span><span class="p">:</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+          </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CRM"</span><span class="p">,</span><span class="w">
+          </span><span class="s2">"weight"</span><span class="p">:</span><span class="w"> </span><span class="s2">"10"</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+      </span><span class="p">}]</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"length-weight"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"algorithmRef"</span><span class="p">:</span><span class="w"> </span><span class="s2">"standard"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"maxValues"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"length"</span><span class="p">:</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"weight"</span><span class="p">:</span><span class="w"> </span><span class="s2">"10"</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}],</span><span class="w">
+    </span><span class="s2">"merging"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"propertyName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ssn"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"strategy"</span><span class="p">:</span><span class="w"> </span><span class="s2">"crm-source-weight"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"propertyName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"name"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"maxValues"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"doubleMetaphone"</span><span class="p">:</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"distanceThreshold"</span><span class="p">:</span><span class="w"> </span><span class="s2">"50"</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="s2">"synonymsSupport"</span><span class="p">:</span><span class="w"> </span><span class="s2">"true"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"thesaurus"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/mdm/config/thesauri/first-name-synonyms.xml"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"length"</span><span class="p">:</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"weight"</span><span class="p">:</span><span class="w"> </span><span class="s2">"8"</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"propertyName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"address"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"strategy"</span><span class="p">:</span><span class="w"> </span><span class="s2">"crm-source-weight"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"maxValues"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"propertyName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dob"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"algorithmRef"</span><span class="p">:</span><span class="w"> </span><span class="s2">"standard"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"sourceWeights"</span><span class="p">:</span><span class="w">
+      </span><span class="p">[{</span><span class="w">
+        </span><span class="s2">"source"</span><span class="p">:</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+          </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Oracle"</span><span class="p">,</span><span class="w">
+          </span><span class="s2">"weight"</span><span class="p">:</span><span class="w"> </span><span class="s2">"10"</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+      </span><span class="p">}],</span><span class="w">
+      </span><span class="s2">"maxValues"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"propertyName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"caseStartDate"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"strategy"</span><span class="p">:</span><span class="w"> </span><span class="s2">"crm-source-weight"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"maxValues"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"propertyName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"incidentDate"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"strategy"</span><span class="p">:</span><span class="w"> </span><span class="s2">"length-weight"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"propertyName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"sex"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"strategy"</span><span class="p">:</span><span class="w"> </span><span class="s2">"length-weight"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"default"</span><span class="p">:</span><span class="w"> </span><span class="s2">"true"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"strategy"</span><span class="p">:</span><span class="w"> </span><span class="s2">"crm-source-weight"</span><span class="w">
+    </span><span class="p">}],</span><span class="w">
+    </span><span class="s2">"tripleMerge"</span><span class="p">:</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"function"</span><span class="p">:</span><span class="w"> </span><span class="s2">"custom-trips"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"namespace"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://marklogic.com/smart-mastering/merging"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/custom-triple-merge.xqy"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"someParam"</span><span class="p">:</span><span class="w"> </span><span class="s2">"3"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="match-options">Match Options</h3>
+
+<p>When calling <code class="highlighter-rouge">process:process-match-and-merge()</code>, match options are specified
+by the merge options used in the call. The value of the <code class="highlighter-rouge">match-options</code> element
+is the name under which a set of match options were previously stored.</p>
+
+<p>Calling the <code class="highlighter-rouge">sm:merge</code> service or <code class="highlighter-rouge">merging:save-merge-models-by-uri</code> does not
+require that the merge options be paired with a set of match options; the
+<code class="highlighter-rouge">match-options</code> element may be left out. This will not affect the merging
+process at all.</p>
+
+<h3 id="property-definitions">Property Definitions</h3>
+
+<h4 id="instance-properties">Instance Properties</h4>
+
+<p>When merging documents, all properties defined for an entity will be merged. The
+<code class="highlighter-rouge">property-defs/property</code> elements specify the properties where the process of
+merging values will be configured. The <code class="highlighter-rouge">namespace</code> and <code class="highlighter-rouge">localname</code> attributes
+specify an XML element or JSON property. The <code class="highlighter-rouge">name</code> attribute provides a
+nickname used to refer to this property in the rest of the configuration. The
+<code class="highlighter-rouge">name</code> attribute values must be unique within this configuration.</p>
+
+<h4 id="path-properties">Path Properties</h4>
+
+<p>In addition to properties defined for an entity, properties may also be specified by path. Paths leading into the 
+headers or instance sections of documents are currently supported; that is:</p>
+
+<ul>
+  <li>/es:envelope/es:headers (XML)</li>
+  <li>/envelope/headers (JSON)</li>
+  <li>/es:envelope/es:instance (XML)</li>
+  <li>/envelope/instance (JSON)</li>
+</ul>
+
+<p>Control of the merging process using algorithms works the same for path properties as it does for instance properties.</p>
+
+<p>Note that namespace prefixes used in the property path attributes must be 
+defined on the <code class="highlighter-rouge">property-defs</code> element. The default namespace and any prefixed
+namespaced used on <code class="highlighter-rouge">property-defs</code> will be used to interpret the path.</p>
+
+<p>In the example above, there are four namespace specifications on <code class="highlighter-rouge">property-defs</code>:</p>
+
+<ul>
+  <li>xmlns:es=”http://marklogic.com/entity-services”</li>
+  <li>xmlns:m=”http://marklogic.com/smart-mastering/merging”</li>
+  <li>xmlns:has=”has”</li>
+  <li>xmlns=””</li>
+</ul>
+
+<p>Because the default namespace is “”, the <code class="highlighter-rouge">m:</code> prefix is used for 
+<code class="highlighter-rouge">property-defs</code> and <code class="highlighter-rouge">property</code> elements. The values of the path attributes will 
+use these namespaces. Thus in <code class="highlighter-rouge">/es:envelope/es:headers/custom/this/has:a/deep/path</code>, 
+any <code class="highlighter-rouge">custom</code> elements will be in the default (blank) namespace.</p>
+
+<h3 id="algorithms">Algorithms</h3>
+
+<p>As part of creating a merged document, the merge process identifies the values
+the source documents have for each property, then selects which of them will be
+preserved in the merged document. The <code class="highlighter-rouge">algorithms/algorithm</code> elements list
+algorithms you can use to combine property values, in addition to the
+<code class="highlighter-rouge">standard</code> algorithm, which implements the default behavior.</p>
+
+<p>An <code class="highlighter-rouge">algorithm</code> element must have <code class="highlighter-rouge">name</code> and <code class="highlighter-rouge">function</code> attributes. The <code class="highlighter-rouge">name</code>
+attribute is the name this algorithm will be referred to elsewhere in the
+configuration. The <code class="highlighter-rouge">function</code> attribute is the localname of the function that
+will be called. This element may also have an <code class="highlighter-rouge">at</code> attribute, indicating where
+to find the source code for this function, and a <code class="highlighter-rouge">namespace</code> attribute.</p>
+
+<p>Smart Mastering comes with a “standard” algorithm. For information about writing and configuring custom merge 
+algorithms, please see the <a href="/docs/custom-merge-algorithms/">Custom Merge Algorithms page</a>.</p>
+
+<h4 id="standard-algorithm">Standard Algorithm</h4>
+
+<p>A <code class="highlighter-rouge">std-algorithm</code> element will allow you to configure options for the standard algorithm. Supported options are:</p>
+
+<h5 id="timestamp">Timestamp</h5>
+
+<p>The timestamp config informs Smart Mastering which element to use for sorting. When merging, the values are sorted in recency order from newest to oldest based on this timestamp. If the timestamp is not provided then there is no recency sort.</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nt">&lt;std-algorithm</span> 
+      <span class="na">xmlns:es=</span><span class="s">"http://marklogic.com/entity-services"</span> 
+      <span class="na">xmlns:sm=</span><span class="s">"http://marklogic.com/smart-mastering"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;timestamp</span> <span class="na">path=</span><span class="s">"/es:envelope/es:headers/sm:sources/sm:source/sm:dateTime"</span> <span class="nt">/&gt;</span>
+  <span class="err">&lt;</span>/std-algorithm
+</code></pre></div></div>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="w">  </span><span class="s2">"stdAlgorithm"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"namespaces"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"es"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://marklogic.com/entity-services"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"sm"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://marklogic.com/smart-mastering"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/es:envelope/es:headers/sm:sources/sm:source/sm:dateTime"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Note that any namespaces used in the <code class="highlighter-rouge">@path</code> attribute must be defined on the <std-algorithm> element. The default namespace for evaluating the path is the empty namespace.</std-algorithm></p>
+
+<p>The timestamp path may point anywhere in the source documents. For instance, in the document below, the <code class="highlighter-rouge">lastModified</code> 
+JSON property is part of the instance, rather than in the headers. This property refers to the last time this document was modified.</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"envelope"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"headers"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"sources"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+          </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MMIS"</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+      </span><span class="p">]</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"instance"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"Person"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"ids"</span><span class="p">:</span><span class="w"> </span><span class="s2">"53762077-bf06-4933-be9f-4bf3fb3ad0b0"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"first_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Hugo"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"last_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Boldry"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"hboldry0@ezinearticles.com"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"gender"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Male"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"lastModified"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2018-05-25T14:24:36Z"</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>The standard algorithm can use this JSON property by setting the path to</p>
+
+<blockquote>
+  <p>/envelope/instance/Person/lastModified</p>
+</blockquote>
+
+<h4 id="collections-algorithm">Collections Algorithm</h4>
+
+<p>The <code class="highlighter-rouge">collections</code> algorithm allows the default behavior of how collections are applied to documents to be overridden during various events.</p>
+
+<h5 id="collection-events">Collection Events</h5>
+
+<p>There are 4 events that can be configured to act different.</p>
+
+<h6 id="on-merge">On Merge</h6>
+
+<p>The <code class="highlighter-rouge">on-merge</code> event determines what collections are applied to the newly created document that represents a merge of a document set.</p>
+
+<p>The default behavior is to take the union of existing collections on the original document set and add the <code class="highlighter-rouge">mdm-content</code> and <code class="highlighter-rouge">mdm-merged</code> collections.</p>
+
+<h6 id="on-no-match">On No Match</h6>
+
+<p>The <code class="highlighter-rouge">on-no-match</code> event determines what collections are applied to a document the for which no documents were found to merge with.</p>
+
+<p>The default behavior is to take the union of existing collections on the original document and add the <code class="highlighter-rouge">mdm-content</code> collection.</p>
+
+<h6 id="on-archive">On Archive</h6>
+
+<p>The <code class="highlighter-rouge">on-archive</code> event determines what collections are applied to the original document set after a merge has taken place.</p>
+
+<p>The default behavior is to take the existing collections on the original document, remove the <code class="highlighter-rouge">mdm-content</code> collection and add the <code class="highlighter-rouge">mdm-archived</code> collection.</p>
+
+<h6 id="on-notification">On Notification</h6>
+
+<p>The <code class="highlighter-rouge">on-notification</code> event determines what collections are applied to a notification document.</p>
+
+<p>The default behavior is to set the collection to <code class="highlighter-rouge">mdm-notification</code>.</p>
+
+<h5 id="collection-override-approaches">Collection Override Approaches</h5>
+
+<p>There are 2 approaches to overriding the behavior of how collections are applied.</p>
+
+<h6 id="simple-collection-override">Simple Collection Override</h6>
+
+<p>Simple overrides to behavior can be made with additional configuration. The <code class="highlighter-rouge">add/collection</code> elements can be used to add collections to the default behavior for an event. The <code class="highlighter-rouge">remove/collection</code> elements can be used to remove collections to the default behavior for an event.</p>
+
+<p>The <code class="highlighter-rouge">set/collection</code> elements can be used to directly determine the full set of collections applied, taking no account for the default collections.</p>
+
+<h6 id="advanced-collection-override">Advanced Collection Override</h6>
+
+<p>Advanced overrides can be made by referencing an XQuery or JavaScript function that returns a sequence of <code class="highlighter-rouge">xs:string</code> or array of <code class="highlighter-rouge">String</code> respectively.</p>
+
+<p>For XQuery, the function arguments are as follows:</p>
+<ol>
+  <li>event name string</li>
+  <li>map:map of collections stored by document URI</li>
+  <li>options element for event (e.g., on-merge element)</li>
+</ol>
+
+<p>For JavaScript, the function arguments look like the following:</p>
+<ol>
+  <li>event name string</li>
+  <li>JSON Object of collections stored by document URI</li>
+  <li>JSON representation of options element for event (e.g., Object with onMerge property)</li>
+</ol>
+
+<h3 id="collections">Collections</h3>
+
+<p>The <code class="highlighter-rouge">collections/merged</code> elements can override the default collection(s) applied to merged documents. If multiple <code class="highlighter-rouge">merged</code> elements are specified, the dataset is restricted to an intersection of those collections.</p>
+
+<p>The <code class="highlighter-rouge">collections/archived</code> elements can override the default collection(s) applied to archived documents.</p>
+
+<p>The <code class="highlighter-rouge">collections/notification</code> elements can override the default collection(s) applied to notification documents.</p>
+
+<p>The <code class="highlighter-rouge">collections/auditing</code> elements can override the default collection(s) applied to auditing documents.</p>
+
+<h3 id="merging">Merging</h3>
+
+<p>The <code class="highlighter-rouge">merging/merge</code> elements define how values from the source documents will be combined in the merged document.</p>
+
+<h3 id="merge-element"><code class="highlighter-rouge">merge</code> Element</h3>
+
+<p>The <code class="highlighter-rouge">merge</code> element can have six attributes: <code class="highlighter-rouge">default</code>, <code class="highlighter-rouge">property-name</code>, <code class="highlighter-rouge">algorithm-ref</code>, <code class="highlighter-rouge">max-values</code>, <code class="highlighter-rouge">max-sources</code>, and <code class="highlighter-rouge">strategy</code>. 
+The <code class="highlighter-rouge">default</code> attribute accepts a boolean value that determines if the <code class="highlighter-rouge">merge</code> element should define the default behavior for merging. The <code class="highlighter-rouge">property-name</code> attribute must match the <code class="highlighter-rouge">name</code> attribute
+of one of the <code class="highlighter-rouge">property</code> elements defined under <code class="highlighter-rouge">property-defs</code>. Use of the <code class="highlighter-rouge">default</code> attribute and <code class="highlighter-rouge">property-name</code> attribute are mutually exclusive. The
+<code class="highlighter-rouge">algorithm-ref</code> attribute must match the <code class="highlighter-rouge">name</code> attribute of one of the
+<code class="highlighter-rouge">algorithm</code> elements. The <code class="highlighter-rouge">max-values</code> attribute is an integer indicating how
+many values for this property should be copied from source documents to the
+merged document. The <code class="highlighter-rouge">strategy</code> attribute can reference the <code class="highlighter-rouge">name</code> attribute of a <code class="highlighter-rouge">merge-strategy</code> element. See the next session for details.</p>
+
+<h3 id="merge-strategy-element"><code class="highlighter-rouge">merge-strategy</code> Element</h3>
+
+<p>The <code class="highlighter-rouge">merge-strategy</code> element has only one required attribute of <code class="highlighter-rouge">name</code>. <code class="highlighter-rouge">merge-strategy</code> can additionally have any of the attributes or child elements that the <code class="highlighter-rouge">merge</code> element supports, with the exception of the <code class="highlighter-rouge">property-name</code> attribute.</p>
+
+<p>The <code class="highlighter-rouge">merge-strategy</code> element provides a way to reduce verbosity of the options file by adding the ability to reference repeated patterns.</p>
+
+<h4 id="standard-merging">Standard Merging</h4>
+
+<p>The standard algorithm will keep up to 99 values for each property. A <code class="highlighter-rouge">merge</code>
+element can specify a different number and can control the order in which the
+values are listed. The <code class="highlighter-rouge">max-sources</code> attribute controls the number of sources that can contribute to a property, instead of values. This is convenient when you’d like to limit by source instead of values (e.g., carry over an entire Array from a single source). The <code class="highlighter-rouge">merge</code> element for the standard algorithm can also
+specify a weighted preference for sources and a weight by which to prefer longer
+values. Any property that does not have a <code class="highlighter-rouge">merge</code> element or that has a <code class="highlighter-rouge">merge</code>
+element that does not specify an <code class="highlighter-rouge">algorithm-ref</code> will use the standard
+algorithm.</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nt">&lt;merge</span> <span class="na">property-name=</span><span class="s">"name"</span> <span class="na">max-sources=</span><span class="s">"1"</span> <span class="na">max-values=</span><span class="s">"1"</span> <span class="na">algorithm-ref=</span><span class="s">"standard"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;length</span> <span class="na">weight=</span><span class="s">"8"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;source-weights&gt;</span>
+      <span class="nt">&lt;source</span> <span class="na">name=</span><span class="s">"good-source"</span> <span class="na">weight=</span><span class="s">"2"</span><span class="nt">/&gt;</span>
+      <span class="nt">&lt;source</span> <span class="na">name=</span><span class="s">"better-source"</span> <span class="na">weight=</span><span class="s">"4"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/source-weights&gt;</span>
+  <span class="nt">&lt;/merge&gt;</span>
+</code></pre></div></div>
+
+<p>None of the elements inside the <code class="highlighter-rouge">merge</code> element are required.</p>
+
+<p>Written as JSON, the above example looks like this:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="w">  </span><span class="s2">"merging"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"propertyName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"name"</span><span class="p">,</span><span class="w"> 
+      </span><span class="s2">"maxValues"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1"</span><span class="p">,</span><span class="w"> 
+      </span><span class="s2">"maxSources"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1"</span><span class="p">,</span><span class="w"> 
+      </span><span class="s2">"algorithmRef"</span><span class="p">:</span><span class="w"> </span><span class="s2">"standard"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"length"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s2">"weight"</span><span class="p">:</span><span class="w"> </span><span class="s2">"8"</span><span class="w"> </span><span class="p">},</span><span class="w"> 
+      </span><span class="s2">"sourceWeights"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"source"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"better-source"</span><span class="p">,</span><span class="w"> </span><span class="s2">"weight"</span><span class="p">:</span><span class="w"> </span><span class="s2">"4"</span><span class="w"> </span><span class="p">}</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Notice that the <code class="highlighter-rouge">property-name</code>, <code class="highlighter-rouge">max-values</code>, <code class="highlighter-rouge">max-sources</code>, and <code class="highlighter-rouge">algorithm-ref</code> attributes
+correspond to JSON properties.</p>
+
+<h4 id="custom-merging">Custom Merging</h4>
+
+<p>To use a different algorithm in XML, create a <code class="highlighter-rouge">merge</code> element with an <code class="highlighter-rouge">algorithm-ref</code>
+attribute that refers to one of the <code class="highlighter-rouge">algorithm</code> elements. The contents of the
+<code class="highlighter-rouge">merge</code> element will be passed into the merging function.</p>
+
+<p>For JSON, the object will use an <code class="highlighter-rouge">algorithmRef</code> property that refers to one of 
+the <code class="highlighter-rouge">algorithm</code> objects. The merge object will be passed to the merging 
+function.</p>
+
+<p>See the <a href="../custom-merge-algorithms/">Custom Merge Algorithms</a> section for more information.</p>
+
+<h4 id="triple-merging">Triple Merging</h4>
+
+<p>To use a custom function for merging triples, create a <code class="highlighter-rouge">triple-merge</code> element with attributes to refer to the function: <code class="highlighter-rouge">at</code>, <code class="highlighter-rouge">namespace</code>, <code class="highlighter-rouge">function</code>.</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nt">&lt;triple-merge</span>
+    <span class="na">function=</span><span class="s">"custom-trips"</span>
+    <span class="na">namespace=</span><span class="s">"http://marklogic.com/smart-mastering/merging"</span>
+    <span class="na">at=</span><span class="s">"/custom-triple-merge.xqy"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;some-param&gt;</span>3<span class="nt">&lt;/some-param&gt;</span>
+  <span class="nt">&lt;/triple-merge&gt;</span>
+</code></pre></div></div>
+
+<p><strong>Custom Xquery code</strong></p>
+
+<div class="language-xquery highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kp">xquery</span> <span class="kp">version</span> <span class="s2">"1.0-ml"</span><span class="p">;</span>
+
+<span class="c">(: you can define any namespace you like :)</span>
+<span class="kd">module</span> <span class="kd">namespace</span> <span class="nn">custom-merging</span> <span class="o">=</span> <span class="s2">"http://marklogic.com/smart-mastering/merging"</span><span class="p">;</span>
+
+<span class="kd">declare</span> <span class="kd">namespace</span> <span class="nn">m</span> <span class="o">=</span> <span class="s2">"http://marklogic.com/smart-mastering/merging"</span><span class="p">;</span>
+
+<span class="c">(: A custom triples merging function
+ : 
+ : @param $merge-options specification of how options are to be merged
+ : @param $docs  the source documents that provide the values
+ : @param $sources  information about the source of the header data
+ : @param $property-spec  configuration for how this property should be merged
+ : @return zero or more sem:triples
+ :)</span>
+<span class="kd">declare</span> <span class="kd">function</span> <span class="nf">custom-merging:custom-trips</span><span class="p">(</span>
+  <span class="nv">$</span><span class="n">merge-options</span> <span class="k">as</span> <span class="nt">element</span><span class="p">(</span><span class="n">m:options</span><span class="p">),</span>
+  <span class="nv">$</span><span class="n">docs</span><span class="p">,</span>
+  <span class="nv">$</span><span class="n">sources</span><span class="p">,</span>
+  <span class="nv">$</span><span class="n">property-spec</span> <span class="k">as</span> <span class="nt">element</span><span class="p">()?</span>
+<span class="p">)</span> <span class="p">{</span>
+  <span class="k">let</span> <span class="nv">$</span><span class="n">some-param</span> <span class="p">:=</span> <span class="nv">$</span><span class="n">property-spec</span><span class="p">/</span><span class="nt">*:some-param</span> <span class="p">!</span> <span class="nf">xs:int</span><span class="p">(.)</span>
+  <span class="k">return</span>
+    <span class="nf">sem:triple</span><span class="p">(</span><span class="nf">sem:iri</span><span class="p">(</span><span class="s2">"some-param"</span><span class="p">),</span> <span class="nf">sem:iri</span><span class="p">(</span><span class="s2">"is"</span><span class="p">),</span> <span class="nv">$</span><span class="n">some-param</span><span class="p">)</span>
+<span class="p">};</span>
+
+</code></pre></div></div>
+
+<p>For JSON, the object will use a <code class="highlighter-rouge">tripleMerge</code> property that refers to the function.</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="w">  </span><span class="s2">"tripleMerge"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"function"</span><span class="p">:</span><span class="w"> </span><span class="s2">"customTrips"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"namespace"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://marklogic.com/smart-mastering/merging"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/custom-triple-merge.xqy"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"some-param"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p><strong>Custom Javascript code</strong></p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s1">'use strict'</span>
+
+<span class="cm">/* A custom triples merging function
+ *
+ * @param mergeOptions specification of how options are to be merged
+ * @param docs  the source documents that provide the values
+ * @param sources  information about the source of the header data
+ * @param propertySpec  configuration for how this property should be merged
+ * @return zero or more sem.triples
+ */</span>
+<span class="kd">function</span> <span class="nx">customTrips</span><span class="p">(</span><span class="nx">mergeOptions</span><span class="p">,</span> <span class="nx">docs</span><span class="p">,</span> <span class="nx">sources</span><span class="p">,</span> <span class="nx">propertySpec</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">someParam</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">propertySpec</span><span class="p">.</span><span class="nx">someParam</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+  <span class="k">return</span> <span class="nx">sem</span><span class="p">.</span><span class="nx">triple</span><span class="p">(</span><span class="nx">sem</span><span class="p">.</span><span class="nx">iri</span><span class="p">(</span><span class="s2">"some-param"</span><span class="p">),</span> <span class="nx">sem</span><span class="p">.</span><span class="nx">iri</span><span class="p">(</span><span class="s2">"is"</span><span class="p">),</span> <span class="nx">someParam</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nx">exports</span><span class="p">.</span><span class="nx">customTrips</span> <span class="o">=</span> <span class="nx">customTrips</span><span class="p">;</span>
+</code></pre></div></div>
+
+        </div>
+      </div>
+    </div>
+  </article>
+
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <p>
+                    Copyright © 2016-2019 MarkLogic Corporation. All Rights Reserved. MARKLOGIC® is a registered trademark of MarkLogic Corporation.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    <!--[if lt IE 9]>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="/smart-mastering-core/js/respond.min.js"></script>
+    <![endif]-->
+
+    <script type="text/javascript" src="/smart-mastering-core/assets/bundle.js" id="1"></script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-79716597-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
+

@@ -1,0 +1,374 @@
+<!doctype html>
+<!--[if lt IE 7 ]><html itemscope itemtype="http://schema.org/Organization" id="ie6" class="ie ie-old" lang="en-US"><![endif]-->
+<!--[if IE 7 ]>   <html itemscope itemtype="http://schema.org/Organization" id="ie7" class="ie ie-old" lang="en-US"><![endif]-->
+<!--[if IE 8 ]>   <html itemscope itemtype="http://schema.org/Organization" id="ie8" class="ie ie-old" lang="en-US"><![endif]-->
+<!--[if IE 9 ]>   <html itemscope itemtype="http://schema.org/Organization" id="ie9" class="ie" lang="en-US"><![endif]-->
+<!--[if gt IE 9]><!--><html itemscope itemtype="http://schema.org/Organization" lang="en-US"><!--<![endif]-->
+<head>
+
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <title>Custom Merging Algorithms - Smart Mastering</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- Favicons -->
+    <link rel="shortcut icon" sizes="16x16 24x24 32x32 48x48 64x64 96x96" href="/smart-mastering-core/favicon.ico">
+    <meta name="application-name" content="Smart Mastering - A Smart Mastering framework for MarkLogic">
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-6638631-15', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+
+    <!-- Facebook Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1879746318909687'); // Insert your pixel ID here.
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1879746318909687&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- DO NOT MODIFY -->
+    <!-- End Facebook Pixel Code -->
+    <link type="text/css" rel="stylesheet" href="/smart-mastering-core/assets/bundle.css">
+</head>
+<body class="">
+
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/smart-mastering-core">
+                  <span class="logo">
+                    <img src="/smart-mastering-core/images/logo-marklogic.svg" width="180px" height="38px" alt="MarkLogic" title="MarkLogic" scale="0">
+                  </span>
+                  Smart Mastering
+                  <img src="/smart-mastering-core/images/smart-mastering.svg" width="36x" height="36px">
+                </a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    
+                        <li  >
+                            
+                            <a href="/smart-mastering-core/">Getting Started</a>
+                            
+                        </li>
+                    
+                        <li  >
+                            
+                            <a href="https://docs.marklogic.com/datahub/">Data Hub 5</a>
+                            
+                        </li>
+                    
+                        <li  >
+                            
+                            <a href="https://github.com/marklogic-community/smart-mastering-core">GitHub</a>
+                            
+                        </li>
+                    
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+
+
+  <article>
+    <div class="container">
+      <div class="row">
+        <div class="side-nav col-md-3 hide-small">
+          <div class="panel panel-default">
+  <div class="panel-heading">Navigation</div>
+  <ul class="list-group">
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/">Getting Started</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/how-does-it-work/">How Does it Work?</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/how-to-use/">How do I Use it?</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/">Docs</a>
+    
+    
+      <ul class="list-group">
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/rest/">REST API</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/libraries/">Libraries</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/matching-options/">Matching Options</a>
+    
+    
+      <ul class="list-group">
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/match-algorithms/">Included Matching Algorithms</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/custom-match-algorithms/">Custom Matching Algorithms</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/actions/">Included Actions</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/custom-actions/">Custom Actions</a>
+    
+    
+  </li>
+  
+</ul>
+
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/merging-options/">Merging Options</a>
+    
+    
+      <ul class="list-group">
+  
+  <li  class="list-group-item active"  >
+    
+    <a href="/smart-mastering-core/docs/merge-algorithms/">Included Merging Algorithms</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/custom-merge-algorithms/">Custom Merging Algorithms</a>
+    
+    
+  </li>
+  
+</ul>
+
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/managing-code/">Managing Custom Code</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/security/">Security</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/error-codes/">Error Codes</a>
+    
+    
+  </li>
+  
+</ul>
+
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/faqs/">FAQs</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/troubleshooting/">Troubleshooting</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="https://github.com/marklogic-community/smart-mastering-core">Smart Mastering on GitHub</a>
+    
+    
+  </li>
+  
+</ul>
+
+</div>
+
+        </div>
+        <div class="col-md-9">
+          <h1 id="-out-of-the-box-merge-algorithms"><a name="intro"></a> Out-of-the-Box Merge Algorithms</h1>
+
+<p>Smart Mastering provides the following merge algorithms that you can use without having to write any code. A merge
+algorithm determines which property values from source documents are brought into a merge document. That is, when 
+merging documents A, B, and C, suppose that for a particular property, those documents had values A1, A2, B1, and C1.
+A merge algorithm will determine which and how many of those values will be in the new document ABC.</p>
+
+<p>In addition to the built-in algorithm, <a href="../custom-match-algorithms/">you can write your own custom functions</a>.</p>
+
+<h2 id="standard-algorithm">Standard Algorithm</h2>
+
+<p>Smart Mastering currently provides a standard algorithm, which can be configured for different uses. You can use it by 
+adding XML or JSON similar to the below to your merge options.</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;options</span> <span class="na">xmlns=</span><span class="s">"http://marklogic.com/smart-mastering/merging"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;merging</span> <span class="na">xmlns=</span><span class="s">"http://marklogic.com/smart-mastering/merging"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;merge</span> <span class="na">property-name=</span><span class="s">"some-property"</span> <span class="na">max-values=</span><span class="s">"1"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;source-weights&gt;</span>
+        <span class="nt">&lt;source</span> <span class="na">name=</span><span class="s">"good-source"</span> <span class="na">weight=</span><span class="s">"2"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;source</span> <span class="na">name=</span><span class="s">"better-source"</span> <span class="na">weight=</span><span class="s">"4"</span><span class="nt">/&gt;</span>
+      <span class="nt">&lt;/source-weights&gt;</span>
+    <span class="nt">&lt;/merge&gt;</span>
+    <span class="nt">&lt;merge</span> <span class="na">property-name=</span><span class="s">"another-property"</span> <span class="na">max-values=</span><span class="s">"1"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;length</span> <span class="na">weight=</span><span class="s">"8"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/merge&gt;</span>
+  <span class="nt">&lt;/merging&gt;</span>
+<span class="nt">&lt;/options&gt;</span>
+</code></pre></div></div>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="s2">"options"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"merging"</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="s2">"propertyName"</span><span class="p">:</span> <span class="s2">"some-property"</span><span class="p">,</span>
+        <span class="s2">"sourceWeights"</span><span class="p">:</span> <span class="p">[</span>
+          <span class="p">{</span> <span class="s2">"source"</span><span class="p">:</span> <span class="p">{</span> <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"good-source"</span><span class="p">,</span> <span class="s2">"weight"</span><span class="p">:</span> <span class="s2">"2"</span> <span class="p">}</span> <span class="p">},</span>
+          <span class="p">{</span> <span class="s2">"source"</span><span class="p">:</span> <span class="p">{</span> <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"better-source"</span><span class="p">,</span> <span class="s2">"weight"</span><span class="p">:</span> <span class="s2">"4"</span> <span class="p">}</span> <span class="p">}</span>
+        <span class="p">]</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="s2">"propertyName"</span><span class="p">:</span> <span class="s2">"another-property"</span><span class="p">,</span>
+        <span class="s2">"maxValues"</span><span class="p">:</span> <span class="s2">"1"</span><span class="p">,</span>
+        <span class="s2">"length"</span><span class="p">:</span> <span class="p">{</span> <span class="s2">"weight"</span><span class="p">:</span> <span class="s2">"8"</span> <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="sorting-by-source">Sorting by Source</h3>
+
+<p>The standard algorithm will sort the available values and keep the first <code class="highlighter-rouge">max-values</code>/<code class="highlighter-rouge">maxValues</code> other them. The sort
+of the values is based on weights for individual sources (where the source is identified by the value at 
+<code class="highlighter-rouge">/es:envelope/es:headers/sm:sources/sm:source/*:name</code> for XML and <code class="highlighter-rouge">/envelope/headers/sources/source/name</code> for JSON). 
+To sort by source weight, provide the name of the sources from the document headers and a weight. These weights must be
+castable to <code class="highlighter-rouge">xs:double</code>.</p>
+
+<h3 id="sorting-by-length">Sorting by Length</h3>
+
+<p>This algorithm can sort values by how long they are. Consider length here to be a proxy for more complete information. 
+Use the weight setting for length to control how much influence this attribute has.</p>
+
+<h3 id="sorting-by-recency">Sorting by Recency</h3>
+
+<p>If the source documents have a dateTime that indicates how recent the data is, the standard algorithm can use that sort
+values. See https://marklogic-community.github.io/smart-mastering-core/docs/merging-options/#timestamp for information
+on configuring this feature.</p>
+
+<h3 id="combining-the-sort-factors">Combining the Sort Factors</h3>
+
+<p>The scores for source preference and for value length will be added together. Ties are resolved by the more recent 
+source, if a timestamp location is configured.</p>
+
+        </div>
+      </div>
+    </div>
+  </article>
+
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <p>
+                    Copyright © 2016-2019 MarkLogic Corporation. All Rights Reserved. MARKLOGIC® is a registered trademark of MarkLogic Corporation.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    <!--[if lt IE 9]>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="/smart-mastering-core/js/respond.min.js"></script>
+    <![endif]-->
+
+    <script type="text/javascript" src="/smart-mastering-core/assets/bundle.js" id="1"></script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-79716597-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
+

@@ -1,0 +1,753 @@
+<!doctype html>
+<!--[if lt IE 7 ]><html itemscope itemtype="http://schema.org/Organization" id="ie6" class="ie ie-old" lang="en-US"><![endif]-->
+<!--[if IE 7 ]>   <html itemscope itemtype="http://schema.org/Organization" id="ie7" class="ie ie-old" lang="en-US"><![endif]-->
+<!--[if IE 8 ]>   <html itemscope itemtype="http://schema.org/Organization" id="ie8" class="ie ie-old" lang="en-US"><![endif]-->
+<!--[if IE 9 ]>   <html itemscope itemtype="http://schema.org/Organization" id="ie9" class="ie" lang="en-US"><![endif]-->
+<!--[if gt IE 9]><!--><html itemscope itemtype="http://schema.org/Organization" lang="en-US"><!--<![endif]-->
+<head>
+
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <title>REST API - Smart Mastering</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- Favicons -->
+    <link rel="shortcut icon" sizes="16x16 24x24 32x32 48x48 64x64 96x96" href="/smart-mastering-core/favicon.ico">
+    <meta name="application-name" content="Smart Mastering - A Smart Mastering framework for MarkLogic">
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-6638631-15', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+
+    <!-- Facebook Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1879746318909687'); // Insert your pixel ID here.
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1879746318909687&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- DO NOT MODIFY -->
+    <!-- End Facebook Pixel Code -->
+    <link type="text/css" rel="stylesheet" href="/smart-mastering-core/assets/bundle.css">
+</head>
+<body class="">
+
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/smart-mastering-core">
+                  <span class="logo">
+                    <img src="/smart-mastering-core/images/logo-marklogic.svg" width="180px" height="38px" alt="MarkLogic" title="MarkLogic" scale="0">
+                  </span>
+                  Smart Mastering
+                  <img src="/smart-mastering-core/images/smart-mastering.svg" width="36x" height="36px">
+                </a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    
+                        <li  >
+                            
+                            <a href="/smart-mastering-core/">Getting Started</a>
+                            
+                        </li>
+                    
+                        <li  >
+                            
+                            <a href="https://docs.marklogic.com/datahub/">Data Hub 5</a>
+                            
+                        </li>
+                    
+                        <li  >
+                            
+                            <a href="https://github.com/marklogic-community/smart-mastering-core">GitHub</a>
+                            
+                        </li>
+                    
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+
+
+  <article>
+    <div class="container">
+      <div class="row">
+        <div class="side-nav col-md-3 hide-small">
+          <div class="panel panel-default">
+  <div class="panel-heading">Navigation</div>
+  <ul class="list-group">
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/">Getting Started</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/how-does-it-work/">How Does it Work?</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/how-to-use/">How do I Use it?</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/">Docs</a>
+    
+    
+      <ul class="list-group">
+  
+  <li  class="list-group-item active"  >
+    
+    <a href="/smart-mastering-core/docs/rest/">REST API</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/libraries/">Libraries</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/matching-options/">Matching Options</a>
+    
+    
+      <ul class="list-group">
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/match-algorithms/">Included Matching Algorithms</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/custom-match-algorithms/">Custom Matching Algorithms</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/actions/">Included Actions</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/custom-actions/">Custom Actions</a>
+    
+    
+  </li>
+  
+</ul>
+
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/merging-options/">Merging Options</a>
+    
+    
+      <ul class="list-group">
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/merge-algorithms/">Included Merging Algorithms</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/custom-merge-algorithms/">Custom Merging Algorithms</a>
+    
+    
+  </li>
+  
+</ul>
+
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/managing-code/">Managing Custom Code</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/security/">Security</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/error-codes/">Error Codes</a>
+    
+    
+  </li>
+  
+</ul>
+
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/faqs/">FAQs</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/troubleshooting/">Troubleshooting</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="https://github.com/marklogic-community/smart-mastering-core">Smart Mastering on GitHub</a>
+    
+    
+  </li>
+  
+</ul>
+
+</div>
+
+        </div>
+        <div class="col-md-9">
+          <h1 id="smart-mastering-with-rest-apis">Smart Mastering with REST APIs</h1>
+
+<p>The Smart Mastering Core project includes a set of REST API extensions. Once
+you have included the core in your own project and run <code class="highlighter-rouge">gradle mlDeploy</code>,
+these REST extensions will be available to your project.</p>
+
+<p>Smart Mastering functionality consists of configuration-driven mastering and
+merging, as well as services to retrieve history for documents or individual
+properties within merged documents. This page will show you how to access this
+functionality using the REST APIs.</p>
+
+<h1 id="table-of-contents">Table of Contents</h1>
+<ol>
+  <li><a href="#match-options">Match Options</a>
+    <ol>
+      <li><a href="#sm-match-options">sm-match-options</a></li>
+      <li><a href="#sm-match-option-names">sm-match-option-names</a></li>
+    </ol>
+  </li>
+  <li><a href="#matching">Matching</a>
+    <ol>
+      <li><a href="#sm-match">sm-match</a></li>
+      <li><a href="#sm-block-match">sm-block-match</a></li>
+      <li><a href="#sm-notifications">sm-notifications</a></li>
+    </ol>
+  </li>
+  <li><a href="#merge-options">Merge Options</a>
+    <ol>
+      <li><a href="#sm-merge-options">sm-merge-options</a></li>
+      <li><a href="#sm-merge-option-names">sm-merge-option-names</a></li>
+    </ol>
+  </li>
+  <li><a href="#merging">Merging</a>
+    <ol>
+      <li><a href="#sm-merge">sm-merge</a></li>
+    </ol>
+  </li>
+  <li><a href="#match-and-merge-together">Match and Merge Together</a>
+    <ol>
+      <li><a href="#sm-match-and-merge">sm-match-and-merge</a></li>
+    </ol>
+  </li>
+  <li><a href="#history">History</a>
+    <ol>
+      <li><a href="#sm-history-document">sm-history-document</a></li>
+      <li><a href="#sm-history-properties">sm-history-properties</a></li>
+    </ol>
+  </li>
+  <li><a href="#other-services">Other Services</a>
+    <ol>
+      <li><a href="#mastering-stats">mastering-stats</a></li>
+      <li><a href="#sm-dictionaries">sm-dictionaries</a></li>
+      <li><a href="#sm-entity-services">sm-entity-services</a></li>
+      <li><a href="#sm-thesauri">sm-thesauri</a></li>
+    </ol>
+  </li>
+</ol>
+
+<h2 id="match-options">Match Options</h2>
+
+<h3 id="sm-match-options">sm-match-options</h3>
+
+<p>Manage the available match options. See <a href="../matching-options/">/docs/matching-options/</a>
+for documentation of the matching options themselves.</p>
+
+<p>This service supports:</p>
+
+<ul>
+  <li>GET: retrieve a set of matching options
+    <ul>
+      <li>parameters:
+        <ul>
+          <li><code class="highlighter-rouge">rs:name</code> – the name under which a set of options were stored</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>PUT: create or replace a set of matching options
+    <ul>
+      <li>parameters:
+        <ul>
+          <li><code class="highlighter-rouge">rs:name</code> – the name under which the options are to be stored</li>
+          <li>body of message – the options, in either XML or JSON format</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>POST: identical to PUT</li>
+</ul>
+
+<h3 id="sm-match-option-names">sm-match-option-names</h3>
+
+<p>List the available matching options.</p>
+
+<ul>
+  <li>GET: retrieve the list
+    <ul>
+      <li>the names will be returned as a JSON array of string values</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="matching">Matching</h2>
+
+<h3 id="sm-match">sm-match</h3>
+
+<ul>
+  <li>POST: identify matches for a particular document
+    <ul>
+      <li>parameters
+        <ul>
+          <li><code class="highlighter-rouge">rs:uri</code> – the URI of the document for which matches will be identified</li>
+          <li><code class="highlighter-rouge">rs:options</code> – the name under which a set of options were previously
+stored</li>
+          <li><code class="highlighter-rouge">rs:start</code> – (optional) starting index of matches; defaults to 1</li>
+          <li><code class="highlighter-rouge">rs:pageLength</code> – (optional) number of potential matches to return; if
+not provided, the matching options’ <code class="highlighter-rouge">max-scan</code> value will be used. If there
+is no <code class="highlighter-rouge">max-scan</code> value, defaults to 20.</li>
+          <li><code class="highlighter-rouge">rs:includeMatches</code> – (optional boolean) whether to include, for each
+potential match, the list of properties that were good matches. Defaults to
+<code class="highlighter-rouge">false</code>.</li>
+          <li>body of message – The body may include the following:
+            <ul>
+              <li>a content document for which matches will be identified. If XML, there
+must be an XML element with the localname of <code class="highlighter-rouge">document</code> (namespace is
+ignored). If JSON, there must be a top-level property called <code class="highlighter-rouge">document</code>.</li>
+              <li>matching options. If XML, there must be an XML element with a QName of
+<code class="highlighter-rouge">matching:options</code>. If JSON, there must be a top-level property called
+<code class="highlighter-rouge">options</code>.</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>response
+        <ul>
+          <li>The response will be a JSON array of objects representing potential
+matches.</li>
+        </ul>
+      </li>
+      <li>usage
+        <ul>
+          <li>Either the <code class="highlighter-rouge">rs:uri</code> parameter or a document in the message body must be
+provided.</li>
+          <li>Either the <code class="highlighter-rouge">rs:options</code> parameter or a set of options in the message body
+must be provided.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="sm-block-match">sm-block-match</h3>
+
+<p>Match blocks are used to manually prevent automatic merging of entities that
+score highly as matches. Ideally, adjusting the match weights well enough would
+solve such problems, but in practice, match blocks are available to handle
+outliers.</p>
+
+<ul>
+  <li>GET: retrieve a list of match blocks for a URI
+    <ul>
+      <li>parameters
+        <ul>
+          <li><code class="highlighter-rouge">rs:uri</code> – find match blocks that include this URI</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>POST: create a match block between two URIs
+    <ul>
+      <li>parameters
+        <ul>
+          <li><code class="highlighter-rouge">rs:uri1</code></li>
+          <li><code class="highlighter-rouge">rs:uri2</code></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>DELETE: remove a match block between two URIs
+    <ul>
+      <li>parameters
+        <ul>
+          <li><code class="highlighter-rouge">rs:uri1</code></li>
+          <li><code class="highlighter-rouge">rs:uri2</code></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="sm-notifications">sm-notifications</h3>
+
+<p>Notifications identify matches that are likely, but did not score high enough
+to automatically merge. Notifications should be presented to human users for
+review.</p>
+
+<ul>
+  <li>GET: retrieve a paged list of notifications
+    <ul>
+      <li>parameters
+        <ul>
+          <li><code class="highlighter-rouge">rs:start</code> – optional; integer defaulting to 1</li>
+          <li><code class="highlighter-rouge">rs:pageLength</code> – optional; integer defaulting to 10</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>POST: retrieve a paged list of notifications with the option to pass in a configuration
+    <ul>
+      <li>parameters
+        <ul>
+          <li><code class="highlighter-rouge">rs:start</code> – optional; integer defaulting to 1</li>
+          <li><code class="highlighter-rouge">rs:pageLength</code> – optional; integer defaulting to 10</li>
+          <li><code class="highlighter-rouge">post body</code><br />
+JSON object with a JSON object of “extractions”<br />
+extractions look like:<br />
+<code class="highlighter-rouge">{ "name": "QName" }</code><br />
+<br />
+when run, the value inside the document at QName will be returned<br />
+in a key/value extractions section under the key “name”.<br />
+<br />
+example:<br />
+<code class="highlighter-rouge">body =&gt; { "firstName": "PersonFirstName" }</code><br />
+<br />
+this would extract the value in the PersonFirstName field<br />
+<br />
+<code class="highlighter-rouge">&lt;Person&gt;&lt;PersonFirstName&gt;Bob&lt;/PersonFirstName&gt;&lt;PersonLastName&gt;Smith&lt;/PersonLastName&gt;&lt;/Person&gt;</code>
+<br />
+<br />
+returns:<br />
+<code class="highlighter-rouge">{
+...
+extractions: {
+"/uri1.xml": {
+"firstName": "Bob"
+}
+}
+}</code></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>PUT: update the status of a notification
+    <ul>
+      <li>body of message: a JSON object with two properties
+        <ul>
+          <li>“uris” – an array of strings with the URIs of notifications to be updated</li>
+          <li>“status” – new status for the notifications; must be either “read” or
+“unread”.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>DELETE: delete a notification
+    <ul>
+      <li>parameters
+        <ul>
+          <li><code class="highlighter-rouge">rs:uri</code> – the URI of the notification to be deleted</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="merge-options">Merge Options</h2>
+
+<p>Merge options control the way property values are combined when producing a new,
+merged document based on two or more original documents. For full documentation
+of merging options, see the <a href="../merging-options/">Merging Options</a> page.</p>
+
+<h3 id="sm-merge-options">sm-merge-options</h3>
+<p>Manage the available merge options.</p>
+
+<ul>
+  <li>GET: retrieve a set of merging options
+    <ul>
+      <li>parameters:
+        <ul>
+          <li><code class="highlighter-rouge">rs:name</code> – the name under which a set of options were stored</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>PUT: create or replace a set of merging options
+    <ul>
+      <li>parameters:
+        <ul>
+          <li><code class="highlighter-rouge">rs:name</code> – the name under which the options are to be stored</li>
+        </ul>
+      </li>
+      <li>body of message – the options, in either XML or JSON format</li>
+    </ul>
+  </li>
+  <li>POST: identical to PUT</li>
+</ul>
+
+<h3 id="sm-merge-option-names">sm-merge-option-names</h3>
+
+<p>List the available merging options.</p>
+
+<ul>
+  <li>GET: retrieve the list
+    <ul>
+      <li>the names will be returned as a JSON array of string values</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="merging">Merging</h2>
+
+<h3 id="sm-merge">sm-merge</h3>
+
+<ul>
+  <li>POST: Save or preview a merge document, combining two or more other documents.
+    <ul>
+      <li>parameters
+        <ul>
+          <li><code class="highlighter-rouge">rs:uri</code> – (repeated parameter) the URIs of the documents to merge</li>
+          <li><code class="highlighter-rouge">rs:options</code> – the name of the merge options that will control how the
+document properties will be combined</li>
+          <li><code class="highlighter-rouge">rs:preview</code> – optional; if <code class="highlighter-rouge">true</code>, return the merged document, but do
+not persist it to the database; else save it to the database and return the
+merged document</li>
+        </ul>
+      </li>
+      <li>body of message
+        <ul>
+          <li>may optionally contain a set of merging options in XML or JSON format</li>
+        </ul>
+      </li>
+      <li>usage
+        <ul>
+          <li>Either the <code class="highlighter-rouge">rs:options</code> parameter or a set of options in the message body
+must be provided.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>DELETE: unmerge a previously merged document, restoring the original documents
+    <ul>
+      <li>parameters
+        <ul>
+          <li><code class="highlighter-rouge">rs:mergedUri</code> – the URI of the merged document</li>
+          <li><code class="highlighter-rouge">rs:retainAuditTrail</code> – optional; if <code class="highlighter-rouge">true</code>, the merged document will be
+moved to an archive collection; if <code class="highlighter-rouge">false</code>, the merged document will be
+deleted. Defaults to <code class="highlighter-rouge">true</code>.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="match-and-merge-together">Match and Merge Together</h2>
+
+<p>Rather than calling match and merge functions separately, you can call them 
+together on a set of URIs. By doing so, you ensure that both happen in the same
+transaction and that the merges are consistent and non-redundant.</p>
+
+<h3 id="sm-match-and-merge">sm-match-and-merge</h3>
+
+<ul>
+  <li>POST: match and merge on a set of documents. A basic controller is included with the Smart Mastering core and can be referenced with collector-name <code class="highlighter-rouge">collect</code> and collector-ns <code class="highlighter-rouge">http://marklogic.com/smart-mastering/collector</code>. The basic collector will return URIs based off of the Smart Mastering content collection and the additional query parameter passed.
+    <ul>
+      <li>parameters
+        <ul>
+          <li><code class="highlighter-rouge">rs:uri</code> – (repeated parameter) the URIs of the documents to merge</li>
+          <li><code class="highlighter-rouge">rs:collector-name</code> – the local name of a function that will return a 
+list of URIs</li>
+          <li><code class="highlighter-rouge">rs:collector-ns</code> – the namespace of the collector function. Skip this
+for JavaScript</li>
+          <li><code class="highlighter-rouge">rs:collector-at</code> – the URI in the modules database of a library module 
+that holds the collector function</li>
+          <li><code class="highlighter-rouge">rs:options</code> – required; the name of the merge options that will control 
+how the document properties will be combined</li>
+          <li><code class="highlighter-rouge">rs:query</code> – optional; a serialized query that will be used to filter 
+the set documents that are eligible for matching</li>
+        </ul>
+      </li>
+      <li>usage
+        <ul>
+          <li>Either <code class="highlighter-rouge">rs:uri</code> or <code class="highlighter-rouge">rs:collector-name</code> is required.</li>
+          <li>Queries can be serialized as either <a href="https://docs.marklogic.com/guide/search-dev/cts_query#id_29308">JSON</a> or <a href="https://docs.marklogic.com/guide/search-dev/cts_query#id_92772">XML</a>.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="history">History</h2>
+
+<p>Smart Mastering Core tracks the history of what merge and unmerge operations
+have been done to a document, as well as which original documents contributed
+values to a merged document.</p>
+
+<h3 id="sm-history-document">sm-history-document</h3>
+
+<ul>
+  <li>GET: retrieve the activity history of this document
+    <ul>
+      <li>parameters
+        <ul>
+          <li><code class="highlighter-rouge">rs:uri</code> – the URI of a document in the content database (may be a merged
+document or an original source document)</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="sm-history-properties">sm-history-properties</h3>
+
+<ul>
+  <li>GET: retrieve the source for each property in a merged document
+    <ul>
+      <li>parameters
+        <ul>
+          <li><code class="highlighter-rouge">rs:uri</code> – the URI of a merged document</li>
+          <li><code class="highlighter-rouge">rs:property</code> – zero or more property names (repeat parameter for more
+than one). If none are provided, returns information for all available
+properties.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="other-services">Other Services</h2>
+
+<h3 id="mastering-stats">mastering-stats</h3>
+
+<ul>
+  <li>GET: convenience endpoint to gather some numbers about Smart Mastering data</li>
+</ul>
+
+<h3 id="sm-dictionaries">sm-dictionaries</h3>
+
+<ul>
+  <li>GET: retrieve any dictionaries used by Smart Mastering</li>
+</ul>
+
+<h3 id="sm-entity-services">sm-entity-services</h3>
+
+<ul>
+  <li>GET: returns Entity Services descriptors present in the content database</li>
+</ul>
+
+<h3 id="sm-thesauri">sm-thesauri</h3>
+
+<ul>
+  <li>GET: retrieve any thesauri used by Smart Mastering</li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </article>
+
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <p>
+                    Copyright © 2016-2019 MarkLogic Corporation. All Rights Reserved. MARKLOGIC® is a registered trademark of MarkLogic Corporation.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    <!--[if lt IE 9]>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="/smart-mastering-core/js/respond.min.js"></script>
+    <![endif]-->
+
+    <script type="text/javascript" src="/smart-mastering-core/assets/bundle.js" id="1"></script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-79716597-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
+

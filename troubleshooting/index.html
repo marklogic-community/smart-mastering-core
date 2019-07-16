@@ -1,0 +1,338 @@
+<!doctype html>
+<!--[if lt IE 7 ]><html itemscope itemtype="http://schema.org/Organization" id="ie6" class="ie ie-old" lang="en-US"><![endif]-->
+<!--[if IE 7 ]>   <html itemscope itemtype="http://schema.org/Organization" id="ie7" class="ie ie-old" lang="en-US"><![endif]-->
+<!--[if IE 8 ]>   <html itemscope itemtype="http://schema.org/Organization" id="ie8" class="ie ie-old" lang="en-US"><![endif]-->
+<!--[if IE 9 ]>   <html itemscope itemtype="http://schema.org/Organization" id="ie9" class="ie" lang="en-US"><![endif]-->
+<!--[if gt IE 9]><!--><html itemscope itemtype="http://schema.org/Organization" lang="en-US"><!--<![endif]-->
+<head>
+
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <title>Troubleshooting - Smart Mastering</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- Favicons -->
+    <link rel="shortcut icon" sizes="16x16 24x24 32x32 48x48 64x64 96x96" href="/smart-mastering-core/favicon.ico">
+    <meta name="application-name" content="Smart Mastering - A Smart Mastering framework for MarkLogic">
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-6638631-15', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+
+    <!-- Facebook Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1879746318909687'); // Insert your pixel ID here.
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1879746318909687&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- DO NOT MODIFY -->
+    <!-- End Facebook Pixel Code -->
+    <link type="text/css" rel="stylesheet" href="/smart-mastering-core/assets/bundle.css">
+</head>
+<body class="">
+
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/smart-mastering-core">
+                  <span class="logo">
+                    <img src="/smart-mastering-core/images/logo-marklogic.svg" width="180px" height="38px" alt="MarkLogic" title="MarkLogic" scale="0">
+                  </span>
+                  Smart Mastering
+                  <img src="/smart-mastering-core/images/smart-mastering.svg" width="36x" height="36px">
+                </a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    
+                        <li  >
+                            
+                            <a href="/smart-mastering-core/">Getting Started</a>
+                            
+                        </li>
+                    
+                        <li  >
+                            
+                            <a href="https://docs.marklogic.com/datahub/">Data Hub 5</a>
+                            
+                        </li>
+                    
+                        <li  >
+                            
+                            <a href="https://github.com/marklogic-community/smart-mastering-core">GitHub</a>
+                            
+                        </li>
+                    
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+
+
+  <article>
+    <div class="container">
+      <div class="row">
+        <div class="side-nav col-md-3 hide-small">
+          <div class="panel panel-default">
+  <div class="panel-heading">Navigation</div>
+  <ul class="list-group">
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/">Getting Started</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/how-does-it-work/">How Does it Work?</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/how-to-use/">How do I Use it?</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/">Docs</a>
+    
+    
+      <ul class="list-group">
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/rest/">REST API</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/libraries/">Libraries</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/matching-options/">Matching Options</a>
+    
+    
+      <ul class="list-group">
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/match-algorithms/">Included Matching Algorithms</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/custom-match-algorithms/">Custom Matching Algorithms</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/actions/">Included Actions</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/custom-actions/">Custom Actions</a>
+    
+    
+  </li>
+  
+</ul>
+
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/merging-options/">Merging Options</a>
+    
+    
+      <ul class="list-group">
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/merge-algorithms/">Included Merging Algorithms</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/custom-merge-algorithms/">Custom Merging Algorithms</a>
+    
+    
+  </li>
+  
+</ul>
+
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/managing-code/">Managing Custom Code</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/security/">Security</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/error-codes/">Error Codes</a>
+    
+    
+  </li>
+  
+</ul>
+
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/faqs/">FAQs</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item active"  >
+    
+    <a href="/smart-mastering-core/troubleshooting/">Troubleshooting</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="https://github.com/marklogic-community/smart-mastering-core">Smart Mastering on GitHub</a>
+    
+    
+  </li>
+  
+</ul>
+
+</div>
+
+        </div>
+        <div class="col-md-9">
+          <h1 id="troubleshooting">Troubleshooting</h1>
+
+<p>Tips for solving problems</p>
+
+<h2 id="how-do-i-check-whether-a-document-has-any-matches">How do I check whether a document has any matches?</h2>
+
+<p>In Query Console, try calling the <code class="highlighter-rouge">matcher:find-document-matches-by-options-name</code> 
+function directly, like this:</p>
+
+<div class="language-xquery highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kp">import</span> <span class="kp">module</span> <span class="k">namespace</span> <span class="nn">matcher</span> <span class="o">=</span> <span class="s2">"http://marklogic.com/smart-mastering/matcher"</span> 
+  <span class="k">at</span> <span class="s2">"com.marklogic.smart-mastering/matcher.xqy"</span><span class="p">;</span>
+
+<span class="nf">matcher:find-document-matches-by-options-name</span><span class="p">(</span>
+  <span class="nf">fn:doc</span><span class="p">(</span><span class="s2">"/Organizations/Source1/org1.json"</span><span class="p">),</span>
+  <span class="s2">"org-match-options"</span><span class="p">,</span>
+  <span class="nf">fn:true</span><span class="p">(),</span>
+  <span class="nf">cts:collection-query</span><span class="p">(</span><span class="s1">'Organization'</span><span class="p">)</span>
+<span class="p">)</span>
+</code></pre></div></div>
+<p>The results will show what documents matched and what properties matched in 
+each. It will also show the query that was generated to look for matches. 
+Review the query to make sure it’s extracting the properties correctly.</p>
+
+<p>If it seems like the query is correct, but a document that you’re expecting to
+match isn’t included in the results, it could be that it scored lower than 
+expected. Consider lowering the threshold in the match options and reloading 
+the options.</p>
+
+<h2 id="traces-available-for-debugging">Traces available for debugging</h2>
+
+<p>The following traces can be enabled to aid with debugging:</p>
+<ul>
+  <li><code class="highlighter-rouge">SM-MATCH</code></li>
+  <li><code class="highlighter-rouge">SM-MERGE</code></li>
+  <li><code class="highlighter-rouge">SM-PERFORMANCE</code></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </article>
+
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <p>
+                    Copyright © 2016-2019 MarkLogic Corporation. All Rights Reserved. MARKLOGIC® is a registered trademark of MarkLogic Corporation.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    <!--[if lt IE 9]>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="/smart-mastering-core/js/respond.min.js"></script>
+    <![endif]-->
+
+    <script type="text/javascript" src="/smart-mastering-core/assets/bundle.js" id="1"></script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-79716597-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
+

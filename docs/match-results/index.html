@@ -1,0 +1,544 @@
+<!doctype html>
+<!--[if lt IE 7 ]><html itemscope itemtype="http://schema.org/Organization" id="ie6" class="ie ie-old" lang="en-US"><![endif]-->
+<!--[if IE 7 ]>   <html itemscope itemtype="http://schema.org/Organization" id="ie7" class="ie ie-old" lang="en-US"><![endif]-->
+<!--[if IE 8 ]>   <html itemscope itemtype="http://schema.org/Organization" id="ie8" class="ie ie-old" lang="en-US"><![endif]-->
+<!--[if IE 9 ]>   <html itemscope itemtype="http://schema.org/Organization" id="ie9" class="ie" lang="en-US"><![endif]-->
+<!--[if gt IE 9]><!--><html itemscope itemtype="http://schema.org/Organization" lang="en-US"><!--<![endif]-->
+<head>
+
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <title>Match Results - Smart Mastering</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- Favicons -->
+    <link rel="shortcut icon" sizes="16x16 24x24 32x32 48x48 64x64 96x96" href="/smart-mastering-core/favicon.ico">
+    <meta name="application-name" content="Smart Mastering - A Smart Mastering framework for MarkLogic">
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-6638631-15', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+
+    <!-- Facebook Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1879746318909687'); // Insert your pixel ID here.
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1879746318909687&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- DO NOT MODIFY -->
+    <!-- End Facebook Pixel Code -->
+    <link type="text/css" rel="stylesheet" href="/smart-mastering-core/assets/bundle.css">
+</head>
+<body class="">
+
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/smart-mastering-core">
+                  <span class="logo">
+                    <img src="/smart-mastering-core/images/logo-marklogic.svg" width="180px" height="38px" alt="MarkLogic" title="MarkLogic" scale="0">
+                  </span>
+                  Smart Mastering
+                  <img src="/smart-mastering-core/images/smart-mastering.svg" width="36x" height="36px">
+                </a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    
+                        <li  >
+                            
+                            <a href="/smart-mastering-core/">Getting Started</a>
+                            
+                        </li>
+                    
+                        <li  >
+                            
+                            <a href="https://docs.marklogic.com/datahub/">Data Hub 5</a>
+                            
+                        </li>
+                    
+                        <li  >
+                            
+                            <a href="https://github.com/marklogic-community/smart-mastering-core">GitHub</a>
+                            
+                        </li>
+                    
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+
+
+  <article>
+    <div class="container">
+      <div class="row">
+        <div class="side-nav col-md-3 hide-small">
+          <div class="panel panel-default">
+  <div class="panel-heading">Navigation</div>
+  <ul class="list-group">
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/">Getting Started</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/how-does-it-work/">How Does it Work?</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/how-to-use/">How do I Use it?</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/">Docs</a>
+    
+    
+      <ul class="list-group">
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/rest/">REST API</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/libraries/">Libraries</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/matching-options/">Matching Options</a>
+    
+    
+      <ul class="list-group">
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/match-algorithms/">Included Matching Algorithms</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/custom-match-algorithms/">Custom Matching Algorithms</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/actions/">Included Actions</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/custom-actions/">Custom Actions</a>
+    
+    
+  </li>
+  
+</ul>
+
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/merging-options/">Merging Options</a>
+    
+    
+      <ul class="list-group">
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/merge-algorithms/">Included Merging Algorithms</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/custom-merge-algorithms/">Custom Merging Algorithms</a>
+    
+    
+  </li>
+  
+</ul>
+
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/managing-code/">Managing Custom Code</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/security/">Security</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/error-codes/">Error Codes</a>
+    
+    
+  </li>
+  
+</ul>
+
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/faqs/">FAQs</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/troubleshooting/">Troubleshooting</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="https://github.com/marklogic-community/smart-mastering-core">Smart Mastering on GitHub</a>
+    
+    
+  </li>
+  
+</ul>
+
+</div>
+
+        </div>
+        <div class="col-md-9">
+          <h1 id="match-results">Match Results</h1>
+
+<p>Calling the matching functions constructs a query based on configured 
+properties and uses it to find potential matches. An application that uses
+process:process-match-and-merge won’t directly see the potential matches; 
+rather, they will be processed automatically. Applications that call one of the
+matching functions in matcher.xqy will get results that look like the response
+below.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import module namespace matcher = "http://marklogic.com/smart-mastering/matcher"
+  at "/com.marklogic.smart-mastering/matcher.xqy";
+
+let $document := (: get a document :)
+let $options := matcher:get-options-as-xml("my-match-options")
+return
+  matcher:find-document-matches-by-options(
+    $document,
+    $options,
+    1, (: $start :)
+    10, (: $page-length :)
+    fn:true(), (: $include-matches :)
+    cts:collection-query("Person")
+  )
+</code></pre></div></div>
+
+<p>Returns:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;results total="2" page-length="6" start="1"&gt;
+    &lt;boost-query&gt;
+      &lt;cts:or-query xmlns:cts="http://marklogic.com/cts"&gt;
+        &lt;cts:element-value-query weight="50"&gt;
+          &lt;cts:element&gt;IdentificationID&lt;/cts:element&gt;
+          &lt;cts:text xml:lang="en"&gt;393225353&lt;/cts:text&gt;
+          &lt;cts:option&gt;case-insensitive&lt;/cts:option&gt;
+        &lt;/cts:element-value-query&gt;
+        &lt;cts:element-value-query weight="8"&gt;
+          &lt;cts:element&gt;PersonSurName&lt;/cts:element&gt;
+          &lt;cts:text xml:lang="en"&gt;JONES&lt;/cts:text&gt;
+          &lt;cts:option&gt;case-insensitive&lt;/cts:option&gt;
+        &lt;/cts:element-value-query&gt;
+        &lt;cts:element-value-query weight="12"&gt;
+          &lt;cts:element&gt;PersonGivenName&lt;/cts:element&gt;
+          &lt;cts:text xml:lang="en"&gt;LINDSEY&lt;/cts:text&gt;
+          &lt;cts:option&gt;case-insensitive&lt;/cts:option&gt;
+        &lt;/cts:element-value-query&gt;
+        &lt;cts:element-value-query weight="5"&gt;
+          &lt;cts:element&gt;AddressPrivateMailboxText&lt;/cts:element&gt;
+          &lt;cts:text xml:lang="en"&gt;45&lt;/cts:text&gt;
+          &lt;cts:option&gt;case-insensitive&lt;/cts:option&gt;
+        &lt;/cts:element-value-query&gt;
+        &lt;cts:element-value-query&gt;
+          &lt;cts:element&gt;LocationState&lt;/cts:element&gt;
+          &lt;cts:text xml:lang="en"&gt;PA&lt;/cts:text&gt;
+          &lt;cts:option&gt;case-insensitive&lt;/cts:option&gt;
+        &lt;/cts:element-value-query&gt;
+        &lt;cts:element-value-query weight="3"&gt;
+          &lt;cts:element&gt;LocationPostalCode&lt;/cts:element&gt;
+          &lt;cts:text xml:lang="en"&gt;18505&lt;/cts:text&gt;
+          &lt;cts:option&gt;case-insensitive&lt;/cts:option&gt;
+        &lt;/cts:element-value-query&gt;
+      &lt;/cts:or-query&gt;
+    &lt;/boost-query&gt;
+    &lt;match-query&gt;
+      &lt;cts:and-query xmlns:cts="http://marklogic.com/cts"&gt;
+        &lt;cts:collection-query&gt;
+          &lt;cts:uri&gt;mdm-content&lt;/cts:uri&gt;
+        &lt;/cts:collection-query&gt;
+        &lt;cts:not-query&gt;
+          &lt;cts:document-query&gt;
+            &lt;cts:uri&gt;/source/2/doc2.xml&lt;/cts:uri&gt;
+          &lt;/cts:document-query&gt;
+        &lt;/cts:not-query&gt;
+        &lt;cts:or-query&gt;
+          &lt;cts:element-value-query weight="0"&gt;
+            &lt;cts:element&gt;IdentificationID&lt;/cts:element&gt;
+            &lt;cts:text xml:lang="en"&gt;393225353&lt;/cts:text&gt;
+            &lt;cts:option&gt;case-insensitive&lt;/cts:option&gt;
+          &lt;/cts:element-value-query&gt;
+        &lt;/cts:or-query&gt;
+      &lt;/cts:and-query&gt;
+    &lt;/match-query&gt;
+    &lt;result uri="/source/3/doc3.xml" index="3" score="75" threshold="Definitive Match" action="merge"&gt;
+      &lt;matches&gt;
+        &lt;match&gt;fn:doc("/source/3/doc3.xml")/envelope/instance/text("PersonSurName")&lt;/match&gt;
+        &lt;match&gt;fn:doc("/source/3/doc3.xml")/envelope/instance/text("PersonGivenName")&lt;/match&gt;
+        &lt;match&gt;fn:doc("/source/3/doc3.xml")/envelope/instance/text("IdentificationID")&lt;/match&gt;
+        &lt;match&gt;fn:doc("/source/3/doc3.xml")/envelope/instance/text("LocationState")&lt;/match&gt;
+        &lt;match&gt;fn:doc("/source/3/doc3.xml")/envelope/instance/text("AddressPrivateMailboxText")&lt;/match&gt;
+        &lt;match&gt;fn:doc("/source/3/doc3.xml")/envelope/instance/text("LocationPostalCode")&lt;/match&gt;
+      &lt;/matches&gt;
+    &lt;/result&gt;
+    &lt;result uri="/source/1/doc1.xml" index="5" score="70" threshold="Likely Match" action="notify"&gt;
+      &lt;matches&gt;
+        &lt;match&gt;fn:doc("/source/1/doc1.xml")/envelope/instance/text("PersonSurName")&lt;/match&gt;
+        &lt;match&gt;fn:doc("/source/1/doc1.xml")/envelope/instance/text("PersonGivenName")&lt;/match&gt;
+        &lt;match&gt;fn:doc("/source/1/doc1.xml")/envelope/instance/text("IdentificationID")&lt;/match&gt;
+      &lt;/matches&gt;
+    &lt;/result&gt;
+  &lt;/results&gt;
+</code></pre></div></div>
+
+<p>The matches elements can be included or skipped, based on the 
+<code class="highlighter-rouge">$include-matches</code> parameter.</p>
+
+<p>In some cases, it may be more convenient to have the results formatted as JSON. In that case, pass the XML to the <code class="highlighter-rouge">matcher:results-to-json</code> function (illustrated here using <a href="http://docs.marklogic.com/guide/jsref/language#chapter">SJS</a>, but works the same in XQuery):</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>const matcher = require("/com.marklogic.smart-mastering/matcher.xqy");
+
+const document = // get a document
+const options = matcher.getOptionsAsXml("my-match-options");
+
+matcher:resultsToJson(
+  matcher.findDocumentMatchesByOptions(
+    document,
+    options,
+    1, // start
+    10, // pageLength
+    true, // includeMatches
+    cts.collectionQuery("Person")
+  )
+)
+</code></pre></div></div>
+
+<p>The JSON result looks like this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
+  "results": {
+    "total": "2",
+    "page-length": "6",
+    "start": "1",
+    "boost-query": {
+      "or-query": {
+        "queries": [
+          {
+            "element-value-query": {
+              "weight": 50,
+              "element": ["IdentificationID"],
+              "text": [{"lang": "en", "_value": "393225353"}],
+              "option": ["case-insensitive"]
+            }
+          },
+          {
+            "element-value-query": {
+              "weight": 8,
+              "element": ["PersonSurName"],
+              "text": [{"lang": "en", "_value": "JONES"}],
+              "option": ["case-insensitive"]
+            }
+          },
+          {
+            "element-value-query": {
+              "weight": 12, 
+              "element": ["PersonGivenName"],
+              "text": [{"lang": "en", "_value": "LINDSEY"}],
+              "option": ["case-insensitive"]
+            }
+          },
+          {
+            "element-value-query": {
+              "weight": 5,
+              "element": ["AddressPrivateMailboxText"],
+              "text": [{"lang": "en", "_value": "45"}],
+              "option": ["case-insensitive"]
+            }
+          },
+          {
+            "element-value-query": {
+              "element": ["LocationState"],
+              "text": [{"lang": "en", "_value": "PA"}],
+              "option": ["case-insensitive"]
+            }
+          },
+          {
+            "element-value-query": {
+              "weight": 3,
+              "element": ["LocationPostalCode"],
+              "text": [{"lang": "en", "_value": "18505"}],
+              "option": ["case-insensitive"]
+            }
+          }
+        ]
+      }
+    },
+    "match-query": {
+      "and-query": {
+        "queries": [
+          {"collection-query": {"uri": "mdm-content"}},
+          {"not-query": {"document-query": {"uri": "/source/2/doc2.xml"}}},
+          {
+            "or-query": {
+              "queries": [
+                {
+                  "element-value-query": {
+                    "weight": 0,
+                    "element": ["IdentificationID"],
+                    "text": [{"lang": "en", "_value": "393225353"}],
+                    "option": ["case-insensitive"]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "result": [
+      {
+        "uri": "/source/3/doc3.json",
+        "index": "3",
+        "score": "75",
+        "threshold": "Definitive Match",
+        "action": "merge",
+        "matches": {
+          "match":[
+            "fn:doc(\"/source/3/doc3.json\")/envelope/instance/text(\"PersonSurName\")",
+            "fn:doc(\"/source/3/doc3.json\")/envelope/instance/text(\"PersonGivenName\")",
+            "fn:doc(\"/source/3/doc3.json\")/envelope/instance/text(\"IdentificationID\")",
+            "fn:doc(\"/source/3/doc3.json\")/envelope/instance/text(\"LocationState\")",
+            "fn:doc(\"/source/3/doc3.json\")/envelope/instance/text(\"AddressPrivateMailboxText\")",
+            "fn:doc(\"/source/3/doc3.json\")/envelope/instance/text(\"LocationPostalCode\")"
+          ]
+        }
+      },
+      {
+        "uri": "/source/1/doc1.json",
+        "index": "5",
+        "score": "70",
+        "threshold": "Likely Match",
+        "action": "notify",
+        "matches": {
+          "match":[
+            "fn:doc(\"/source/1/doc1.json\")/envelope/instance/text(\"PersonSurName\")",
+            "fn:doc(\"/source/1/doc1.json\")/envelope/instance/text(\"PersonGivenName\")",
+            "fn:doc(\"/source/1/doc1.json\")/envelope/instance/text(\"IdentificationID\")"
+          ]
+        }
+      }
+    ]
+  }
+}
+</code></pre></div></div>
+
+
+        </div>
+      </div>
+    </div>
+  </article>
+
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <p>
+                    Copyright © 2016-2019 MarkLogic Corporation. All Rights Reserved. MARKLOGIC® is a registered trademark of MarkLogic Corporation.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    <!--[if lt IE 9]>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="/smart-mastering-core/js/respond.min.js"></script>
+    <![endif]-->
+
+    <script type="text/javascript" src="/smart-mastering-core/assets/bundle.js" id="1"></script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-79716597-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
+

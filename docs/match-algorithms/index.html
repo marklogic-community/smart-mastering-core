@@ -1,0 +1,642 @@
+<!doctype html>
+<!--[if lt IE 7 ]><html itemscope itemtype="http://schema.org/Organization" id="ie6" class="ie ie-old" lang="en-US"><![endif]-->
+<!--[if IE 7 ]>   <html itemscope itemtype="http://schema.org/Organization" id="ie7" class="ie ie-old" lang="en-US"><![endif]-->
+<!--[if IE 8 ]>   <html itemscope itemtype="http://schema.org/Organization" id="ie8" class="ie ie-old" lang="en-US"><![endif]-->
+<!--[if IE 9 ]>   <html itemscope itemtype="http://schema.org/Organization" id="ie9" class="ie" lang="en-US"><![endif]-->
+<!--[if gt IE 9]><!--><html itemscope itemtype="http://schema.org/Organization" lang="en-US"><!--<![endif]-->
+<head>
+
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <title>Custom Match Algorithms - Smart Mastering</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- Favicons -->
+    <link rel="shortcut icon" sizes="16x16 24x24 32x32 48x48 64x64 96x96" href="/smart-mastering-core/favicon.ico">
+    <meta name="application-name" content="Smart Mastering - A Smart Mastering framework for MarkLogic">
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-6638631-15', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+
+    <!-- Facebook Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1879746318909687'); // Insert your pixel ID here.
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1879746318909687&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- DO NOT MODIFY -->
+    <!-- End Facebook Pixel Code -->
+    <link type="text/css" rel="stylesheet" href="/smart-mastering-core/assets/bundle.css">
+</head>
+<body class="">
+
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/smart-mastering-core">
+                  <span class="logo">
+                    <img src="/smart-mastering-core/images/logo-marklogic.svg" width="180px" height="38px" alt="MarkLogic" title="MarkLogic" scale="0">
+                  </span>
+                  Smart Mastering
+                  <img src="/smart-mastering-core/images/smart-mastering.svg" width="36x" height="36px">
+                </a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    
+                        <li  >
+                            
+                            <a href="/smart-mastering-core/">Getting Started</a>
+                            
+                        </li>
+                    
+                        <li  >
+                            
+                            <a href="https://docs.marklogic.com/datahub/">Data Hub 5</a>
+                            
+                        </li>
+                    
+                        <li  >
+                            
+                            <a href="https://github.com/marklogic-community/smart-mastering-core">GitHub</a>
+                            
+                        </li>
+                    
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+
+
+  <article>
+    <div class="container">
+      <div class="row">
+        <div class="side-nav col-md-3 hide-small">
+          <div class="panel panel-default">
+  <div class="panel-heading">Navigation</div>
+  <ul class="list-group">
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/">Getting Started</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/how-does-it-work/">How Does it Work?</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/how-to-use/">How do I Use it?</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/">Docs</a>
+    
+    
+      <ul class="list-group">
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/rest/">REST API</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/libraries/">Libraries</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/matching-options/">Matching Options</a>
+    
+    
+      <ul class="list-group">
+  
+  <li  class="list-group-item active"  >
+    
+    <a href="/smart-mastering-core/docs/match-algorithms/">Included Matching Algorithms</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/custom-match-algorithms/">Custom Matching Algorithms</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/actions/">Included Actions</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/custom-actions/">Custom Actions</a>
+    
+    
+  </li>
+  
+</ul>
+
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/merging-options/">Merging Options</a>
+    
+    
+      <ul class="list-group">
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/merge-algorithms/">Included Merging Algorithms</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/custom-merge-algorithms/">Custom Merging Algorithms</a>
+    
+    
+  </li>
+  
+</ul>
+
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/managing-code/">Managing Custom Code</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/security/">Security</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/docs/error-codes/">Error Codes</a>
+    
+    
+  </li>
+  
+</ul>
+
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/faqs/">FAQs</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="/smart-mastering-core/troubleshooting/">Troubleshooting</a>
+    
+    
+  </li>
+  
+  <li  class="list-group-item"  >
+    
+    <a href="https://github.com/marklogic-community/smart-mastering-core">Smart Mastering on GitHub</a>
+    
+    
+  </li>
+  
+</ul>
+
+</div>
+
+        </div>
+        <div class="col-md-9">
+          <h1 id="table-of-contents">Table of Contents</h1>
+<ol>
+  <li><a href="#intro">Out-of-the-Box Match Algorithms</a></li>
+  <li><a href="#configuring-add">Configuring Add</a>
+    <ol>
+      <li><a href="#standard-algorithm">Standard Algorithm</a></li>
+    </ol>
+  </li>
+  <li><a href="#configuring-expand">Configuring Expand</a>
+    <ol>
+      <li><a href="#double-metaphone">Double Metaphone</a></li>
+      <li><a href="#thesaurus">Thesaurus</a></li>
+      <li><a href="#zip">Zip</a></li>
+    </ol>
+  </li>
+  <li><a href="#reductions">Reductions</a>
+    <ol>
+      <li><a href="#standard-reduction">Standard Reduction</a></li>
+    </ol>
+  </li>
+</ol>
+
+<h1 id="-out-of-the-box-match-algorithms"><a name="intro"></a> Out-of-the-Box Match Algorithms</h1>
+
+<p>Smart Mastering provides the following match algorithms that you can use without having to write any code. A match
+algorithm generates a query that is used to identify and score potential matches. In addition to the built-in 
+algorithms, <a href="../custom-match-algorithms/">you can write your own custom functions</a>.</p>
+
+<h2 id="configuring-add">Configuring Add</h2>
+<p>The simplest way to look for matches is to configure a property under the <code class="highlighter-rouge">scoring/add</code> part of the match options (see
+<a href="../matching-options/">Matching Options</a> for a complete example).</p>
+
+<h3 id="standard-algorithm">Standard Algorithm</h3>
+
+<p>The standard algorithm is used for properties configured under the <code class="highlighter-rouge">scoring/add</code> of the match options. This algorithm 
+builds a query that looks for exact matches. For example, if there is a property called “state” that holds 2-character 
+abbreviations of US states, and the document for which Smart Mastering is looking for matches has the value “PA”, the 
+standard algorithm will look for other documents that have the value “PA” in their state properties. The query is run 
+with the <code class="highlighter-rouge">case-insensitive</code> option.</p>
+
+<p>When configuring <code class="highlighter-rouge">scoring/add</code> properties, specify the <code class="highlighter-rouge">property-name</code>/<code class="highlighter-rouge">propertyName</code> and the <code class="highlighter-rouge">weight</code>.</p>
+
+<h2 id="configuring-expand">Configuring Expand</h2>
+<p>To look for inexact matches, configure a property under the <code class="highlighter-rouge">scoring/expand</code> section of the match options. You may 
+specify a property here that is also listed under <code class="highlighter-rouge">add</code>; in this case, the scores from both sections will be added 
+together. For each property configured under <code class="highlighter-rouge">scoring/expand</code>, specify an algorithm and options (for algorithms that
+support options).</p>
+
+<h3 id="double-metaphone">Double Metaphone</h3>
+
+<p>Allow matches that are similar in string distance. This algorithm uses a dictionary generated from current content
+in the database. The query generated by this algorithm is based on values drawn from this dictionary, so it should be 
+regenerated occasionaly as new values are inserted into the database. This is done by re-running the 
+<code class="highlighter-rouge">setup-double-metaphone</code> function. This can be done manually or by re-installing the options using 
+<code class="highlighter-rouge">matcher:save-options</code>.</p>
+
+<p>Note that to generate the dictionary, there must be a range index on the XML element or JSON property where the
+values can be found.</p>
+
+<p>To add this algorithm to your match configuration, add XML or JSON like the following, assuming that you have
+configured a property named “last-name”. Change the weights to work with your other properties.</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;options</span> <span class="na">xmlns=</span><span class="s">"http://marklogic.com/smart-mastering/matcher"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;algorithms&gt;</span>
+    <span class="nt">&lt;algorithm</span>
+      <span class="na">name=</span><span class="s">"double-metaphone"</span>
+      <span class="na">function=</span><span class="s">"double-metaphone"</span>
+      <span class="na">namespace=</span><span class="s">"http://marklogic.com/smart-mastering/algorithms"</span>
+      <span class="na">at=</span><span class="s">"/com.marklogic.smart-mastering/algorithms/double-metaphone.xqy"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/algorithms&gt;</span>
+  <span class="nt">&lt;scoring&gt;</span>
+    <span class="nt">&lt;add</span> <span class="na">property-name=</span><span class="s">"last-name"</span> <span class="na">weight=</span><span class="s">"8"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;expand</span> <span class="na">property-name=</span><span class="s">"last-name"</span> <span class="na">algorithm-ref=</span><span class="s">"double-metaphone"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;distance-threshold&gt;</span>20<span class="nt">&lt;/distance-threshold&gt;</span>
+      <span class="nt">&lt;dictionary&gt;</span>/dictionaries/last-names.xml<span class="nt">&lt;/dictionary&gt;</span>
+      <span class="nt">&lt;collation&gt;</span>http://marklogic.com/collation/codepoint<span class="nt">&lt;/collation&gt;</span>
+    <span class="nt">&lt;/expand&gt;</span>
+  <span class="nt">&lt;/scoring&gt;</span>
+<span class="nt">&lt;/options&gt;</span>
+</code></pre></div></div>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+ <span class="s2">"options"</span><span class="p">:</span> <span class="p">{</span>
+   <span class="s2">"algorithms"</span><span class="p">:</span> <span class="p">{</span>
+     <span class="s2">"algorithm"</span><span class="p">:</span> <span class="p">[</span>
+       <span class="p">{</span>
+         <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"dbl-metaphone"</span><span class="p">,</span>
+         <span class="s2">"namespace"</span><span class="p">:</span> <span class="s2">"http://marklogic.com/smart-mastering/algorithms"</span><span class="p">,</span>
+         <span class="s2">"function"</span><span class="p">:</span> <span class="s2">"double-metaphone"</span><span class="p">,</span>
+         <span class="s2">"at"</span><span class="p">:</span> <span class="s2">"/com.marklogic.smart-mastering/algorithms/double-metaphone.xqy"</span>
+       <span class="p">}</span>
+     <span class="p">]</span>
+   <span class="p">},</span>
+   <span class="s2">"scoring"</span><span class="p">:</span> <span class="p">{</span>
+     <span class="s2">"add"</span><span class="p">:</span> <span class="p">[</span>
+       <span class="p">{</span> <span class="s2">"propertyName"</span><span class="p">:</span> <span class="s2">"last-name"</span><span class="p">,</span> <span class="s2">"weight"</span><span class="p">:</span> <span class="s2">"8"</span> <span class="p">}</span>
+     <span class="p">],</span>
+     <span class="s2">"expand"</span><span class="p">:</span> <span class="p">[</span>
+       <span class="p">{</span>
+         <span class="s2">"propertyName"</span><span class="p">:</span> <span class="s2">"last-name"</span><span class="p">,</span>
+         <span class="s2">"algorithmRef"</span><span class="p">:</span> <span class="s2">"dbl-metaphone"</span><span class="p">,</span>
+         <span class="s2">"weight"</span><span class="p">:</span> <span class="s2">"8"</span><span class="p">,</span>
+         <span class="s2">"dictionary"</span><span class="p">:</span> <span class="s2">"/dictionaries/last-names.xml"</span><span class="p">,</span>
+         <span class="s2">"distanceThreshold"</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+         <span class="s2">"collation"</span><span class="p">:</span> <span class="s2">"http://marklogic.com/collation/codepoint"</span>
+       <span class="p">}</span>
+     <span class="p">]</span>
+   <span class="p">}</span>
+ <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>There are three configurable properties for double-metaphone:</p>
+<ul>
+  <li><code class="highlighter-rouge">dictionary</code>: the URI of a dictionary that will be created by the setup script</li>
+  <li><code class="highlighter-rouge">distance-threshold</code>: see https://docs.marklogic.com/spell:suggest for information about how the distance-threshold
+                    affects values.</li>
+  <li><code class="highlighter-rouge">collation</code>: used to identify the range index used to populate the dictionaries</li>
+</ul>
+
+<h3 id="thesaurus">Thesaurus</h3>
+
+<p>The thesaurus algorithm will look for synonyms based on a provided thesaurus. It will look up the value(s) present in
+the document that matching is being run on and build a query based on the values found in the thesaurus. The query is 
+built with the <code class="highlighter-rouge">case-insensitive</code> option. Note that the lookup of values will be done after converting the original 
+value to lower-case. For instance, if the <code class="highlighter-rouge">first-name</code> property has the value “Bill”, the algorithm will look up the 
+value “bill”. The thesaurus might have the following entry:</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;thesaurus</span> <span class="na">xmlns=</span><span class="s">"http://marklogic.com/xdmp/thesaurus"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;entry&gt;</span>
+    <span class="nt">&lt;term&gt;</span>will<span class="nt">&lt;/term&gt;</span>
+    <span class="nt">&lt;synonym&gt;</span>
+    <span class="nt">&lt;term&gt;</span>bill<span class="nt">&lt;/term&gt;</span>
+    <span class="nt">&lt;/synonym&gt;</span>
+    <span class="nt">&lt;synonym&gt;</span>
+    <span class="nt">&lt;term&gt;</span>billy<span class="nt">&lt;/term&gt;</span>
+    <span class="nt">&lt;/synonym&gt;</span>
+    <span class="nt">&lt;synonym&gt;</span>
+    <span class="nt">&lt;term&gt;</span>william<span class="nt">&lt;/term&gt;</span>
+    <span class="nt">&lt;/synonym&gt;</span>
+  <span class="nt">&lt;/entry&gt;</span>
+<span class="nt">&lt;/thesaurus&gt;</span>
+</code></pre></div></div>
+
+<p>The algorithm will then construct a case-insensitive query with the values “william”, “will”, and “billy”.</p>
+
+<p>For more information about using thesauri in MarkLogic, including the required schema, see 
+<a href="//docs.marklogic.com/guide/search-dev/thesaurus#chapter">Using the Thesaurus Functions</a> in the Search Developer’s Guide. You can insert a thesaurus using 
+<a href="//docs.marklogic.com/thsr:load"><code class="highlighter-rouge">thsr:load</code></a>/<a href="//docs.marklogic.com/thsr.load"><code class="highlighter-rouge">thsr.load</code></a> or 
+<a href="//docs.marklogic.com/thsr:insert"><code class="highlighter-rouge">thsr:insert</code></a>/<a href="//docs.marklogic.com/thsr.insert"><code class="highlighter-rouge">thsr.insert</code></a>, which will validate that the content matches the 
+expected schema. You can also directly insert a thesarus into your content database, which skips the validation step. 
+In either case, use the URI at which you insert the thesaurus document to configure the thesaurus option.</p>
+
+<p>To add this algorithm to your match configuration, add XML or JSON like the following, assuming that you have
+configured a property named “first-name”. Change the weights to work with your other properties.</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;options</span> <span class="na">xmlns=</span><span class="s">"http://marklogic.com/smart-mastering/matcher"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;algorithms&gt;</span>
+    <span class="nt">&lt;algorithm</span>
+      <span class="na">name=</span><span class="s">"thesaurus"</span>
+      <span class="na">function=</span><span class="s">"thesaurus"</span>
+      <span class="na">namespace=</span><span class="s">"http://marklogic.com/smart-mastering/algorithms"</span>
+      <span class="na">at=</span><span class="s">"/com.marklogic.smart-mastering/algorithms/thesaurus.xqy"</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;/algorithms&gt;</span>
+  <span class="nt">&lt;scoring&gt;</span>
+    <span class="nt">&lt;add</span> <span class="na">property-name=</span><span class="s">"first-name"</span> <span class="na">weight=</span><span class="s">"8"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;expand</span> <span class="na">property-name=</span><span class="s">"first-name"</span> <span class="na">algorithm-ref=</span><span class="s">"thesaurus"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;thesaurus&gt;</span>/dictionaries/first-name-thesaurus.xml<span class="nt">&lt;/thesaurus&gt;</span>
+    <span class="nt">&lt;/expand&gt;</span>
+  <span class="nt">&lt;/scoring&gt;</span>
+<span class="nt">&lt;/options&gt;</span>
+</code></pre></div></div>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="s2">"options"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"propertyDefs"</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">"property"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span> <span class="s2">"namespace"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span> <span class="s2">"localname"</span><span class="p">:</span> <span class="s2">"PersonSurName"</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"first-name"</span> <span class="p">},</span>
+      <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="s2">"algorithms"</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">"algorithm"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"thesaurus"</span><span class="p">,</span>
+          <span class="s2">"namespace"</span><span class="p">:</span> <span class="s2">"http://marklogic.com/smart-mastering/algorithms"</span><span class="p">,</span>
+          <span class="s2">"function"</span><span class="p">:</span> <span class="s2">"thesaurus"</span><span class="p">,</span>
+          <span class="s2">"at"</span><span class="p">:</span> <span class="s2">"/com.marklogic.smart-mastering/algorithms/thesaurus.xqy"</span>
+        <span class="p">}</span>
+      <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="s2">"scoring"</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">"add"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span> <span class="s2">"propertyName"</span><span class="p">:</span> <span class="s2">"first-name"</span><span class="p">,</span> <span class="s2">"weight"</span><span class="p">:</span> <span class="s2">"8"</span> <span class="p">}</span>
+      <span class="p">],</span>
+      <span class="s2">"expand"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="s2">"propertyName"</span><span class="p">:</span> <span class="s2">"first-name"</span><span class="p">,</span>
+          <span class="s2">"algorithmRef"</span><span class="p">:</span> <span class="s2">"thesaurus"</span><span class="p">,</span>
+          <span class="s2">"weight"</span><span class="p">:</span> <span class="s2">"8"</span><span class="p">,</span>
+          <span class="s2">"thesaurus"</span><span class="p">:</span> <span class="s2">"/dictionaries/first-name-thesaurus.xml"</span>
+        <span class="p">}</span>
+      <span class="p">]</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>There are two configurable properties for thesaurus:</p>
+<ul>
+  <li>thesaurus: the URI of a thesaurus that values will be drawn from. You must supply a thesaurus.</li>
+  <li>filter: corresponds to the filter parameter to https://docs.marklogic.com/thsr:expand</li>
+</ul>
+
+<h3 id="zip">Zip</h3>
+
+<p>Allow matches between 5- and 9-digit US ZIP codes. For each zip in original document, this algorithm generates a query 
+to match values that have the same first five digits.</p>
+
+<p>To add this algorithm to your match configuration, add XML or JSON like the following, assuming that you have 
+configured a property named “zip”. Change the weights to work with your other properties.</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;options</span> <span class="na">xmlns=</span><span class="s">"http://marklogic.com/smart-mastering/matcher"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;algorithms&gt;</span>
+    <span class="nt">&lt;algorithm</span>
+      <span class="na">name=</span><span class="s">"zip-code"</span>
+      <span class="na">function=</span><span class="s">"zip-match"</span>
+      <span class="na">namespace=</span><span class="s">"http://marklogic.com/smart-mastering/algorithms"</span>
+      <span class="na">at=</span><span class="s">"/com.marklogic.smart-mastering/algorithms/zip.xqy"</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;/algorithms&gt;</span>
+  <span class="nt">&lt;scoring&gt;</span>
+    <span class="nt">&lt;add</span> <span class="na">property-name=</span><span class="s">"zip"</span> <span class="na">weight=</span><span class="s">"5"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;expand</span> <span class="na">property-name=</span><span class="s">"zip"</span> <span class="na">algorithm-ref=</span><span class="s">"zip-code"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;zip</span> <span class="na">origin=</span><span class="s">"5"</span> <span class="na">weight=</span><span class="s">"3"</span><span class="nt">/&gt;</span>
+      <span class="nt">&lt;zip</span> <span class="na">origin=</span><span class="s">"9"</span> <span class="na">weight=</span><span class="s">"2"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/expand&gt;</span>
+  <span class="nt">&lt;/scoring&gt;</span>
+<span class="nt">&lt;/options&gt;</span>
+</code></pre></div></div>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="s2">"options"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"algorithms"</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">"algorithm"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"zip-code"</span><span class="p">,</span>
+          <span class="s2">"namespace"</span><span class="p">:</span> <span class="s2">"http://marklogic.com/smart-mastering/algorithms"</span><span class="p">,</span>
+          <span class="s2">"function"</span><span class="p">:</span> <span class="s2">"zip-match"</span><span class="p">,</span>
+          <span class="s2">"at"</span><span class="p">:</span> <span class="s2">"/com.marklogic.smart-mastering/algorithms/zip.xqy"</span>
+        <span class="p">}</span>
+      <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="s2">"scoring"</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">"add"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span> <span class="s2">"propertyName"</span><span class="p">:</span> <span class="s2">"zip"</span><span class="p">,</span> <span class="s2">"weight"</span><span class="p">:</span> <span class="s2">"5"</span> <span class="p">}</span>
+      <span class="p">],</span>
+      <span class="s2">"expand"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="s2">"propertyName"</span><span class="p">:</span> <span class="s2">"zip"</span><span class="p">,</span>
+          <span class="s2">"algorithmRef"</span><span class="p">:</span> <span class="s2">"zip-code"</span><span class="p">,</span>
+          <span class="s2">"zip"</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span> <span class="s2">"origin"</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">"weight"</span><span class="p">:</span> <span class="mi">3</span> <span class="p">},</span>
+            <span class="p">{</span> <span class="s2">"origin"</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span> <span class="s2">"weight"</span><span class="p">:</span> <span class="mi">2</span> <span class="p">}</span>
+          <span class="p">]</span>
+        <span class="p">}</span>
+      <span class="p">]</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Effect:</p>
+
+<ul>
+  <li>If the original document has a 5-digit zip:
+    <ul>
+      <li>A potential match with the same 5-digit zip will get 5 points (from the <code class="highlighter-rouge">add</code>).</li>
+      <li>A potential match with a 9-digit zip that starts with the same five digits will get (5+3=)8 points.</li>
+    </ul>
+  </li>
+  <li>If the original document has a 9-digit zip:
+    <ul>
+      <li>A potential match with the same 9-digit zip will get 5 points.</li>
+      <li>A potential match with a 5-digit zip that matches the first five digits of the original document will get 2 points.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="reductions">Reductions</h2>
+
+<p>In some cases, a combination of matching properties may suggest a match when there shouldn’t be one. Consider two 
+relatives living together. When matched, two Person records have the same family name, same street address, city, and 
+zip code. That might be enough points to trigger a match even though the two given names differ.</p>
+
+<p>The reduce element gives a way to back off the scores in such cases. The <code class="highlighter-rouge">algorithm-ref</code>/<code class="highlighter-rouge">algorithmRef</code> must match the 
+name of an algorithm element under algorithms. The weight attribute will be subtracted from the score if the 
+algorithm matches.</p>
+
+<h3 id="standard-reduction">Standard Reduction</h3>
+
+<p>To use the standard reduction algorithm, add XML or JSON to your match options like the following, assuming you have
+configured properties called “last-name” and “addr1”. The specified weight reduction will be applied if the listed 
+properties all match.</p>
+
+<p>Note that this algorithm requires that the match function calculates a list of which matches were scored. This feature
+is optional when calling match functions directly and disabled when calling <code class="highlighter-rouge">match-and-merge</code>.</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;options</span> <span class="na">xmlns=</span><span class="s">"http://marklogic.com/smart-mastering/matcher"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;algorithms&gt;</span>
+    <span class="nt">&lt;algorithm</span> <span class="na">name=</span><span class="s">"std-reduce"</span> <span class="na">function=</span><span class="s">"standard-reduction"</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;/algorithms&gt;</span>
+  <span class="nt">&lt;scoring&gt;</span>
+    <span class="nt">&lt;reduce</span> <span class="na">algorithm-ref=</span><span class="s">"std-reduce"</span> <span class="na">weight=</span><span class="s">"4"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;all-match&gt;</span>
+        <span class="nt">&lt;property&gt;</span>last-name<span class="nt">&lt;/property&gt;</span>
+        <span class="nt">&lt;property&gt;</span>addr1<span class="nt">&lt;/property&gt;</span>
+      <span class="nt">&lt;/all-match&gt;</span>
+    <span class="nt">&lt;/reduce&gt;</span>
+  <span class="nt">&lt;/scoring&gt;</span>
+<span class="nt">&lt;/options&gt;</span>
+</code></pre></div></div>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="s2">"options"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"algorithms"</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">"algorithm"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span> <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"std-reduce"</span><span class="p">,</span> <span class="s2">"function"</span><span class="p">:</span> <span class="s2">"standard-reduction"</span> <span class="p">},</span>
+      <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="s2">"scoring"</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">"reduce"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="s2">"algorithmRef"</span><span class="p">:</span> <span class="s2">"std-reduce"</span><span class="p">,</span>
+          <span class="s2">"weight"</span><span class="p">:</span> <span class="s2">"4"</span><span class="p">,</span>
+          <span class="s2">"allMatch"</span><span class="p">:</span> <span class="p">{</span> <span class="s2">"property"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"last-name"</span><span class="p">,</span> <span class="s2">"addr1"</span><span class="p">]</span> <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">]</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+        </div>
+      </div>
+    </div>
+  </article>
+
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <p>
+                    Copyright © 2016-2019 MarkLogic Corporation. All Rights Reserved. MARKLOGIC® is a registered trademark of MarkLogic Corporation.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    <!--[if lt IE 9]>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="/smart-mastering-core/js/respond.min.js"></script>
+    <![endif]-->
+
+    <script type="text/javascript" src="/smart-mastering-core/assets/bundle.js" id="1"></script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-79716597-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
+
