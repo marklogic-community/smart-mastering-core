@@ -1575,7 +1575,12 @@ declare function merge-impl:get-instance-props-by-path(
   let $inst-path := merge-impl:strip-top-path($path-prop/@path)
   let $parts := fn:tokenize($inst-path, "/")
   (: We'll grab the node above our target so that we determine whether it's an array :)
-  let $middle-path := fn:string-join($parts[fn:position() != fn:last()], "/")
+
+  (:Issue #333 WORKAROUND:)
+  let $middle-path := if (fn:count($parts) eq 1) then $parts[fn:last()]
+                      else fn:string-join($parts[fn:position() != fn:last()], "/")
+  (:Issue #333 END OF WORKAROUND:)
+
   let $target-name-str := $parts[fn:last()]
   let $target-name := fn:QName(map:get($ns-map, fn:replace($target-name-str, ":.*", "")), $target-name-str)
   return (
